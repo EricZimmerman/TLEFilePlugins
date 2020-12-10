@@ -1,14 +1,15 @@
 ﻿using System.Reflection;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
 // General Information about an assembly is controlled through the following
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("ITLEFileSpec")]
+[assembly: AssemblyTitle("TLEFileTzWorks")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("ITLEFileSpec")]
+[assembly: AssemblyProduct("TLEFileTzWorks")]
 [assembly: AssemblyCopyright("Copyright ©  2020")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
@@ -19,7 +20,7 @@ using System.Runtime.InteropServices;
 [assembly: ComVisible(false)]
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM
-[assembly: Guid("b405ee7d-7ede-4812-88b4-7297dd35dfbb")]
+[assembly: Guid("3f975021-89c4-4e63-b342-dcca4af5f1bc")]
 
 // Version information for an assembly consists of the following four values:
 //

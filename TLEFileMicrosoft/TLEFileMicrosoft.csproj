@@ -4,11 +4,11 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{FC0EB431-2893-41C4-B0ED-C4D2C4290CA4}</ProjectGuid>
+    <ProjectGuid>{496A603A-7A88-490F-BEC8-97967746AFF8}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>TLEFileGenericCsv</RootNamespace>
-    <AssemblyName>TLEFileGenericCsv</AssemblyName>
+    <RootNamespace>TLEFileMicrosoft</RootNamespace>
+    <AssemblyName>TLEFileMicrosoft</AssemblyName>
     <TargetFrameworkVersion>v4.6.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <Deterministic>true</Deterministic>
@@ -41,7 +41,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="GenericCsv.cs" />
+    <Compile Include="Microsoft.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -49,11 +49,6 @@
       <Project>{b405ee7d-7ede-4812-88b4-7297dd35dfbb}</Project>
       <Name>ITLEFileSpec</Name>
     </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <PackageReference Include="CsvHelper">
-      <Version>18.0.0</Version>
-    </PackageReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

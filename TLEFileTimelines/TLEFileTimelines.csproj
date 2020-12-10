@@ -4,11 +4,11 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{FC0EB431-2893-41C4-B0ED-C4D2C4290CA4}</ProjectGuid>
+    <ProjectGuid>{8983B700-AFE0-480A-BABE-D8DD5A760404}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>TLEFileGenericCsv</RootNamespace>
-    <AssemblyName>TLEFileGenericCsv</AssemblyName>
+    <RootNamespace>TLEFileTimelines</RootNamespace>
+    <AssemblyName>TLEFileTimelines</AssemblyName>
     <TargetFrameworkVersion>v4.6.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <Deterministic>true</Deterministic>
@@ -41,7 +41,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="GenericCsv.cs" />
+    <Compile Include="Timelines.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

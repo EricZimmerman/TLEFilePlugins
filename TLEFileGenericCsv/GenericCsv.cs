@@ -4,14 +4,11 @@ using System.ComponentModel;
 using System.Globalization;
 using System.IO;
 using System.Linq;
-
 using CsvHelper;
 using ITLEFileSpec;
 
 namespace TLEFileGenericCsv
 {
-  
-
     public class GenericCsv : IFileSpec
     {
         public GenericCsv()
@@ -19,7 +16,7 @@ namespace TLEFileGenericCsv
             TaggedLines = new List<int>();
 
             DataList = new BindingList<dynamic>();
-            
+
             ExpectedHeaders = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
         }
 
@@ -49,7 +46,6 @@ namespace TLEFileGenericCsv
 
                     DataList = new BindingList<dynamic>(records);
                 }
-
             }
         }
     }
