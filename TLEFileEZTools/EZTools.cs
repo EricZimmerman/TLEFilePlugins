@@ -9,7 +9,7 @@ using ITLEFileSpec;
 
 namespace MFTECmd
 {
-    public class BootOutData : IFileSpecData
+    public class BootData : IFileSpecData
     {
         public string EntryPoint { get; set; }
         public string Signature { get; set; }
@@ -44,16 +44,16 @@ namespace MFTECmd
 
     /// <summary>
     ///     This is the "container" class that defines properties, how to process a file, etc. The actual data the file
-    ///     contains is defined in BootOutData.
+    ///     contains is defined in BootData.
     /// </summary>
-    public class BootOut : IFileSpec
+    public class Boot : IFileSpec
     {
-        public BootOut()
+        public Boot()
         {
             //Initialize collections here, one for TaggedLines TLE can add values to, and the collection that TLE will display
             TaggedLines = new List<int>();
 
-            DataList = new BindingList<BootOutData>();
+            DataList = new BindingList<BootData>();
 
             ExpectedHeaders = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
             {
@@ -81,16 +81,16 @@ namespace MFTECmd
                 {
                     DateTimeStyle = DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal
                 };
-                csv.Configuration.TypeConverterOptionsCache.AddOptions<BootOutData>(o);
+                csv.Configuration.TypeConverterOptionsCache.AddOptions<BootData>(o);
 
-                var foo = csv.Configuration.AutoMap<BootOutData>();
+                var foo = csv.Configuration.AutoMap<BootData>();
 
                 foo.Map(t => t.Line).Ignore();
                 foo.Map(t => t.Tag).Ignore();
 
                 csv.Configuration.RegisterClassMap(foo);
 
-                var records = csv.GetRecords<BootOutData>();
+                var records = csv.GetRecords<BootData>();
 
                 var ln = 1;
                 foreach (var record in records)
@@ -103,6 +103,8 @@ namespace MFTECmd
                 }
             }
         }
+
+        public string InternalGuid => "40dd7405-16cf-4612-a480-9b150d0a9952";
     }
 
     public class SdsOutData : IFileSpecData
@@ -132,9 +134,9 @@ namespace MFTECmd
         }
     }
 
-    public class SdsOut : IFileSpec
+    public class Sds : IFileSpec
     {
-        public SdsOut()
+        public Sds()
         {
             TaggedLines = new List<int>();
 
@@ -152,6 +154,8 @@ namespace MFTECmd
 
         public IBindingList DataList { get; }
         public List<int> TaggedLines { get; set; }
+
+        public string InternalGuid => "40dd7405-22cf-4612-a480-9a050d0a9952";
 
         public void ProcessFile(string filename)
         {
@@ -217,9 +221,9 @@ namespace MFTECmd
         }
     }
 
-    public class JOut : IFileSpec
+    public class J : IFileSpec
     {
-        public JOut()
+        public J()
         {
             TaggedLines = new List<int>();
 
@@ -237,6 +241,8 @@ namespace MFTECmd
 
         public IBindingList DataList { get; }
         public List<int> TaggedLines { get; set; }
+
+        public string InternalGuid => "40ee7405-16cf-4612-a480-9a050d0a9952";
 
         public void ProcessFile(string filename)
         {
@@ -339,9 +345,9 @@ namespace MFTECmd
         }
     }
 
-    public class MFTOut : IFileSpec
+    public class MFT : IFileSpec
     {
-        public MFTOut()
+        public MFT()
         {
             TaggedLines = new List<int>();
 
@@ -359,6 +365,8 @@ namespace MFTECmd
 
         public IBindingList DataList { get; }
         public List<int> TaggedLines { get; set; }
+
+        public string InternalGuid => "10dd7405-16cf-4612-a480-9a050d0a9952";
 
         public void ProcessFile(string filename)
         {

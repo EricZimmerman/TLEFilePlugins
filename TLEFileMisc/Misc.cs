@@ -8,32 +8,33 @@ namespace TLEFileMisc
 {
     public class Misc
     {
+    }
 
 
-        /*
+    /*
 
-         if (headerLine.StartsWith("("))
-                        {
-                            FileType = ContentType.DensityScout;
-                            break;
-                        }
+     if (headerLine.StartsWith("("))
+                    {
+                        FileType = ContentType.DensityScout;
+                        break;
+                    }
 
-        case "order,last modified,last update,exec flag,file size,file path":
-        FileType = ContentType.ShimcacheVolatility;
-        break;
-                   
+    case "order,last modified,last update,exec flag,file size,file path":
+    FileType = ContentType.ShimcacheVolatility;
+    break;
+               
 
-        case "last modified,last update,path,file size,exec flag":
-        FileType = ContentType.ShimcacheParser;
-        break;
+    case "last modified,last update,path,file size,exec flag":
+    FileType = ContentType.ShimcacheParser;
+    break;
 
-        case "timestamp,treeid,patternid,\"parent process id\",\"process id\",event,\"file loaded/executed\",domain,destip,\"file accessed/written\",\"usersid_readable\",username,attributes,aid":
-        FileType = ContentType.CrowdStrikeEvent;
-        case
-        "\"record number\",\"good\",\"active\",\"record type\",\"sequence number\",\"parent file rec. #\",\"parent file rec. seq. #\",\"filename #1\",\"std info creation date\",\"std info modification date\",\"std info access date\",\"std info entry date\",\"fn info creation date\",\"fn info modification date\",\"fn info access date\",\"fn info entry date\",\"object id\",\"birth volume id\",\"birth object id\",\"birth domain id\",\"filename #2\",\"fn info creation date\",\"fn info modify date\",\"fn info access date\",\"fn info entry date\",\"filename #3\",\"fn info creation date\",\"fn info modify date\",\"fn info access date\",\"fn info entry date\",\"filename #4\",\"fn info creation date\",\"fn info modify date\",\"fn info access date\",\"fn info entry date\",\"standard information\",\"attribute list\",\"filename\",\"object id\",\"volume name\",\"volume info\",\"data\",\"index root\",\"index allocation\",\"bitmap\",\"reparse point\",\"ea information\",\"ea\",\"property set\",\"logged utility stream\",\"log/notes\",\"stf fn shift\",\"usec zero\",\"ads\""
-        :
-        FileType = ContentType.AnalyzeMft;
-        break;*/
+    case "timestamp,treeid,patternid,\"parent process id\",\"process id\",event,\"file loaded/executed\",domain,destip,\"file accessed/written\",\"usersid_readable\",username,attributes,aid":
+    FileType = ContentType.CrowdStrikeEvent;
+    case
+    "\"record number\",\"good\",\"active\",\"record type\",\"sequence number\",\"parent file rec. #\",\"parent file rec. seq. #\",\"filename #1\",\"std info creation date\",\"std info modification date\",\"std info access date\",\"std info entry date\",\"fn info creation date\",\"fn info modification date\",\"fn info access date\",\"fn info entry date\",\"object id\",\"birth volume id\",\"birth object id\",\"birth domain id\",\"filename #2\",\"fn info creation date\",\"fn info modify date\",\"fn info access date\",\"fn info entry date\",\"filename #3\",\"fn info creation date\",\"fn info modify date\",\"fn info access date\",\"fn info entry date\",\"filename #4\",\"fn info creation date\",\"fn info modify date\",\"fn info access date\",\"fn info entry date\",\"standard information\",\"attribute list\",\"filename\",\"object id\",\"volume name\",\"volume info\",\"data\",\"index root\",\"index allocation\",\"bitmap\",\"reparse point\",\"ea information\",\"ea\",\"property set\",\"logged utility stream\",\"log/notes\",\"stf fn shift\",\"usec zero\",\"ads\""
+    :
+    FileType = ContentType.AnalyzeMft;
+    break;*/
 
           // case ContentType.CrowdStrikeEvent:
           //           DataList = new BindingList<CrowdStrikeEvents>();
@@ -543,4 +544,4 @@ namespace TLEFileMisc
 
                     return true;*/
     }
-}
+

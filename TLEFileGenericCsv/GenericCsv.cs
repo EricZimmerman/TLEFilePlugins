@@ -26,6 +26,7 @@ namespace TLEFileGenericCsv
 
         public IBindingList DataList { get; private set; }
         public List<int> TaggedLines { get; set; }
+        public string InternalGuid => "40dd7405-16cf-4612-a480-9a050d0a9952";
 
         public void ProcessFile(string filename)
         {

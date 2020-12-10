@@ -210,6 +210,8 @@ namespace TLEFileTimelines
         public IBindingList DataList { get; }
         public List<int> TaggedLines { get; set; }
 
+        public string InternalGuid => "40dd7405-16cf-4612-a480-9a021e2a3353";
+
         public void ProcessFile(string filename)
         {
             DataList.Clear();
@@ -414,6 +416,8 @@ namespace TLEFileTimelines
 
         public IBindingList DataList { get; }
         public List<int> TaggedLines { get; set; }
+
+        public string InternalGuid => "30877d57-540d-4460-bc4e-859fee4b0aac";
 
         public void ProcessFile(string filename)
         {

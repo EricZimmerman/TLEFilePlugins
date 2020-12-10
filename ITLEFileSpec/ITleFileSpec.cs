@@ -54,6 +54,11 @@ namespace ITLEFileSpec
         /// </summary>
         /// <param name="filename"></param>
         void ProcessFile(string filename);
+
+        /// <summary>
+        /// This must be unique across all plugins!
+        /// </summary>
+        string InternalGuid { get; }
     }
 
     /// <summary>
