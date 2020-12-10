@@ -7,8 +7,8 @@
     <ProjectGuid>{6CAA82CE-3E8C-473C-B48B-E0BD857740D7}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>MFTECmd</RootNamespace>
-    <AssemblyName>TLEFileMFTECmd</AssemblyName>
+    <RootNamespace>TLEFileEZTools</RootNamespace>
+    <AssemblyName>TLEFileEZTools</AssemblyName>
     <TargetFrameworkVersion>v4.6.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <Deterministic>true</Deterministic>
