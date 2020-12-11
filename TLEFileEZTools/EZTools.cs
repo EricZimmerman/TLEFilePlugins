@@ -1042,7 +1042,7 @@ namespace TLEFileEZTools
         }
     }
 
-    public class EvtECmdData : IFileSpecData
+    public class EvtxECmdData : IFileSpecData
     {
         public string RecordNumber { get; set; }
         public string EventRecordId { get; set; }
@@ -1081,14 +1081,14 @@ namespace TLEFileEZTools
     }
 
 
-    public class EvtECmd : IFileSpec
+    public class EvtxECmd : IFileSpec
     {
-        public EvtECmd()
+        public EvtxECmd()
         {
             //Initialize collections here, one for TaggedLines TLE can add values to, and the collection that TLE will display
             TaggedLines = new List<int>();
 
-            DataList = new BindingList<EvtECmdData>();
+            DataList = new BindingList<EvtxECmdData>();
 
             ExpectedHeaders = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
             {
@@ -1118,9 +1118,9 @@ namespace TLEFileEZTools
                 {
                     DateTimeStyle = DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal
                 };
-                csv.Configuration.TypeConverterOptionsCache.AddOptions<EvtECmdData>(o);
+                csv.Configuration.TypeConverterOptionsCache.AddOptions<EvtxECmdData>(o);
 
-                var foo = csv.Configuration.AutoMap<EvtECmdData>();
+                var foo = csv.Configuration.AutoMap<EvtxECmdData>();
 
                 foo.Map(t => t.Line).Ignore();
                 foo.Map(t => t.Tag).Ignore();
@@ -1130,7 +1130,7 @@ namespace TLEFileEZTools
 
                 csv.Configuration.RegisterClassMap(foo);
 
-                var records = csv.GetRecords<EvtECmdData>();
+                var records = csv.GetRecords<EvtxECmdData>();
 
                 var ln = 1;
                 foreach (var record in records)
@@ -1969,7 +1969,7 @@ namespace TLEFileEZTools
         public string FileExtension { get; set; }
         public DateTime? LinkDate { get; set; }
         public string ProductName { get; set; }
-        public int Size { get; set; }
+        public long Size { get; set; }
         public string Version { get; set; }
         public string ProductVersion { get; set; }
         public string LongPathHash { get; set; }
@@ -1978,7 +1978,7 @@ namespace TLEFileEZTools
         public string BinFileVersion { get; set; }
         public string BinProductVersion { get; set; }
         public int Language { get; set; }
-        public int Usn { get; set; }
+        public long Usn { get; set; }
 
         public int Line { get; set; }
         public bool Tag { get; set; }
@@ -2035,6 +2035,7 @@ namespace TLEFileEZTools
 
                 foo.Map(t => t.Line).Ignore();
                 foo.Map(t => t.Tag).Ignore();
+                foo.Map(t => t.Usn).Ignore();
 
                 csv.Configuration.RegisterClassMap(foo);
 
