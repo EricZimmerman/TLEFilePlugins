@@ -418,7 +418,7 @@ namespace TLEFileMicrosoft
                 {
                     var csv = new CsvReader(fileReader, CultureInfo.InvariantCulture);
                     csv.Configuration.HasHeaderRecord = true;
-                    csv.Configuration.Delimiter = ",";
+                    
 
                     var foo = csv.Configuration.AutoMap<MsftMftData>();
 

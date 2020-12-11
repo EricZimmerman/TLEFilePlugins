@@ -37,7 +37,7 @@ namespace TLEFileGenericCsv
                     var csv = new CsvReader(ff, CultureInfo.InvariantCulture);
                     csv.Configuration.BadDataFound = null;
 
-                    csv.Configuration.Delimiter = ",";
+                    
                     if (filename.ToUpperInvariant().EndsWith(".TSV"))
                     {
                         csv.Configuration.Delimiter = "\t";
