@@ -481,7 +481,7 @@ namespace TLEFileMisc
             {
                 var csv = new CsvReader(fileReader, CultureInfo.InvariantCulture);
                 csv.Configuration.HasHeaderRecord = true;
-                
+
                 var o = new TypeConverterOptions
                 {
                     DateTimeStyle = DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal

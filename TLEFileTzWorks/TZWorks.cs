@@ -254,10 +254,8 @@ namespace TLEFileTzWorks
             {
                 "mft entry,mft seq,parent mft,seqnum,type,file mdate,time-UTC,file adate,time-UTC,mftdate,time-UTC,file cdate,time-UTC,dir/file,size resv,size used,flags,name,slack comment"
             };
-
-            
         }
-        
+
         public string Author => "Eric Zimmerman";
         public string FileDescription => "CSV generated from Wisp";
         public HashSet<string> ExpectedHeaders { get; }

@@ -76,7 +76,7 @@ namespace TLEFileEZTools
             {
                 var csv = new CsvReader(fileReader, CultureInfo.InvariantCulture);
                 csv.Configuration.HasHeaderRecord = true;
-                
+
                 var o = new TypeConverterOptions
                 {
                     DateTimeStyle = DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal
@@ -164,7 +164,7 @@ namespace TLEFileEZTools
             {
                 var csv = new CsvReader(fileReader, CultureInfo.InvariantCulture);
                 csv.Configuration.HasHeaderRecord = true;
-                
+
                 var o = new TypeConverterOptions
                 {
                     DateTimeStyle = DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal
@@ -252,7 +252,7 @@ namespace TLEFileEZTools
             {
                 var csv = new CsvReader(fileReader, CultureInfo.InvariantCulture);
                 csv.Configuration.HasHeaderRecord = true;
-                
+
                 var o = new TypeConverterOptions
                 {
                     DateTimeStyle = DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal
@@ -376,7 +376,7 @@ namespace TLEFileEZTools
             {
                 var csv = new CsvReader(fileReader, CultureInfo.InvariantCulture);
                 csv.Configuration.HasHeaderRecord = true;
-                
+
                 var foo = csv.Configuration.AutoMap<MFTData>();
 
                 var o = new TypeConverterOptions
@@ -424,7 +424,7 @@ namespace TLEFileEZTools
     }
 
 
-      public class RbCmdData : IFileSpecData
+    public class RbCmdData : IFileSpecData
     {
         public string SourceName { get; set; }
         public string FileType { get; set; }
@@ -442,7 +442,7 @@ namespace TLEFileEZTools
         }
     }
 
-   
+
     public class RbCmd : IFileSpec
     {
         public RbCmd()
@@ -465,7 +465,7 @@ namespace TLEFileEZTools
         public IBindingList DataList { get; }
         public List<int> TaggedLines { get; set; }
 
-public string InternalGuid => "acba03f3-9886-4d33-8464-98d11be6e07d";
+        public string InternalGuid => "acba03f3-9886-4d33-8464-98d11be6e07d";
 
         public void ProcessFile(string filename)
         {
@@ -473,9 +473,9 @@ public string InternalGuid => "acba03f3-9886-4d33-8464-98d11be6e07d";
 
             using (var fileReader = File.OpenText(filename))
             {
-                var csv = new CsvReader(fileReader,CultureInfo.InvariantCulture);
+                var csv = new CsvReader(fileReader, CultureInfo.InvariantCulture);
                 csv.Configuration.HasHeaderRecord = true;
-                
+
                 var o = new TypeConverterOptions
                 {
                     DateTimeStyle = DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal
@@ -553,11 +553,12 @@ public string InternalGuid => "acba03f3-9886-4d33-8464-98d11be6e07d";
 
         public override string ToString()
         {
-            return $"{Note} {SourceFilename} {SourceCreated} {SourceModified} {SourceAccessed} {ExecutableName} {Hash} {Size} {Version} {RunCount} {LastRun} {PreviousRun0} {PreviousRun1} {PreviousRun2} {PreviousRun2} {PreviousRun3} {PreviousRun4} {PreviousRun5} {PreviousRun6} {Volume0Name} {Volume0Serial} {Volume0Created} {Volume1Name} {Volume1Serial} {Volume1Created} {Directories} {FilesLoaded} {ParsingError}";
+            return
+                $"{Note} {SourceFilename} {SourceCreated} {SourceModified} {SourceAccessed} {ExecutableName} {Hash} {Size} {Version} {RunCount} {LastRun} {PreviousRun0} {PreviousRun1} {PreviousRun2} {PreviousRun2} {PreviousRun3} {PreviousRun4} {PreviousRun5} {PreviousRun6} {Volume0Name} {Volume0Serial} {Volume0Created} {Volume1Name} {Volume1Serial} {Volume1Created} {Directories} {FilesLoaded} {ParsingError}";
         }
     }
 
-   
+
     public class PeCmd : IFileSpec
     {
         public PeCmd()
@@ -588,9 +589,9 @@ public string InternalGuid => "acba03f3-9886-4d33-8464-98d11be6e07d";
 
             using (var fileReader = File.OpenText(filename))
             {
-                var csv = new CsvReader(fileReader,CultureInfo.InvariantCulture);
+                var csv = new CsvReader(fileReader, CultureInfo.InvariantCulture);
                 csv.Configuration.HasHeaderRecord = true;
-                        
+
                 var o = new TypeConverterOptions
                 {
                     DateTimeStyle = DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal
@@ -633,7 +634,7 @@ public string InternalGuid => "acba03f3-9886-4d33-8464-98d11be6e07d";
         }
     }
 
-   
+
     public class PECmdTimeline : IFileSpec
     {
         public PECmdTimeline()
@@ -664,9 +665,9 @@ public string InternalGuid => "acba03f3-9886-4d33-8464-98d11be6e07d";
 
             using (var fileReader = File.OpenText(filename))
             {
-                var csv = new CsvReader(fileReader,CultureInfo.InvariantCulture);
+                var csv = new CsvReader(fileReader, CultureInfo.InvariantCulture);
                 csv.Configuration.HasHeaderRecord = true;
-                        
+
                 var o = new TypeConverterOptions
                 {
                     DateTimeStyle = DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal
@@ -728,13 +729,15 @@ public string InternalGuid => "acba03f3-9886-4d33-8464-98d11be6e07d";
         public string ExtraBlocksPresent { get; set; }
         public int Line { get; set; }
         public bool Tag { get; set; }
+
         public override string ToString()
         {
-            return $"{SourceFile} {SourceCreated} {SourceModified} {SourceAccessed} {TargetCreated} {TargetModified} {TargetAccessed} {FileSize} {RelativePath} {WorkingDirectory} {FileAttributes} {HeaderFlags} {DriveType} {VolumeSerialNumber} {VolumeLabel} {LocalPath} {NetworkPath} {CommonPath} {Arguments} {TargetIDAbsolutePath} {TargetMFTEntryNumber} {TargetMFTSequenceNumber} {MachineID} {MachineMACAddress} {MACVendor} {TrackerCreatedOn} {ExtraBlocksPresent}";
+            return
+                $"{SourceFile} {SourceCreated} {SourceModified} {SourceAccessed} {TargetCreated} {TargetModified} {TargetAccessed} {FileSize} {RelativePath} {WorkingDirectory} {FileAttributes} {HeaderFlags} {DriveType} {VolumeSerialNumber} {VolumeLabel} {LocalPath} {NetworkPath} {CommonPath} {Arguments} {TargetIDAbsolutePath} {TargetMFTEntryNumber} {TargetMFTSequenceNumber} {MachineID} {MachineMACAddress} {MACVendor} {TrackerCreatedOn} {ExtraBlocksPresent}";
         }
     }
 
-   
+
     public class LECmd : IFileSpec
     {
         public LECmd()
@@ -765,9 +768,9 @@ public string InternalGuid => "acba03f3-9886-4d33-8464-98d11be6e07d";
 
             using (var fileReader = File.OpenText(filename))
             {
-                var csv = new CsvReader(fileReader,CultureInfo.InvariantCulture);
+                var csv = new CsvReader(fileReader, CultureInfo.InvariantCulture);
                 csv.Configuration.HasHeaderRecord = true;
-                        
+
 
                 var o = new TypeConverterOptions
                 {
@@ -775,7 +778,7 @@ public string InternalGuid => "acba03f3-9886-4d33-8464-98d11be6e07d";
                 };
                 csv.Configuration.TypeConverterOptionsCache.AddOptions<LECmdData>(o);
 
-                csv.Configuration.PrepareHeaderForMatch =  (header, index) => header.Replace(" ", "");
+                csv.Configuration.PrepareHeaderForMatch = (header, index) => header.Replace(" ", "");
 
                 var foo = csv.Configuration.AutoMap<LECmdData>();
 
@@ -801,7 +804,7 @@ public string InternalGuid => "acba03f3-9886-4d33-8464-98d11be6e07d";
 
     public class JleCmdAutoData : IFileSpecData
     {
-       public string SourceFile { get; set; }
+        public string SourceFile { get; set; }
         public DateTime? SourceCreated { get; set; }
         public DateTime? SourceModified { get; set; }
         public DateTime? SourceAccessed { get; set; }
@@ -851,14 +854,16 @@ public string InternalGuid => "acba03f3-9886-4d33-8464-98d11be6e07d";
         public string Notes { get; set; }
         public int Line { get; set; }
         public bool Tag { get; set; }
+
         public override string ToString()
         {
-            return $"{SourceFile} {SourceCreated} {SourceModified} {SourceAccessed} {AppId} {AppIdDescription} {DestListVersion} {LastUsedEntryNumber} {MRU} {CreationTime} {LastModified} {Hostname} {MacAddress} {Path} {InteractionCount} {PinStatus} {FileBirthDroid} {FileDroid} {VolumeBirthDroid} {VolumeDroid} {TargetCreated} {TargetModified} {TargetAccessed} {FileSize} {RelativePath} {WorkingDirectory} {FileAttributes} {HeaderFlags} {DriveType} {VolumeSerialNumber}" +
-                   $" {VolumeLabel} {LocalPath} {CommonPath} {Arguments} {TargetIDAbsolutePath} {TargetMFTEntryNumber} {TargetMFTSequenceNumber} {MachineID} {MachineMACAddress} {TrackerCreatedOn} {ExtraBlocksPresent} {Notes}";
+            return
+                $"{SourceFile} {SourceCreated} {SourceModified} {SourceAccessed} {AppId} {AppIdDescription} {DestListVersion} {LastUsedEntryNumber} {MRU} {CreationTime} {LastModified} {Hostname} {MacAddress} {Path} {InteractionCount} {PinStatus} {FileBirthDroid} {FileDroid} {VolumeBirthDroid} {VolumeDroid} {TargetCreated} {TargetModified} {TargetAccessed} {FileSize} {RelativePath} {WorkingDirectory} {FileAttributes} {HeaderFlags} {DriveType} {VolumeSerialNumber}" +
+                $" {VolumeLabel} {LocalPath} {CommonPath} {Arguments} {TargetIDAbsolutePath} {TargetMFTEntryNumber} {TargetMFTSequenceNumber} {MachineID} {MachineMACAddress} {TrackerCreatedOn} {ExtraBlocksPresent} {Notes}";
         }
     }
 
-   
+
     public class JleCmdAuto : IFileSpec
     {
         public JleCmdAuto()
@@ -889,11 +894,11 @@ public string InternalGuid => "acba03f3-9886-4d33-8464-98d11be6e07d";
 
             using (var fileReader = File.OpenText(filename))
             {
-                var csv = new CsvReader(fileReader,CultureInfo.InvariantCulture);
+                var csv = new CsvReader(fileReader, CultureInfo.InvariantCulture);
                 csv.Configuration.HasHeaderRecord = true;
-                        
 
-                csv.Configuration.PrepareHeaderForMatch =  (header, index) => header.Replace(" ", "");
+
+                csv.Configuration.PrepareHeaderForMatch = (header, index) => header.Replace(" ", "");
 
                 var o = new TypeConverterOptions
                 {
@@ -964,13 +969,15 @@ public string InternalGuid => "acba03f3-9886-4d33-8464-98d11be6e07d";
         public string ExtraBlocksPresent { get; set; }
         public int Line { get; set; }
         public bool Tag { get; set; }
+
         public override string ToString()
         {
-            return $"{SourceFile} {SourceCreated} {SourceModified} {SourceAccessed} {AppId} {AppIdDescription} {EntryName} {TargetCreated} {TargetModified} {TargetAccessed} {FileSize} {RelativePath} {WorkingDirectory} {FileAttributes} {HeaderFlags} {DriveType} {VolumeSerialNumber} {VolumeLabel} {LocalPath} {CommonPath} {Arguments} {TargetIDAbsolutePath} {TargetMFTEntryNumber} {TargetMFTSequenceNumber} {MachineID} {MachineMACAddress} {TrackerCreatedOn} {ExtraBlocksPresent}";
+            return
+                $"{SourceFile} {SourceCreated} {SourceModified} {SourceAccessed} {AppId} {AppIdDescription} {EntryName} {TargetCreated} {TargetModified} {TargetAccessed} {FileSize} {RelativePath} {WorkingDirectory} {FileAttributes} {HeaderFlags} {DriveType} {VolumeSerialNumber} {VolumeLabel} {LocalPath} {CommonPath} {Arguments} {TargetIDAbsolutePath} {TargetMFTEntryNumber} {TargetMFTSequenceNumber} {MachineID} {MachineMACAddress} {TrackerCreatedOn} {ExtraBlocksPresent}";
         }
     }
 
-   
+
     public class JleCmdCustom : IFileSpec
     {
         public JleCmdCustom()
@@ -1001,9 +1008,9 @@ public string InternalGuid => "acba03f3-9886-4d33-8464-98d11be6e07d";
 
             using (var fileReader = File.OpenText(filename))
             {
-                var csv = new CsvReader(fileReader,CultureInfo.InvariantCulture);
+                var csv = new CsvReader(fileReader, CultureInfo.InvariantCulture);
                 csv.Configuration.HasHeaderRecord = true;
-                        
+
 
                 var o = new TypeConverterOptions
                 {
@@ -1011,7 +1018,7 @@ public string InternalGuid => "acba03f3-9886-4d33-8464-98d11be6e07d";
                 };
                 csv.Configuration.TypeConverterOptionsCache.AddOptions<JleCmdCustomData>(o);
 
-                csv.Configuration.PrepareHeaderForMatch =  (header, index) => header.Replace(" ", "");
+                csv.Configuration.PrepareHeaderForMatch = (header, index) => header.Replace(" ", "");
 
                 var foo = csv.Configuration.AutoMap<JleCmdCustomData>();
 
@@ -1065,13 +1072,15 @@ public string InternalGuid => "acba03f3-9886-4d33-8464-98d11be6e07d";
 
         public int Line { get; set; }
         public bool Tag { get; set; }
+
         public override string ToString()
         {
-            return $"{RecordNumber} {EventRecordId} {TimeCreated} {EventId} {Level} {Provider} {Channel} {ProcessId} {ThreadId} {Computer} {UserId} {MapDescription} {UserName} {RemoteHost} {PayloadData1} {PayloadData2} {PayloadData3} {PayloadData4} {PayloadData5} {PayloadData6} {ExecutableInfo} {SourceFile} {Keywords} {HiddenRecord}";
+            return
+                $"{RecordNumber} {EventRecordId} {TimeCreated} {EventId} {Level} {Provider} {Channel} {ProcessId} {ThreadId} {Computer} {UserId} {MapDescription} {UserName} {RemoteHost} {PayloadData1} {PayloadData2} {PayloadData3} {PayloadData4} {PayloadData5} {PayloadData6} {ExecutableInfo} {SourceFile} {Keywords} {HiddenRecord}";
         }
     }
 
-   
+
     public class EvtECmd : IFileSpec
     {
         public EvtECmd()
@@ -1102,9 +1111,9 @@ public string InternalGuid => "acba03f3-9886-4d33-8464-98d11be6e07d";
 
             using (var fileReader = File.OpenText(filename))
             {
-                var csv = new CsvReader(fileReader,CultureInfo.InvariantCulture);
+                var csv = new CsvReader(fileReader, CultureInfo.InvariantCulture);
                 csv.Configuration.HasHeaderRecord = true;
-                        
+
                 var o = new TypeConverterOptions
                 {
                     DateTimeStyle = DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal
@@ -1164,11 +1173,12 @@ public string InternalGuid => "acba03f3-9886-4d33-8464-98d11be6e07d";
 
         public override string ToString()
         {
-            return $"{HivePath} {HiveType} {Description} {Category} {KeyPath} {ValueName} {ValueType} {ValueData} {ValueData2} {ValueData3} {Comment} {Recursive} {Deleted} {LastWriteTimestamp} {PluginDetailFile}";
+            return
+                $"{HivePath} {HiveType} {Description} {Category} {KeyPath} {ValueName} {ValueType} {ValueData} {ValueData2} {ValueData3} {Comment} {Recursive} {Deleted} {LastWriteTimestamp} {PluginDetailFile}";
         }
     }
 
-   
+
     public class RecmdBatch : IFileSpec
     {
         public RecmdBatch()
@@ -1199,9 +1209,9 @@ public string InternalGuid => "acba03f3-9886-4d33-8464-98d11be6e07d";
 
             using (var fileReader = File.OpenText(filename))
             {
-                var csv = new CsvReader(fileReader,CultureInfo.InvariantCulture);
+                var csv = new CsvReader(fileReader, CultureInfo.InvariantCulture);
                 csv.Configuration.HasHeaderRecord = true;
-                        
+
                 var o = new TypeConverterOptions
                 {
                     DateTimeStyle = DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal
@@ -1261,11 +1271,12 @@ public string InternalGuid => "acba03f3-9886-4d33-8464-98d11be6e07d";
 
         public override string ToString()
         {
-            return $"{BagPath} {Slot} {NodeSlot} {MRUPosition} {AbsolutePath} {ShellType} {Value} {ChildBags} {CreatedOn} {ModifiedOn} {AccessedOn} {MFTEntry} {MFTSequenceNumber} {ExtensionBlockCount} {FirstInteracted} {LastInteracted} {HasExplored} {Miscellaneous} {LastWriteTime}";
+            return
+                $"{BagPath} {Slot} {NodeSlot} {MRUPosition} {AbsolutePath} {ShellType} {Value} {ChildBags} {CreatedOn} {ModifiedOn} {AccessedOn} {MFTEntry} {MFTSequenceNumber} {ExtensionBlockCount} {FirstInteracted} {LastInteracted} {HasExplored} {Miscellaneous} {LastWriteTime}";
         }
     }
 
-   
+
     public class SbeCmd : IFileSpec
     {
         public SbeCmd()
@@ -1296,9 +1307,9 @@ public string InternalGuid => "acba03f3-9886-4d33-8464-98d11be6e07d";
 
             using (var fileReader = File.OpenText(filename))
             {
-                var csv = new CsvReader(fileReader,CultureInfo.InvariantCulture);
+                var csv = new CsvReader(fileReader, CultureInfo.InvariantCulture);
                 csv.Configuration.HasHeaderRecord = true;
-                        
+
 
                 var o = new TypeConverterOptions
                 {
@@ -1342,7 +1353,6 @@ public string InternalGuid => "acba03f3-9886-4d33-8464-98d11be6e07d";
         public bool Duplicate { get; set; }
         public string SourceFile { get; set; }
 
-       
 
         //ControlSet	CacheEntryPosition	Path	LastModifiedTimeUTC	Executed
         public int Line { get; set; }
@@ -1351,11 +1361,12 @@ public string InternalGuid => "acba03f3-9886-4d33-8464-98d11be6e07d";
 
         public override string ToString()
         {
-            return $"{ControlSet} {CacheEntryPosition} {Path} {LastModifiedTimeUTC} {Executed} {Duplicate} {SourceFile}";
+            return
+                $"{ControlSet} {CacheEntryPosition} {Path} {LastModifiedTimeUTC} {Executed} {Duplicate} {SourceFile}";
         }
     }
 
-   
+
     public class AppCompatCache : IFileSpec
     {
         public AppCompatCache()
@@ -1386,9 +1397,9 @@ public string InternalGuid => "acba03f3-9886-4d33-8464-98d11be6e07d";
 
             using (var fileReader = File.OpenText(filename))
             {
-                var csv = new CsvReader(fileReader,CultureInfo.InvariantCulture);
+                var csv = new CsvReader(fileReader, CultureInfo.InvariantCulture);
                 csv.Configuration.HasHeaderRecord = true;
-                        
+
 
                 var o = new TypeConverterOptions
                 {
@@ -1436,7 +1447,7 @@ public string InternalGuid => "acba03f3-9886-4d33-8464-98d11be6e07d";
         }
     }
 
-   
+
     public class ActivityPackage : IFileSpec
     {
         public ActivityPackage()
@@ -1467,7 +1478,7 @@ public string InternalGuid => "acba03f3-9886-4d33-8464-98d11be6e07d";
 
             using (var fileReader = File.OpenText(filename))
             {
-                var csv = new CsvReader(fileReader,CultureInfo.InvariantCulture);
+                var csv = new CsvReader(fileReader, CultureInfo.InvariantCulture);
                 csv.Configuration.HasHeaderRecord = true;
                 var foo = csv.Configuration.AutoMap<ActivityPackageData>();
 
@@ -1502,11 +1513,6 @@ public string InternalGuid => "acba03f3-9886-4d33-8464-98d11be6e07d";
 
     public class ActivityData : IFileSpecData
     {
-        public override string ToString()
-        {
-            return $"{Id} {Executable} {DisplayText} {Payload} {ClipboardPayload} {ContentInfo} {LastModifiedTime} {ExpirationTime} {CreatedInCloud} {StartTime} {EndTime} {Duration} {LastModifiedOnClient} {OriginalLastModifiedOnClient} {ActivityType} {ActivityTypeOrg} {IsLocalOnly} {ETag} {PackageIdHash} {PlatformDeviceId} {DevicePlatform} {TimeZone}";
-        }
-
         public string Id { get; set; }
         public string Executable { get; set; }
         public string DisplayText { get; set; }
@@ -1538,12 +1544,18 @@ public string InternalGuid => "acba03f3-9886-4d33-8464-98d11be6e07d";
 
         public string DevicePlatform { get; set; }
         public string TimeZone { get; set; }
-        
+
         public int Line { get; set; }
         public bool Tag { get; set; }
+
+        public override string ToString()
+        {
+            return
+                $"{Id} {Executable} {DisplayText} {Payload} {ClipboardPayload} {ContentInfo} {LastModifiedTime} {ExpirationTime} {CreatedInCloud} {StartTime} {EndTime} {Duration} {LastModifiedOnClient} {OriginalLastModifiedOnClient} {ActivityType} {ActivityTypeOrg} {IsLocalOnly} {ETag} {PackageIdHash} {PlatformDeviceId} {DevicePlatform} {TimeZone}";
+        }
     }
 
-   
+
     public class Activity : IFileSpec
     {
         public Activity()
@@ -1572,67 +1584,62 @@ public string InternalGuid => "acba03f3-9886-4d33-8464-98d11be6e07d";
         {
             DataList.Clear();
 
-           using (var fileReader = File.OpenText(filename))
-                    {
-                        var csv = new CsvReader(fileReader,CultureInfo.InvariantCulture);
-                        csv.Configuration.HasHeaderRecord = true;
-                        
-                        var foo = csv.Configuration.AutoMap<ActivityData>();
+            using (var fileReader = File.OpenText(filename))
+            {
+                var csv = new CsvReader(fileReader, CultureInfo.InvariantCulture);
+                csv.Configuration.HasHeaderRecord = true;
 
-                        var o = new TypeConverterOptions
-                        {
-                            DateTimeStyle = DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal
-                        };
-                        csv.Configuration.TypeConverterOptionsCache.AddOptions<ActivityData>(o);
+                var foo = csv.Configuration.AutoMap<ActivityData>();
 
-                        foo.Map(t => t.Line).Ignore();
-                        foo.Map(t => t.Tag).Ignore();
-                    
-                        foo.Map(m => m.CreatedInCloud).TypeConverterOption
-                            .DateTimeStyles(DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal);
+                var o = new TypeConverterOptions
+                {
+                    DateTimeStyle = DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal
+                };
+                csv.Configuration.TypeConverterOptionsCache.AddOptions<ActivityData>(o);
 
-                        foo.Map(m => m.EndTime).TypeConverterOption
-                            .DateTimeStyles(DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal);
-                        
-                        foo.Map(m => m.ExpirationTime).TypeConverterOption
-                            .DateTimeStyles(DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal);
-                        
-                        foo.Map(m => m.LastModifiedOnClient).TypeConverterOption
-                            .DateTimeStyles(DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal);
-                        
-                        foo.Map(m => m.LastModifiedTime).TypeConverterOption
-                            .DateTimeStyles(DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal);
-                        
-                        foo.Map(m => m.OriginalLastModifiedOnClient).TypeConverterOption
-                            .DateTimeStyles(DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal);
-                        
-                        foo.Map(m => m.StartTime).TypeConverterOption
-                            .DateTimeStyles(DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal);
+                foo.Map(t => t.Line).Ignore();
+                foo.Map(t => t.Tag).Ignore();
 
-                        csv.Configuration.RegisterClassMap(foo);
+                foo.Map(m => m.CreatedInCloud).TypeConverterOption
+                    .DateTimeStyles(DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal);
 
-                        var records = csv.GetRecords<ActivityData>();
+                foo.Map(m => m.EndTime).TypeConverterOption
+                    .DateTimeStyles(DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal);
 
-                        var ln = 1;
-                        foreach (var record in records)
-                        {
-                            record.Line = ln;
-                            record.Tag = TaggedLines.Contains(ln);
-                            DataList.Add(record);
+                foo.Map(m => m.ExpirationTime).TypeConverterOption
+                    .DateTimeStyles(DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal);
 
-                            ln += 1;
-                        }
-                    }
+                foo.Map(m => m.LastModifiedOnClient).TypeConverterOption
+                    .DateTimeStyles(DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal);
+
+                foo.Map(m => m.LastModifiedTime).TypeConverterOption
+                    .DateTimeStyles(DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal);
+
+                foo.Map(m => m.OriginalLastModifiedOnClient).TypeConverterOption
+                    .DateTimeStyles(DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal);
+
+                foo.Map(m => m.StartTime).TypeConverterOption
+                    .DateTimeStyles(DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal);
+
+                csv.Configuration.RegisterClassMap(foo);
+
+                var records = csv.GetRecords<ActivityData>();
+
+                var ln = 1;
+                foreach (var record in records)
+                {
+                    record.Line = ln;
+                    record.Tag = TaggedLines.Contains(ln);
+                    DataList.Add(record);
+
+                    ln += 1;
+                }
+            }
         }
     }
 
     public class ActivityOperationData : IFileSpecData
     {
-        public override string ToString()
-        {
-            return $"{OperationOrder} {OperationType} {AppId} {Executable} {Description} {StartTime} {DisplayText} {ClipboardPayload} {ContentInfo} {DevicePlatform} {TimeZone} {ActivityTypeOrg} {ActivityType} {Duration} {LastModifiedTime} {ExpirationTime} {Payload} {CreatedTime} {EndTime} {LastModifiedTimeOnClient} {OperationExpirationTime} {PlatformDeviceId}";
-        }
-
         public string Id { get; set; }
 
         public int OperationOrder { get; set; }
@@ -1648,10 +1655,9 @@ public string InternalGuid => "acba03f3-9886-4d33-8464-98d11be6e07d";
         public string ClipboardPayload { get; set; }
         public string ContentInfo { get; set; }
 
-        
+
         public string DevicePlatform { get; set; }
         public string TimeZone { get; set; }
-        
 
 
         public int ActivityTypeOrg { get; set; }
@@ -1673,9 +1679,15 @@ public string InternalGuid => "acba03f3-9886-4d33-8464-98d11be6e07d";
 
         public int Line { get; set; }
         public bool Tag { get; set; }
+
+        public override string ToString()
+        {
+            return
+                $"{OperationOrder} {OperationType} {AppId} {Executable} {Description} {StartTime} {DisplayText} {ClipboardPayload} {ContentInfo} {DevicePlatform} {TimeZone} {ActivityTypeOrg} {ActivityType} {Duration} {LastModifiedTime} {ExpirationTime} {Payload} {CreatedTime} {EndTime} {LastModifiedTimeOnClient} {OperationExpirationTime} {PlatformDeviceId}";
+        }
     }
 
-   
+
     public class ActivityOperation : IFileSpec
     {
         public ActivityOperation()
@@ -1704,377 +1716,886 @@ public string InternalGuid => "acba03f3-9886-4d33-8464-98d11be6e07d";
         {
             DataList.Clear();
 
-         using (var fileReader = File.OpenText(filename))
-                    {
-                        var csv = new CsvReader(fileReader,CultureInfo.InvariantCulture);
-                        csv.Configuration.HasHeaderRecord = true;
-                        
-                        var foo = csv.Configuration.AutoMap<ActivityOperationData>();
+            using (var fileReader = File.OpenText(filename))
+            {
+                var csv = new CsvReader(fileReader, CultureInfo.InvariantCulture);
+                csv.Configuration.HasHeaderRecord = true;
 
-                        var o = new TypeConverterOptions
-                        {
-                            DateTimeStyle = DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal
-                        };
-                        csv.Configuration.TypeConverterOptionsCache.AddOptions<ActivityOperationData>(o);
+                var foo = csv.Configuration.AutoMap<ActivityOperationData>();
 
-                        foo.Map(t => t.Line).Ignore();
-                        foo.Map(t => t.Tag).Ignore();
-                 
-                        foo.Map(m => m.CreatedTime).TypeConverterOption
-                            .DateTimeStyles(DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal);
-                        
-                        foo.Map(m => m.EndTime).TypeConverterOption
-                            .DateTimeStyles(DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal);
-                        
-                        foo.Map(m => m.ExpirationTime).TypeConverterOption
-                            .DateTimeStyles(DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal);
-                        
-                        foo.Map(m => m.LastModifiedTimeOnClient).TypeConverterOption
-                            .DateTimeStyles(DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal);
-                        
-                        foo.Map(m => m.LastModifiedTime).TypeConverterOption
-                            .DateTimeStyles(DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal);
-                        
-                        foo.Map(m => m.OperationExpirationTime).TypeConverterOption
-                            .DateTimeStyles(DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal);
-                        
-                        foo.Map(m => m.StartTime).TypeConverterOption
-                            .DateTimeStyles(DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal);
+                var o = new TypeConverterOptions
+                {
+                    DateTimeStyle = DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal
+                };
+                csv.Configuration.TypeConverterOptionsCache.AddOptions<ActivityOperationData>(o);
 
-                        csv.Configuration.RegisterClassMap(foo);
+                foo.Map(t => t.Line).Ignore();
+                foo.Map(t => t.Tag).Ignore();
 
-                        var records = csv.GetRecords<ActivityOperationData>();
+                foo.Map(m => m.CreatedTime).TypeConverterOption
+                    .DateTimeStyles(DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal);
 
-                        var ln = 1;
-                        foreach (var record in records)
-                        {
-                            record.Line = ln;
-                            record.Tag = TaggedLines.Contains(ln);
-                            DataList.Add(record);
+                foo.Map(m => m.EndTime).TypeConverterOption
+                    .DateTimeStyles(DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal);
 
-                            ln += 1;
-                        }
-                    }
+                foo.Map(m => m.ExpirationTime).TypeConverterOption
+                    .DateTimeStyles(DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal);
+
+                foo.Map(m => m.LastModifiedTimeOnClient).TypeConverterOption
+                    .DateTimeStyles(DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal);
+
+                foo.Map(m => m.LastModifiedTime).TypeConverterOption
+                    .DateTimeStyles(DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal);
+
+                foo.Map(m => m.OperationExpirationTime).TypeConverterOption
+                    .DateTimeStyles(DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal);
+
+                foo.Map(m => m.StartTime).TypeConverterOption
+                    .DateTimeStyles(DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal);
+
+                csv.Configuration.RegisterClassMap(foo);
+
+                var records = csv.GetRecords<ActivityOperationData>();
+
+                var ln = 1;
+                foreach (var record in records)
+                {
+                    record.Line = ln;
+                    record.Tag = TaggedLines.Contains(ln);
+                    DataList.Add(record);
+
+                    ln += 1;
+                }
+            }
         }
     }
 
- 
-    /*
-                case ContentType.AmcacheParserFiles:
-
-                    DataList = new BindingList<AmcacheParserFiles>();
-                    using (var fileReader = File.OpenText(FileName))
-                    {
-                        var csv = new CsvReader(fileReader,CultureInfo.InvariantCulture);
-                        csv.Configuration.HasHeaderRecord = true;
-                        
-                        var foo = csv.Configuration.AutoMap<AmcacheParserFiles>();
 
-                        var o = new TypeConverterOptions
-                        {
-                            DateTimeStyle = DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal
-                        };
-                        csv.Configuration.TypeConverterOptionsCache.AddOptions<AmcacheParserFiles>(o);
-
-                        foo.Map(t => t.Line).Ignore();
-                        foo.Map(t => t.Tag).Ignore();
-
-                        csv.Configuration.RegisterClassMap(foo);
-
-                        var records = csv.GetRecords<AmcacheParserFiles>();
-
-                        var ln = 1;
-                        foreach (var record in records)
-                        {
-                            record.Line = ln;
-                            record.Tag = _taggedLines.Contains(ln);
-                            DataList.Add(record);
-
-                            ln += 1;
-                        }
-                    }
-
-                    return true;
-
-                case ContentType.AmcacheParserNewFile:
-
-                    DataList = new BindingList<AmcacheParserNewFiles>();
-                    using (var fileReader = File.OpenText(FileName))
-                    {
-                        var csv = new CsvReader(fileReader,CultureInfo.InvariantCulture);
-                        csv.Configuration.HasHeaderRecord = true;
-                        
-
-                        var o = new TypeConverterOptions
-                        {
-                            DateTimeStyle = DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal
-                        };
-                        csv.Configuration.TypeConverterOptionsCache.AddOptions<AmcacheParserNewFiles>(o);
-
-                        var foo = csv.Configuration.AutoMap<AmcacheParserNewFiles>();
-
-                        foo.Map(t => t.Line).Ignore();
-                        foo.Map(t => t.Tag).Ignore();
-
-                        csv.Configuration.RegisterClassMap(foo);
-
-                        var records = csv.GetRecords<AmcacheParserNewFiles>();
-
-                        var ln = 1;
-                        foreach (var record in records)
-                        {
-                            record.Line = ln;
-                            record.Tag = _taggedLines.Contains(ln);
-                            DataList.Add(record);
-
-                            ln += 1;
-                        }
-                    }
-
-                    return true;
-
-                case ContentType.AmcacheParserPrograms:
-
-                    DataList = new BindingList<AmcacheParserPrograms>();
-                    using (var fileReader = File.OpenText(FileName))
-                    {
-                        var csv = new CsvReader(fileReader,CultureInfo.InvariantCulture);
-                        csv.Configuration.HasHeaderRecord = true;
-                        
-                        var o = new TypeConverterOptions
-                        {
-                            DateTimeStyle = DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal
-                        };
-                        csv.Configuration.TypeConverterOptionsCache.AddOptions<AmcacheParserPrograms>(o);
-
-                        var foo = csv.Configuration.AutoMap<AmcacheParserPrograms>();
-
-                        foo.Map(t => t.Line).Ignore();
-                        foo.Map(t => t.Tag).Ignore();
-
-                        csv.Configuration.RegisterClassMap(foo);
-
-                        var records = csv.GetRecords<AmcacheParserPrograms>();
-
-                        var ln = 1;
-                        foreach (var record in records)
-                        {
-                            record.Line = ln;
-                            record.Tag = _taggedLines.Contains(ln);
-                            DataList.Add(record);
-
-                            ln += 1;
-                        }
-                    }
-
-                    return true;
-
-
-
-                case ContentType.AmcacheParserNewDevicePnP:
-                    DataList = new BindingList<AmcacheParserNewDevicePnP>();
-                    using (var fileReader = File.OpenText(FileName))
-                    {
-                        var csv = new CsvReader(fileReader,CultureInfo.InvariantCulture);
-                        csv.Configuration.HasHeaderRecord = true;
-                        
-                        var foo = csv.Configuration.AutoMap<AmcacheParserNewDevicePnP>();
-
-                        var o = new TypeConverterOptions
-                        {
-                            DateTimeStyle = DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal
-                        };
-                        csv.Configuration.TypeConverterOptionsCache.AddOptions<AmcacheParserNewDevicePnP>(o);
-
-                        foo.Map(t => t.Line).Ignore();
-                        foo.Map(t => t.Tag).Ignore();
-
-                        csv.Configuration.RegisterClassMap(foo);
-
-                        var records = csv.GetRecords<AmcacheParserNewDevicePnP>();
-
-                        var ln = 1;
-                        foreach (var record in records)
-                        {
-                            record.Line = ln;
-                            record.Tag = _taggedLines.Contains(ln);
-                            DataList.Add(record);
-
-                            ln += 1;
-                        }
-                    }
-
-                    return true;
-                case ContentType.AmcacheParserNewDeviceContainer:
-                    DataList = new BindingList<AmcacheParserDeviceContainer>();
-                    using (var fileReader = File.OpenText(FileName))
-                    {
-                        var csv = new CsvReader(fileReader,CultureInfo.InvariantCulture);
-                        csv.Configuration.HasHeaderRecord = true;
-                        
-                        var foo = csv.Configuration.AutoMap<AmcacheParserDeviceContainer>();
-
-                        var o = new TypeConverterOptions
-                        {
-                            DateTimeStyle = DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal
-                        };
-                        csv.Configuration.TypeConverterOptionsCache.AddOptions<AmcacheParserDeviceContainer>(o);
-
-                        foo.Map(t => t.Line).Ignore();
-                        foo.Map(t => t.Tag).Ignore();
-
-                        csv.Configuration.RegisterClassMap(foo);
-
-                        var records = csv.GetRecords<AmcacheParserDeviceContainer>();
-
-                        var ln = 1;
-                        foreach (var record in records)
-                        {
-                            record.Line = ln;
-                            record.Tag = _taggedLines.Contains(ln);
-                            DataList.Add(record);
-
-                            ln += 1;
-                        }
-                    }
-
-                    return true;
-                case ContentType.AmcacheParserNewDriverPackage:
-                    DataList = new BindingList<AmcacheParserDriverPackage>();
-                    using (var fileReader = File.OpenText(FileName))
-                    {
-                        var csv = new CsvReader(fileReader,CultureInfo.InvariantCulture);
-                        csv.Configuration.HasHeaderRecord = true;
-                        
-                        var foo = csv.Configuration.AutoMap<AmcacheParserDriverPackage>();
-
-                        var o = new TypeConverterOptions
-                        {
-                            DateTimeStyle = DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal
-                        };
-                        csv.Configuration.TypeConverterOptionsCache.AddOptions<AmcacheParserDriverPackage>(o);
-
-                        foo.Map(t => t.Line).Ignore();
-                        foo.Map(t => t.Tag).Ignore();
-
-                        csv.Configuration.RegisterClassMap(foo);
-
-                        var records = csv.GetRecords<AmcacheParserDriverPackage>();
-
-                        var ln = 1;
-                        foreach (var record in records)
-                        {
-                            record.Line = ln;
-                            record.Tag = _taggedLines.Contains(ln);
-                            DataList.Add(record);
-
-                            ln += 1;
-                        }
-                    }
-
-                    return true;
-                case ContentType.AmcacheParserNewDriveBinary:
-                    DataList = new BindingList<AmcacheParserDriverBinary>();
-                    using (var fileReader = File.OpenText(FileName))
-                    {
-                        var csv = new CsvReader(fileReader,CultureInfo.InvariantCulture);
-                        csv.Configuration.HasHeaderRecord = true;
-                        
-                        var foo = csv.Configuration.AutoMap<AmcacheParserDriverBinary>();
-
-                        var o = new TypeConverterOptions
-                        {
-                            DateTimeStyle = DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal
-                        };
-                        csv.Configuration.TypeConverterOptionsCache.AddOptions<AmcacheParserDriverBinary>(o);
-
-                        foo.Map(t => t.Line).Ignore();
-                        foo.Map(t => t.Tag).Ignore();
-
-                        csv.Configuration.RegisterClassMap(foo);
-
-                        
-
-                        var records = csv.GetRecords<AmcacheParserDriverBinary>();
-
-                        var ln = 1;
-                        foreach (var record in records)
-                        {
-                            record.Line = ln;
-                            record.Tag = _taggedLines.Contains(ln);
-                            DataList.Add(record);
-
-                            ln += 1;
-                        }
-                    }
-
-                    return true;
-                case ContentType.AmcacheParserShortcuts:
-                    DataList = new BindingList<AmcacheParserNewShortcut>();
-                    using (var fileReader = File.OpenText(FileName))
-                    {
-                        var csv = new CsvReader(fileReader,CultureInfo.InvariantCulture);
-                        csv.Configuration.HasHeaderRecord = true;
-                        
-                        var foo = csv.Configuration.AutoMap<AmcacheParserNewShortcut>();
-
-                        var o = new TypeConverterOptions
-                        {
-                            DateTimeStyle = DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal
-                        };
-                        csv.Configuration.TypeConverterOptionsCache.AddOptions<AmcacheParserNewShortcut>(o);
-
-                        foo.Map(t => t.Line).Ignore();
-                        foo.Map(t => t.Tag).Ignore();
-
-                        csv.Configuration.RegisterClassMap(foo);
-
-                        var records = csv.GetRecords<AmcacheParserNewShortcut>();
-
-                        var ln = 1;
-                        foreach (var record in records)
-                        {
-                            record.Line = ln;
-                            record.Tag = _taggedLines.Contains(ln);
-                            DataList.Add(record);
-
-                            ln += 1;
-                        }
-                    }
-
-                    return true;
-                case ContentType.AmcacheParserNewPrograms:
-                    DataList = new BindingList<AmcacheParserNewProgram>();
-                    using (var fileReader = File.OpenText(FileName))
-                    {
-                        var csv = new CsvReader(fileReader,CultureInfo.InvariantCulture);
-                        csv.Configuration.HasHeaderRecord = true;
-                        
-                        var foo = csv.Configuration.AutoMap<AmcacheParserNewProgram>();
-
-                        var o = new TypeConverterOptions
-                        {
-                            DateTimeStyle = DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal
-                        };
-                        csv.Configuration.TypeConverterOptionsCache.AddOptions<AmcacheParserNewProgram>(o);
-
-                        foo.Map(t => t.Line).Ignore();
-                        foo.Map(t => t.Tag).Ignore();
-
-                        csv.Configuration.RegisterClassMap(foo);
-
-                        var records = csv.GetRecords<AmcacheParserNewProgram>();
-
-                        var ln = 1;
-                        foreach (var record in records)
-                        {
-                            record.Line = ln;
-                            record.Tag = _taggedLines.Contains(ln);
-                            DataList.Add(record);
-
-                            ln += 1;
-                        }
-                    }
-
-                    return true;*/
+    public class AmcacheParserProgramsData : IFileSpecData
+    {
+        public string ProgramID { get; set; }
+        public DateTime LastWriteTimestamp { get; set; }
+        public string ProgramName_0 { get; set; }
+        public string ProgramVersion_1 { get; set; }
+        public string VendorName_2 { get; set; }
+        public DateTime? InstallDateEpoch_a { get; set; }
+        public DateTime? InstallDateEpoch_b { get; set; }
+        public string LanguageCode_3 { get; set; }
+        public string InstallSource_6 { get; set; }
+        public string UninstallRegistryKey_7 { get; set; }
+        public string PathsList_d { get; set; }
+        public int Line { get; set; }
+        public bool Tag { get; set; }
+
+        public override string ToString()
+        {
+            return
+                $"{ProgramID} {LastWriteTimestamp} {ProgramName_0} {ProgramVersion_1} {VendorName_2} {InstallDateEpoch_a} {InstallDateEpoch_b} {LanguageCode_3} {InstallSource_6} {UninstallRegistryKey_7} {PathsList_d}";
+        }
+    }
+
+
+    public class AmcacheParserPrograms : IFileSpec
+    {
+        public AmcacheParserPrograms()
+        {
+            //Initialize collections here, one for TaggedLines TLE can add values to, and the collection that TLE will display
+            TaggedLines = new List<int>();
+
+            DataList = new BindingList<AmcacheParserProgramsData>();
+
+            ExpectedHeaders = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+            {
+                "ProgramID,LastWriteTimestamp,ProgramName_0,ProgramVersion_1,VendorName_2,InstallDateEpoch_a,InstallDateEpoch_b,LanguageCode_3,InstallSource_6,UninstallRegistryKey_7,PathsList_d,UnknownGuid_10,UnknownGuid_12,UninstallGuid_11,UnknownDword_5,UnknownDword_13,UnknownDword_14,UnknownDword_15,UnknownBytes_16,UnknownQWord_17,UnknownDword_18,UninstallGuid_f"
+            };
+        }
+
+        public string Author => "Eric Zimmerman";
+        public string FileDescription => "CSV generated from AmcacheParser for old Programs format";
+        public HashSet<string> ExpectedHeaders { get; }
+
+        public IBindingList DataList { get; }
+        public List<int> TaggedLines { get; set; }
+
+        public string InternalGuid => "344f6e65-b127-4a57-b4f4-866839406256";
+
+        public void ProcessFile(string filename)
+        {
+            DataList.Clear();
+
+            using (var fileReader = File.OpenText(filename))
+            {
+                var csv = new CsvReader(fileReader, CultureInfo.InvariantCulture);
+                csv.Configuration.HasHeaderRecord = true;
+
+                var o = new TypeConverterOptions
+                {
+                    DateTimeStyle = DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal
+                };
+                csv.Configuration.TypeConverterOptionsCache.AddOptions<AmcacheParserProgramsData>(o);
+
+                var foo = csv.Configuration.AutoMap<AmcacheParserProgramsData>();
+
+                foo.Map(t => t.Line).Ignore();
+                foo.Map(t => t.Tag).Ignore();
+
+                csv.Configuration.RegisterClassMap(foo);
+
+                var records = csv.GetRecords<AmcacheParserProgramsData>();
+
+                var ln = 1;
+                foreach (var record in records)
+                {
+                    record.Line = ln;
+                    record.Tag = TaggedLines.Contains(ln);
+                    DataList.Add(record);
+
+                    ln += 1;
+                }
+            }
+        }
+    }
+
+    public class AmcacheParserFilesData : IFileSpecData
+    {
+        public string ProgramName { get; set; }
+        public string ProgramID { get; set; }
+        public string VolumeID { get; set; }
+        public DateTime VolumeIDLastWriteTimestamp { get; set; }
+        public string FileID { get; set; }
+        public DateTime FileIDLastWriteTimestamp { get; set; }
+        public string SHA1 { get; set; }
+        public string FullPath { get; set; }
+        public string FileExtension { get; set; }
+        public long MFTEntryNumber { get; set; }
+        public int MFTSequenceNumber { get; set; }
+        public string FileSize { get; set; }
+        public string FileVersionString { get; set; }
+        public string FileVersionNumber { get; set; }
+        public string FileDescription { get; set; }
+        public string SizeOfImage { get; set; }
+        public string PEHeaderHash { get; set; }
+        public string PEHeaderChecksum { get; set; }
+
+        public DateTime? Created { get; set; }
+        public DateTime? LastModified { get; set; }
+        public DateTime? LastModifiedStore { get; set; }
+        public DateTime? LinkDate { get; set; }
+        public string LanguageID { get; set; }
+        public string ProductName { get; set; }
+        public string CompanyName { get; set; }
+
+        public int Line { get; set; }
+        public bool Tag { get; set; }
+
+        public override string ToString()
+        {
+            return
+                $"{ProgramName} {ProgramID} {VolumeID} {VolumeIDLastWriteTimestamp} {FileID} {FileIDLastWriteTimestamp} {SHA1} {FullPath} {FileExtension} {MFTEntryNumber} {MFTSequenceNumber} {FileSize} {FileVersionString} {FileVersionNumber} {FileDescription} {SizeOfImage} {PEHeaderHash} {PEHeaderChecksum} {Created} {LastModified} {LastModifiedStore} {LinkDate} {LanguageID} {ProductName} {CompanyName}";
+        }
+    }
+
+    public class AmcacheParserFiles : IFileSpec
+    {
+        public AmcacheParserFiles()
+        {
+            //Initialize collections here, one for TaggedLines TLE can add values to, and the collection that TLE will display
+            TaggedLines = new List<int>();
+
+            DataList = new BindingList<AmcacheParserFilesData>();
+
+            ExpectedHeaders = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+            {
+                "ProgramName,ProgramID,VolumeID,VolumeIDLastWriteTimestamp,FileID,FileIDLastWriteTimestamp,SHA1,FullPath,FileExtension,MFTEntryNumber,MFTSequenceNumber,FileSize,FileVersionString,FileVersionNumber,FileDescription,SizeOfImage,PEHeaderHash,PEHeaderChecksum,BinProductVersion,BinFileVersion,LinkerVersion,BinaryType,IsLocal,GuessProgramID,Created,LastModified,LastModifiedStore,LinkDate,LanguageID,ProductName,CompanyName,SwitchBackContext"
+            };
+        }
+
+        public string Author => "Eric Zimmerman";
+        public string FileDescription => "CSV generated from AmcacheParser for old File Entries format";
+        public HashSet<string> ExpectedHeaders { get; }
+
+        public IBindingList DataList { get; }
+        public List<int> TaggedLines { get; set; }
+
+        public string InternalGuid => "ed1c0ddb-ffb3-4d2e-b60d-fd4fb859ef4f";
+
+        public void ProcessFile(string filename)
+        {
+            DataList.Clear();
+
+            using (var fileReader = File.OpenText(filename))
+            {
+                var csv = new CsvReader(fileReader, CultureInfo.InvariantCulture);
+                csv.Configuration.HasHeaderRecord = true;
+
+                var foo = csv.Configuration.AutoMap<AmcacheParserFilesData>();
+
+                var o = new TypeConverterOptions
+                {
+                    DateTimeStyle = DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal
+                };
+                csv.Configuration.TypeConverterOptionsCache.AddOptions<AmcacheParserFilesData>(o);
+
+                foo.Map(t => t.Line).Ignore();
+                foo.Map(t => t.Tag).Ignore();
+
+                csv.Configuration.RegisterClassMap(foo);
+
+                var records = csv.GetRecords<AmcacheParserFilesData>();
+
+                var ln = 1;
+                foreach (var record in records)
+                {
+                    record.Line = ln;
+                    record.Tag = TaggedLines.Contains(ln);
+                    DataList.Add(record);
+
+                    ln += 1;
+                }
+            }
+        }
+    }
+
+
+    public class AmcacheParserNewFilesData : IFileSpecData
+    {
+        public string ApplicationName { get; set; }
+        public string ProgramId { get; set; }
+        public DateTime FileKeyLastWriteTimestamp { get; set; }
+        public string SHA1 { get; set; }
+        public bool IsOsComponent { get; set; }
+        public string FullPath { get; set; }
+        public string Name { get; set; }
+        public string FileExtension { get; set; }
+        public DateTime? LinkDate { get; set; }
+        public string ProductName { get; set; }
+        public int Size { get; set; }
+        public string Version { get; set; }
+        public string ProductVersion { get; set; }
+        public string LongPathHash { get; set; }
+        public string BinaryType { get; set; }
+        public bool IsPeFile { get; set; }
+        public string BinFileVersion { get; set; }
+        public string BinProductVersion { get; set; }
+        public int Language { get; set; }
+        public int Usn { get; set; }
+
+        public int Line { get; set; }
+        public bool Tag { get; set; }
+
+        public override string ToString()
+        {
+            return
+                $"{ApplicationName} {Name} {ProgramId} {FileKeyLastWriteTimestamp} {SHA1} {IsOsComponent} {FullPath} {FileExtension} {LinkDate} {ProductName} {Size} {Version} {ProductVersion} {LongPathHash} {BinaryType} {IsPeFile} {BinFileVersion} {BinProductVersion} {Language} {Usn}";
+        }
+    }
+
+
+    public class AmcacheParserNewFiles : IFileSpec
+    {
+        public AmcacheParserNewFiles()
+        {
+            //Initialize collections here, one for TaggedLines TLE can add values to, and the collection that TLE will display
+            TaggedLines = new List<int>();
+
+            DataList = new BindingList<AmcacheParserNewFilesData>();
+
+            ExpectedHeaders = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+            {
+                "ApplicationName,ProgramId,FileKeyLastWriteTimestamp,SHA1,IsOsComponent,FullPath,Name,FileExtension,LinkDate,ProductName,Size,Version,ProductVersion,LongPathHash,BinaryType,IsPeFile,BinFileVersion,BinProductVersion,Language,Usn,Description"
+            };
+        }
+
+        public string Author => "Eric Zimmerman";
+        public string FileDescription => "CSV generated from AmcacheParser for new File Entries format";
+        public HashSet<string> ExpectedHeaders { get; }
+
+        public IBindingList DataList { get; }
+        public List<int> TaggedLines { get; set; }
+
+        public string InternalGuid => "aa4517f0-c1a3-4591-8591-069b57cf9249";
+
+        public void ProcessFile(string filename)
+        {
+            DataList.Clear();
+
+            using (var fileReader = File.OpenText(filename))
+            {
+                var csv = new CsvReader(fileReader, CultureInfo.InvariantCulture);
+                csv.Configuration.HasHeaderRecord = true;
+
+
+                var o = new TypeConverterOptions
+                {
+                    DateTimeStyle = DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal
+                };
+                csv.Configuration.TypeConverterOptionsCache.AddOptions<AmcacheParserNewFilesData>(o);
+
+                var foo = csv.Configuration.AutoMap<AmcacheParserNewFilesData>();
+
+                foo.Map(t => t.Line).Ignore();
+                foo.Map(t => t.Tag).Ignore();
+
+                csv.Configuration.RegisterClassMap(foo);
+
+                var records = csv.GetRecords<AmcacheParserNewFilesData>();
+
+                var ln = 1;
+                foreach (var record in records)
+                {
+                    record.Line = ln;
+                    record.Tag = TaggedLines.Contains(ln);
+                    DataList.Add(record);
+
+                    ln += 1;
+                }
+            }
+        }
+    }
+
+
+    public class AmcacheParserNewDevicePnPData : IFileSpecData
+    {
+        public string KeyName { get; set; }
+        public DateTime KeyLastWriteTimestamp { get; set; }
+        public string BusReportedDescription { get; set; }
+        public string Class { get; set; }
+        public string ClassGuid { get; set; }
+        public string Compid { get; set; }
+        public string ContainerId { get; set; }
+        public string Description { get; set; }
+        public string DriverId { get; set; }
+        public string DriverPackageStrongName { get; set; }
+        public string DriverName { get; set; }
+        public DateTime? DriverVerDate { get; set; }
+        public string DriverVerVersion { get; set; }
+        public string Enumerator { get; set; }
+        public string HWID { get; set; }
+        public string Inf { get; set; }
+        public string InstallState { get; set; }
+        public string Manufacturer { get; set; }
+        public string MatchingId { get; set; }
+        public string Model { get; set; }
+        public string ParentId { get; set; }
+        public string ProblemCode { get; set; }
+        public string Provider { get; set; }
+        public string Service { get; set; }
+        public string Stackid { get; set; }
+        public int Line { get; set; }
+        public bool Tag { get; set; }
+
+        public override string ToString()
+        {
+            return
+                $"{KeyName} {KeyLastWriteTimestamp} {BusReportedDescription} {Class} {ClassGuid} {Compid} {ContainerId} {Description} {DriverId} {DriverPackageStrongName} {DriverName} {DriverVerDate} {DriverVerVersion} {Enumerator} {HWID} {Inf} {InstallState} {Manufacturer} {MatchingId} {Model} {ParentId} {ProblemCode} {Provider} {Service} {Stackid}";
+        }
+    }
+
+
+    public class AmcacheParserNewDevicePnP : IFileSpec
+    {
+        public AmcacheParserNewDevicePnP()
+        {
+            //Initialize collections here, one for TaggedLines TLE can add values to, and the collection that TLE will display
+            TaggedLines = new List<int>();
+
+            DataList = new BindingList<AmcacheParserNewDevicePnPData>();
+
+            ExpectedHeaders = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+            {
+                "KeyName,KeyLastWriteTimestamp,BusReportedDescription,Class,ClassGuid,Compid,ContainerId,Description,DriverId,DriverPackageStrongName,DriverName,DriverVerDate,DriverVerVersion,Enumerator,HWID,Inf,InstallState,Manufacturer,MatchingId,Model,ParentId,ProblemCode,Provider,Service,Stackid"
+            };
+        }
+
+        public string Author => "Eric Zimmerman";
+        public string FileDescription => "CSV generated from AmcacheParser for new Device PnP format";
+        public HashSet<string> ExpectedHeaders { get; }
+
+        public IBindingList DataList { get; }
+        public List<int> TaggedLines { get; set; }
+
+        public string InternalGuid => "bb16e468-f637-4872-b40f-e288fd98ed91";
+
+        public void ProcessFile(string filename)
+        {
+            DataList.Clear();
+
+            using (var fileReader = File.OpenText(filename))
+            {
+                var csv = new CsvReader(fileReader, CultureInfo.InvariantCulture);
+                csv.Configuration.HasHeaderRecord = true;
+
+                var foo = csv.Configuration.AutoMap<AmcacheParserNewDevicePnPData>();
+
+                var o = new TypeConverterOptions
+                {
+                    DateTimeStyle = DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal
+                };
+                csv.Configuration.TypeConverterOptionsCache.AddOptions<AmcacheParserNewDevicePnPData>(o);
+
+                foo.Map(t => t.Line).Ignore();
+                foo.Map(t => t.Tag).Ignore();
+
+                csv.Configuration.RegisterClassMap(foo);
+
+                var records = csv.GetRecords<AmcacheParserNewDevicePnPData>();
+
+                var ln = 1;
+                foreach (var record in records)
+                {
+                    record.Line = ln;
+                    record.Tag = TaggedLines.Contains(ln);
+                    DataList.Add(record);
+
+                    ln += 1;
+                }
+            }
+        }
+    }
+
+    public class AmcacheParserDeviceContainerData : IFileSpecData
+    {
+        public string KeyName { get; set; }
+        public DateTime KeyLastWriteTimestamp { get; set; }
+        public string Categories { get; set; }
+        public string DiscoveryMethod { get; set; }
+        public string FriendlyName { get; set; }
+        public string Icon { get; set; }
+        public bool IsActive { get; set; }
+        public bool IsConnected { get; set; }
+        public bool IsMachineContainer { get; set; }
+        public bool IsNetworked { get; set; }
+        public bool IsPaired { get; set; }
+        public string Manufacturer { get; set; }
+        public string ModelId { get; set; }
+        public string ModelName { get; set; }
+        public string ModelNumber { get; set; }
+        public string PrimaryCategory { get; set; }
+        public int State { get; set; }
+        public int Line { get; set; }
+        public bool Tag { get; set; }
+
+        public override string ToString()
+        {
+            return
+                $"{KeyName} {KeyLastWriteTimestamp} {Categories} {DiscoveryMethod} {FriendlyName} {Icon} {IsActive} {IsConnected} {IsMachineContainer} {IsNetworked} {IsPaired} {Manufacturer} {ModelId} {ModelName} {ModelNumber} {PrimaryCategory} {State}";
+        }
+    }
+
+
+    public class AmcacheParserDeviceContainer : IFileSpec
+    {
+        public AmcacheParserDeviceContainer()
+        {
+            //Initialize collections here, one for TaggedLines TLE can add values to, and the collection that TLE will display
+            TaggedLines = new List<int>();
+
+            DataList = new BindingList<AmcacheParserDeviceContainerData>();
+
+            ExpectedHeaders = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+            {
+                "KeyName,KeyLastWriteTimestamp,Categories,DiscoveryMethod,FriendlyName,Icon,IsActive,IsConnected,IsMachineContainer,IsNetworked,IsPaired,Manufacturer,ModelId,ModelName,ModelNumber,PrimaryCategory,State"
+            };
+        }
+
+        public string Author => "Eric Zimmerman";
+        public string FileDescription => "CSV generated from AmcacheParser for new File Device Container format";
+        public HashSet<string> ExpectedHeaders { get; }
+
+        public IBindingList DataList { get; }
+        public List<int> TaggedLines { get; set; }
+
+        public string InternalGuid => "b99337ec-c635-4ebb-8175-3fa72ec12d47";
+
+        public void ProcessFile(string filename)
+        {
+            DataList.Clear();
+
+            using (var fileReader = File.OpenText(filename))
+            {
+                var csv = new CsvReader(fileReader, CultureInfo.InvariantCulture);
+                csv.Configuration.HasHeaderRecord = true;
+
+                var foo = csv.Configuration.AutoMap<AmcacheParserDeviceContainerData>();
+
+                var o = new TypeConverterOptions
+                {
+                    DateTimeStyle = DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal
+                };
+                csv.Configuration.TypeConverterOptionsCache.AddOptions<AmcacheParserDeviceContainerData>(o);
+
+                foo.Map(t => t.Line).Ignore();
+                foo.Map(t => t.Tag).Ignore();
+
+                csv.Configuration.RegisterClassMap(foo);
+
+                var records = csv.GetRecords<AmcacheParserDeviceContainerData>();
+
+                var ln = 1;
+                foreach (var record in records)
+                {
+                    record.Line = ln;
+                    record.Tag = TaggedLines.Contains(ln);
+                    DataList.Add(record);
+
+                    ln += 1;
+                }
+            }
+        }
+    }
+
+    public class AmcacheParserDriverPackageData : IFileSpecData
+    {
+        public string KeyName { get; set; }
+        public DateTime KeyLastWriteTimestamp { get; set; }
+        public DateTime Date { get; set; }
+        public string Class { get; set; }
+        public string Directory { get; set; }
+        public bool DriverInBox { get; set; }
+        public string Hwids { get; set; }
+        public string Inf { get; set; }
+        public string Provider { get; set; }
+        public string SubmissionId { get; set; }
+        public string SYSFILE { get; set; }
+        public string Version { get; set; }
+        public int Line { get; set; }
+        public bool Tag { get; set; }
+
+        public override string ToString()
+        {
+            return
+                $"{KeyName} {KeyLastWriteTimestamp} {Date} {Class} {Directory} {DriverInBox} {Hwids} {Inf} {Provider} {SubmissionId} {SYSFILE} {Version}";
+        }
+    }
+
+
+    public class AmcacheParserDriverPackage : IFileSpec
+    {
+        public AmcacheParserDriverPackage()
+        {
+            //Initialize collections here, one for TaggedLines TLE can add values to, and the collection that TLE will display
+            TaggedLines = new List<int>();
+
+            DataList = new BindingList<AmcacheParserDriverPackageData>();
+
+            ExpectedHeaders = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+            {
+                "KeyName,KeyLastWriteTimestamp,Date,Class,Directory,DriverInBox,Hwids,Inf,Provider,SubmissionId,SYSFILE,Version"
+            };
+        }
+
+        public string Author => "Eric Zimmerman";
+        public string FileDescription => "CSV generated from AmcacheParser for new Driver Package format";
+        public HashSet<string> ExpectedHeaders { get; }
+
+        public IBindingList DataList { get; }
+        public List<int> TaggedLines { get; set; }
+
+        public string InternalGuid => "e16beaa2-349c-4dbd-8f63-038712789ed8";
+
+        public void ProcessFile(string filename)
+        {
+            DataList.Clear();
+
+            using (var fileReader = File.OpenText(filename))
+            {
+                var csv = new CsvReader(fileReader, CultureInfo.InvariantCulture);
+                csv.Configuration.HasHeaderRecord = true;
+
+                var foo = csv.Configuration.AutoMap<AmcacheParserDriverPackageData>();
+
+                var o = new TypeConverterOptions
+                {
+                    DateTimeStyle = DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal
+                };
+                csv.Configuration.TypeConverterOptionsCache.AddOptions<AmcacheParserDriverPackageData>(o);
+
+                foo.Map(t => t.Line).Ignore();
+                foo.Map(t => t.Tag).Ignore();
+
+                csv.Configuration.RegisterClassMap(foo);
+
+                var records = csv.GetRecords<AmcacheParserDriverPackageData>();
+
+                var ln = 1;
+                foreach (var record in records)
+                {
+                    record.Line = ln;
+                    record.Tag = TaggedLines.Contains(ln);
+                    DataList.Add(record);
+
+                    ln += 1;
+                }
+            }
+        }
+    }
+
+
+    public class AmcacheParserDriverBinaryData : IFileSpecData
+    {
+        public string KeyName { get; set; }
+        public DateTime KeyLastWriteTimestamp { get; set; }
+        public DateTime DriverTimeStamp { get; set; }
+        public DateTime DriverLastWriteTime { get; set; }
+        public string DriverName { get; set; }
+        public bool DriverInBox { get; set; }
+        public bool DriverIsKernelMode { get; set; }
+        public bool DriverSigned { get; set; }
+        public string DriverCheckSum { get; set; }
+        public string DriverCompany { get; set; }
+        public string DriverId { get; set; }
+        public string DriverPackageStrongName { get; set; }
+        public string DriverType { get; set; }
+        public string DriverVersion { get; set; }
+        public string ImageSize { get; set; }
+        public string Inf { get; set; }
+        public string Product { get; set; }
+        public string ProductVersion { get; set; }
+        public string Service { get; set; }
+        public string WdfVersion { get; set; }
+        public int Line { get; set; }
+        public bool Tag { get; set; }
+
+        public override string ToString()
+        {
+            return
+                $"{KeyName} {KeyLastWriteTimestamp} {DriverTimeStamp} {DriverLastWriteTime} {DriverName} {DriverInBox} {DriverIsKernelMode} {DriverSigned} {DriverCheckSum} {DriverCompany} {DriverId} {DriverPackageStrongName} {DriverType} {DriverVersion} {ImageSize} {Inf} {Product} {ProductVersion} {Service} {WdfVersion}";
+        }
+    }
+
+
+    public class AmcacheParserDriverBinary : IFileSpec
+    {
+        public AmcacheParserDriverBinary()
+        {
+            //Initialize collections here, one for TaggedLines TLE can add values to, and the collection that TLE will display
+            TaggedLines = new List<int>();
+
+            DataList = new BindingList<AmcacheParserDriverBinaryData>();
+
+            ExpectedHeaders = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+            {
+                "KeyName,KeyLastWriteTimestamp,DriverTimeStamp,DriverLastWriteTime,DriverName,DriverInBox,DriverIsKernelMode,DriverSigned,DriverCheckSum,DriverCompany,DriverId,DriverPackageStrongName,DriverType,DriverVersion,ImageSize,Inf,Product,ProductVersion,Service,WdfVersion"
+            };
+        }
+
+        public string Author => "Eric Zimmerman";
+        public string FileDescription => "CSV generated from AmcacheParser for new Driver Binary format";
+        public HashSet<string> ExpectedHeaders { get; }
+
+        public IBindingList DataList { get; }
+        public List<int> TaggedLines { get; set; }
+
+        public string InternalGuid => "b50eaff5-063e-4864-b129-7d6100b2dd09";
+
+        public void ProcessFile(string filename)
+        {
+            DataList.Clear();
+
+            using (var fileReader = File.OpenText(filename))
+            {
+                var csv = new CsvReader(fileReader, CultureInfo.InvariantCulture);
+                csv.Configuration.HasHeaderRecord = true;
+
+                var foo = csv.Configuration.AutoMap<AmcacheParserDriverBinaryData>();
+
+                var o = new TypeConverterOptions
+                {
+                    DateTimeStyle = DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal
+                };
+                csv.Configuration.TypeConverterOptionsCache.AddOptions<AmcacheParserDriverBinaryData>(o);
+
+                foo.Map(t => t.Line).Ignore();
+                foo.Map(t => t.Tag).Ignore();
+
+                csv.Configuration.RegisterClassMap(foo);
+
+
+                var records = csv.GetRecords<AmcacheParserDriverBinaryData>();
+
+                var ln = 1;
+                foreach (var record in records)
+                {
+                    record.Line = ln;
+                    record.Tag = TaggedLines.Contains(ln);
+                    DataList.Add(record);
+
+                    ln += 1;
+                }
+            }
+        }
+    }
+
+
+    public class AmcacheParserNewShortcutData : IFileSpecData
+    {
+        public string KeyName { get; set; }
+        public string LnkName { get; set; }
+        public DateTime KeyLastWriteTimestamp { get; set; }
+        public int Line { get; set; }
+        public bool Tag { get; set; }
+
+        public override string ToString()
+        {
+            return $"{KeyName} {LnkName} {KeyLastWriteTimestamp}";
+        }
+    }
+
+
+    public class AmcacheParserNewShortcut : IFileSpec
+    {
+        public AmcacheParserNewShortcut()
+        {
+            //Initialize collections here, one for TaggedLines TLE can add values to, and the collection that TLE will display
+            TaggedLines = new List<int>();
+
+            DataList = new BindingList<AmcacheParserNewShortcutData>();
+
+            ExpectedHeaders = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+            {
+                "KeyName,LnkName,KeyLastWriteTimestamp"
+            };
+        }
+
+        public string Author => "Eric Zimmerman";
+        public string FileDescription => "CSV generated from AmcacheParser for new Shortcuts format";
+        public HashSet<string> ExpectedHeaders { get; }
+
+        public IBindingList DataList { get; }
+        public List<int> TaggedLines { get; set; }
+
+        public string InternalGuid => "4df80328-9ece-453b-939d-5aba89d3354d";
+
+        public void ProcessFile(string filename)
+        {
+            DataList.Clear();
+
+            using (var fileReader = File.OpenText(filename))
+            {
+                var csv = new CsvReader(fileReader, CultureInfo.InvariantCulture);
+                csv.Configuration.HasHeaderRecord = true;
+
+                var foo = csv.Configuration.AutoMap<AmcacheParserNewShortcutData>();
+
+                var o = new TypeConverterOptions
+                {
+                    DateTimeStyle = DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal
+                };
+                csv.Configuration.TypeConverterOptionsCache.AddOptions<AmcacheParserNewShortcutData>(o);
+
+                foo.Map(t => t.Line).Ignore();
+                foo.Map(t => t.Tag).Ignore();
+
+                csv.Configuration.RegisterClassMap(foo);
+
+                var records = csv.GetRecords<AmcacheParserNewShortcutData>();
+
+                var ln = 1;
+                foreach (var record in records)
+                {
+                    record.Line = ln;
+                    record.Tag = TaggedLines.Contains(ln);
+                    DataList.Add(record);
+
+                    ln += 1;
+                }
+            }
+        }
+    }
+
+    public class AmcacheParserNewProgramData : IFileSpecData
+    {
+        public string ProgramId { get; set; }
+        public DateTime KeyLastWriteTimestamp { get; set; }
+        public string Name { get; set; }
+        public string Version { get; set; }
+        public string Publisher { get; set; }
+        public DateTime? InstallDate { get; set; }
+        public string OSVersionAtInstallTime { get; set; }
+        public string BundleManifestPath { get; set; }
+        public bool HiddenArp { get; set; }
+        public bool InboxModernApp { get; set; }
+        public int Language { get; set; }
+        public string ManifestPath { get; set; }
+        public string MsiPackageCode { get; set; }
+        public string MsiProductCode { get; set; }
+        public string PackageFullName { get; set; }
+        public string ProgramInstanceId { get; set; }
+        public string RegistryKeyPath { get; set; }
+        public string RootDirPath { get; set; }
+        public string Type { get; set; }
+        public string Source { get; set; }
+        public string StoreAppType { get; set; }
+        public string UninstallString { get; set; }
+        public int Line { get; set; }
+        public bool Tag { get; set; }
+
+        public override string ToString()
+        {
+            return
+                $"{ProgramId} {KeyLastWriteTimestamp} {Name} {Version} {Publisher} {InstallDate} {OSVersionAtInstallTime} {BundleManifestPath} {HiddenArp} {InboxModernApp} {Language} {ManifestPath} {MsiPackageCode} {MsiProductCode} {PackageFullName} {ProgramInstanceId} {RegistryKeyPath} {RootDirPath} {Type} {Source} {StoreAppType} {UninstallString}";
+        }
+    }
+
+
+    public class AmcacheParserNewProgram : IFileSpec
+    {
+        public AmcacheParserNewProgram()
+        {
+            //Initialize collections here, one for TaggedLines TLE can add values to, and the collection that TLE will display
+            TaggedLines = new List<int>();
+
+            DataList = new BindingList<AmcacheParserNewProgramData>();
+
+            ExpectedHeaders = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+            {
+                "ProgramId,KeyLastWriteTimestamp,Name,Version,Publisher,InstallDate,OSVersionAtInstallTime,BundleManifestPath,HiddenArp,InboxModernApp,Language,ManifestPath,MsiPackageCode,MsiProductCode,PackageFullName,ProgramInstanceId,RegistryKeyPath,RootDirPath,Type,Source,StoreAppType,UninstallString,InstallDateArpLastModified,InstallDateMsi,InstallDateFromLinkFile,Manufacturer"
+            };
+        }
+
+        public string Author => "Eric Zimmerman";
+        public string FileDescription => "CSV generated from AmcacheParser for new Program format";
+        public HashSet<string> ExpectedHeaders { get; }
+
+        public IBindingList DataList { get; }
+        public List<int> TaggedLines { get; set; }
+
+        public string InternalGuid => "86d6aee1-caf7-4e46-986f-86563f22c09d";
+
+        public void ProcessFile(string filename)
+        {
+            DataList.Clear();
+
+            using (var fileReader = File.OpenText(filename))
+            {
+                var csv = new CsvReader(fileReader, CultureInfo.InvariantCulture);
+                csv.Configuration.HasHeaderRecord = true;
+
+                var foo = csv.Configuration.AutoMap<AmcacheParserNewProgramData>();
+
+                var o = new TypeConverterOptions
+                {
+                    DateTimeStyle = DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal
+                };
+                csv.Configuration.TypeConverterOptionsCache.AddOptions<AmcacheParserNewProgramData>(o);
+
+                foo.Map(t => t.Line).Ignore();
+                foo.Map(t => t.Tag).Ignore();
+
+                csv.Configuration.RegisterClassMap(foo);
+
+                var records = csv.GetRecords<AmcacheParserNewProgramData>();
+
+                var ln = 1;
+                foreach (var record in records)
+                {
+                    record.Line = ln;
+                    record.Tag = TaggedLines.Contains(ln);
+                    DataList.Add(record);
+
+                    ln += 1;
+                }
+            }
+        }
+    }
 }
