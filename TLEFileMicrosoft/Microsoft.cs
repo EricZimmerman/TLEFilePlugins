@@ -7,6 +7,7 @@ using System.Text;
 using CsvHelper;
 using CsvHelper.TypeConversion;
 using ITLEFileSpec;
+using NLog;
 
 namespace TLEFileMicrosoft
 {
@@ -100,11 +101,15 @@ namespace TLEFileMicrosoft
 
                 csv.Configuration.RegisterClassMap(foo);
 
+                var l = LogManager.GetCurrentClassLogger();
+
                 var records = csv.GetRecords<SigcheckData>();
 
                 var ln = 1;
                 foreach (var sc in records)
                 {
+                    l.Debug($"Line # {ln}, Record: {csv.Context.RawRecord}");
+
                     sc.Line = ln;
                     sc.Tag = TaggedLines.Contains(ln);
                     DataList.Add(sc);
@@ -213,11 +218,15 @@ namespace TLEFileMicrosoft
 
                 csv.Configuration.RegisterClassMap(foo);
 
+                var l = LogManager.GetCurrentClassLogger();
+
                 var records = csv.GetRecords<SigcheckTroyData>();
 
                 var ln = 1;
                 foreach (var sc in records)
                 {
+                    l.Debug($"Line # {ln}, Record: {csv.Context.RawRecord}");
+
                     sc.Line = ln;
                     sc.Tag = TaggedLines.Contains(ln);
                     DataList.Add(sc);
@@ -314,11 +323,15 @@ namespace TLEFileMicrosoft
 
                 csv.Configuration.RegisterClassMap(foo);
 
+                var l = LogManager.GetCurrentClassLogger();
+
                 var records = csv.GetRecords<AutorunsData>();
 
                 var ln = 1;
                 foreach (var autorunsEntry in records)
                 {
+                    l.Debug($"Line # {ln}, Record: {csv.Context.RawRecord}");
+
                     autorunsEntry.Line = ln;
                     autorunsEntry.Tag = TaggedLines.Contains(ln);
                     DataList.Add(autorunsEntry);
@@ -451,11 +464,14 @@ namespace TLEFileMicrosoft
 
                 csv.Configuration.RegisterClassMap(foo);
 
+                var l = LogManager.GetCurrentClassLogger();
+
                 var records = csv.GetRecords<MsftMftData>();
 
                 var ln = 1;
                 foreach (var record in records)
                 {
+                    l.Debug($"Line # {ln}, Record: {csv.Context.RawRecord}");
                     record.Line = ln;
                     record.Tag = TaggedLines.Contains(ln);
                     DataList.Add(record);

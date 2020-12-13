@@ -6,6 +6,7 @@ using System.IO;
 using CsvHelper;
 using CsvHelper.TypeConversion;
 using ITLEFileSpec;
+using NLog;
 
 namespace TLEFileEZTools
 {
@@ -92,9 +93,14 @@ namespace TLEFileEZTools
 
                 var records = csv.GetRecords<BootData>();
 
+                var l = LogManager.GetCurrentClassLogger();
+
                 var ln = 1;
                 foreach (var record in records)
                 {
+                    //In TLE, there is an option to enable Debug messages which lets more context be seen when errors happen. Keep this call here so the last known good line of data is obvious in TLE messages
+                    l.Debug($"Line # {ln}, Record: {csv.Context.RawRecord}");
+
                     record.Line = ln;
                     record.Tag = TaggedLines.Contains(ln);
                     DataList.Add(record);
@@ -180,9 +186,13 @@ namespace TLEFileEZTools
 
                 var records = csv.GetRecords<SdsData>();
 
+                var l = LogManager.GetCurrentClassLogger();
+
+
                 var ln = 1;
                 foreach (var record in records)
                 {
+                    l.Debug($"Line # {ln}, Record: {csv.Context.RawRecord}");
                     record.Line = ln;
                     record.Tag = TaggedLines.Contains(ln);
                     DataList.Add(record);
@@ -271,9 +281,13 @@ namespace TLEFileEZTools
 
                 var records = csv.GetRecords<JData>();
 
+                var l = LogManager.GetCurrentClassLogger();
+
+
                 var ln = 1;
                 foreach (var record in records)
                 {
+                    l.Debug($"Line # {ln}, Record: {csv.Context.RawRecord}");
                     record.Line = ln;
                     record.Tag = TaggedLines.Contains(ln);
                     DataList.Add(record);
@@ -410,9 +424,13 @@ namespace TLEFileEZTools
 
                 var records = csv.GetRecords<MFTData>();
 
+                var l = LogManager.GetCurrentClassLogger();
+
+
                 var ln = 1;
                 foreach (var record in records)
                 {
+                    l.Debug($"Line # {ln}, Record: {csv.Context.RawRecord}");
                     record.Line = ln;
                     record.Tag = TaggedLines.Contains(ln);
                     DataList.Add(record);
@@ -493,10 +511,11 @@ namespace TLEFileEZTools
                 csv.Configuration.RegisterClassMap(foo);
 
                 var records = csv.GetRecords<RbCmdData>();
-
+                var l = LogManager.GetCurrentClassLogger();
                 var ln = 1;
                 foreach (var record in records)
                 {
+                    l.Debug($"Line # {ln}, Record: {csv.Context.RawRecord}");
                     record.Line = ln;
                     record.Tag = TaggedLines.Contains(ln);
                     DataList.Add(record);
@@ -606,10 +625,11 @@ namespace TLEFileEZTools
                 csv.Configuration.RegisterClassMap(foo);
 
                 var records = csv.GetRecords<PeCmdData>();
-
+                var l = LogManager.GetCurrentClassLogger();
                 var ln = 1;
                 foreach (var record in records)
                 {
+                    l.Debug($"Line # {ln}, Record: {csv.Context.RawRecord}");
                     record.Line = ln;
                     record.Tag = TaggedLines.Contains(ln);
                     DataList.Add(record);
@@ -682,10 +702,11 @@ namespace TLEFileEZTools
                 csv.Configuration.RegisterClassMap(foo);
 
                 var records = csv.GetRecords<PECmdTimelineData>();
-
+                var l = LogManager.GetCurrentClassLogger();
                 var ln = 1;
                 foreach (var record in records)
                 {
+                    l.Debug($"Line # {ln}, Record: {csv.Context.RawRecord}");
                     record.Line = ln;
                     record.Tag = TaggedLines.Contains(ln);
                     DataList.Add(record);
@@ -788,10 +809,11 @@ namespace TLEFileEZTools
                 csv.Configuration.RegisterClassMap(foo);
 
                 var records = csv.GetRecords<LECmdData>();
-
+                var l = LogManager.GetCurrentClassLogger();
                 var ln = 1;
                 foreach (var record in records)
                 {
+                    l.Debug($"Line # {ln}, Record: {csv.Context.RawRecord}");
                     record.Line = ln;
                     record.Tag = TaggedLines.Contains(ln);
                     DataList.Add(record);
@@ -914,10 +936,12 @@ namespace TLEFileEZTools
                 csv.Configuration.RegisterClassMap(foo);
 
                 var records = csv.GetRecords<JleCmdAutoData>();
-
+                var l = LogManager.GetCurrentClassLogger();
                 var ln = 1;
                 foreach (var record in records)
                 {
+                    l.Debug($"Line # {ln}, Record: {csv.Context.RawRecord}");
+
                     if (record.FileAttributes.Equals("0"))
                     {
                         record.FileAttributes = string.Empty;
@@ -1028,10 +1052,11 @@ namespace TLEFileEZTools
                 csv.Configuration.RegisterClassMap(foo);
 
                 var records = csv.GetRecords<JleCmdCustomData>();
-
+                var l = LogManager.GetCurrentClassLogger();
                 var ln = 1;
                 foreach (var record in records)
                 {
+                    l.Debug($"Line # {ln}, Record: {csv.Context.RawRecord}");
                     record.Line = ln;
                     record.Tag = TaggedLines.Contains(ln);
                     DataList.Add(record);
@@ -1131,10 +1156,11 @@ namespace TLEFileEZTools
                 csv.Configuration.RegisterClassMap(foo);
 
                 var records = csv.GetRecords<EvtxECmdData>();
-
+                var l = LogManager.GetCurrentClassLogger();
                 var ln = 1;
                 foreach (var record in records)
                 {
+                    l.Debug($"Line # {ln}, Record: {csv.Context.RawRecord}");
                     record.Line = ln;
                     record.Tag = TaggedLines.Contains(ln);
                     DataList.Add(record);
@@ -1226,10 +1252,11 @@ namespace TLEFileEZTools
                 csv.Configuration.RegisterClassMap(foo);
 
                 var records = csv.GetRecords<RecmdBatchData>();
-
+                var l = LogManager.GetCurrentClassLogger();
                 var ln = 1;
                 foreach (var record in records)
                 {
+                    l.Debug($"Line # {ln}, Record: {csv.Context.RawRecord}");
                     record.Line = ln;
                     record.Tag = TaggedLines.Contains(ln);
                     DataList.Add(record);
@@ -1327,10 +1354,11 @@ namespace TLEFileEZTools
                 csv.Configuration.RegisterClassMap(foo);
 
                 var records = csv.GetRecords<SbeCmdData>();
-
+                var l = LogManager.GetCurrentClassLogger();
                 var ln = 1;
                 foreach (var record in records)
                 {
+                    l.Debug($"Line # {ln}, Record: {csv.Context.RawRecord}");
                     record.Line = ln;
                     record.Tag = TaggedLines.Contains(ln);
                     DataList.Add(record);
@@ -1415,10 +1443,11 @@ namespace TLEFileEZTools
                 csv.Configuration.RegisterClassMap(foo);
 
                 var records = csv.GetRecords<AppCompatCacheData>();
-
+                var l = LogManager.GetCurrentClassLogger();
                 var ln = 1;
                 foreach (var record in records)
                 {
+                    l.Debug($"Line # {ln}, Record: {csv.Context.RawRecord}");
                     record.Line = ln;
                     record.Tag = TaggedLines.Contains(ln);
                     DataList.Add(record);
@@ -1497,10 +1526,11 @@ namespace TLEFileEZTools
                 csv.Configuration.RegisterClassMap(foo);
 
                 var records = csv.GetRecords<ActivityPackageData>();
-
+                var l = LogManager.GetCurrentClassLogger();
                 var ln = 1;
                 foreach (var record in records)
                 {
+                    l.Debug($"Line # {ln}, Record: {csv.Context.RawRecord}");
                     record.Line = ln;
                     record.Tag = TaggedLines.Contains(ln);
                     DataList.Add(record);
@@ -1624,10 +1654,11 @@ namespace TLEFileEZTools
                 csv.Configuration.RegisterClassMap(foo);
 
                 var records = csv.GetRecords<ActivityData>();
-
+                var l = LogManager.GetCurrentClassLogger();
                 var ln = 1;
                 foreach (var record in records)
                 {
+                    l.Debug($"Line # {ln}, Record: {csv.Context.RawRecord}");
                     record.Line = ln;
                     record.Tag = TaggedLines.Contains(ln);
                     DataList.Add(record);
@@ -1756,10 +1787,11 @@ namespace TLEFileEZTools
                 csv.Configuration.RegisterClassMap(foo);
 
                 var records = csv.GetRecords<ActivityOperationData>();
-
+                var l = LogManager.GetCurrentClassLogger();
                 var ln = 1;
                 foreach (var record in records)
                 {
+                    l.Debug($"Line # {ln}, Record: {csv.Context.RawRecord}");
                     record.Line = ln;
                     record.Tag = TaggedLines.Contains(ln);
                     DataList.Add(record);
@@ -1842,10 +1874,11 @@ namespace TLEFileEZTools
                 csv.Configuration.RegisterClassMap(foo);
 
                 var records = csv.GetRecords<AmcacheParserProgramsData>();
-
+                var l = LogManager.GetCurrentClassLogger();
                 var ln = 1;
                 foreach (var record in records)
                 {
+                    l.Debug($"Line # {ln}, Record: {csv.Context.RawRecord}");
                     record.Line = ln;
                     record.Tag = TaggedLines.Contains(ln);
                     DataList.Add(record);
@@ -1942,10 +1975,11 @@ namespace TLEFileEZTools
                 csv.Configuration.RegisterClassMap(foo);
 
                 var records = csv.GetRecords<AmcacheParserFilesData>();
-
+                var l = LogManager.GetCurrentClassLogger();
                 var ln = 1;
                 foreach (var record in records)
                 {
+                    l.Debug($"Line # {ln}, Record: {csv.Context.RawRecord}");
                     record.Line = ln;
                     record.Tag = TaggedLines.Contains(ln);
                     DataList.Add(record);
@@ -2040,10 +2074,11 @@ namespace TLEFileEZTools
                 csv.Configuration.RegisterClassMap(foo);
 
                 var records = csv.GetRecords<AmcacheParserNewFilesData>();
-
+                var l = LogManager.GetCurrentClassLogger();
                 var ln = 1;
                 foreach (var record in records)
                 {
+                    l.Debug($"Line # {ln}, Record: {csv.Context.RawRecord}");
                     record.Line = ln;
                     record.Tag = TaggedLines.Contains(ln);
                     DataList.Add(record);
@@ -2140,10 +2175,11 @@ namespace TLEFileEZTools
                 csv.Configuration.RegisterClassMap(foo);
 
                 var records = csv.GetRecords<AmcacheParserNewDevicePnPData>();
-
+                var l = LogManager.GetCurrentClassLogger();
                 var ln = 1;
                 foreach (var record in records)
                 {
+                    l.Debug($"Line # {ln}, Record: {csv.Context.RawRecord}");
                     record.Line = ln;
                     record.Tag = TaggedLines.Contains(ln);
                     DataList.Add(record);
@@ -2231,10 +2267,11 @@ namespace TLEFileEZTools
                 csv.Configuration.RegisterClassMap(foo);
 
                 var records = csv.GetRecords<AmcacheParserDeviceContainerData>();
-
+                var l = LogManager.GetCurrentClassLogger();
                 var ln = 1;
                 foreach (var record in records)
                 {
+                    l.Debug($"Line # {ln}, Record: {csv.Context.RawRecord}");
                     record.Line = ln;
                     record.Tag = TaggedLines.Contains(ln);
                     DataList.Add(record);
@@ -2317,10 +2354,11 @@ namespace TLEFileEZTools
                 csv.Configuration.RegisterClassMap(foo);
 
                 var records = csv.GetRecords<AmcacheParserDriverPackageData>();
-
+                var l = LogManager.GetCurrentClassLogger();
                 var ln = 1;
                 foreach (var record in records)
                 {
+                    l.Debug($"Line # {ln}, Record: {csv.Context.RawRecord}");
                     record.Line = ln;
                     record.Tag = TaggedLines.Contains(ln);
                     DataList.Add(record);
@@ -2413,10 +2451,11 @@ namespace TLEFileEZTools
 
 
                 var records = csv.GetRecords<AmcacheParserDriverBinaryData>();
-
+                var l = LogManager.GetCurrentClassLogger();
                 var ln = 1;
                 foreach (var record in records)
                 {
+                    l.Debug($"Line # {ln}, Record: {csv.Context.RawRecord}");
                     record.Line = ln;
                     record.Tag = TaggedLines.Contains(ln);
                     DataList.Add(record);
@@ -2489,15 +2528,18 @@ namespace TLEFileEZTools
 
                 csv.Configuration.RegisterClassMap(foo);
 
-                var records = csv.GetRecords<AmcacheParserNewShortcutData>();
+                var l = LogManager.GetCurrentClassLogger();
 
+                var records = csv.GetRecords<AmcacheParserNewShortcutData>();
+                
                 var ln = 1;
                 foreach (var record in records)
                 {
+                    l.Debug($"Line # {ln}, Record: {csv.Context.RawRecord}");
                     record.Line = ln;
                     record.Tag = TaggedLines.Contains(ln);
                     DataList.Add(record);
-
+                
                     ln += 1;
                 }
             }
@@ -2585,11 +2627,15 @@ namespace TLEFileEZTools
 
                 csv.Configuration.RegisterClassMap(foo);
 
+                var l = LogManager.GetCurrentClassLogger();
+
                 var records = csv.GetRecords<AmcacheParserNewProgramData>();
 
                 var ln = 1;
                 foreach (var record in records)
                 {
+                    l.Debug($"Line # {ln}, Record: {csv.Context.RawRecord}");
+
                     record.Line = ln;
                     record.Tag = TaggedLines.Contains(ln);
                     DataList.Add(record);

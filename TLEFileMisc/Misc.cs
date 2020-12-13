@@ -7,6 +7,7 @@ using System.Linq;
 using CsvHelper;
 using CsvHelper.TypeConversion;
 using ITLEFileSpec;
+using NLog;
 
 namespace TLEFileMisc
 {
@@ -193,12 +194,16 @@ namespace TLEFileMisc
 
                 csv.Configuration.RegisterClassMap(foo);
 
+                var l = LogManager.GetCurrentClassLogger();
+
                 csv.Read();
                 csv.ReadHeader();
 
                 var ln = 1;
                 while (csv.Read())
                 {
+                    l.Debug($"Line # {ln}, Record: {csv.Context.RawRecord}");
+
                     if (csv.Context.RawRecord.Contains("BAAD MFT Record"))
                     {
                         continue;
@@ -510,11 +515,15 @@ namespace TLEFileMisc
 
                 csv.Configuration.RegisterClassMap(foo);
 
+                var l = LogManager.GetCurrentClassLogger();
+
                 var records = csv.GetRecords<CrowdStrikeEventData>();
 
                 var ln = 1;
                 foreach (var record in records)
                 {
+                    l.Debug($"Line # {ln}, Record: {csv.Context.RawRecord}");
+
                     record.Line = ln;
 
                     record.Tag = TaggedLines.Contains(ln);
@@ -612,12 +621,16 @@ namespace TLEFileMisc
 
                 csv.Configuration.RegisterClassMap(foo);
 
+                var l = LogManager.GetCurrentClassLogger();
+
                 csv.Read();
                 csv.ReadHeader();
 
                 var ln = 1;
                 while (csv.Read())
                 {
+                    l.Debug($"Line # {ln}, Record: {csv.Context.RawRecord}");
+
                     var modified = DateTime.Parse(csv.GetField("Last Modified"),
                         CultureInfo.InvariantCulture, DateTimeStyles.AssumeUniversal).ToUniversalTime();
 
@@ -732,12 +745,16 @@ namespace TLEFileMisc
 
                 csv.Configuration.RegisterClassMap(foo);
 
+                var l = LogManager.GetCurrentClassLogger();
+
                 csv.Read();
                 csv.ReadHeader();
 
                 var ln = 1;
                 while (csv.Read())
                 {
+                    l.Debug($"Line # {ln}, Record: {csv.Context.RawRecord}");
+
                     var order = int.Parse(csv.GetField("Order"));
 
                     var lastMod = csv.GetField("Last Modified");
@@ -814,13 +831,17 @@ namespace TLEFileMisc
 
             using (var fileReader = File.OpenText(filename))
             {
-                var l = fileReader.ReadLine();
+                var l = LogManager.GetCurrentClassLogger();
+
+                var ln = fileReader.ReadLine();
                 var ln1 = 1;
-                while (l != null)
+                while (ln != null)
                 {
+                    l.Debug($"Line # {ln1}, Record: {ln}");
+
                     var d = new DensityScoutData();
 
-                    var dsegs = l.Split('|');
+                    var dsegs = ln.Split('|');
 
                     var rawNum = dsegs.First().Substring(1, dsegs.First().Length - 3);
 
@@ -830,7 +851,7 @@ namespace TLEFileMisc
                     d.Tag = TaggedLines.Contains(ln1);
                     DataList.Add(d);
                     ln1 += 1;
-                    l = fileReader.ReadLine();
+                    ln = fileReader.ReadLine();
                 }
             }
         }

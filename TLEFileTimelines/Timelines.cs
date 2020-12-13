@@ -6,6 +6,7 @@ using System.IO;
 using CsvHelper;
 using CsvHelper.TypeConversion;
 using ITLEFileSpec;
+using NLog;
 
 namespace TLEFileTimelines
 {
@@ -258,12 +259,16 @@ namespace TLEFileTimelines
                 csv.Read();
                 csv.ReadHeader();
 
+                var l = LogManager.GetCurrentClassLogger();
+
                 var ln = 1;
 
                 try
                 {
                     while (csv.Read())
                     {
+                        l.Debug($"Line # {ln}, Record: {csv.Context.RawRecord}");
+
                         //"date,time,timezone,macb,source,sourcetype,type,user,host,short,desc,version,filename,inode,notes,format,extra":
                         var dt = csv.GetField("date");
 
@@ -461,9 +466,13 @@ namespace TLEFileTimelines
                 csv.Read();
                 csv.ReadHeader();
 
+                var l = LogManager.GetCurrentClassLogger();
+
                 var ln = 1;
                 while (csv.Read())
                 {
+                    l.Debug($"Line # {ln}, Record: {csv.Context.RawRecord}");
+
                     var f = csv.GetRecord<MacTimeData>();
                     f.Line = ln;
                     f.Tag = TaggedLines.Contains(ln);

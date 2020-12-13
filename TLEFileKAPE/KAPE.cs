@@ -6,6 +6,7 @@ using System.IO;
 using CsvHelper;
 using CsvHelper.TypeConversion;
 using ITLEFileSpec;
+using NLog;
 
 namespace TLEFileKAPE
 {
@@ -82,11 +83,14 @@ namespace TLEFileKAPE
 
                 csv.Configuration.RegisterClassMap(foo);
 
+                var l = LogManager.GetCurrentClassLogger();
+
                 var records = csv.GetRecords<KapeCopyLogData>();
 
                 var ln = 1;
                 foreach (var record in records)
                 {
+                    l.Debug($"Line # {ln}, Record: {csv.Context.RawRecord}");
                     record.Line = ln;
 
                     record.Tag = TaggedLines.Contains(ln);
@@ -163,11 +167,14 @@ namespace TLEFileKAPE
 
                 csv.Configuration.RegisterClassMap(foo);
 
+                var l = LogManager.GetCurrentClassLogger();
+
                 var records = csv.GetRecords<KapeSkipLogData>();
 
                 var ln = 1;
                 foreach (var record in records)
                 {
+                    l.Debug($"Line # {ln}, Record: {csv.Context.RawRecord}");
                     record.Line = ln;
 
                     record.Tag = TaggedLines.Contains(ln);
@@ -257,12 +264,14 @@ namespace TLEFileKAPE
                 foo.Map(t => t.Tag).Ignore();
 
                 csv.Configuration.RegisterClassMap(foo);
+                var l = LogManager.GetCurrentClassLogger();
 
                 var records = csv.GetRecords<KapeTriageData>();
 
                 var ln = 1;
                 foreach (var record in records)
                 {
+                    l.Debug($"Line # {ln}, Record: {csv.Context.RawRecord}");
                     record.Line = ln;
 
                     record.Tag = TaggedLines.Contains(ln);

@@ -6,6 +6,7 @@ using System.IO;
 using CsvHelper;
 using CsvHelper.TypeConversion;
 using ITLEFileSpec;
+using NLog;
 using ServiceStack;
 
 namespace TLEFileTzWorks
@@ -107,6 +108,7 @@ namespace TLEFileTzWorks
                     csv.Read();
                 }
 
+                var l = LogManager.GetCurrentClassLogger();
 
                 csv.ReadHeader();
 
@@ -115,6 +117,8 @@ namespace TLEFileTzWorks
                 var ln11 = 1;
                 while (csv.Read())
                 {
+                    l.Debug($"Line # {ln11}, Record: {csv.Context.RawRecord}");
+
                     var compiled = csv.GetField(0);
                     var compTime = csv.GetField(1);
                     var created = csv.GetField(2);
@@ -293,10 +297,12 @@ namespace TLEFileTzWorks
                 }
 
                 csv.ReadHeader();
+                var l = LogManager.GetCurrentClassLogger();
 
                 var ln11 = 1;
                 while (csv.Read())
                 {
+                    l.Debug($"Line # {ln11}, Record: {csv.Context.RawRecord}");
                     var mftEntry = csv.GetField(0);
                     var mftSeq = csv.GetField(1);
                     var parentMftEntry = csv.GetField(2);
