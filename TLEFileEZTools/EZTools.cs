@@ -2531,7 +2531,7 @@ namespace TLEFileEZTools
                 var l = LogManager.GetCurrentClassLogger();
 
                 var records = csv.GetRecords<AmcacheParserNewShortcutData>();
-                
+
                 var ln = 1;
                 foreach (var record in records)
                 {
@@ -2539,7 +2539,7 @@ namespace TLEFileEZTools
                     record.Line = ln;
                     record.Tag = TaggedLines.Contains(ln);
                     DataList.Add(record);
-                
+
                     ln += 1;
                 }
             }
@@ -2636,6 +2636,696 @@ namespace TLEFileEZTools
                 {
                     l.Debug($"Line # {ln}, Record: {csv.Context.RawRecord}");
 
+                    record.Line = ln;
+                    record.Tag = TaggedLines.Contains(ln);
+                    DataList.Add(record);
+
+                    ln += 1;
+                }
+            }
+        }
+    }
+
+
+    public class NetworkUsageData : IFileSpecData
+    {
+        public int Id { get; set; }
+        public DateTime Timestamp { get; set; }
+
+        public string ExeInfo { get; set; }
+        public string ExeInfoDescription { get; set; }
+
+        public DateTime? ExeTimestamp { get; set; }
+
+        public string SidType { get; set; }
+        public string Sid { get; set; }
+        public string UserName { get; set; }
+        public int UserId { get; set; }
+        public int AppId { get; set; }
+        public long BytesReceived { get; set; }
+        public long BytesSent { get; set; }
+        public long InterfaceLuid { get; set; }
+        public string InterfaceType { get; set; }
+        public int L2ProfileFlags { get; set; }
+        public int L2ProfileId { get; set; }
+        public string ProfileName { get; set; }
+
+        public int Line { get; set; }
+        public bool Tag { get; set; }
+
+        public override string ToString()
+        {
+            return
+                $"{Timestamp} {Id} {ExeInfo} {ExeInfoDescription} {ExeTimestamp} {SidType} {Sid} {UserName} {UserId} {AppId} {BytesReceived} {BytesSent} {InterfaceLuid} {InterfaceType} {L2ProfileFlags} {L2ProfileId} {ProfileName}";
+        }
+    }
+
+    public class NetworkUsage : IFileSpec
+    {
+        public NetworkUsage()
+        {
+            TaggedLines = new List<int>();
+
+            DataList = new BindingList<NetworkUsageData>();
+
+            ExpectedHeaders = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+            {
+                "Id,Timestamp,ExeInfo,ExeInfoDescription,ExeTimestamp,SidType,Sid,UserName,UserId,AppId,BytesReceived,BytesSent,InterfaceLuid,InterfaceType,L2ProfileFlags,L2ProfileId,ProfileName"
+            };
+        }
+
+        public string Author => "Eric Zimmerman";
+        public string FileDescription => "CSV generated from SrumECmd for NetworkUsage";
+        public HashSet<string> ExpectedHeaders { get; }
+
+        public IBindingList DataList { get; }
+        public List<int> TaggedLines { get; set; }
+
+        public string InternalGuid => "41ee6405-22cf-4612-a480-9a050d0a9952";
+
+        public void ProcessFile(string filename)
+        {
+            DataList.Clear();
+            using (var fileReader = File.OpenText(filename))
+            {
+                var csv = new CsvReader(fileReader, CultureInfo.InvariantCulture);
+                csv.Configuration.HasHeaderRecord = true;
+
+                var o = new TypeConverterOptions
+                {
+                    DateTimeStyle = DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal
+                };
+                csv.Configuration.TypeConverterOptionsCache.AddOptions<NetworkUsageData>(o);
+
+                var foo = csv.Configuration.AutoMap<NetworkUsageData>();
+
+                foo.Map(t => t.Line).Ignore();
+                foo.Map(t => t.Tag).Ignore();
+
+                csv.Configuration.RegisterClassMap(foo);
+
+                var records = csv.GetRecords<NetworkUsageData>();
+
+                var l = LogManager.GetCurrentClassLogger();
+
+
+                var ln = 1;
+                foreach (var record in records)
+                {
+                    l.Debug($"Line # {ln}, Record: {csv.Context.RawRecord}");
+                    record.Line = ln;
+                    record.Tag = TaggedLines.Contains(ln);
+                    DataList.Add(record);
+
+                    ln += 1;
+                }
+            }
+        }
+    }
+
+
+    public class PushNotificationData : IFileSpecData
+    {
+        public int Id { get; set; }
+        public DateTime Timestamp { get; set; }
+
+        public string ExeInfo { get; set; }
+        public string ExeInfoDescription { get; set; }
+        public DateTime? ExeTimestamp { get; set; }
+        public string SidType { get; set; }
+        public string Sid { get; set; }
+        public string UserName { get; set; }
+        public int UserId { get; set; }
+        public int AppId { get; set; }
+
+        public int NetworkType { get; set; }
+        public int NotificationType { get; set; }
+        public int PayloadSize { get; set; }
+
+        public int Line { get; set; }
+        public bool Tag { get; set; }
+
+        public override string ToString()
+        {
+            return
+                $"{Timestamp} {Id} {ExeInfo} {ExeInfoDescription} {ExeTimestamp} {SidType} {Sid} {UserName} {UserId} {AppId} {NetworkType} {NotificationType} {PayloadSize}";
+        }
+    }
+
+    public class PushNotification : IFileSpec
+    {
+        public PushNotification()
+        {
+            TaggedLines = new List<int>();
+
+            DataList = new BindingList<PushNotificationData>();
+
+            ExpectedHeaders = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+            {
+                "Id,Timestamp,ExeInfo,ExeInfoDescription,ExeTimestamp,SidType,Sid,UserName,UserId,AppId,NetworkType,NotificationType,PayloadSize"
+            };
+        }
+
+        public string Author => "Eric Zimmerman";
+        public string FileDescription => "CSV generated from SrumECmd for PushNotification";
+        public HashSet<string> ExpectedHeaders { get; }
+
+        public IBindingList DataList { get; }
+        public List<int> TaggedLines { get; set; }
+
+        public string InternalGuid => "41ee6405-33ef-4612-a480-9a050d0a9952";
+
+        public void ProcessFile(string filename)
+        {
+            DataList.Clear();
+            using (var fileReader = File.OpenText(filename))
+            {
+                var csv = new CsvReader(fileReader, CultureInfo.InvariantCulture);
+                csv.Configuration.HasHeaderRecord = true;
+
+                var o = new TypeConverterOptions
+                {
+                    DateTimeStyle = DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal
+                };
+                csv.Configuration.TypeConverterOptionsCache.AddOptions<PushNotificationData>(o);
+
+                var foo = csv.Configuration.AutoMap<PushNotificationData>();
+
+                foo.Map(t => t.Line).Ignore();
+                foo.Map(t => t.Tag).Ignore();
+
+                csv.Configuration.RegisterClassMap(foo);
+
+                var records = csv.GetRecords<PushNotificationData>();
+
+                var l = LogManager.GetCurrentClassLogger();
+
+
+                var ln = 1;
+                foreach (var record in records)
+                {
+                    l.Debug($"Line # {ln}, Record: {csv.Context.RawRecord}");
+                    record.Line = ln;
+                    record.Tag = TaggedLines.Contains(ln);
+                    DataList.Add(record);
+
+                    ln += 1;
+                }
+            }
+        }
+    }
+
+    public class NetworkConnectionData : IFileSpecData
+    {
+        public int Id { get; set; }
+        public DateTime Timestamp { get; set; }
+
+        public string ExeInfo { get; set; }
+        public string ExeInfoDescription { get; set; }
+
+        public DateTime? ExeTimestamp { get; set; }
+        public string SidType { get; set; }
+        public string Sid { get; set; }
+        public string UserName { get; set; }
+
+        public int UserId { get; set; }
+        public int AppId { get; set; }
+
+        public int ConnectedTime { get; set; }
+        public DateTime ConnectStartTime { get; set; }
+        public long InterfaceLuid { get; set; }
+        public string InterfaceType { get; set; }
+        public int L2ProfileFlags { get; set; }
+        public int L2ProfileId { get; set; }
+        public string ProfileName { get; set; }
+
+        public int Line { get; set; }
+        public bool Tag { get; set; }
+
+        public override string ToString()
+        {
+            return
+                $"{Timestamp} {Id} {ExeInfo} {ExeInfoDescription} {ExeTimestamp} {SidType} {Sid} {UserName} {UserId} {AppId} {ConnectedTime} {ConnectStartTime} {InterfaceLuid} {InterfaceType} {L2ProfileFlags} {L2ProfileId} {ProfileName}";
+        }
+    }
+
+    public class NetworkConnection : IFileSpec
+    {
+        public NetworkConnection()
+        {
+            TaggedLines = new List<int>();
+
+            DataList = new BindingList<NetworkConnectionData>();
+
+            ExpectedHeaders = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+            {
+                "Id,Timestamp,ExeInfo,ExeInfoDescription,ExeTimestamp,SidType,Sid,UserName,UserId,AppId,ConnectedTime,ConnectStartTime,InterfaceLuid,InterfaceType,L2ProfileFlags,L2ProfileId,ProfileName"
+            };
+        }
+
+        public string Author => "Eric Zimmerman";
+        public string FileDescription => "CSV generated from SrumECmd for NetworkConnection";
+        public HashSet<string> ExpectedHeaders { get; }
+
+        public IBindingList DataList { get; }
+        public List<int> TaggedLines { get; set; }
+
+        public string InternalGuid => "41ab4565-22cf-4612-a480-9a050d0a9952";
+
+        public void ProcessFile(string filename)
+        {
+            DataList.Clear();
+            using (var fileReader = File.OpenText(filename))
+            {
+                var csv = new CsvReader(fileReader, CultureInfo.InvariantCulture);
+                csv.Configuration.HasHeaderRecord = true;
+
+                var o = new TypeConverterOptions
+                {
+                    DateTimeStyle = DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal
+                };
+                csv.Configuration.TypeConverterOptionsCache.AddOptions<NetworkConnectionData>(o);
+
+                var foo = csv.Configuration.AutoMap<NetworkConnectionData>();
+
+                foo.Map(t => t.Line).Ignore();
+                foo.Map(t => t.Tag).Ignore();
+
+                csv.Configuration.RegisterClassMap(foo);
+
+                var records = csv.GetRecords<NetworkConnectionData>();
+
+                var l = LogManager.GetCurrentClassLogger();
+
+
+                var ln = 1;
+                foreach (var record in records)
+                {
+                    l.Debug($"Line # {ln}, Record: {csv.Context.RawRecord}");
+                    record.Line = ln;
+                    record.Tag = TaggedLines.Contains(ln);
+                    DataList.Add(record);
+
+                    ln += 1;
+                }
+            }
+        }
+    }
+
+    public class AppResourceUseInfoData : IFileSpecData
+    {
+        public int Id { get; set; }
+        public DateTime Timestamp { get; set; }
+
+        public string ExeInfo { get; set; }
+        public string ExeInfoDescription { get; set; }
+        public DateTime? ExeTimestamp { get; set; }
+        public string SidType { get; set; }
+        public string Sid { get; set; }
+        public string UserName { get; set; }
+
+        public int UserId { get; set; }
+        public int AppId { get; set; }
+
+        public long BackgroundBytesRead { get; set; }
+        public long BackgroundBytesWritten { get; set; }
+        public int BackgroundContextSwitches { get; set; }
+        public long BackgroundCycleTime { get; set; }
+        public int BackgroundNumberOfFlushes { get; set; }
+        public int BackgroundNumReadOperations { get; set; }
+        public int BackgroundNumWriteOperations { get; set; }
+        public long FaceTime { get; set; }
+        public long ForegroundBytesRead { get; set; }
+        public long ForegroundBytesWritten { get; set; }
+        public int ForegroundContextSwitches { get; set; }
+        public long ForegroundCycleTime { get; set; }
+        public int ForegroundNumberOfFlushes { get; set; }
+        public int ForegroundNumReadOperations { get; set; }
+
+        public int ForegroundNumWriteOperations { get; set; }
+
+
+        public int Line { get; set; }
+        public bool Tag { get; set; }
+
+        public override string ToString()
+        {
+            return
+                $"{Timestamp} {Id} {ExeInfo} {ExeInfoDescription} {ExeTimestamp} {SidType} {Sid} {UserName} {UserId} {AppId} {BackgroundBytesRead} {BackgroundBytesWritten} {BackgroundContextSwitches} {BackgroundCycleTime} {BackgroundNumReadOperations} {BackgroundNumWriteOperations} {BackgroundNumberOfFlushes} {FaceTime} {ForegroundBytesRead} {ForegroundBytesWritten} {ForegroundContextSwitches} {ForegroundCycleTime} {ForegroundNumReadOperations} {ForegroundNumWriteOperations} {ForegroundNumberOfFlushes}";
+        }
+    }
+
+    public class AppResourceUseInfo : IFileSpec
+    {
+        public AppResourceUseInfo()
+        {
+            TaggedLines = new List<int>();
+
+            DataList = new BindingList<AppResourceUseInfoData>();
+
+            ExpectedHeaders = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+            {
+                "Id,Timestamp,ExeInfo,ExeInfoDescription,ExeTimestamp,SidType,Sid,UserName,UserId,AppId,BackgroundBytesRead,BackgroundBytesWritten,BackgroundContextSwitches,BackgroundCycleTime,BackgroundNumberOfFlushes,BackgroundNumReadOperations,BackgroundNumWriteOperations,FaceTime,ForegroundBytesRead,ForegroundBytesWritten,ForegroundContextSwitches,ForegroundCycleTime,ForegroundNumberOfFlushes,ForegroundNumReadOperations,ForegroundNumWriteOperations"
+            };
+        }
+
+        public string Author => "Eric Zimmerman";
+        public string FileDescription => "CSV generated from SrumECmd for AppResourceUseInfo";
+        public HashSet<string> ExpectedHeaders { get; }
+
+        public IBindingList DataList { get; }
+        public List<int> TaggedLines { get; set; }
+
+        public string InternalGuid => "41ee6405-22cf-5678-b580-9a050d0a9952";
+
+        public void ProcessFile(string filename)
+        {
+            DataList.Clear();
+            using (var fileReader = File.OpenText(filename))
+            {
+                var csv = new CsvReader(fileReader, CultureInfo.InvariantCulture);
+                csv.Configuration.HasHeaderRecord = true;
+
+                var o = new TypeConverterOptions
+                {
+                    DateTimeStyle = DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal
+                };
+                csv.Configuration.TypeConverterOptionsCache.AddOptions<AppResourceUseInfoData>(o);
+
+                var foo = csv.Configuration.AutoMap<AppResourceUseInfoData>();
+
+                foo.Map(t => t.Line).Ignore();
+                foo.Map(t => t.Tag).Ignore();
+
+
+                csv.Configuration.RegisterClassMap(foo);
+
+                var records = csv.GetRecords<AppResourceUseInfoData>();
+
+                var l = LogManager.GetCurrentClassLogger();
+
+
+                var ln = 1;
+                foreach (var record in records)
+                {
+                    l.Debug($"Line # {ln}, Record: {csv.Context.RawRecord}");
+                    record.Line = ln;
+                    record.Tag = TaggedLines.Contains(ln);
+                    DataList.Add(record);
+
+                    ln += 1;
+                }
+            }
+        }
+    }
+
+    public class UnknownD8FData : IFileSpecData
+    {
+        public int Id { get; set; }
+        public DateTime Timestamp { get; set; }
+        public int UserId { get; set; }
+        public int AppId { get; set; }
+
+        public string ExeInfo { get; set; }
+        public string ExeInfoDescription { get; set; }
+
+        public DateTime? ExeTimestamp { get; set; }
+
+        public string SidType { get; set; }
+        public string Sid { get; set; }
+        public string UserName { get; set; }
+
+        public DateTime StartTime { get; set; }
+
+        public DateTime EndTime { get; set; }
+
+        public int Flags { get; set; }
+
+        public TimeSpan Duration { get; set; }
+
+        public int Line { get; set; }
+        public bool Tag { get; set; }
+
+        public override string ToString()
+        {
+            return
+                $"{Timestamp} {Id} {ExeInfo} {ExeInfoDescription} {ExeTimestamp} {SidType} {Sid} {UserName} {UserId} {AppId} {StartTime} {EndTime} {Flags} {Duration}";
+        }
+    }
+
+    public class UnknownD8F : IFileSpec
+    {
+        public UnknownD8F()
+        {
+            TaggedLines = new List<int>();
+
+            DataList = new BindingList<UnknownD8FData>();
+
+            ExpectedHeaders = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+            {
+                "Id,Timestamp,UserId,AppId,ExeInfo,ExeInfoDescription,ExeTimestamp,SidType,Sid,UserName,StartTime,EndTime,Flags,Duration"
+            };
+        }
+
+        public string Author => "Eric Zimmerman";
+        public string FileDescription => "CSV generated from SrumECmd for UnknownD8F";
+        public HashSet<string> ExpectedHeaders { get; }
+
+        public IBindingList DataList { get; }
+        public List<int> TaggedLines { get; set; }
+
+        public string InternalGuid => "41ee6405-35ea-4612-b480-9a050d1a9952";
+
+        public void ProcessFile(string filename)
+        {
+            DataList.Clear();
+            using (var fileReader = File.OpenText(filename))
+            {
+                var csv = new CsvReader(fileReader, CultureInfo.InvariantCulture);
+                csv.Configuration.HasHeaderRecord = true;
+
+                var o = new TypeConverterOptions
+                {
+                    DateTimeStyle = DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal
+                };
+                csv.Configuration.TypeConverterOptionsCache.AddOptions<UnknownD8FData>(o);
+
+                var foo = csv.Configuration.AutoMap<UnknownD8FData>();
+
+                foo.Map(t => t.Line).Ignore();
+                foo.Map(t => t.Tag).Ignore();
+
+                csv.Configuration.RegisterClassMap(foo);
+
+                var records = csv.GetRecords<UnknownD8FData>();
+
+                var l = LogManager.GetCurrentClassLogger();
+
+
+                var ln = 1;
+                foreach (var record in records)
+                {
+                    l.Debug($"Line # {ln}, Record: {csv.Context.RawRecord}");
+                    record.Line = ln;
+                    record.Tag = TaggedLines.Contains(ln);
+                    DataList.Add(record);
+
+                    ln += 1;
+                }
+            }
+        }
+    }
+
+    public class Unknown312Data : IFileSpecData
+    {
+        public int Id { get; set; }
+        public DateTime Timestamp { get; set; }
+
+        public string ExeInfo { get; set; }
+        public string ExeInfoDescription { get; set; }
+
+        public DateTime? ExeTimestamp { get; set; }
+
+        public string SidType { get; set; }
+        public string Sid { get; set; }
+        public string UserName { get; set; }
+
+        public int UserId { get; set; }
+        public int AppId { get; set; }
+
+        public DateTime EndTime { get; set; }
+
+        public int DurationMs { get; set; }
+
+        public int Line { get; set; }
+        public bool Tag { get; set; }
+
+        public override string ToString()
+        {
+            return
+                $"{Timestamp} {Id} {ExeInfo} {ExeInfoDescription} {ExeTimestamp} {SidType} {Sid} {UserName} {UserId} {AppId} {EndTime} {DurationMs}";
+        }
+    }
+
+    public class Unknown312 : IFileSpec
+    {
+        public Unknown312()
+        {
+            TaggedLines = new List<int>();
+
+            DataList = new BindingList<Unknown312Data>();
+
+            ExpectedHeaders = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+            {
+                "Id,Timestamp,ExeInfo,ExeInfoDescription,ExeTimestamp,SidType,Sid,UserName,UserId,AppId,EndTime,DurationMs"
+            };
+        }
+
+        public string Author => "Eric Zimmerman";
+        public string FileDescription => "CSV generated from SrumECmd for Unknown312";
+        public HashSet<string> ExpectedHeaders { get; }
+
+        public IBindingList DataList { get; }
+        public List<int> TaggedLines { get; set; }
+
+        public string InternalGuid => "41ee6405-22cf-4612-a480-9a050d1b5631";
+
+        public void ProcessFile(string filename)
+        {
+            DataList.Clear();
+            using (var fileReader = File.OpenText(filename))
+            {
+                var csv = new CsvReader(fileReader, CultureInfo.InvariantCulture);
+                csv.Configuration.HasHeaderRecord = true;
+
+                var o = new TypeConverterOptions
+                {
+                    DateTimeStyle = DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal
+                };
+                csv.Configuration.TypeConverterOptionsCache.AddOptions<Unknown312Data>(o);
+
+                var foo = csv.Configuration.AutoMap<Unknown312Data>();
+
+                foo.Map(t => t.Line).Ignore();
+                foo.Map(t => t.Tag).Ignore();
+
+                csv.Configuration.RegisterClassMap(foo);
+
+                var records = csv.GetRecords<Unknown312Data>();
+
+                var l = LogManager.GetCurrentClassLogger();
+
+                var ln = 1;
+                foreach (var record in records)
+                {
+                    l.Debug($"Line # {ln}, Record: {csv.Context.RawRecord}");
+                    record.Line = ln;
+                    record.Tag = TaggedLines.Contains(ln);
+                    DataList.Add(record);
+
+                    ln += 1;
+                }
+            }
+        }
+    }
+
+    public class EnergyUsageData : IFileSpecData
+    {
+        public int Id { get; set; }
+        public DateTime Timestamp { get; set; }
+        public string ExeInfo { get; set; }
+        public string ExeInfoDescription { get; set; }
+
+        public DateTime? ExeTimestamp { get; set; }
+
+        public string SidType { get; set; }
+        public string Sid { get; set; }
+        public string UserName { get; set; }
+
+        public int UserId { get; set; }
+        public int AppId { get; set; }
+        public bool IsLt { get; set; }
+
+        public long ConfigurationHash { get; set; }
+        public DateTime? EventTimestamp { get; set; }
+        public long StateTransition { get; set; }
+
+        public int ChargeLevel { get; set; }
+        public int CycleCount { get; set; }
+        public int DesignedCapacity { get; set; }
+        public int FullChargedCapacity { get; set; }
+        public int ActiveAcTime { get; set; }
+        public int ActiveDcTime { get; set; }
+        public int ActiveDischargeTime { get; set; }
+        public int ActiveEnergy { get; set; }
+        public int CsAcTime { get; set; }
+        public int CsDcTime { get; set; }
+        public int CsDischargeTime { get; set; }
+        public int CsEnergy { get; set; }
+
+        public int Line { get; set; }
+        public bool Tag { get; set; }
+
+        public override string ToString()
+        {
+            return
+                $"{Timestamp} {Id} {ExeInfo} {ExeInfoDescription} {ExeTimestamp} {SidType} {Sid} {UserName} {UserId} {AppId} {IsLt} {ConfigurationHash} {EventTimestamp} {StateTransition} {ChargeLevel} {CycleCount} {DesignedCapacity} {FullChargedCapacity} {ActiveAcTime} {ActiveDcTime} {ActiveDischargeTime} {ActiveEnergy} {CsAcTime} {CsDcTime} {CsDischargeTime} {CsEnergy}";
+        }
+    }
+
+    public class EnergyUsage : IFileSpec
+    {
+        public EnergyUsage()
+        {
+            TaggedLines = new List<int>();
+
+            DataList = new BindingList<EnergyUsageData>();
+
+            ExpectedHeaders = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+            {
+                "Id,Timestamp,ExeInfo,ExeInfoDescription,ExeTimestamp,SidType,Sid,UserName,UserId,AppId,IsLt,ConfigurationHash,EventTimestamp,StateTransition,ChargeLevel,CycleCount,DesignedCapacity,FullChargedCapacity,ActiveAcTime,ActiveDcTime,ActiveDischargeTime,ActiveEnergy,CsAcTime,CsDcTime,CsDischargeTime,CsEnergy"
+            };
+        }
+
+        public string Author => "Eric Zimmerman";
+        public string FileDescription => "CSV generated from SrumECmd for EnergyUsage";
+        public HashSet<string> ExpectedHeaders { get; }
+
+        public IBindingList DataList { get; }
+        public List<int> TaggedLines { get; set; }
+
+        public string InternalGuid => "41ee6405-22cf-4612-a480-8b120d1a9952";
+
+        public void ProcessFile(string filename)
+        {
+            DataList.Clear();
+            using (var fileReader = File.OpenText(filename))
+            {
+                var csv = new CsvReader(fileReader, CultureInfo.InvariantCulture);
+                csv.Configuration.HasHeaderRecord = true;
+
+                var o = new TypeConverterOptions
+                {
+                    DateTimeStyle = DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal
+                };
+                csv.Configuration.TypeConverterOptionsCache.AddOptions<EnergyUsageData>(o);
+
+                var foo = csv.Configuration.AutoMap<EnergyUsageData>();
+
+                foo.Map(t => t.Line).Ignore();
+                foo.Map(t => t.Tag).Ignore();
+
+                csv.Configuration.RegisterClassMap(foo);
+
+                var records = csv.GetRecords<EnergyUsageData>();
+
+                var l = LogManager.GetCurrentClassLogger();
+
+
+                var ln = 1;
+                foreach (var record in records)
+                {
+                    l.Debug($"Line # {ln}, Record: {csv.Context.RawRecord}");
                     record.Line = ln;
                     record.Tag = TaggedLines.Contains(ln);
                     DataList.Add(record);
