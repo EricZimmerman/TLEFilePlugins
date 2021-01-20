@@ -3335,4 +3335,94 @@ namespace TLEFileEZTools
             }
         }
     }
+
+     public class MFTFileListingData : IFileSpecData
+    {
+        public string FullPath { get; set; }
+        public string Extension { get; set; }
+
+        public bool IsDirectory { get; set; }
+        public ulong FileSize { get; set; }
+        public DateTime? Created0x10 { get; set; }
+        public DateTime? LastModified0x10 { get; set; }
+
+        public int Line { get; set; }
+        public bool Tag { get; set; }
+
+        public override string ToString()
+        {
+            return
+                $"{FullPath} {Extension} {FileSize} {Created0x10} {LastModified0x10}";
+        }
+    }
+
+    public class MFTFileListing : IFileSpec
+    {
+        public MFTFileListing()
+        {
+            TaggedLines = new List<int>();
+
+            DataList = new BindingList<MFTFileListingData>();
+
+            ExpectedHeaders = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+            {
+                "FullPath,Extension,IsDirectory,FileSize,Created0x10,LastModified0x10"
+            };
+        }
+
+        public string Author => "Eric Zimmerman";
+        public string FileDescription => "CSV generated from MFTECmd --fl mode";
+        public HashSet<string> ExpectedHeaders { get; }
+
+        public IBindingList DataList { get; }
+        public List<int> TaggedLines { get; set; }
+
+        public string InternalGuid => "40dd7405-22cf-1612-b180-1a011d0a9952";
+
+        public void ProcessFile(string filename)
+        {
+            DataList.Clear();
+            using (var fileReader = File.OpenText(filename))
+            {
+                var csv = new CsvReader(fileReader, CultureInfo.InvariantCulture);
+                csv.Configuration.HasHeaderRecord = true;
+
+                var o = new TypeConverterOptions
+                {
+                    DateTimeStyle = DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal
+                };
+                csv.Configuration.TypeConverterOptionsCache.AddOptions<MFTFileListingData>(o);
+
+                var foo = csv.Configuration.AutoMap<MFTFileListingData>();
+
+                foo.Map(m => m.Created0x10).TypeConverterOption
+                    .DateTimeStyles(DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal);
+                foo.Map(m => m.LastModified0x10).TypeConverterOption
+                    .DateTimeStyles(DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal);
+
+                foo.Map(t => t.Line).Ignore();
+                foo.Map(t => t.Tag).Ignore();
+
+                csv.Configuration.RegisterClassMap(foo);
+
+                var records = csv.GetRecords<MFTFileListingData>();
+
+                var l = LogManager.GetCurrentClassLogger();
+
+
+                var ln = 1;
+                foreach (var record in records)
+                {
+                    l.Debug($"Line # {ln}, Record: {csv.Context.RawRecord}");
+                    record.Line = ln;
+                    record.Tag = TaggedLines.Contains(ln);
+                    DataList.Add(record);
+
+                    ln += 1;
+                }
+            }
+        }
+    }
+
+
 }
