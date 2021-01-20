@@ -5,6 +5,7 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using CsvHelper;
+using CsvHelper.Configuration;
 using ITLEFileSpec;
 
 namespace TLEFileGenericCsv
@@ -34,14 +35,24 @@ namespace TLEFileGenericCsv
             {
                 using (var ff = new StreamReader(fileReader))
                 {
-                    var csv = new CsvReader(ff, CultureInfo.InvariantCulture);
-                    csv.Configuration.BadDataFound = null;
-
+                    var config = new CsvConfiguration(CultureInfo.InvariantCulture)
+                    {
+                        BadDataFound = null,
+                    
+                    };
 
                     if (filename.ToUpperInvariant().EndsWith(".TSV"))
                     {
-                        csv.Configuration.Delimiter = "\t";
+                        config = new CsvConfiguration(CultureInfo.InvariantCulture)
+                        {
+                            BadDataFound = null,
+                            Delimiter = "\t"
+                        };
                     }
+
+                    var csv = new CsvReader(ff, config);
+                   
+                  
 
                     var records = csv.GetRecords<dynamic>().ToList();
 

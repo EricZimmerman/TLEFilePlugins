@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.Globalization;
 using System.IO;
 using CsvHelper;
+using CsvHelper.Configuration;
 using CsvHelper.TypeConversion;
 using ITLEFileSpec;
 using NLog;
@@ -219,10 +220,18 @@ namespace TLEFileTimelines
 
             using (var fileReader = File.OpenText(filename))
             {
-                var csv = new CsvReader(fileReader, CultureInfo.InvariantCulture);
-                csv.Configuration.HasHeaderRecord = true;
 
-                var foo = csv.Configuration.AutoMap<SuperTimelineData>();
+                var config = new CsvConfiguration(CultureInfo.InvariantCulture)
+                {
+                    BadDataFound = null,
+                    MissingFieldFound = null
+                };
+
+
+                var csv = new CsvReader(fileReader, config);
+                
+
+                var foo = csv.Context.AutoMap<SuperTimelineData>();
 
                 foo.Map(t => t.Line).Ignore();
                 foo.Map(t => t.Tag).Ignore();
@@ -249,12 +258,9 @@ namespace TLEFileTimelines
                 {
                     DateTimeStyle = DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal
                 };
-                csv.Configuration.TypeConverterOptionsCache.AddOptions<SuperTimelineData>(o);
+                csv.Context.TypeConverterOptionsCache.AddOptions<SuperTimelineData>(o);
 
-                csv.Configuration.BadDataFound = null;
-                csv.Configuration.MissingFieldFound = null;
-
-                csv.Configuration.RegisterClassMap(foo);
+                csv.Context.RegisterClassMap(foo);
 
                 csv.Read();
                 csv.ReadHeader();
@@ -267,7 +273,7 @@ namespace TLEFileTimelines
                 {
                     while (csv.Read())
                     {
-                        l.Debug($"Line # {ln}, Record: {csv.Context.RawRecord}");
+                        l.Debug($"Line # {ln}, Record: {csv.Context.Parser.RawRecord}");
 
                         //"date,time,timezone,macb,source,sourcetype,type,user,host,short,desc,version,filename,inode,notes,format,extra":
                         var dt = csv.GetField("date");
@@ -307,7 +313,7 @@ namespace TLEFileTimelines
                 catch (Exception e)
                 {
                     throw new Exception(
-                        $"Error loading data on line '{ln}': {e.Message}. Line: {csv.Context.RawRecord}", e);
+                        $"Error loading data on line '{ln}': {e.Message}. Line: {csv.Context.Parser.RawRecord}", e);
                 }
             }
         }
@@ -431,23 +437,23 @@ namespace TLEFileTimelines
             using (var fileReader = File.OpenText(filename))
             {
                 var csv = new CsvReader(fileReader, CultureInfo.InvariantCulture);
-                csv.Configuration.HasHeaderRecord = true;
-                var foo = csv.Configuration.AutoMap<MacTimeData>();
+                
+                var foo = csv.Context.AutoMap<MacTimeData>();
 
                 var o = new TypeConverterOptions
                 {
                     DateTimeStyle = DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal &
                                     DateTimeStyles.AdjustToUniversal
                 };
-                csv.Configuration.TypeConverterOptionsCache.AddOptions<MacTimeData>(o);
+                csv.Context.TypeConverterOptionsCache.AddOptions<MacTimeData>(o);
 
                 foo.Map(t => t.Line).Ignore();
                 foo.Map(t => t.Tag).Ignore();
                 foo.Map(t => t.Color).Ignore();
                 //
                 foo.Map(t => t.Timestamp).Name("Date");
-                foo.Map(m => m.Timestamp).ConvertUsing(row =>
-                    DateTime.TryParse(row.Context.Record[0], CultureInfo.InvariantCulture,
+                foo.Map(m => m.Timestamp).Convert(row =>
+                    DateTime.TryParse(row.Context.Parser.Record[0], CultureInfo.InvariantCulture,
                         DateTimeStyles.AssumeUniversal, out var outDate)
                         ? outDate.ToUniversalTime()
                         : new DateTime?());
@@ -461,7 +467,7 @@ namespace TLEFileTimelines
                 foo.Map(t => t.Meta).Name("Meta");
                 foo.Map(t => t.FileName).Name("File Name");
 
-                csv.Configuration.RegisterClassMap(foo);
+                csv.Context.RegisterClassMap(foo);
 
                 csv.Read();
                 csv.ReadHeader();
@@ -471,7 +477,7 @@ namespace TLEFileTimelines
                 var ln = 1;
                 while (csv.Read())
                 {
-                    l.Debug($"Line # {ln}, Record: {csv.Context.RawRecord}");
+                    l.Debug($"Line # {ln}, Record: {csv.Context.Parser.RawRecord}");
 
                     var f = csv.GetRecord<MacTimeData>();
                     f.Line = ln;

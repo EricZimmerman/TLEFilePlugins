@@ -76,20 +76,20 @@ namespace TLEFileEZTools
             using (var fileReader = File.OpenText(filename))
             {
                 var csv = new CsvReader(fileReader, CultureInfo.InvariantCulture);
-                csv.Configuration.HasHeaderRecord = true;
+                
 
                 var o = new TypeConverterOptions
                 {
                     DateTimeStyle = DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal
                 };
-                csv.Configuration.TypeConverterOptionsCache.AddOptions<BootData>(o);
+                csv.Context.TypeConverterOptionsCache.AddOptions<BootData>(o);
 
-                var foo = csv.Configuration.AutoMap<BootData>();
+                var foo = csv.Context.AutoMap<BootData>();
 
                 foo.Map(t => t.Line).Ignore();
                 foo.Map(t => t.Tag).Ignore();
 
-                csv.Configuration.RegisterClassMap(foo);
+                csv.Context.RegisterClassMap(foo);
 
                 var records = csv.GetRecords<BootData>();
 
@@ -99,7 +99,7 @@ namespace TLEFileEZTools
                 foreach (var record in records)
                 {
                     //In TLE, there is an option to enable Debug messages which lets more context be seen when errors happen. Keep this call here so the last known good line of data is obvious in TLE messages
-                    l.Debug($"Line # {ln}, Record: {csv.Context.RawRecord}");
+                    l.Debug($"Line # {ln}, Record: {csv.Context.Parser.RawRecord}");
 
                     record.Line = ln;
                     record.Tag = TaggedLines.Contains(ln);
@@ -169,20 +169,20 @@ namespace TLEFileEZTools
             using (var fileReader = File.OpenText(filename))
             {
                 var csv = new CsvReader(fileReader, CultureInfo.InvariantCulture);
-                csv.Configuration.HasHeaderRecord = true;
+                
 
                 var o = new TypeConverterOptions
                 {
                     DateTimeStyle = DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal
                 };
-                csv.Configuration.TypeConverterOptionsCache.AddOptions<SdsData>(o);
+                csv.Context.TypeConverterOptionsCache.AddOptions<SdsData>(o);
 
-                var foo = csv.Configuration.AutoMap<SdsData>();
+                var foo = csv.Context.AutoMap<SdsData>();
 
                 foo.Map(t => t.Line).Ignore();
                 foo.Map(t => t.Tag).Ignore();
 
-                csv.Configuration.RegisterClassMap(foo);
+                csv.Context.RegisterClassMap(foo);
 
                 var records = csv.GetRecords<SdsData>();
 
@@ -192,7 +192,7 @@ namespace TLEFileEZTools
                 var ln = 1;
                 foreach (var record in records)
                 {
-                    l.Debug($"Line # {ln}, Record: {csv.Context.RawRecord}");
+                    l.Debug($"Line # {ln}, Record: {csv.Context.Parser.RawRecord}");
                     record.Line = ln;
                     record.Tag = TaggedLines.Contains(ln);
                     DataList.Add(record);
@@ -261,15 +261,15 @@ namespace TLEFileEZTools
             using (var fileReader = File.OpenText(filename))
             {
                 var csv = new CsvReader(fileReader, CultureInfo.InvariantCulture);
-                csv.Configuration.HasHeaderRecord = true;
+                
 
                 var o = new TypeConverterOptions
                 {
                     DateTimeStyle = DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal
                 };
-                csv.Configuration.TypeConverterOptionsCache.AddOptions<JData>(o);
+                csv.Context.TypeConverterOptionsCache.AddOptions<JData>(o);
 
-                var foo = csv.Configuration.AutoMap<JData>();
+                var foo = csv.Context.AutoMap<JData>();
 
                 foo.Map(m => m.UpdateTimestamp).TypeConverterOption
                     .DateTimeStyles(DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal);
@@ -277,7 +277,7 @@ namespace TLEFileEZTools
                 foo.Map(t => t.Line).Ignore();
                 foo.Map(t => t.Tag).Ignore();
 
-                csv.Configuration.RegisterClassMap(foo);
+                csv.Context.RegisterClassMap(foo);
 
                 var records = csv.GetRecords<JData>();
 
@@ -287,7 +287,7 @@ namespace TLEFileEZTools
                 var ln = 1;
                 foreach (var record in records)
                 {
-                    l.Debug($"Line # {ln}, Record: {csv.Context.RawRecord}");
+                    l.Debug($"Line # {ln}, Record: {csv.Context.Parser.RawRecord}");
                     record.Line = ln;
                     record.Tag = TaggedLines.Contains(ln);
                     DataList.Add(record);
@@ -389,16 +389,16 @@ namespace TLEFileEZTools
             using (var fileReader = File.OpenText(filename))
             {
                 var csv = new CsvReader(fileReader, CultureInfo.InvariantCulture);
-                csv.Configuration.HasHeaderRecord = true;
+                
 
-                var foo = csv.Configuration.AutoMap<MFTData>();
+                var foo = csv.Context.AutoMap<MFTData>();
 
                 var o = new TypeConverterOptions
                 {
                     DateTimeStyle = DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal,
                     NullValues = {"=\"\""}
                 };
-                csv.Configuration.TypeConverterOptionsCache.AddOptions<MFTData>(o);
+                csv.Context.TypeConverterOptionsCache.AddOptions<MFTData>(o);
 
                 foo.Map(t => t.Line).Ignore();
                 foo.Map(t => t.Tag).Ignore();
@@ -420,7 +420,7 @@ namespace TLEFileEZTools
                 foo.Map(m => m.LastAccess0x30).TypeConverterOption
                     .DateTimeStyles(DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal);
 
-                csv.Configuration.RegisterClassMap(foo);
+                csv.Context.RegisterClassMap(foo);
 
                 var records = csv.GetRecords<MFTData>();
 
@@ -430,7 +430,7 @@ namespace TLEFileEZTools
                 var ln = 1;
                 foreach (var record in records)
                 {
-                    l.Debug($"Line # {ln}, Record: {csv.Context.RawRecord}");
+                    l.Debug($"Line # {ln}, Record: {csv.Context.Parser.RawRecord}");
                     record.Line = ln;
                     record.Tag = TaggedLines.Contains(ln);
                     DataList.Add(record);
@@ -492,15 +492,15 @@ namespace TLEFileEZTools
             using (var fileReader = File.OpenText(filename))
             {
                 var csv = new CsvReader(fileReader, CultureInfo.InvariantCulture);
-                csv.Configuration.HasHeaderRecord = true;
+                
 
                 var o = new TypeConverterOptions
                 {
                     DateTimeStyle = DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal
                 };
-                csv.Configuration.TypeConverterOptionsCache.AddOptions<RbCmdData>(o);
+                csv.Context.TypeConverterOptionsCache.AddOptions<RbCmdData>(o);
 
-                var foo = csv.Configuration.AutoMap<RbCmdData>();
+                var foo = csv.Context.AutoMap<RbCmdData>();
 
                 foo.Map(m => m.DeletedOn).TypeConverterOption
                     .DateTimeStyles(DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal);
@@ -508,14 +508,14 @@ namespace TLEFileEZTools
                 foo.Map(t => t.Line).Ignore();
                 foo.Map(t => t.Tag).Ignore();
 
-                csv.Configuration.RegisterClassMap(foo);
+                csv.Context.RegisterClassMap(foo);
 
                 var records = csv.GetRecords<RbCmdData>();
                 var l = LogManager.GetCurrentClassLogger();
                 var ln = 1;
                 foreach (var record in records)
                 {
-                    l.Debug($"Line # {ln}, Record: {csv.Context.RawRecord}");
+                    l.Debug($"Line # {ln}, Record: {csv.Context.Parser.RawRecord}");
                     record.Line = ln;
                     record.Tag = TaggedLines.Contains(ln);
                     DataList.Add(record);
@@ -609,27 +609,27 @@ namespace TLEFileEZTools
             using (var fileReader = File.OpenText(filename))
             {
                 var csv = new CsvReader(fileReader, CultureInfo.InvariantCulture);
-                csv.Configuration.HasHeaderRecord = true;
+                
 
                 var o = new TypeConverterOptions
                 {
                     DateTimeStyle = DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal
                 };
-                csv.Configuration.TypeConverterOptionsCache.AddOptions<PeCmdData>(o);
+                csv.Context.TypeConverterOptionsCache.AddOptions<PeCmdData>(o);
 
-                var foo = csv.Configuration.AutoMap<PeCmdData>();
+                var foo = csv.Context.AutoMap<PeCmdData>();
 
                 foo.Map(t => t.Line).Ignore();
                 foo.Map(t => t.Tag).Ignore();
 
-                csv.Configuration.RegisterClassMap(foo);
+                csv.Context.RegisterClassMap(foo);
 
                 var records = csv.GetRecords<PeCmdData>();
                 var l = LogManager.GetCurrentClassLogger();
                 var ln = 1;
                 foreach (var record in records)
                 {
-                    l.Debug($"Line # {ln}, Record: {csv.Context.RawRecord}");
+                    l.Debug($"Line # {ln}, Record: {csv.Context.Parser.RawRecord}");
                     record.Line = ln;
                     record.Tag = TaggedLines.Contains(ln);
                     DataList.Add(record);
@@ -686,27 +686,27 @@ namespace TLEFileEZTools
             using (var fileReader = File.OpenText(filename))
             {
                 var csv = new CsvReader(fileReader, CultureInfo.InvariantCulture);
-                csv.Configuration.HasHeaderRecord = true;
+                
 
                 var o = new TypeConverterOptions
                 {
                     DateTimeStyle = DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal
                 };
-                csv.Configuration.TypeConverterOptionsCache.AddOptions<PECmdTimelineData>(o);
+                csv.Context.TypeConverterOptionsCache.AddOptions<PECmdTimelineData>(o);
 
-                var foo = csv.Configuration.AutoMap<PECmdTimelineData>();
+                var foo = csv.Context.AutoMap<PECmdTimelineData>();
 
                 foo.Map(t => t.Line).Ignore();
                 foo.Map(t => t.Tag).Ignore();
 
-                csv.Configuration.RegisterClassMap(foo);
+                csv.Context.RegisterClassMap(foo);
 
                 var records = csv.GetRecords<PECmdTimelineData>();
                 var l = LogManager.GetCurrentClassLogger();
                 var ln = 1;
                 foreach (var record in records)
                 {
-                    l.Debug($"Line # {ln}, Record: {csv.Context.RawRecord}");
+                    l.Debug($"Line # {ln}, Record: {csv.Context.Parser.RawRecord}");
                     record.Line = ln;
                     record.Tag = TaggedLines.Contains(ln);
                     DataList.Add(record);
@@ -790,30 +790,28 @@ namespace TLEFileEZTools
             using (var fileReader = File.OpenText(filename))
             {
                 var csv = new CsvReader(fileReader, CultureInfo.InvariantCulture);
-                csv.Configuration.HasHeaderRecord = true;
+                
 
 
                 var o = new TypeConverterOptions
                 {
                     DateTimeStyle = DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal
                 };
-                csv.Configuration.TypeConverterOptionsCache.AddOptions<LECmdData>(o);
-
-                csv.Configuration.PrepareHeaderForMatch = (header, index) => header.Replace(" ", "");
-
-                var foo = csv.Configuration.AutoMap<LECmdData>();
+                csv.Context.TypeConverterOptionsCache.AddOptions<LECmdData>(o);
+                
+                var foo = csv.Context.AutoMap<LECmdData>();
 
                 foo.Map(t => t.Line).Ignore();
                 foo.Map(t => t.Tag).Ignore();
 
-                csv.Configuration.RegisterClassMap(foo);
+                csv.Context.RegisterClassMap(foo);
 
                 var records = csv.GetRecords<LECmdData>();
                 var l = LogManager.GetCurrentClassLogger();
                 var ln = 1;
                 foreach (var record in records)
                 {
-                    l.Debug($"Line # {ln}, Record: {csv.Context.RawRecord}");
+                    l.Debug($"Line # {ln}, Record: {csv.Context.Parser.RawRecord}");
                     record.Line = ln;
                     record.Tag = TaggedLines.Contains(ln);
                     DataList.Add(record);
@@ -917,30 +915,26 @@ namespace TLEFileEZTools
             using (var fileReader = File.OpenText(filename))
             {
                 var csv = new CsvReader(fileReader, CultureInfo.InvariantCulture);
-                csv.Configuration.HasHeaderRecord = true;
-
-
-                csv.Configuration.PrepareHeaderForMatch = (header, index) => header.Replace(" ", "");
-
+                
                 var o = new TypeConverterOptions
                 {
                     DateTimeStyle = DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal
                 };
-                csv.Configuration.TypeConverterOptionsCache.AddOptions<JleCmdAutoData>(o);
+                csv.Context.TypeConverterOptionsCache.AddOptions<JleCmdAutoData>(o);
 
-                var foo = csv.Configuration.AutoMap<JleCmdAutoData>();
+                var foo = csv.Context.AutoMap<JleCmdAutoData>();
 
                 foo.Map(t => t.Line).Ignore();
                 foo.Map(t => t.Tag).Ignore();
 
-                csv.Configuration.RegisterClassMap(foo);
+                csv.Context.RegisterClassMap(foo);
 
                 var records = csv.GetRecords<JleCmdAutoData>();
                 var l = LogManager.GetCurrentClassLogger();
                 var ln = 1;
                 foreach (var record in records)
                 {
-                    l.Debug($"Line # {ln}, Record: {csv.Context.RawRecord}");
+                    l.Debug($"Line # {ln}, Record: {csv.Context.Parser.RawRecord}");
 
                     if (record.FileAttributes.Equals("0"))
                     {
@@ -1033,30 +1027,28 @@ namespace TLEFileEZTools
             using (var fileReader = File.OpenText(filename))
             {
                 var csv = new CsvReader(fileReader, CultureInfo.InvariantCulture);
-                csv.Configuration.HasHeaderRecord = true;
+                
 
 
                 var o = new TypeConverterOptions
                 {
                     DateTimeStyle = DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal
                 };
-                csv.Configuration.TypeConverterOptionsCache.AddOptions<JleCmdCustomData>(o);
-
-                csv.Configuration.PrepareHeaderForMatch = (header, index) => header.Replace(" ", "");
-
-                var foo = csv.Configuration.AutoMap<JleCmdCustomData>();
+                csv.Context.TypeConverterOptionsCache.AddOptions<JleCmdCustomData>(o);
+                
+                var foo = csv.Context.AutoMap<JleCmdCustomData>();
 
                 foo.Map(t => t.Line).Ignore();
                 foo.Map(t => t.Tag).Ignore();
 
-                csv.Configuration.RegisterClassMap(foo);
+                csv.Context.RegisterClassMap(foo);
 
                 var records = csv.GetRecords<JleCmdCustomData>();
                 var l = LogManager.GetCurrentClassLogger();
                 var ln = 1;
                 foreach (var record in records)
                 {
-                    l.Debug($"Line # {ln}, Record: {csv.Context.RawRecord}");
+                    l.Debug($"Line # {ln}, Record: {csv.Context.Parser.RawRecord}");
                     record.Line = ln;
                     record.Tag = TaggedLines.Contains(ln);
                     DataList.Add(record);
@@ -1137,15 +1129,15 @@ namespace TLEFileEZTools
             using (var fileReader = File.OpenText(filename))
             {
                 var csv = new CsvReader(fileReader, CultureInfo.InvariantCulture);
-                csv.Configuration.HasHeaderRecord = true;
+                
 
                 var o = new TypeConverterOptions
                 {
                     DateTimeStyle = DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal
                 };
-                csv.Configuration.TypeConverterOptionsCache.AddOptions<EvtxECmdData>(o);
+                csv.Context.TypeConverterOptionsCache.AddOptions<EvtxECmdData>(o);
 
-                var foo = csv.Configuration.AutoMap<EvtxECmdData>();
+                var foo = csv.Context.AutoMap<EvtxECmdData>();
 
                 foo.Map(t => t.Line).Ignore();
                 foo.Map(t => t.Tag).Ignore();
@@ -1153,14 +1145,14 @@ namespace TLEFileEZTools
                 foo.Map(t => t.HiddenRecord).Optional();
                 foo.Map(t => t.Keywords).Optional();
 
-                csv.Configuration.RegisterClassMap(foo);
+                csv.Context.RegisterClassMap(foo);
 
                 var records = csv.GetRecords<EvtxECmdData>();
                 var l = LogManager.GetCurrentClassLogger();
                 var ln = 1;
                 foreach (var record in records)
                 {
-                    l.Debug($"Line # {ln}, Record: {csv.Context.RawRecord}");
+                    l.Debug($"Line # {ln}, Record: {csv.Context.Parser.RawRecord}");
                     record.Line = ln;
                     record.Tag = TaggedLines.Contains(ln);
                     DataList.Add(record);
@@ -1236,27 +1228,27 @@ namespace TLEFileEZTools
             using (var fileReader = File.OpenText(filename))
             {
                 var csv = new CsvReader(fileReader, CultureInfo.InvariantCulture);
-                csv.Configuration.HasHeaderRecord = true;
+                
 
                 var o = new TypeConverterOptions
                 {
                     DateTimeStyle = DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal
                 };
-                csv.Configuration.TypeConverterOptionsCache.AddOptions<RecmdBatchData>(o);
+                csv.Context.TypeConverterOptionsCache.AddOptions<RecmdBatchData>(o);
 
-                var foo = csv.Configuration.AutoMap<RecmdBatchData>();
+                var foo = csv.Context.AutoMap<RecmdBatchData>();
 
                 foo.Map(t => t.Line).Ignore();
                 foo.Map(t => t.Tag).Ignore();
 
-                csv.Configuration.RegisterClassMap(foo);
+                csv.Context.RegisterClassMap(foo);
 
                 var records = csv.GetRecords<RecmdBatchData>();
                 var l = LogManager.GetCurrentClassLogger();
                 var ln = 1;
                 foreach (var record in records)
                 {
-                    l.Debug($"Line # {ln}, Record: {csv.Context.RawRecord}");
+                    l.Debug($"Line # {ln}, Record: {csv.Context.Parser.RawRecord}");
                     record.Line = ln;
                     record.Tag = TaggedLines.Contains(ln);
                     DataList.Add(record);
@@ -1335,30 +1327,26 @@ namespace TLEFileEZTools
             using (var fileReader = File.OpenText(filename))
             {
                 var csv = new CsvReader(fileReader, CultureInfo.InvariantCulture);
-                csv.Configuration.HasHeaderRecord = true;
-
-
+                
                 var o = new TypeConverterOptions
                 {
                     DateTimeStyle = DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal
                 };
-                csv.Configuration.TypeConverterOptionsCache.AddOptions<SbeCmdData>(o);
-
-                csv.Configuration.PrepareHeaderForMatch = (header, index) => header.Replace(" ", "");
-
-                var foo = csv.Configuration.AutoMap<SbeCmdData>();
+                csv.Context.TypeConverterOptionsCache.AddOptions<SbeCmdData>(o);
+                
+                var foo = csv.Context.AutoMap<SbeCmdData>();
 
                 foo.Map(t => t.Line).Ignore();
                 foo.Map(t => t.Tag).Ignore();
 
-                csv.Configuration.RegisterClassMap(foo);
+                csv.Context.RegisterClassMap(foo);
 
                 var records = csv.GetRecords<SbeCmdData>();
                 var l = LogManager.GetCurrentClassLogger();
                 var ln = 1;
                 foreach (var record in records)
                 {
-                    l.Debug($"Line # {ln}, Record: {csv.Context.RawRecord}");
+                    l.Debug($"Line # {ln}, Record: {csv.Context.Parser.RawRecord}");
                     record.Line = ln;
                     record.Tag = TaggedLines.Contains(ln);
                     DataList.Add(record);
@@ -1426,28 +1414,28 @@ namespace TLEFileEZTools
             using (var fileReader = File.OpenText(filename))
             {
                 var csv = new CsvReader(fileReader, CultureInfo.InvariantCulture);
-                csv.Configuration.HasHeaderRecord = true;
+                
 
 
                 var o = new TypeConverterOptions
                 {
                     DateTimeStyle = DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal
                 };
-                csv.Configuration.TypeConverterOptionsCache.AddOptions<AppCompatCacheData>(o);
+                csv.Context.TypeConverterOptionsCache.AddOptions<AppCompatCacheData>(o);
 
-                var foo = csv.Configuration.AutoMap<AppCompatCacheData>();
+                var foo = csv.Context.AutoMap<AppCompatCacheData>();
 
                 foo.Map(t => t.Line).Ignore();
                 foo.Map(t => t.Tag).Ignore();
 
-                csv.Configuration.RegisterClassMap(foo);
+                csv.Context.RegisterClassMap(foo);
 
                 var records = csv.GetRecords<AppCompatCacheData>();
                 var l = LogManager.GetCurrentClassLogger();
                 var ln = 1;
                 foreach (var record in records)
                 {
-                    l.Debug($"Line # {ln}, Record: {csv.Context.RawRecord}");
+                    l.Debug($"Line # {ln}, Record: {csv.Context.Parser.RawRecord}");
                     record.Line = ln;
                     record.Tag = TaggedLines.Contains(ln);
                     DataList.Add(record);
@@ -1508,14 +1496,14 @@ namespace TLEFileEZTools
             using (var fileReader = File.OpenText(filename))
             {
                 var csv = new CsvReader(fileReader, CultureInfo.InvariantCulture);
-                csv.Configuration.HasHeaderRecord = true;
-                var foo = csv.Configuration.AutoMap<ActivityPackageData>();
+                
+                var foo = csv.Context.AutoMap<ActivityPackageData>();
 
                 var o = new TypeConverterOptions
                 {
                     DateTimeStyle = DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal
                 };
-                csv.Configuration.TypeConverterOptionsCache.AddOptions<ActivityPackageData>(o);
+                csv.Context.TypeConverterOptionsCache.AddOptions<ActivityPackageData>(o);
 
                 foo.Map(t => t.Line).Ignore();
                 foo.Map(t => t.Tag).Ignore();
@@ -1523,14 +1511,14 @@ namespace TLEFileEZTools
                 foo.Map(m => m.Expires).TypeConverterOption
                     .DateTimeStyles(DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal);
 
-                csv.Configuration.RegisterClassMap(foo);
+                csv.Context.RegisterClassMap(foo);
 
                 var records = csv.GetRecords<ActivityPackageData>();
                 var l = LogManager.GetCurrentClassLogger();
                 var ln = 1;
                 foreach (var record in records)
                 {
-                    l.Debug($"Line # {ln}, Record: {csv.Context.RawRecord}");
+                    l.Debug($"Line # {ln}, Record: {csv.Context.Parser.RawRecord}");
                     record.Line = ln;
                     record.Tag = TaggedLines.Contains(ln);
                     DataList.Add(record);
@@ -1617,15 +1605,15 @@ namespace TLEFileEZTools
             using (var fileReader = File.OpenText(filename))
             {
                 var csv = new CsvReader(fileReader, CultureInfo.InvariantCulture);
-                csv.Configuration.HasHeaderRecord = true;
+                
 
-                var foo = csv.Configuration.AutoMap<ActivityData>();
+                var foo = csv.Context.AutoMap<ActivityData>();
 
                 var o = new TypeConverterOptions
                 {
                     DateTimeStyle = DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal
                 };
-                csv.Configuration.TypeConverterOptionsCache.AddOptions<ActivityData>(o);
+                csv.Context.TypeConverterOptionsCache.AddOptions<ActivityData>(o);
 
                 foo.Map(t => t.Line).Ignore();
                 foo.Map(t => t.Tag).Ignore();
@@ -1651,14 +1639,14 @@ namespace TLEFileEZTools
                 foo.Map(m => m.StartTime).TypeConverterOption
                     .DateTimeStyles(DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal);
 
-                csv.Configuration.RegisterClassMap(foo);
+                csv.Context.RegisterClassMap(foo);
 
                 var records = csv.GetRecords<ActivityData>();
                 var l = LogManager.GetCurrentClassLogger();
                 var ln = 1;
                 foreach (var record in records)
                 {
-                    l.Debug($"Line # {ln}, Record: {csv.Context.RawRecord}");
+                    l.Debug($"Line # {ln}, Record: {csv.Context.Parser.RawRecord}");
                     record.Line = ln;
                     record.Tag = TaggedLines.Contains(ln);
                     DataList.Add(record);
@@ -1750,15 +1738,15 @@ namespace TLEFileEZTools
             using (var fileReader = File.OpenText(filename))
             {
                 var csv = new CsvReader(fileReader, CultureInfo.InvariantCulture);
-                csv.Configuration.HasHeaderRecord = true;
+                
 
-                var foo = csv.Configuration.AutoMap<ActivityOperationData>();
+                var foo = csv.Context.AutoMap<ActivityOperationData>();
 
                 var o = new TypeConverterOptions
                 {
                     DateTimeStyle = DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal
                 };
-                csv.Configuration.TypeConverterOptionsCache.AddOptions<ActivityOperationData>(o);
+                csv.Context.TypeConverterOptionsCache.AddOptions<ActivityOperationData>(o);
 
                 foo.Map(t => t.Line).Ignore();
                 foo.Map(t => t.Tag).Ignore();
@@ -1784,14 +1772,14 @@ namespace TLEFileEZTools
                 foo.Map(m => m.StartTime).TypeConverterOption
                     .DateTimeStyles(DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal);
 
-                csv.Configuration.RegisterClassMap(foo);
+                csv.Context.RegisterClassMap(foo);
 
                 var records = csv.GetRecords<ActivityOperationData>();
                 var l = LogManager.GetCurrentClassLogger();
                 var ln = 1;
                 foreach (var record in records)
                 {
-                    l.Debug($"Line # {ln}, Record: {csv.Context.RawRecord}");
+                    l.Debug($"Line # {ln}, Record: {csv.Context.Parser.RawRecord}");
                     record.Line = ln;
                     record.Tag = TaggedLines.Contains(ln);
                     DataList.Add(record);
@@ -1858,27 +1846,27 @@ namespace TLEFileEZTools
             using (var fileReader = File.OpenText(filename))
             {
                 var csv = new CsvReader(fileReader, CultureInfo.InvariantCulture);
-                csv.Configuration.HasHeaderRecord = true;
+                
 
                 var o = new TypeConverterOptions
                 {
                     DateTimeStyle = DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal
                 };
-                csv.Configuration.TypeConverterOptionsCache.AddOptions<AmcacheParserProgramsData>(o);
+                csv.Context.TypeConverterOptionsCache.AddOptions<AmcacheParserProgramsData>(o);
 
-                var foo = csv.Configuration.AutoMap<AmcacheParserProgramsData>();
+                var foo = csv.Context.AutoMap<AmcacheParserProgramsData>();
 
                 foo.Map(t => t.Line).Ignore();
                 foo.Map(t => t.Tag).Ignore();
 
-                csv.Configuration.RegisterClassMap(foo);
+                csv.Context.RegisterClassMap(foo);
 
                 var records = csv.GetRecords<AmcacheParserProgramsData>();
                 var l = LogManager.GetCurrentClassLogger();
                 var ln = 1;
                 foreach (var record in records)
                 {
-                    l.Debug($"Line # {ln}, Record: {csv.Context.RawRecord}");
+                    l.Debug($"Line # {ln}, Record: {csv.Context.Parser.RawRecord}");
                     record.Line = ln;
                     record.Tag = TaggedLines.Contains(ln);
                     DataList.Add(record);
@@ -1959,27 +1947,27 @@ namespace TLEFileEZTools
             using (var fileReader = File.OpenText(filename))
             {
                 var csv = new CsvReader(fileReader, CultureInfo.InvariantCulture);
-                csv.Configuration.HasHeaderRecord = true;
+                
 
-                var foo = csv.Configuration.AutoMap<AmcacheParserFilesData>();
+                var foo = csv.Context.AutoMap<AmcacheParserFilesData>();
 
                 var o = new TypeConverterOptions
                 {
                     DateTimeStyle = DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal
                 };
-                csv.Configuration.TypeConverterOptionsCache.AddOptions<AmcacheParserFilesData>(o);
+                csv.Context.TypeConverterOptionsCache.AddOptions<AmcacheParserFilesData>(o);
 
                 foo.Map(t => t.Line).Ignore();
                 foo.Map(t => t.Tag).Ignore();
 
-                csv.Configuration.RegisterClassMap(foo);
+                csv.Context.RegisterClassMap(foo);
 
                 var records = csv.GetRecords<AmcacheParserFilesData>();
                 var l = LogManager.GetCurrentClassLogger();
                 var ln = 1;
                 foreach (var record in records)
                 {
-                    l.Debug($"Line # {ln}, Record: {csv.Context.RawRecord}");
+                    l.Debug($"Line # {ln}, Record: {csv.Context.Parser.RawRecord}");
                     record.Line = ln;
                     record.Tag = TaggedLines.Contains(ln);
                     DataList.Add(record);
@@ -2056,29 +2044,29 @@ namespace TLEFileEZTools
             using (var fileReader = File.OpenText(filename))
             {
                 var csv = new CsvReader(fileReader, CultureInfo.InvariantCulture);
-                csv.Configuration.HasHeaderRecord = true;
+                
 
 
                 var o = new TypeConverterOptions
                 {
                     DateTimeStyle = DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal
                 };
-                csv.Configuration.TypeConverterOptionsCache.AddOptions<AmcacheParserNewFilesData>(o);
+                csv.Context.TypeConverterOptionsCache.AddOptions<AmcacheParserNewFilesData>(o);
 
-                var foo = csv.Configuration.AutoMap<AmcacheParserNewFilesData>();
+                var foo = csv.Context.AutoMap<AmcacheParserNewFilesData>();
 
                 foo.Map(t => t.Line).Ignore();
                 foo.Map(t => t.Tag).Ignore();
                 foo.Map(t => t.Usn).Ignore();
 
-                csv.Configuration.RegisterClassMap(foo);
+                csv.Context.RegisterClassMap(foo);
 
                 var records = csv.GetRecords<AmcacheParserNewFilesData>();
                 var l = LogManager.GetCurrentClassLogger();
                 var ln = 1;
                 foreach (var record in records)
                 {
-                    l.Debug($"Line # {ln}, Record: {csv.Context.RawRecord}");
+                    l.Debug($"Line # {ln}, Record: {csv.Context.Parser.RawRecord}");
                     record.Line = ln;
                     record.Tag = TaggedLines.Contains(ln);
                     DataList.Add(record);
@@ -2159,27 +2147,27 @@ namespace TLEFileEZTools
             using (var fileReader = File.OpenText(filename))
             {
                 var csv = new CsvReader(fileReader, CultureInfo.InvariantCulture);
-                csv.Configuration.HasHeaderRecord = true;
+                
 
-                var foo = csv.Configuration.AutoMap<AmcacheParserNewDevicePnPData>();
+                var foo = csv.Context.AutoMap<AmcacheParserNewDevicePnPData>();
 
                 var o = new TypeConverterOptions
                 {
                     DateTimeStyle = DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal
                 };
-                csv.Configuration.TypeConverterOptionsCache.AddOptions<AmcacheParserNewDevicePnPData>(o);
+                csv.Context.TypeConverterOptionsCache.AddOptions<AmcacheParserNewDevicePnPData>(o);
 
                 foo.Map(t => t.Line).Ignore();
                 foo.Map(t => t.Tag).Ignore();
 
-                csv.Configuration.RegisterClassMap(foo);
+                csv.Context.RegisterClassMap(foo);
 
                 var records = csv.GetRecords<AmcacheParserNewDevicePnPData>();
                 var l = LogManager.GetCurrentClassLogger();
                 var ln = 1;
                 foreach (var record in records)
                 {
-                    l.Debug($"Line # {ln}, Record: {csv.Context.RawRecord}");
+                    l.Debug($"Line # {ln}, Record: {csv.Context.Parser.RawRecord}");
                     record.Line = ln;
                     record.Tag = TaggedLines.Contains(ln);
                     DataList.Add(record);
@@ -2251,27 +2239,27 @@ namespace TLEFileEZTools
             using (var fileReader = File.OpenText(filename))
             {
                 var csv = new CsvReader(fileReader, CultureInfo.InvariantCulture);
-                csv.Configuration.HasHeaderRecord = true;
+                
 
-                var foo = csv.Configuration.AutoMap<AmcacheParserDeviceContainerData>();
+                var foo = csv.Context.AutoMap<AmcacheParserDeviceContainerData>();
 
                 var o = new TypeConverterOptions
                 {
                     DateTimeStyle = DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal
                 };
-                csv.Configuration.TypeConverterOptionsCache.AddOptions<AmcacheParserDeviceContainerData>(o);
+                csv.Context.TypeConverterOptionsCache.AddOptions<AmcacheParserDeviceContainerData>(o);
 
                 foo.Map(t => t.Line).Ignore();
                 foo.Map(t => t.Tag).Ignore();
 
-                csv.Configuration.RegisterClassMap(foo);
+                csv.Context.RegisterClassMap(foo);
 
                 var records = csv.GetRecords<AmcacheParserDeviceContainerData>();
                 var l = LogManager.GetCurrentClassLogger();
                 var ln = 1;
                 foreach (var record in records)
                 {
-                    l.Debug($"Line # {ln}, Record: {csv.Context.RawRecord}");
+                    l.Debug($"Line # {ln}, Record: {csv.Context.Parser.RawRecord}");
                     record.Line = ln;
                     record.Tag = TaggedLines.Contains(ln);
                     DataList.Add(record);
@@ -2338,27 +2326,27 @@ namespace TLEFileEZTools
             using (var fileReader = File.OpenText(filename))
             {
                 var csv = new CsvReader(fileReader, CultureInfo.InvariantCulture);
-                csv.Configuration.HasHeaderRecord = true;
+                
 
-                var foo = csv.Configuration.AutoMap<AmcacheParserDriverPackageData>();
+                var foo = csv.Context.AutoMap<AmcacheParserDriverPackageData>();
 
                 var o = new TypeConverterOptions
                 {
                     DateTimeStyle = DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal
                 };
-                csv.Configuration.TypeConverterOptionsCache.AddOptions<AmcacheParserDriverPackageData>(o);
+                csv.Context.TypeConverterOptionsCache.AddOptions<AmcacheParserDriverPackageData>(o);
 
                 foo.Map(t => t.Line).Ignore();
                 foo.Map(t => t.Tag).Ignore();
 
-                csv.Configuration.RegisterClassMap(foo);
+                csv.Context.RegisterClassMap(foo);
 
                 var records = csv.GetRecords<AmcacheParserDriverPackageData>();
                 var l = LogManager.GetCurrentClassLogger();
                 var ln = 1;
                 foreach (var record in records)
                 {
-                    l.Debug($"Line # {ln}, Record: {csv.Context.RawRecord}");
+                    l.Debug($"Line # {ln}, Record: {csv.Context.Parser.RawRecord}");
                     record.Line = ln;
                     record.Tag = TaggedLines.Contains(ln);
                     DataList.Add(record);
@@ -2434,20 +2422,20 @@ namespace TLEFileEZTools
             using (var fileReader = File.OpenText(filename))
             {
                 var csv = new CsvReader(fileReader, CultureInfo.InvariantCulture);
-                csv.Configuration.HasHeaderRecord = true;
+                
 
-                var foo = csv.Configuration.AutoMap<AmcacheParserDriverBinaryData>();
+                var foo = csv.Context.AutoMap<AmcacheParserDriverBinaryData>();
 
                 var o = new TypeConverterOptions
                 {
                     DateTimeStyle = DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal
                 };
-                csv.Configuration.TypeConverterOptionsCache.AddOptions<AmcacheParserDriverBinaryData>(o);
+                csv.Context.TypeConverterOptionsCache.AddOptions<AmcacheParserDriverBinaryData>(o);
 
                 foo.Map(t => t.Line).Ignore();
                 foo.Map(t => t.Tag).Ignore();
 
-                csv.Configuration.RegisterClassMap(foo);
+                csv.Context.RegisterClassMap(foo);
 
 
                 var records = csv.GetRecords<AmcacheParserDriverBinaryData>();
@@ -2455,7 +2443,7 @@ namespace TLEFileEZTools
                 var ln = 1;
                 foreach (var record in records)
                 {
-                    l.Debug($"Line # {ln}, Record: {csv.Context.RawRecord}");
+                    l.Debug($"Line # {ln}, Record: {csv.Context.Parser.RawRecord}");
                     record.Line = ln;
                     record.Tag = TaggedLines.Contains(ln);
                     DataList.Add(record);
@@ -2513,20 +2501,20 @@ namespace TLEFileEZTools
             using (var fileReader = File.OpenText(filename))
             {
                 var csv = new CsvReader(fileReader, CultureInfo.InvariantCulture);
-                csv.Configuration.HasHeaderRecord = true;
+                
 
-                var foo = csv.Configuration.AutoMap<AmcacheParserNewShortcutData>();
+                var foo = csv.Context.AutoMap<AmcacheParserNewShortcutData>();
 
                 var o = new TypeConverterOptions
                 {
                     DateTimeStyle = DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal
                 };
-                csv.Configuration.TypeConverterOptionsCache.AddOptions<AmcacheParserNewShortcutData>(o);
+                csv.Context.TypeConverterOptionsCache.AddOptions<AmcacheParserNewShortcutData>(o);
 
                 foo.Map(t => t.Line).Ignore();
                 foo.Map(t => t.Tag).Ignore();
 
-                csv.Configuration.RegisterClassMap(foo);
+                csv.Context.RegisterClassMap(foo);
 
                 var l = LogManager.GetCurrentClassLogger();
 
@@ -2535,7 +2523,7 @@ namespace TLEFileEZTools
                 var ln = 1;
                 foreach (var record in records)
                 {
-                    l.Debug($"Line # {ln}, Record: {csv.Context.RawRecord}");
+                    l.Debug($"Line # {ln}, Record: {csv.Context.Parser.RawRecord}");
                     record.Line = ln;
                     record.Tag = TaggedLines.Contains(ln);
                     DataList.Add(record);
@@ -2612,20 +2600,20 @@ namespace TLEFileEZTools
             using (var fileReader = File.OpenText(filename))
             {
                 var csv = new CsvReader(fileReader, CultureInfo.InvariantCulture);
-                csv.Configuration.HasHeaderRecord = true;
+                
 
-                var foo = csv.Configuration.AutoMap<AmcacheParserNewProgramData>();
+                var foo = csv.Context.AutoMap<AmcacheParserNewProgramData>();
 
                 var o = new TypeConverterOptions
                 {
                     DateTimeStyle = DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal
                 };
-                csv.Configuration.TypeConverterOptionsCache.AddOptions<AmcacheParserNewProgramData>(o);
+                csv.Context.TypeConverterOptionsCache.AddOptions<AmcacheParserNewProgramData>(o);
 
                 foo.Map(t => t.Line).Ignore();
                 foo.Map(t => t.Tag).Ignore();
 
-                csv.Configuration.RegisterClassMap(foo);
+                csv.Context.RegisterClassMap(foo);
 
                 var l = LogManager.GetCurrentClassLogger();
 
@@ -2634,7 +2622,7 @@ namespace TLEFileEZTools
                 var ln = 1;
                 foreach (var record in records)
                 {
-                    l.Debug($"Line # {ln}, Record: {csv.Context.RawRecord}");
+                    l.Debug($"Line # {ln}, Record: {csv.Context.Parser.RawRecord}");
 
                     record.Line = ln;
                     record.Tag = TaggedLines.Contains(ln);
@@ -2709,20 +2697,20 @@ namespace TLEFileEZTools
             using (var fileReader = File.OpenText(filename))
             {
                 var csv = new CsvReader(fileReader, CultureInfo.InvariantCulture);
-                csv.Configuration.HasHeaderRecord = true;
+                
 
                 var o = new TypeConverterOptions
                 {
                     DateTimeStyle = DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal
                 };
-                csv.Configuration.TypeConverterOptionsCache.AddOptions<NetworkUsageData>(o);
+                csv.Context.TypeConverterOptionsCache.AddOptions<NetworkUsageData>(o);
 
-                var foo = csv.Configuration.AutoMap<NetworkUsageData>();
+                var foo = csv.Context.AutoMap<NetworkUsageData>();
 
                 foo.Map(t => t.Line).Ignore();
                 foo.Map(t => t.Tag).Ignore();
 
-                csv.Configuration.RegisterClassMap(foo);
+                csv.Context.RegisterClassMap(foo);
 
                 var records = csv.GetRecords<NetworkUsageData>();
 
@@ -2732,7 +2720,7 @@ namespace TLEFileEZTools
                 var ln = 1;
                 foreach (var record in records)
                 {
-                    l.Debug($"Line # {ln}, Record: {csv.Context.RawRecord}");
+                    l.Debug($"Line # {ln}, Record: {csv.Context.Parser.RawRecord}");
                     record.Line = ln;
                     record.Tag = TaggedLines.Contains(ln);
                     DataList.Add(record);
@@ -2801,20 +2789,20 @@ namespace TLEFileEZTools
             using (var fileReader = File.OpenText(filename))
             {
                 var csv = new CsvReader(fileReader, CultureInfo.InvariantCulture);
-                csv.Configuration.HasHeaderRecord = true;
+                
 
                 var o = new TypeConverterOptions
                 {
                     DateTimeStyle = DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal
                 };
-                csv.Configuration.TypeConverterOptionsCache.AddOptions<PushNotificationData>(o);
+                csv.Context.TypeConverterOptionsCache.AddOptions<PushNotificationData>(o);
 
-                var foo = csv.Configuration.AutoMap<PushNotificationData>();
+                var foo = csv.Context.AutoMap<PushNotificationData>();
 
                 foo.Map(t => t.Line).Ignore();
                 foo.Map(t => t.Tag).Ignore();
 
-                csv.Configuration.RegisterClassMap(foo);
+                csv.Context.RegisterClassMap(foo);
 
                 var records = csv.GetRecords<PushNotificationData>();
 
@@ -2824,7 +2812,7 @@ namespace TLEFileEZTools
                 var ln = 1;
                 foreach (var record in records)
                 {
-                    l.Debug($"Line # {ln}, Record: {csv.Context.RawRecord}");
+                    l.Debug($"Line # {ln}, Record: {csv.Context.Parser.RawRecord}");
                     record.Line = ln;
                     record.Tag = TaggedLines.Contains(ln);
                     DataList.Add(record);
@@ -2898,20 +2886,20 @@ namespace TLEFileEZTools
             using (var fileReader = File.OpenText(filename))
             {
                 var csv = new CsvReader(fileReader, CultureInfo.InvariantCulture);
-                csv.Configuration.HasHeaderRecord = true;
+                
 
                 var o = new TypeConverterOptions
                 {
                     DateTimeStyle = DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal
                 };
-                csv.Configuration.TypeConverterOptionsCache.AddOptions<NetworkConnectionData>(o);
+                csv.Context.TypeConverterOptionsCache.AddOptions<NetworkConnectionData>(o);
 
-                var foo = csv.Configuration.AutoMap<NetworkConnectionData>();
+                var foo = csv.Context.AutoMap<NetworkConnectionData>();
 
                 foo.Map(t => t.Line).Ignore();
                 foo.Map(t => t.Tag).Ignore();
 
-                csv.Configuration.RegisterClassMap(foo);
+                csv.Context.RegisterClassMap(foo);
 
                 var records = csv.GetRecords<NetworkConnectionData>();
 
@@ -2921,7 +2909,7 @@ namespace TLEFileEZTools
                 var ln = 1;
                 foreach (var record in records)
                 {
-                    l.Debug($"Line # {ln}, Record: {csv.Context.RawRecord}");
+                    l.Debug($"Line # {ln}, Record: {csv.Context.Parser.RawRecord}");
                     record.Line = ln;
                     record.Tag = TaggedLines.Contains(ln);
                     DataList.Add(record);
@@ -3004,21 +2992,21 @@ namespace TLEFileEZTools
             using (var fileReader = File.OpenText(filename))
             {
                 var csv = new CsvReader(fileReader, CultureInfo.InvariantCulture);
-                csv.Configuration.HasHeaderRecord = true;
+                
 
                 var o = new TypeConverterOptions
                 {
                     DateTimeStyle = DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal
                 };
-                csv.Configuration.TypeConverterOptionsCache.AddOptions<AppResourceUseInfoData>(o);
+                csv.Context.TypeConverterOptionsCache.AddOptions<AppResourceUseInfoData>(o);
 
-                var foo = csv.Configuration.AutoMap<AppResourceUseInfoData>();
+                var foo = csv.Context.AutoMap<AppResourceUseInfoData>();
 
                 foo.Map(t => t.Line).Ignore();
                 foo.Map(t => t.Tag).Ignore();
 
 
-                csv.Configuration.RegisterClassMap(foo);
+                csv.Context.RegisterClassMap(foo);
 
                 var records = csv.GetRecords<AppResourceUseInfoData>();
 
@@ -3028,7 +3016,7 @@ namespace TLEFileEZTools
                 var ln = 1;
                 foreach (var record in records)
                 {
-                    l.Debug($"Line # {ln}, Record: {csv.Context.RawRecord}");
+                    l.Debug($"Line # {ln}, Record: {csv.Context.Parser.RawRecord}");
                     record.Line = ln;
                     record.Tag = TaggedLines.Contains(ln);
                     DataList.Add(record);
@@ -3102,20 +3090,20 @@ namespace TLEFileEZTools
             using (var fileReader = File.OpenText(filename))
             {
                 var csv = new CsvReader(fileReader, CultureInfo.InvariantCulture);
-                csv.Configuration.HasHeaderRecord = true;
+                
 
                 var o = new TypeConverterOptions
                 {
                     DateTimeStyle = DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal
                 };
-                csv.Configuration.TypeConverterOptionsCache.AddOptions<UnknownD8FData>(o);
+                csv.Context.TypeConverterOptionsCache.AddOptions<UnknownD8FData>(o);
 
-                var foo = csv.Configuration.AutoMap<UnknownD8FData>();
+                var foo = csv.Context.AutoMap<UnknownD8FData>();
 
                 foo.Map(t => t.Line).Ignore();
                 foo.Map(t => t.Tag).Ignore();
 
-                csv.Configuration.RegisterClassMap(foo);
+                csv.Context.RegisterClassMap(foo);
 
                 var records = csv.GetRecords<UnknownD8FData>();
 
@@ -3125,7 +3113,7 @@ namespace TLEFileEZTools
                 var ln = 1;
                 foreach (var record in records)
                 {
-                    l.Debug($"Line # {ln}, Record: {csv.Context.RawRecord}");
+                    l.Debug($"Line # {ln}, Record: {csv.Context.Parser.RawRecord}");
                     record.Line = ln;
                     record.Tag = TaggedLines.Contains(ln);
                     DataList.Add(record);
@@ -3196,20 +3184,20 @@ namespace TLEFileEZTools
             using (var fileReader = File.OpenText(filename))
             {
                 var csv = new CsvReader(fileReader, CultureInfo.InvariantCulture);
-                csv.Configuration.HasHeaderRecord = true;
+                
 
                 var o = new TypeConverterOptions
                 {
                     DateTimeStyle = DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal
                 };
-                csv.Configuration.TypeConverterOptionsCache.AddOptions<Unknown312Data>(o);
+                csv.Context.TypeConverterOptionsCache.AddOptions<Unknown312Data>(o);
 
-                var foo = csv.Configuration.AutoMap<Unknown312Data>();
+                var foo = csv.Context.AutoMap<Unknown312Data>();
 
                 foo.Map(t => t.Line).Ignore();
                 foo.Map(t => t.Tag).Ignore();
 
-                csv.Configuration.RegisterClassMap(foo);
+                csv.Context.RegisterClassMap(foo);
 
                 var records = csv.GetRecords<Unknown312Data>();
 
@@ -3218,7 +3206,7 @@ namespace TLEFileEZTools
                 var ln = 1;
                 foreach (var record in records)
                 {
-                    l.Debug($"Line # {ln}, Record: {csv.Context.RawRecord}");
+                    l.Debug($"Line # {ln}, Record: {csv.Context.Parser.RawRecord}");
                     record.Line = ln;
                     record.Tag = TaggedLines.Contains(ln);
                     DataList.Add(record);
@@ -3302,20 +3290,20 @@ namespace TLEFileEZTools
             using (var fileReader = File.OpenText(filename))
             {
                 var csv = new CsvReader(fileReader, CultureInfo.InvariantCulture);
-                csv.Configuration.HasHeaderRecord = true;
+                
 
                 var o = new TypeConverterOptions
                 {
                     DateTimeStyle = DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal
                 };
-                csv.Configuration.TypeConverterOptionsCache.AddOptions<EnergyUsageData>(o);
+                csv.Context.TypeConverterOptionsCache.AddOptions<EnergyUsageData>(o);
 
-                var foo = csv.Configuration.AutoMap<EnergyUsageData>();
+                var foo = csv.Context.AutoMap<EnergyUsageData>();
 
                 foo.Map(t => t.Line).Ignore();
                 foo.Map(t => t.Tag).Ignore();
 
-                csv.Configuration.RegisterClassMap(foo);
+                csv.Context.RegisterClassMap(foo);
 
                 var records = csv.GetRecords<EnergyUsageData>();
 
@@ -3325,7 +3313,7 @@ namespace TLEFileEZTools
                 var ln = 1;
                 foreach (var record in records)
                 {
-                    l.Debug($"Line # {ln}, Record: {csv.Context.RawRecord}");
+                    l.Debug($"Line # {ln}, Record: {csv.Context.Parser.RawRecord}");
                     record.Line = ln;
                     record.Tag = TaggedLines.Contains(ln);
                     DataList.Add(record);
@@ -3385,15 +3373,15 @@ namespace TLEFileEZTools
             using (var fileReader = File.OpenText(filename))
             {
                 var csv = new CsvReader(fileReader, CultureInfo.InvariantCulture);
-                csv.Configuration.HasHeaderRecord = true;
+                
 
                 var o = new TypeConverterOptions
                 {
                     DateTimeStyle = DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal
                 };
-                csv.Configuration.TypeConverterOptionsCache.AddOptions<MFTFileListingData>(o);
+                csv.Context.TypeConverterOptionsCache.AddOptions<MFTFileListingData>(o);
 
-                var foo = csv.Configuration.AutoMap<MFTFileListingData>();
+                var foo = csv.Context.AutoMap<MFTFileListingData>();
 
                 foo.Map(m => m.Created0x10).TypeConverterOption
                     .DateTimeStyles(DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal);
@@ -3403,7 +3391,7 @@ namespace TLEFileEZTools
                 foo.Map(t => t.Line).Ignore();
                 foo.Map(t => t.Tag).Ignore();
 
-                csv.Configuration.RegisterClassMap(foo);
+                csv.Context.RegisterClassMap(foo);
 
                 var records = csv.GetRecords<MFTFileListingData>();
 
@@ -3413,7 +3401,7 @@ namespace TLEFileEZTools
                 var ln = 1;
                 foreach (var record in records)
                 {
-                    l.Debug($"Line # {ln}, Record: {csv.Context.RawRecord}");
+                    l.Debug($"Line # {ln}, Record: {csv.Context.Parser.RawRecord}");
                     record.Line = ln;
                     record.Tag = TaggedLines.Contains(ln);
                     DataList.Add(record);

@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.Globalization;
 using System.IO;
 using CsvHelper;
+using CsvHelper.Configuration;
 using CsvHelper.TypeConversion;
 using ITLEFileSpec;
 using NLog;
@@ -87,19 +88,24 @@ namespace TLEFileTzWorks
 
             using (var fileReader = File.OpenText(filename))
             {
-                var csv = new CsvReader(fileReader, CultureInfo.InvariantCulture);
-                csv.Configuration.HasHeaderRecord = true;
+                var config = new CsvConfiguration(CultureInfo.InvariantCulture)
+                {
+                    BadDataFound = null,
+                };
+
+                var csv = new CsvReader(fileReader, config);
+                
 
                 var o = new TypeConverterOptions
                 {
                     DateTimeStyle = DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal
                 };
-                csv.Configuration.TypeConverterOptionsCache.AddOptions<PeScanOutData>(o);
+                csv.Context.TypeConverterOptionsCache.AddOptions<PeScanOutData>(o);
 
 
                 csv.Read();
 
-                if (csv.Context.RawRecord.StartsWith("pescan - "))
+                if (csv.Context.Parser.RawRecord.StartsWith("pescan - "))
                 {
                     //dumb ass non-csv, so skip it
                     csv.Read();
@@ -112,12 +118,12 @@ namespace TLEFileTzWorks
 
                 csv.ReadHeader();
 
-                csv.Configuration.BadDataFound = null;
+        
 
                 var ln11 = 1;
                 while (csv.Read())
                 {
-                    l.Debug($"Line # {ln11}, Record: {csv.Context.RawRecord}");
+                    l.Debug($"Line # {ln11}, Record: {csv.Context.Parser.RawRecord}");
 
                     var compiled = csv.GetField(0);
                     var compTime = csv.GetField(1);
@@ -277,17 +283,17 @@ namespace TLEFileTzWorks
             using (var fileReader = File.OpenText(filename))
             {
                 var csv = new CsvReader(fileReader, CultureInfo.InvariantCulture);
-                csv.Configuration.HasHeaderRecord = true;
+                
 
                 var o = new TypeConverterOptions
                 {
                     DateTimeStyle = DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal
                 };
-                csv.Configuration.TypeConverterOptionsCache.AddOptions<WispOutData>(o);
+                csv.Context.TypeConverterOptionsCache.AddOptions<WispOutData>(o);
 
                 csv.Read();
 
-                if (csv.Context.RawRecord.StartsWith("wisp - "))
+                if (csv.Context.Parser.RawRecord.StartsWith("wisp - "))
                 {
                     //dumb ass non-csv, so skip it
                     csv.Read();
@@ -302,7 +308,7 @@ namespace TLEFileTzWorks
                 var ln11 = 1;
                 while (csv.Read())
                 {
-                    l.Debug($"Line # {ln11}, Record: {csv.Context.RawRecord}");
+                    l.Debug($"Line # {ln11}, Record: {csv.Context.Parser.RawRecord}");
                     var mftEntry = csv.GetField(0);
                     var mftSeq = csv.GetField(1);
                     var parentMftEntry = csv.GetField(2);

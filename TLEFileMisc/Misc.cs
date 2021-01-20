@@ -120,14 +120,14 @@ namespace TLEFileMisc
             using (var fileReader = File.OpenText(filename))
             {
                 var csv = new CsvReader(fileReader, CultureInfo.InvariantCulture);
-                csv.Configuration.HasHeaderRecord = true;
-                var foo = csv.Configuration.AutoMap<AnalyzeMftData>();
+                
+                var foo = csv.Context.AutoMap<AnalyzeMftData>();
 
                 var o = new TypeConverterOptions
                 {
                     DateTimeStyle = DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal
                 };
-                csv.Configuration.TypeConverterOptionsCache.AddOptions<AnalyzeMftData>(o);
+                csv.Context.TypeConverterOptionsCache.AddOptions<AnalyzeMftData>(o);
 
                 foo.Map(t => t.Line).Ignore();
                 foo.Map(t => t.Tag).Ignore();
@@ -192,7 +192,7 @@ namespace TLEFileMisc
                 foo.Map(t => t.Ads).Name("ADS");
 
 
-                csv.Configuration.RegisterClassMap(foo);
+                csv.Context.RegisterClassMap(foo);
 
                 var l = LogManager.GetCurrentClassLogger();
 
@@ -202,9 +202,9 @@ namespace TLEFileMisc
                 var ln = 1;
                 while (csv.Read())
                 {
-                    l.Debug($"Line # {ln}, Record: {csv.Context.RawRecord}");
+                    l.Debug($"Line # {ln}, Record: {csv.Context.Parser.RawRecord}");
 
-                    if (csv.Context.RawRecord.Contains("BAAD MFT Record"))
+                    if (csv.Context.Parser.RawRecord.Contains("BAAD MFT Record"))
                     {
                         continue;
                     }
@@ -485,18 +485,18 @@ namespace TLEFileMisc
             using (var fileReader = File.OpenText(filename))
             {
                 var csv = new CsvReader(fileReader, CultureInfo.InvariantCulture);
-                csv.Configuration.HasHeaderRecord = true;
+                
 
                 var o = new TypeConverterOptions
                 {
                     DateTimeStyle = DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal
                 };
-                csv.Configuration.TypeConverterOptionsCache.AddOptions<CrowdStrikeEventData>(o);
+                csv.Context.TypeConverterOptionsCache.AddOptions<CrowdStrikeEventData>(o);
 
 
-                var foo = csv.Configuration.AutoMap<CrowdStrikeEventData>();
+                var foo = csv.Context.AutoMap<CrowdStrikeEventData>();
 
-                foo.Map(m => m.Timestamp).ConvertUsing(row =>
+                foo.Map(m => m.Timestamp).Convert(row =>
                     DateTime.Parse(row.GetField<string>("Timestamp").Replace("Z", "")));
 
                 foo.Map(t => t.ProcessId).Name("Process ID");
@@ -513,7 +513,7 @@ namespace TLEFileMisc
                 foo.Map(t => t.Line).Ignore();
                 foo.Map(t => t.Tag).Ignore();
 
-                csv.Configuration.RegisterClassMap(foo);
+                csv.Context.RegisterClassMap(foo);
 
                 var l = LogManager.GetCurrentClassLogger();
 
@@ -522,7 +522,7 @@ namespace TLEFileMisc
                 var ln = 1;
                 foreach (var record in records)
                 {
-                    l.Debug($"Line # {ln}, Record: {csv.Context.RawRecord}");
+                    l.Debug($"Line # {ln}, Record: {csv.Context.Parser.RawRecord}");
 
                     record.Line = ln;
 
@@ -601,14 +601,14 @@ namespace TLEFileMisc
             using (var fileReader = File.OpenText(filename))
             {
                 var csv = new CsvReader(fileReader, CultureInfo.InvariantCulture);
-                csv.Configuration.HasHeaderRecord = true;
-                var foo = csv.Configuration.AutoMap<ShimcacheParserData>();
+                
+                var foo = csv.Context.AutoMap<ShimcacheParserData>();
 
                 var o = new TypeConverterOptions
                 {
                     DateTimeStyle = DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal
                 };
-                csv.Configuration.TypeConverterOptionsCache.AddOptions<ShimcacheParserData>(o);
+                csv.Context.TypeConverterOptionsCache.AddOptions<ShimcacheParserData>(o);
 
                 foo.Map(t => t.Line).Ignore();
                 foo.Map(t => t.Tag).Ignore();
@@ -619,7 +619,7 @@ namespace TLEFileMisc
                 foo.Map(t => t.FileSize).Name("File Size");
                 foo.Map(t => t.FilePath).Name("Path");
 
-                csv.Configuration.RegisterClassMap(foo);
+                csv.Context.RegisterClassMap(foo);
 
                 var l = LogManager.GetCurrentClassLogger();
 
@@ -629,7 +629,7 @@ namespace TLEFileMisc
                 var ln = 1;
                 while (csv.Read())
                 {
-                    l.Debug($"Line # {ln}, Record: {csv.Context.RawRecord}");
+                    l.Debug($"Line # {ln}, Record: {csv.Context.Parser.RawRecord}");
 
                     var modified = DateTime.Parse(csv.GetField("Last Modified"),
                         CultureInfo.InvariantCulture, DateTimeStyles.AssumeUniversal).ToUniversalTime();
@@ -724,14 +724,14 @@ namespace TLEFileMisc
             using (var fileReader = File.OpenText(filename))
             {
                 var csv = new CsvReader(fileReader, CultureInfo.InvariantCulture);
-                csv.Configuration.HasHeaderRecord = true;
-                var foo = csv.Configuration.AutoMap<ShimcacheVolatilityData>();
+                
+                var foo = csv.Context.AutoMap<ShimcacheVolatilityData>();
 
                 var o = new TypeConverterOptions
                 {
                     DateTimeStyle = DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal
                 };
-                csv.Configuration.TypeConverterOptionsCache.AddOptions<ShimcacheVolatilityData>(o);
+                csv.Context.TypeConverterOptionsCache.AddOptions<ShimcacheVolatilityData>(o);
 
                 foo.Map(t => t.Line).Ignore();
                 foo.Map(t => t.Tag).Ignore();
@@ -743,7 +743,7 @@ namespace TLEFileMisc
                 foo.Map(t => t.FileSize).Name("File Size");
                 foo.Map(t => t.FilePath).Name("File Path");
 
-                csv.Configuration.RegisterClassMap(foo);
+                csv.Context.RegisterClassMap(foo);
 
                 var l = LogManager.GetCurrentClassLogger();
 
@@ -753,7 +753,7 @@ namespace TLEFileMisc
                 var ln = 1;
                 while (csv.Read())
                 {
-                    l.Debug($"Line # {ln}, Record: {csv.Context.RawRecord}");
+                    l.Debug($"Line # {ln}, Record: {csv.Context.Parser.RawRecord}");
 
                     var order = int.Parse(csv.GetField("Order"));
 

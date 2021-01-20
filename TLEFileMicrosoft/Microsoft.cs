@@ -5,6 +5,7 @@ using System.Globalization;
 using System.IO;
 using System.Text;
 using CsvHelper;
+using CsvHelper.Configuration;
 using CsvHelper.TypeConversion;
 using ITLEFileSpec;
 using NLog;
@@ -75,22 +76,25 @@ namespace TLEFileMicrosoft
 
             using (var fileReader = new StreamReader(filename, Encoding.GetEncoding(1252)))
             {
-                var csv = new CsvReader(fileReader, CultureInfo.InvariantCulture);
-                csv.Configuration.HasHeaderRecord = true;
-                csv.Configuration.BadDataFound = null;
+                var config = new CsvConfiguration(CultureInfo.InvariantCulture)
+                {
+                    BadDataFound = null,
+                };
 
+                var csv = new CsvReader(fileReader, config);
+                
                 var o = new TypeConverterOptions
                 {
                     DateTimeStyle = DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal
                 };
-                csv.Configuration.TypeConverterOptionsCache.AddOptions<SigcheckData>(o);
+                csv.Context.TypeConverterOptionsCache.AddOptions<SigcheckData>(o);
 
-                var foo = csv.Configuration.AutoMap<SigcheckData>();
+                var foo = csv.Context.AutoMap<SigcheckData>();
 
                 foo.Map(t => t.Line).Ignore();
                 foo.Map(t => t.Tag).Ignore();
 
-                foo.Map(t => t.Verified).ConvertUsing(t => t.GetField("Verified") == "Signed");
+                foo.Map(t => t.Verified).Convert(t => t.GetField("Verified") == "Signed");
 
                 foo.Map(t => t.Timestamp).Name("Date");
                 foo.Map(t => t.ProductVersion).Name("Product Version");
@@ -99,7 +103,7 @@ namespace TLEFileMicrosoft
                 foo.Map(t => t.VTDetection).Name("VT detection");
                 foo.Map(t => t.VTLink).Name("VT link");
 
-                csv.Configuration.RegisterClassMap(foo);
+                csv.Context.RegisterClassMap(foo);
 
                 var l = LogManager.GetCurrentClassLogger();
 
@@ -108,7 +112,7 @@ namespace TLEFileMicrosoft
                 var ln = 1;
                 foreach (var sc in records)
                 {
-                    l.Debug($"Line # {ln}, Record: {csv.Context.RawRecord}");
+                    l.Debug($"Line # {ln}, Record: {csv.Context.Parser.RawRecord}");
 
                     sc.Line = ln;
                     sc.Tag = TaggedLines.Contains(ln);
@@ -188,24 +192,29 @@ namespace TLEFileMicrosoft
 
             using (var fileReader = new StreamReader(filename, Encoding.GetEncoding(1252)))
             {
-                var csv = new CsvReader(fileReader, CultureInfo.InvariantCulture);
-                csv.Configuration.HasHeaderRecord = true;
-                csv.Configuration.BadDataFound = null;
+                var config = new CsvConfiguration(CultureInfo.InvariantCulture)
+                {
+                    BadDataFound = null,
+                };
+
+                var csv = new CsvReader(fileReader, config);
+                
+            
 
                 var o = new TypeConverterOptions
                 {
                     DateTimeStyle = DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal
                 };
-                csv.Configuration.TypeConverterOptionsCache.AddOptions<SigcheckTroyData>(o);
+                csv.Context.TypeConverterOptionsCache.AddOptions<SigcheckTroyData>(o);
 
-                var foo = csv.Configuration.AutoMap<SigcheckTroyData>();
+                var foo = csv.Context.AutoMap<SigcheckTroyData>();
 
                 //path,verified,date,publisher,company,description,product,product version,file version,machine type,binary version,original name,internal name,copyright,comments,entropy,md5,sha1,pesha1,pesha256,sha256,imp
 
                 foo.Map(t => t.Line).Ignore();
                 foo.Map(t => t.Tag).Ignore();
 
-                foo.Map(t => t.Verified).ConvertUsing(t => t.GetField("Verified") == "Signed");
+                foo.Map(t => t.Verified).Convert(t => t.GetField("Verified") == "Signed");
 
                 foo.Map(t => t.Timestamp).Name("Date");
                 foo.Map(t => t.ProductVersion).Name("Product Version");
@@ -216,7 +225,7 @@ namespace TLEFileMicrosoft
                 foo.Map(t => t.InternalName).Name("Internal Name");
 
 
-                csv.Configuration.RegisterClassMap(foo);
+                csv.Context.RegisterClassMap(foo);
 
                 var l = LogManager.GetCurrentClassLogger();
 
@@ -225,7 +234,7 @@ namespace TLEFileMicrosoft
                 var ln = 1;
                 foreach (var sc in records)
                 {
-                    l.Debug($"Line # {ln}, Record: {csv.Context.RawRecord}");
+                    l.Debug($"Line # {ln}, Record: {csv.Context.Parser.RawRecord}");
 
                     sc.Line = ln;
                     sc.Tag = TaggedLines.Contains(ln);
@@ -301,8 +310,8 @@ namespace TLEFileMicrosoft
             using (var fileReader = File.OpenText(filename))
             {
                 var csv = new CsvReader(fileReader, CultureInfo.InvariantCulture);
-                csv.Configuration.HasHeaderRecord = true;
-                var foo = csv.Configuration.AutoMap<AutorunsData>();
+                
+                var foo = csv.Context.AutoMap<AutorunsData>();
 
                 //"Time","Entry Location","Entry","Enabled","Category","Profile","Description","Signer","Company",
                 //"Image Path","Version","Launch String","MD5","SHA-1","PESHA-1","PESHA-256","SHA-256","IMP",
@@ -312,7 +321,7 @@ namespace TLEFileMicrosoft
                 foo.Map(t => t.Tag).Ignore();
 
                 foo.Map(t => t.EntryLocation).Name("Entry Location");
-                foo.Map(t => t.Enabled).ConvertUsing(t => t[3] == "enabled");
+                foo.Map(t => t.Enabled).Convert(t => t[3] == "enabled");
                 foo.Map(t => t.ImagePath).Name("Image Path");
                 foo.Map(t => t.LaunchString).Name("Launch String");
                 foo.Map(t => t.SHA1).Name("SHA-1");
@@ -321,7 +330,7 @@ namespace TLEFileMicrosoft
                 foo.Map(t => t.PESHA256).Name("PESHA-256");
                 foo.Map(t => t.Imp).Name("IMP");
 
-                csv.Configuration.RegisterClassMap(foo);
+                csv.Context.RegisterClassMap(foo);
 
                 var l = LogManager.GetCurrentClassLogger();
 
@@ -330,7 +339,7 @@ namespace TLEFileMicrosoft
                 var ln = 1;
                 foreach (var autorunsEntry in records)
                 {
-                    l.Debug($"Line # {ln}, Record: {csv.Context.RawRecord}");
+                    l.Debug($"Line # {ln}, Record: {csv.Context.Parser.RawRecord}");
 
                     autorunsEntry.Line = ln;
                     autorunsEntry.Tag = TaggedLines.Contains(ln);
@@ -429,40 +438,40 @@ namespace TLEFileMicrosoft
             using (var fileReader = File.OpenText(filename))
             {
                 var csv = new CsvReader(fileReader, CultureInfo.InvariantCulture);
-                csv.Configuration.HasHeaderRecord = true;
+                
 
 
-                var foo = csv.Configuration.AutoMap<MsftMftData>();
+                var foo = csv.Context.AutoMap<MsftMftData>();
 
                 var o = new TypeConverterOptions
                 {
                     DateTimeStyle = DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal
                 };
 
-                csv.Configuration.TypeConverterOptionsCache.AddOptions<MsftMftData>(o);
+                csv.Context.TypeConverterOptionsCache.AddOptions<MsftMftData>(o);
 
                 foo.Map(t => t.Line).Ignore();
                 foo.Map(t => t.Tag).Ignore();
 
-                foo.Map(m => m.CreationTime0x10).ConvertUsing(row =>
+                foo.Map(m => m.CreationTime0x10).Convert(row =>
                     DateTime.Parse(row.GetField<string>("CreationTime0x10").Replace("Z", "")));
-                foo.Map(m => m.CreationTime0x30).ConvertUsing(row =>
+                foo.Map(m => m.CreationTime0x30).Convert(row =>
                     DateTime.Parse(row.GetField<string>("CreationTime0x30").Replace("Z", "")));
-                foo.Map(m => m.LastModificationTime0x10).ConvertUsing(row =>
+                foo.Map(m => m.LastModificationTime0x10).Convert(row =>
                     DateTime.Parse(row.GetField<string>("LastModificationTime0x10").Replace("Z", "")));
-                foo.Map(m => m.LastModificationTime0x30).ConvertUsing(row =>
+                foo.Map(m => m.LastModificationTime0x30).Convert(row =>
                     DateTime.Parse(row.GetField<string>("LastModificationTime0x30").Replace("Z", "")));
-                foo.Map(m => m.LastChangeTime0x10).ConvertUsing(row =>
+                foo.Map(m => m.LastChangeTime0x10).Convert(row =>
                     DateTime.Parse(row.GetField<string>("LastChangeTime0x10").Replace("Z", "")));
-                foo.Map(m => m.LastChangeTime0x30).ConvertUsing(row =>
+                foo.Map(m => m.LastChangeTime0x30).Convert(row =>
                     DateTime.Parse(row.GetField<string>("LastChangeTime0x30").Replace("Z", "")));
-                foo.Map(m => m.LastAccessTime0x10).ConvertUsing(row =>
+                foo.Map(m => m.LastAccessTime0x10).Convert(row =>
                     DateTime.Parse(row.GetField<string>("LastAccessTime0x10").Replace("Z", "")));
-                foo.Map(m => m.LastAccessTime0x30).ConvertUsing(row =>
+                foo.Map(m => m.LastAccessTime0x30).Convert(row =>
                     DateTime.Parse(row.GetField<string>("LastAccessTime0x30").Replace("Z", "")));
 
 
-                csv.Configuration.RegisterClassMap(foo);
+                csv.Context.RegisterClassMap(foo);
 
                 var l = LogManager.GetCurrentClassLogger();
 
@@ -471,7 +480,7 @@ namespace TLEFileMicrosoft
                 var ln = 1;
                 foreach (var record in records)
                 {
-                    l.Debug($"Line # {ln}, Record: {csv.Context.RawRecord}");
+                    l.Debug($"Line # {ln}, Record: {csv.Context.Parser.RawRecord}");
                     record.Line = ln;
                     record.Tag = TaggedLines.Contains(ln);
                     DataList.Add(record);
