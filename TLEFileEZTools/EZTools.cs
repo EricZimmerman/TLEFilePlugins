@@ -1109,7 +1109,7 @@ namespace TLEFileEZTools
 
             ExpectedHeaders = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
             {
-                "RecordNumber,EventRecordId,TimeCreated,EventId,Level,Provider,Channel,ProcessId,ThreadId,Computer,UserId,MapDescription,ChunkNumber,UserName,RemoteHost,PayloadData1,PayloadData2,PayloadData3,PayloadData4,PayloadData5,PayloadData6,ExecutableInfo,HiddenRecord,SourceFile,Payload,Keywords,ExtraDataOffset"
+                "RecordNumber,EventRecordId,TimeCreated,EventId,Level,Provider,Channel,ProcessId,ThreadId,Computer,ChunkNumber,UserId,MapDescription,UserName,RemoteHost,PayloadData1,PayloadData2,PayloadData3,PayloadData4,PayloadData5,PayloadData6,ExecutableInfo,HiddenRecord,SourceFile,Payload,Keywords,ExtraDataOffset"
             };
         }
 
@@ -1141,9 +1141,7 @@ namespace TLEFileEZTools
 
                 foo.Map(t => t.Line).Ignore();
                 foo.Map(t => t.Tag).Ignore();
-                foo.Map(t => t.Payload).Optional();
-                foo.Map(t => t.HiddenRecord).Optional();
-                foo.Map(t => t.Keywords).Optional();
+
 
                 csv.Context.RegisterClassMap(foo);
 
