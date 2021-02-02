@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.Globalization;
 using System.IO;
 using CsvHelper;
+using CsvHelper.Configuration;
 using CsvHelper.TypeConversion;
 using ITLEFileSpec;
 using NLog;
@@ -1109,7 +1110,7 @@ namespace TLEFileEZTools
 
             ExpectedHeaders = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
             {
-                "RecordNumber,EventRecordId,TimeCreated,EventId,Level,Provider,Channel,ProcessId,ThreadId,Computer,ChunkNumber,UserId,MapDescription,UserName,RemoteHost,PayloadData1,PayloadData2,PayloadData3,PayloadData4,PayloadData5,PayloadData6,ExecutableInfo,HiddenRecord,SourceFile,Payload,Keywords,ExtraDataOffset"
+                "RecordNumber,EventRecordId,TimeCreated,EventId,Level,Provider,Channel,ProcessId,ThreadId,Computer,ChunkNumber,UserId,MapDescription,UserName,RemoteHost,PayloadData1,PayloadData2,PayloadData3,PayloadData4,PayloadData5,PayloadData6,ExecutableInfo,HiddenRecord,SourceFile,Keywords,ExtraDataOffset,Payload"
             };
         }
 
@@ -1128,7 +1129,12 @@ namespace TLEFileEZTools
 
             using (var fileReader = File.OpenText(filename))
             {
-                var csv = new CsvReader(fileReader, CultureInfo.InvariantCulture);
+                var opt = new CsvConfiguration(CultureInfo.InvariantCulture)
+                {
+                    ShouldUseConstructorParameters = _ => false
+                };
+
+                var csv = new CsvReader(fileReader, opt);
                 
 
                 var o = new TypeConverterOptions
@@ -1141,7 +1147,7 @@ namespace TLEFileEZTools
 
                 foo.Map(t => t.Line).Ignore();
                 foo.Map(t => t.Tag).Ignore();
-
+              //  foo.Map(t => t.Payload).Optional();
 
                 csv.Context.RegisterClassMap(foo);
 
