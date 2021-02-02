@@ -19,7 +19,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TLEFileTzWorks", "TLEFileTz
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TLEFileMisc", "TLEFileMisc\TLEFileMisc.csproj", "{EFBB6815-A8EC-40D5-83FF-5D73DB540116}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TLEFile.Test", "TLEFile.Text\TLEFile.Test.csproj", "{6A9F9E57-170A-4959-8768-0C0EBBDDCBE8}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TLEFile.Test", "TLEFile.Test\TLEFile.Test.csproj", "{6A9F9E57-170A-4959-8768-0C0EBBDDCBE8}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
