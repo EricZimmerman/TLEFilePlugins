@@ -14,7 +14,7 @@ namespace TLEFile.Text
     public void EzTools_Evtx()
     {
         var t = new TLEFileEZTools.EvtxECmd();
-        t.ProcessFile(@"C:\temp\20210201192041_EvtxECmd_Outputfirst500lines.csv");
+        t.ProcessFile(@"C:\temp\foo.csv");
 
 //20210202154458_EvtxECmd_Output.csv
 
@@ -25,7 +25,7 @@ namespace TLEFile.Text
     public void EzTools_Evtx2()
     {
         var t = new TLEFileEZTools.EvtxECmd();
-        t.ProcessFile(@"C:\temp\20210202154458_EvtxECmd_Output.csv");
+        t.ProcessFile(@"C:\temp\20210204123845_EvtxECmd_Output.csv");
 
     }
 
@@ -42,7 +42,7 @@ namespace TLEFile.Text
     public void EzTools_Evtx4()
     {
         var t = new TLEFileEZTools.EvtxECmd();
-        t.ProcessFile(@"C:\temp\txt.csv");
+        t.ProcessFile(@"C:\temp\foo2.csv");
 
     }
 
