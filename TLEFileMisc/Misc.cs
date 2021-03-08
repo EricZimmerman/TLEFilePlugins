@@ -497,7 +497,7 @@ namespace TLEFileMisc
                 var foo = csv.Context.AutoMap<CrowdStrikeEventData>();
 
                 foo.Map(m => m.Timestamp).Convert(row =>
-                    DateTime.Parse(row.GetField<string>("Timestamp").Replace("Z", "")));
+                    DateTime.Parse(row.Row.GetField<string>("Timestamp").Replace("Z", "")));
 
                 foo.Map(t => t.ProcessId).Name("Process ID");
                 foo.Map(t => t.ParentProcessId).Name("Parent Process ID");

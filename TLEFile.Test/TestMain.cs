@@ -47,6 +47,14 @@ namespace TLEFile.Text
     }
 
 
+    [Test]
+    public void EzTools_KapeTL()
+    {
+        var t = new TLEFileTimelines.KapeMiniTimeline();
+        t.ProcessFile(@"C:\Temp\minitimeline.csv");
+
+    }
+
     
     }
 }

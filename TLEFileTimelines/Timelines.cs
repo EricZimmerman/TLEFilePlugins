@@ -453,7 +453,7 @@ namespace TLEFileTimelines
                 //
                 foo.Map(t => t.Timestamp).Name("Date");
                 foo.Map(m => m.Timestamp).Convert(row =>
-                    DateTime.TryParse(row.Context.Parser.Record[0], CultureInfo.InvariantCulture,
+                    DateTime.TryParse(row.Row.Context.Parser.Record[0], CultureInfo.InvariantCulture,
                         DateTimeStyles.AssumeUniversal, out var outDate)
                         ? outDate.ToUniversalTime()
                         : new DateTime?());
@@ -488,6 +488,131 @@ namespace TLEFileTimelines
                     }
 
                     f.UpdateColor();
+
+                    DataList.Add(f);
+
+                    ln += 1;
+                }
+            }
+        }
+    }
+
+
+
+      public class KapeMiniTimelineData : IFileSpecData
+    {
+       
+  
+
+        public DateTime Timestamp { get; set; }
+
+        public string DataType { get; set; }
+        public string ComputerName { get; set; }
+        public string UserSource { get; set; }
+        public string Message { get; set; }
+
+
+        public int Line { get; set; }
+        public bool Tag { get; set; }
+
+        public override string ToString()
+        {
+            return $"{Timestamp} {DataType} {ComputerName} {UserSource} {Message}";
+        }
+    
+    }
+
+    public class KapeMiniTimeline : IFileSpec
+    {
+        public KapeMiniTimeline()
+        {
+            TaggedLines = new List<int>();
+
+            DataList = new BindingList<KapeMiniTimelineData>();
+
+            ExpectedHeaders = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+            {
+                "Time,Type,ComputerName,User/Source,Message"
+            };
+        }
+
+        public string Author => "Eric Zimmerman";
+        public string FileDescription => "CSV generated from KAPE Mini timeline module";
+        public HashSet<string> ExpectedHeaders { get; }
+
+        public IBindingList DataList { get; }
+        public List<int> TaggedLines { get; set; }
+
+        public string InternalGuid => "12855d57-540d-4460-bc4e-859fee4b0aac";
+
+        public void ProcessFile(string filename)
+        {
+            DataList.Clear();
+
+            using (var fileReader = File.OpenText(filename))
+            {
+
+                var csvO = new CsvConfiguration(CultureInfo.InvariantCulture)
+			{
+                // BadDataFound = context =>
+                // {
+                //     var log = LogManager.GetLogger("KapeMiniTimeline");
+                //
+                //     log.Warn($"Bad data found! Skipping. Raw data: '{context.RawRecord}'");
+                // },
+            };
+
+              
+
+                
+
+                var csv = new CsvReader(fileReader, csvO);
+                
+                
+
+                var foo = csv.Context.AutoMap<KapeMiniTimelineData>();
+
+                var o = new TypeConverterOptions
+                {
+                    DateTimeStyle = DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal &
+                                    DateTimeStyles.AdjustToUniversal
+                };
+                csv.Context.TypeConverterOptionsCache.AddOptions<KapeMiniTimelineData>(o);
+
+                foo.Map(t => t.Line).Ignore();
+                foo.Map(t => t.Tag).Ignore();
+             
+                foo.Map(t => t.Timestamp).Name("Time");
+                foo.Map(t => t.DataType).Name("Type");
+             
+                foo.Map(m => m.Timestamp).TypeConverterOption.DateTimeStyles(DateTimeStyles.AssumeUniversal);
+
+                foo.Map(t => t.UserSource).Name("User/Source");
+
+                csv.Context.RegisterClassMap(foo);
+                
+                csv.Read();
+                csv.ReadHeader();
+
+                var l = LogManager.GetCurrentClassLogger();
+
+                var ln = 1;
+                while (csv.Read())
+                {
+                    l.Debug($"Line # {ln}, Record: {csv.Context.Parser.RawRecord}");
+
+                    var testStr = csv.GetField<string>(0);
+
+                    if (DateTime.TryParse(testStr, out var s) == false)
+                    {
+                        l.Warn($"Bad data found! Skipping. Raw data: '{csv.Context.Parser.RawRecord}'");
+                        continue;
+                    }
+
+                    var f = csv.GetRecord<KapeMiniTimelineData>();
+                    f.Line = ln;
+                    f.Tag = TaggedLines.Contains(ln);
+                 
 
                     DataList.Add(f);
 

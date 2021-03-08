@@ -56,10 +56,14 @@
       <Project>{6caa82ce-3e8c-473c-b48b-e0bd857740d7}</Project>
       <Name>TLEFileEZTools</Name>
     </ProjectReference>
+    <ProjectReference Include="..\TLEFileTimelines\TLEFileTimelines.csproj">
+      <Project>{8983b700-afe0-480a-babe-d8dd5a760404}</Project>
+      <Name>TLEFileTimelines</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="NLog">
-      <Version>4.7.7</Version>
+      <Version>4.7.8</Version>
     </PackageReference>
     <PackageReference Include="NUnit">
       <Version>3.13.1</Version>

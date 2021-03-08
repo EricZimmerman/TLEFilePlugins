@@ -94,7 +94,7 @@ namespace TLEFileMicrosoft
                 foo.Map(t => t.Line).Ignore();
                 foo.Map(t => t.Tag).Ignore();
 
-                foo.Map(t => t.Verified).Convert(t => t.GetField("Verified") == "Signed");
+                foo.Map(t => t.Verified).Convert(t => t.Row.GetField("Verified") == "Signed");
 
                 foo.Map(t => t.Timestamp).Name("Date");
                 foo.Map(t => t.ProductVersion).Name("Product Version");
@@ -214,7 +214,7 @@ namespace TLEFileMicrosoft
                 foo.Map(t => t.Line).Ignore();
                 foo.Map(t => t.Tag).Ignore();
 
-                foo.Map(t => t.Verified).Convert(t => t.GetField("Verified") == "Signed");
+                foo.Map(t => t.Verified).Convert(t => t.Row.GetField("Verified") == "Signed");
 
                 foo.Map(t => t.Timestamp).Name("Date");
                 foo.Map(t => t.ProductVersion).Name("Product Version");
@@ -321,7 +321,7 @@ namespace TLEFileMicrosoft
                 foo.Map(t => t.Tag).Ignore();
 
                 foo.Map(t => t.EntryLocation).Name("Entry Location");
-                foo.Map(t => t.Enabled).Convert(t => t[3] == "enabled");
+                foo.Map(t => t.Enabled).Convert(t => t.Row[3] == "enabled");
                 foo.Map(t => t.ImagePath).Name("Image Path");
                 foo.Map(t => t.LaunchString).Name("Launch String");
                 foo.Map(t => t.SHA1).Name("SHA-1");
@@ -454,21 +454,21 @@ namespace TLEFileMicrosoft
                 foo.Map(t => t.Tag).Ignore();
 
                 foo.Map(m => m.CreationTime0x10).Convert(row =>
-                    DateTime.Parse(row.GetField<string>("CreationTime0x10").Replace("Z", "")));
+                    DateTime.Parse(row.Row.GetField<string>("CreationTime0x10").Replace("Z", "")));
                 foo.Map(m => m.CreationTime0x30).Convert(row =>
-                    DateTime.Parse(row.GetField<string>("CreationTime0x30").Replace("Z", "")));
+                    DateTime.Parse(row.Row.GetField<string>("CreationTime0x30").Replace("Z", "")));
                 foo.Map(m => m.LastModificationTime0x10).Convert(row =>
-                    DateTime.Parse(row.GetField<string>("LastModificationTime0x10").Replace("Z", "")));
+                    DateTime.Parse(row.Row.GetField<string>("LastModificationTime0x10").Replace("Z", "")));
                 foo.Map(m => m.LastModificationTime0x30).Convert(row =>
-                    DateTime.Parse(row.GetField<string>("LastModificationTime0x30").Replace("Z", "")));
+                    DateTime.Parse(row.Row.GetField<string>("LastModificationTime0x30").Replace("Z", "")));
                 foo.Map(m => m.LastChangeTime0x10).Convert(row =>
-                    DateTime.Parse(row.GetField<string>("LastChangeTime0x10").Replace("Z", "")));
+                    DateTime.Parse(row.Row.GetField<string>("LastChangeTime0x10").Replace("Z", "")));
                 foo.Map(m => m.LastChangeTime0x30).Convert(row =>
-                    DateTime.Parse(row.GetField<string>("LastChangeTime0x30").Replace("Z", "")));
+                    DateTime.Parse(row.Row.GetField<string>("LastChangeTime0x30").Replace("Z", "")));
                 foo.Map(m => m.LastAccessTime0x10).Convert(row =>
-                    DateTime.Parse(row.GetField<string>("LastAccessTime0x10").Replace("Z", "")));
+                    DateTime.Parse(row.Row.GetField<string>("LastAccessTime0x10").Replace("Z", "")));
                 foo.Map(m => m.LastAccessTime0x30).Convert(row =>
-                    DateTime.Parse(row.GetField<string>("LastAccessTime0x30").Replace("Z", "")));
+                    DateTime.Parse(row.Row.GetField<string>("LastAccessTime0x30").Replace("Z", "")));
 
 
                 csv.Context.RegisterClassMap(foo);
