@@ -56,6 +56,10 @@
       <Project>{6caa82ce-3e8c-473c-b48b-e0bd857740d7}</Project>
       <Name>TLEFileEZTools</Name>
     </ProjectReference>
+    <ProjectReference Include="..\TLEFileGenericCsv\TLEFileGenericCsv.csproj">
+      <Project>{fc0eb431-2893-41c4-b0ed-c4d2c4290ca4}</Project>
+      <Name>TLEFileGenericCsv</Name>
+    </ProjectReference>
     <ProjectReference Include="..\TLEFileTimelines\TLEFileTimelines.csproj">
       <Project>{8983b700-afe0-480a-babe-d8dd5a760404}</Project>
       <Name>TLEFileTimelines</Name>

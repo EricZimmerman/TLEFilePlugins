@@ -554,17 +554,8 @@ namespace TLEFileTimelines
 
                 var csvO = new CsvConfiguration(CultureInfo.InvariantCulture)
 			{
-                // BadDataFound = context =>
-                // {
-                //     var log = LogManager.GetLogger("KapeMiniTimeline");
-                //
-                //     log.Warn($"Bad data found! Skipping. Raw data: '{context.RawRecord}'");
-                // },
-            };
-
               
-
-                
+            };
 
                 var csv = new CsvReader(fileReader, csvO);
                 

@@ -55,6 +55,14 @@ namespace TLEFile.Text
 
     }
 
+    [Test]
+    public void GenericTest()
+    {
+        var t = new TLEFileGenericCsv.GenericCsv();
+        t.ProcessFile(@"C:\Temp\minitimeline.csv");
+
+    }
+
     
     }
 }
