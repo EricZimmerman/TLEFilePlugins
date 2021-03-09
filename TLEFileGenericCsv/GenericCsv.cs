@@ -23,7 +23,7 @@ namespace TLEFileGenericCsv
         }
 
         public string Author => "Eric Zimmerman";
-        public string FileDescription => "Generic CSV/TSV plugin. Does not add Tag or Line number columns";
+        public string FileDescription => "Generic CSV/TSV plugin. Adds Tag and Line number columns when loading the file";
         public HashSet<string> ExpectedHeaders { get; }
 
         public IBindingList DataList { get; private set; }
