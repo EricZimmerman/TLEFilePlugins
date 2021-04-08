@@ -3417,4 +3417,527 @@ namespace TLEFileEZTools
     }
 
 
+     public class SumChainedDbData : IFileSpecData
+    {
+        public int Year { get; set; }
+        public string FileName { get; set; }
+
+        public int Line { get; set; }
+        public bool Tag { get; set; }
+
+        public override string ToString()
+        {
+            return
+                $"{Year} {FileName}";
+        }
+    }
+
+    public class SumChainedDb : IFileSpec
+    {
+        public SumChainedDb()
+        {
+            TaggedLines = new List<int>();
+
+            DataList = new BindingList<SumChainedDbData>();
+
+            ExpectedHeaders = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+            {
+                "Year,FileName"
+            };
+        }
+
+        public string Author => "Eric Zimmerman";
+        public string FileDescription => "CSV generated from SumECmd Chained Db Info";
+        public HashSet<string> ExpectedHeaders { get; }
+
+        public IBindingList DataList { get; }
+        public List<int> TaggedLines { get; set; }
+
+        public string InternalGuid => "40ee6415-22ce-1312-b180-1b011d0a9952";
+
+        public void ProcessFile(string filename)
+        {
+            DataList.Clear();
+            using (var fileReader = File.OpenText(filename))
+            {
+                var csv = new CsvReader(fileReader, CultureInfo.InvariantCulture);
+                
+                var o = new TypeConverterOptions
+                {
+                    DateTimeStyle = DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal
+                };
+                csv.Context.TypeConverterOptionsCache.AddOptions<SumChainedDbData>(o);
+
+                var foo = csv.Context.AutoMap<SumChainedDbData>();
+           
+                foo.Map(t => t.Line).Ignore();
+                foo.Map(t => t.Tag).Ignore();
+
+                csv.Context.RegisterClassMap(foo);
+
+                var records = csv.GetRecords<SumChainedDbData>();
+
+                var l = LogManager.GetCurrentClassLogger();
+
+                var ln = 1;
+                foreach (var record in records)
+                {
+                    l.Debug($"Line # {ln}, Record: {csv.Context.Parser.RawRecord}");
+                    record.Line = ln;
+                    record.Tag = TaggedLines.Contains(ln);
+                    DataList.Add(record);
+
+                    ln += 1;
+                }
+            }
+        }
+    }
+
+
+     public class SumSystemIdentInfoData : IFileSpecData
+    {
+        public DateTime? CreationTime { get; set; }
+
+        public int OsMajor { get; set; }
+        public int OsMinor { get; set; }
+
+        public int OsBuild { get; set; }
+
+        public int Line { get; set; }
+        public bool Tag { get; set; }
+
+        public override string ToString()
+        {
+            return
+                $"{CreationTime} {OsMajor} {OsMinor} {OsBuild}";
+        }
+    }
+
+    public class SumSystemIdentInfo : IFileSpec
+    {
+        public SumSystemIdentInfo()
+        {
+            TaggedLines = new List<int>();
+
+            DataList = new BindingList<SumSystemIdentInfoData>();
+
+            ExpectedHeaders = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+            {
+                "CreationTime,OsMajor,OsMinor,OsBuild"
+            };
+        }
+
+        public string Author => "Eric Zimmerman";
+        public string FileDescription => "CSV generated from SumECmd System Ident Info";
+        public HashSet<string> ExpectedHeaders { get; }
+
+        public IBindingList DataList { get; }
+        public List<int> TaggedLines { get; set; }
+
+        public string InternalGuid => "40ee6414-22df-2723-b280-1a021d0a9952";
+
+        public void ProcessFile(string filename)
+        {
+            DataList.Clear();
+            using (var fileReader = File.OpenText(filename))
+            {
+                var csv = new CsvReader(fileReader, CultureInfo.InvariantCulture);
+
+                var o = new TypeConverterOptions
+                {
+                    DateTimeStyle = DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal
+                };
+                csv.Context.TypeConverterOptionsCache.AddOptions<SumSystemIdentInfoData>(o);
+
+                var foo = csv.Context.AutoMap<SumSystemIdentInfoData>();
+
+                foo.Map(m => m.CreationTime).TypeConverterOption
+                    .DateTimeStyles(DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal);
+              
+                foo.Map(t => t.Line).Ignore();
+                foo.Map(t => t.Tag).Ignore();
+
+                csv.Context.RegisterClassMap(foo);
+
+                var records = csv.GetRecords<SumSystemIdentInfoData>();
+
+                var l = LogManager.GetCurrentClassLogger();
+
+                var ln = 1;
+                foreach (var record in records)
+                {
+                    l.Debug($"Line # {ln}, Record: {csv.Context.Parser.RawRecord}");
+                    record.Line = ln;
+                    record.Tag = TaggedLines.Contains(ln);
+                    DataList.Add(record);
+
+                    ln += 1;
+                }
+            }
+        }
+    }
+
+
+
+    
+     public class SumRoleInfoData : IFileSpecData
+    {
+        public string RoleGuid { get; set; }
+        public string RoleName { get; set; }
+
+        public string ProductName { get; set; }
+
+        public int Line { get; set; }
+        public bool Tag { get; set; }
+
+        public override string ToString()
+        {
+            return
+                $"{RoleGuid} {RoleName} {ProductName}";
+        }
+    }
+
+    public class SumRoleInfo : IFileSpec
+    {
+        public SumRoleInfo()
+        {
+            TaggedLines = new List<int>();
+
+            DataList = new BindingList<SumRoleInfoData>();
+
+            ExpectedHeaders = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+            {
+                "RoleGuid,RoleName,ProductName"
+            };
+        }
+
+        public string Author => "Eric Zimmerman";
+        public string FileDescription => "CSV generated from SumECmd Role Info";
+        public HashSet<string> ExpectedHeaders { get; }
+
+        public IBindingList DataList { get; }
+        public List<int> TaggedLines { get; set; }
+
+        public string InternalGuid => "40ee6414-22df-2723-b312-2a134d0a9952";
+
+        public void ProcessFile(string filename)
+        {
+            DataList.Clear();
+            using (var fileReader = File.OpenText(filename))
+            {
+                var csv = new CsvReader(fileReader, CultureInfo.InvariantCulture);
+
+                var o = new TypeConverterOptions
+                {
+                    DateTimeStyle = DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal
+                };
+                csv.Context.TypeConverterOptionsCache.AddOptions<SumRoleInfoData>(o);
+
+                var foo = csv.Context.AutoMap<SumRoleInfoData>();
+
+              
+                foo.Map(t => t.Line).Ignore();
+                foo.Map(t => t.Tag).Ignore();
+
+                csv.Context.RegisterClassMap(foo);
+
+                var records = csv.GetRecords<SumRoleInfoData>();
+
+                var l = LogManager.GetCurrentClassLogger();
+
+                var ln = 1;
+                foreach (var record in records)
+                {
+                    l.Debug($"Line # {ln}, Record: {csv.Context.Parser.RawRecord}");
+                    record.Line = ln;
+                    record.Tag = TaggedLines.Contains(ln);
+                    DataList.Add(record);
+
+                    ln += 1;
+                }
+            }
+        }
+    }
+
+
+    
+     public class SumRoleAccessData : IFileSpecData
+    {
+        public string RoleGuid { get; set; }
+        public string RoleDescription { get; set; }
+
+        public DateTime FirstSeen { get;set; }
+        public DateTime LastSeen { get;set; }
+
+        public string SourceFile { get; set; }
+
+        public int Line { get; set; }
+        public bool Tag { get; set; }
+
+        public override string ToString()
+        {
+            return
+                $"{RoleGuid} {RoleDescription} {FirstSeen} {LastSeen} {SourceFile}";
+        }
+    }
+
+    public class SumRoleAccess : IFileSpec
+    {
+        public SumRoleAccess()
+        {
+            TaggedLines = new List<int>();
+
+            DataList = new BindingList<SumRoleAccessData>();
+
+            ExpectedHeaders = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+            {
+                "RoleGuid,RoleDescription,FirstSeen,LastSeen,SourceFile"
+            };
+        }
+
+        public string Author => "Eric Zimmerman";
+        public string FileDescription => "CSV generated from SumECmd Role Access";
+        public HashSet<string> ExpectedHeaders { get; }
+
+        public IBindingList DataList { get; }
+        public List<int> TaggedLines { get; set; }
+
+        public string InternalGuid => "51ab5323-22df-2723-b312-2a134d0a9952";
+
+        public void ProcessFile(string filename)
+        {
+            DataList.Clear();
+            using (var fileReader = File.OpenText(filename))
+            {
+                var csv = new CsvReader(fileReader, CultureInfo.InvariantCulture);
+
+                var o = new TypeConverterOptions
+                {
+                    DateTimeStyle = DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal
+                };
+                csv.Context.TypeConverterOptionsCache.AddOptions<SumRoleAccessData>(o);
+
+                var foo = csv.Context.AutoMap<SumRoleAccessData>();
+
+                foo.Map(m => m.FirstSeen).TypeConverterOption
+                    .DateTimeStyles(DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal);
+                foo.Map(m => m.LastSeen).TypeConverterOption
+                    .DateTimeStyles(DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal);
+              
+                foo.Map(t => t.Line).Ignore();
+                foo.Map(t => t.Tag).Ignore();
+
+                csv.Context.RegisterClassMap(foo);
+
+                var records = csv.GetRecords<SumRoleAccessData>();
+
+                var l = LogManager.GetCurrentClassLogger();
+
+                var ln = 1;
+                foreach (var record in records)
+                {
+                    l.Debug($"Line # {ln}, Record: {csv.Context.Parser.RawRecord}");
+                    record.Line = ln;
+                    record.Tag = TaggedLines.Contains(ln);
+                    DataList.Add(record);
+
+                    ln += 1;
+                }
+            }
+        }
+    }
+
+
+      public class SumClientData : IFileSpecData
+    {
+        public string RoleGuid { get; set; }
+        public string RoleDescription { get; set; }
+        public string AuthenticatedUserName { get; set; }
+        public int TotalAccesses { get; set; }
+
+        public DateTime InsertDate { get;set; }
+        public DateTime LastAccess { get;set; }
+
+        public string IpAddress { get; set; }
+        public string ClientName { get; set; }
+        public string TenantId { get; set; }
+        public string SourceFile { get; set; }
+
+        public int Line { get; set; }
+        public bool Tag { get; set; }
+
+        public override string ToString()
+        {
+            return
+                $"{RoleGuid} {RoleDescription} {AuthenticatedUserName} {TotalAccesses} {InsertDate} {LastAccess} {IpAddress} {ClientName} {TenantId} {SourceFile}";
+        }
+    }
+
+    public class SumClient : IFileSpec
+    {
+        public SumClient()
+        {
+            TaggedLines = new List<int>();
+
+            DataList = new BindingList<SumClientData>();
+
+            ExpectedHeaders = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+            {
+                "RoleGuid,RoleDescription,AuthenticatedUserName,TotalAccesses,InsertDate,LastAccess,IpAddress,ClientName,TenantId,SourceFile"
+            };
+        }
+
+        public string Author => "Eric Zimmerman";
+        public string FileDescription => "CSV generated from SumECmd Client";
+        public HashSet<string> ExpectedHeaders { get; }
+
+        public IBindingList DataList { get; }
+        public List<int> TaggedLines { get; set; }
+
+        public string InternalGuid => "12cb4452-81ef-2723-b312-2a134d0a9952";
+
+        public void ProcessFile(string filename)
+        {
+            DataList.Clear();
+            using (var fileReader = File.OpenText(filename))
+            {
+                var csv = new CsvReader(fileReader, CultureInfo.InvariantCulture);
+
+                var o = new TypeConverterOptions
+                {
+                    DateTimeStyle = DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal
+                };
+                csv.Context.TypeConverterOptionsCache.AddOptions<SumClientData>(o);
+
+                var foo = csv.Context.AutoMap<SumClientData>();
+
+                foo.Map(m => m.InsertDate).TypeConverterOption
+                    .DateTimeStyles(DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal);
+                foo.Map(m => m.LastAccess).TypeConverterOption
+                    .DateTimeStyles(DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal);
+              
+                foo.Map(t => t.Line).Ignore();
+                foo.Map(t => t.Tag).Ignore();
+
+                csv.Context.RegisterClassMap(foo);
+
+                var records = csv.GetRecords<SumClientData>();
+
+                var l = LogManager.GetCurrentClassLogger();
+
+                var ln = 1;
+                foreach (var record in records)
+                {
+                    l.Debug($"Line # {ln}, Record: {csv.Context.Parser.RawRecord}");
+                    record.Line = ln;
+                    record.Tag = TaggedLines.Contains(ln);
+                    DataList.Add(record);
+
+                    ln += 1;
+                }
+            }
+        }
+    }
+
+    
+
+      public class SumClientDetailedData : IFileSpecData
+    {
+        public DateTime Date { get;set; }
+        public int Count { get; set; }
+        public int DayNumber { get; set; }
+
+
+        public string RoleGuid { get; set; }
+        public string RoleDescription { get; set; }
+        public string AuthenticatedUserName { get; set; }
+        public int TotalAccesses { get; set; }
+
+        public DateTime InsertDate { get;set; }
+        public DateTime LastAccess { get;set; }
+
+        public string IpAddress { get; set; }
+        public string ClientName { get; set; }
+        public string TenantId { get; set; }
+        public string SourceFile { get; set; }
+
+        public int Line { get; set; }
+        public bool Tag { get; set; }
+
+        public override string ToString()
+        {
+            return
+                $"{Date} {Count} {DayNumber} {RoleGuid} {RoleDescription} {AuthenticatedUserName} {TotalAccesses} {InsertDate} {LastAccess} {IpAddress} {ClientName} {TenantId} {SourceFile}";
+        }
+    }
+
+    public class SumClientDetailed : IFileSpec
+    {
+        public SumClientDetailed()
+        {
+            TaggedLines = new List<int>();
+
+            DataList = new BindingList<SumClientDetailedData>();
+
+            ExpectedHeaders = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+            {
+                "Date,Count,DayNumber,RoleGuid,RoleDescription,AuthenticatedUserName,TotalAccesses,InsertDate,LastAccess,IpAddress,ClientName,TenantId,SourceFile"
+            };
+        }
+
+        public string Author => "Eric Zimmerman";
+        public string FileDescription => "CSV generated from SumECmd Client Detailed";
+        public HashSet<string> ExpectedHeaders { get; }
+
+        public IBindingList DataList { get; }
+        public List<int> TaggedLines { get; set; }
+
+        public string InternalGuid => "12cb4452-81ef-2723-b312-3b234e1a9952";
+
+        public void ProcessFile(string filename)
+        {
+            DataList.Clear();
+            using (var fileReader = File.OpenText(filename))
+            {
+                var csv = new CsvReader(fileReader, CultureInfo.InvariantCulture);
+
+                var o = new TypeConverterOptions
+                {
+                    DateTimeStyle = DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal
+                };
+                csv.Context.TypeConverterOptionsCache.AddOptions<SumClientDetailedData>(o);
+
+                var foo = csv.Context.AutoMap<SumClientDetailedData>();
+
+                foo.Map(m => m.Date).TypeConverterOption
+                    .DateTimeStyles(DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal);
+
+                foo.Map(m => m.InsertDate).TypeConverterOption
+                    .DateTimeStyles(DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal);
+                foo.Map(m => m.LastAccess).TypeConverterOption
+                    .DateTimeStyles(DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal);
+              
+                foo.Map(t => t.Line).Ignore();
+                foo.Map(t => t.Tag).Ignore();
+
+                csv.Context.RegisterClassMap(foo);
+
+                var records = csv.GetRecords<SumClientDetailedData>();
+
+                var l = LogManager.GetCurrentClassLogger();
+
+                var ln = 1;
+                foreach (var record in records)
+                {
+                    l.Debug($"Line # {ln}, Record: {csv.Context.Parser.RawRecord}");
+                    record.Line = ln;
+                    record.Tag = TaggedLines.Contains(ln);
+                    DataList.Add(record);
+
+                    ln += 1;
+                }
+            }
+        }
+    }
+
 }
