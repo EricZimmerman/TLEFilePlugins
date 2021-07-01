@@ -426,6 +426,125 @@ namespace TLEFileMisc
         }
     }
 
+
+     public class BrowsingHistoryViewEventData : IFileSpecData
+    {
+        public string Url { get; set; }
+        public string Title { get; set; }
+        
+        public DateTime VisitTimeUtc { get; set; }
+        public int VisitCount { get; set; }
+        public string VisitedFrom { get; set; }
+        public string VisitType { get; set; }
+        public string WebBrowser { get; set; }
+        public string UserProfile { get; set; }
+        public string BrowserProfile { get; set; }
+        public int UrlLength { get; set; }
+        public int? TypedCount { get; set; }
+        public string HistoryFile { get; set; }
+        public int RecordId { get; set; }
+
+
+        public int Line { get; set; }
+        public bool Tag { get; set; }
+
+        public override string ToString()
+        {
+            return
+                $"{Url} {Title} {VisitTimeUtc} {VisitedFrom} {VisitCount} {VisitType} {WebBrowser} {UserProfile} {BrowserProfile} {UrlLength} {TypedCount} {HistoryFile} {RecordId}";
+        }
+    }
+
+
+    public class BrowsingHistoryView : IFileSpec
+    {
+        public BrowsingHistoryView()
+        {
+            //Initialize collections here, one for TaggedLines TLE can add values to, and the collection that TLE will display
+            TaggedLines = new List<int>();
+
+            DataList = new BindingList<BrowsingHistoryViewEventData>();
+
+            ExpectedHeaders = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+            {
+                "url,title,visit time,visit count,visited from,visit type,web browser,user profile,browser profile,url length,typed count,history file,record id"
+            };
+        }
+
+        public string Author => "Eric Zimmerman";
+        public string FileDescription => "CSV generated from BrowsingHistoryView";
+        public HashSet<string> ExpectedHeaders { get; }
+
+        public IBindingList DataList { get; }
+        public List<int> TaggedLines { get; set; }
+
+        public string InternalGuid => "e8c703e2-a34c-45df-a444-b133a250ed7a";
+
+        public void ProcessFile(string filename)
+        {
+            DataList.Clear();
+
+            using (var fileReader = File.OpenText(filename))
+            {
+                var csv = new CsvReader(fileReader, CultureInfo.InvariantCulture);
+                
+
+                var o = new TypeConverterOptions
+                {
+                    DateTimeStyle = DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal
+                };
+                csv.Context.TypeConverterOptionsCache.AddOptions<BrowsingHistoryViewEventData>(o);
+
+
+                var foo = csv.Context.AutoMap<BrowsingHistoryViewEventData>();
+
+                //URL,Title,Visit Time,Visit Count,Visited From,Visit Type,Web Browser,User Profile,Browser Profile,URL Length,Typed Count,History File,Record ID
+                //file:///C:/Program%20Files/Commvault/ContentStore/Reports/BackupJobSummaryReport_15460_670556_7872_1618863877.html,,4/19/2021 8:24:43 PM,4,,,Internet Explorer 10/11 / Edge,jasonb,,114,,H:\C\Users\jasonb\AppData\Local\Microsoft\Windows\WebCache\WebCacheV01.dat,212
+
+                foo.Map(t => t.Url).Name("URL");
+
+                foo.Map(m => m.VisitTimeUtc).Convert(row =>
+                    DateTime.Parse(row.Row.GetField<string>("Visit Time")).ToUniversalTime());
+
+                foo.Map(t => t.VisitCount).Name("Visit Count");
+                foo.Map(t => t.VisitedFrom).Name("Visited From");
+                foo.Map(t => t.VisitType).Name("Visit Type");
+                foo.Map(t => t.WebBrowser).Name("Web Browser");
+                foo.Map(t => t.UserProfile).Name("User Profile");
+                foo.Map(t => t.BrowserProfile).Name("Browser Profile");
+                foo.Map(t => t.UrlLength).Name("URL Length");
+                foo.Map(t => t.TypedCount).Name("Typed Count");
+                foo.Map(t => t.HistoryFile).Name("History File");
+                foo.Map(t => t.RecordId).Name("Record ID");
+
+
+                foo.Map(t => t.Line).Ignore();
+                foo.Map(t => t.Tag).Ignore();
+
+                csv.Context.RegisterClassMap(foo);
+
+                var l = LogManager.GetCurrentClassLogger();
+
+                var records = csv.GetRecords<BrowsingHistoryViewEventData>();
+
+                var ln = 1;
+                foreach (var record in records)
+                {
+                    l.Debug($"Line # {ln}, Record: {csv.Context.Parser.RawRecord}");
+
+                    record.Line = ln;
+
+                    record.Tag = TaggedLines.Contains(ln);
+
+                    DataList.Add(record);
+
+                    ln += 1;
+                }
+            }
+        }
+    }
+
+
     public class CrowdStrikeEventData : IFileSpecData
     {
         public DateTime Timestamp { get; set; }

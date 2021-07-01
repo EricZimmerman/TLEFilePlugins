@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using NUnit.Framework;
+using TLEFileMisc;
 
 namespace TLEFile.Text
 {
@@ -60,6 +61,14 @@ namespace TLEFile.Text
     {
         var t = new TLEFileGenericCsv.GenericCsv();
         t.ProcessFile(@"C:\Temp\minitimeline.csv");
+
+    }
+
+    [Test]
+    public void BrowserHistView()
+    {
+        var t = new BrowsingHistoryView();
+        t.ProcessFile(@"C:\temp\test.csv");
 
     }
 

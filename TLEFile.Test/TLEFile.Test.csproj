@@ -60,6 +60,10 @@
       <Project>{fc0eb431-2893-41c4-b0ed-c4d2c4290ca4}</Project>
       <Name>TLEFileGenericCsv</Name>
     </ProjectReference>
+    <ProjectReference Include="..\TLEFileMisc\TLEFileMisc.csproj">
+      <Project>{EFBB6815-A8EC-40D5-83FF-5D73DB540116}</Project>
+      <Name>TLEFileMisc</Name>
+    </ProjectReference>
     <ProjectReference Include="..\TLEFileTimelines\TLEFileTimelines.csproj">
       <Project>{8983b700-afe0-480a-babe-d8dd5a760404}</Project>
       <Name>TLEFileTimelines</Name>

@@ -49,6 +49,10 @@
       <Project>{b405ee7d-7ede-4812-88b4-7297dd35dfbb}</Project>
       <Name>ITLEFileSpec</Name>
     </ProjectReference>
+    <ProjectReference Include="..\TLEFileMisc\TLEFileMisc.csproj">
+      <Project>{efbb6815-a8ec-40d5-83ff-5d73db540116}</Project>
+      <Name>TLEFileMisc</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="CsvHelper">
