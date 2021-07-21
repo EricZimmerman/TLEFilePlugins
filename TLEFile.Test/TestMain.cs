@@ -25,8 +25,8 @@ namespace TLEFile.Text
     [Test]
     public void EzTools_Evtx2()
     {
-        var t = new TLEFileEZTools.EvtxECmd();
-        t.ProcessFile(@"C:\temp\20210204123845_EvtxECmd_Output.csv");
+        var t = new TLEFileEZTools.SbeCmd();
+        t.ProcessFile(@"C:\Users\eric\Desktop\2021-07-21115457_ShellBagsExplorerExport.csv");
 
     }
 
