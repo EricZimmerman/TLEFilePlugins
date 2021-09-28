@@ -212,7 +212,8 @@ namespace TLEFileEZTools
         public int SequenceNumber { get; set; }
         public ulong ParentEntryNumber { get; set; }
         public int ParentSequenceNumber { get; set; }
-
+        
+        public string ParentPath { get; set; }
         public ulong UpdateSequenceNumber { get; set; }
 
         public DateTime UpdateTimestamp { get; set; }
@@ -242,7 +243,7 @@ namespace TLEFileEZTools
 
             ExpectedHeaders = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
             {
-                "name,extension,entrynumber,sequencenumber,parententrynumber,parentsequencenumber,updatesequencenumber,updatetimestamp,updatereasons,fileattributes,offsettodata,sourcefile"
+                "name,extension,entrynumber,sequencenumber,parententrynumber,parentsequencenumber,parentpath,updatesequencenumber,updatetimestamp,updatereasons,fileattributes,offsettodata,sourcefile"
             };
         }
 

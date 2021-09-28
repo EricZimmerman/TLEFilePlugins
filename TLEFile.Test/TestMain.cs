@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using NUnit.Framework;
+using TLEFileEZTools;
 using TLEFileMisc;
 
 namespace TLEFile.Text
@@ -67,8 +68,8 @@ namespace TLEFile.Text
     [Test]
     public void BrowserHistView()
     {
-        var t = new BrowsingHistoryView();
-        t.ProcessFile(@"C:\temp\test.csv");
+        var t = new J();
+        t.ProcessFile(@"C:\temp\20210928133849_MFTECmd_$J_Output.csv");
 
     }
 
