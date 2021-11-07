@@ -1063,8 +1063,8 @@ namespace TLEFileEZTools
 
     public class EvtxECmdData : IFileSpecData
     {
-        public string RecordNumber { get; set; }
-        public string EventRecordId { get; set; }
+        public int RecordNumber { get; set; }
+        public int EventRecordId { get; set; }
         public DateTime TimeCreated { get; set; }
         public int EventId { get; set; }
         public string Level { get; set; }
