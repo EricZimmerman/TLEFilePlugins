@@ -1058,7 +1058,7 @@ namespace TLEFileMisc
                 // foo.Map(t => t.LastWriteTimeUtc).Convert(row =>
                 //       DateTime.Parse(row.Row.GetField<string>("Last Write Time UTC")));
                 //foo.Map(t => t.Attributes).Name("Attributes");
-                //foo.Map(t => t.Md5).Name("MD5");
+                foo.Map(t => t.Md5).Name("MD5");
                 foo.Map(t => t.Sha256).Name("SHA256");
                 //foo.Map(t => t.Sddl).Name("Sddl");
                 
