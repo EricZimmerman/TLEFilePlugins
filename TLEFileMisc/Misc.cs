@@ -975,4 +975,116 @@ namespace TLEFileMisc
             }
         }
     }
+         public class VanillaWindowsReferenceData : IFileSpecData
+    {
+        public string DirectoryName { get; set; }
+        public string Name { get; set; }
+        public string FullName { get; set; }
+        public int Length { get; set; }
+        public DateTime CreationTimeUtc { get; set; }
+        public DateTime LastAccessTimeUtc { get; set; }
+        public DateTime LastWriteTimeUtc { get; set; }
+        public string Attributes { get; set; }
+        public string Md5 { get; set; }
+        public string Sha256 { get; set; }
+        public string Sddl { get; set; }
+        
+        public int Line { get; set; }
+        public bool Tag { get; set; }
+
+        public override string ToString()
+        {
+            return
+                $"{DirectoryName} {Name} {FullName} {Length} {CreationTimeUtc} {LastAccessTimeUtc} {LastWriteTimeUtc} {Attributes} {Md5} {Sha256} {Sddl}";
+        }
+    }
+    public class VanillaWindowsReference : IFileSpec
+    {
+        public VanillaWindowsReference()
+        {
+            //Initialize collections here, one for TaggedLines TLE can add values to, and the collection that TLE will display
+            TaggedLines = new List<int>();
+
+            DataList = new BindingList<VanillaWindowsReferenceData>();
+
+            ExpectedHeaders = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+            {
+                "\"directoryname\",\"name\",\"fullname\",\"length\",\"creationtimeutc\",\"lastaccesstimeutc\",\"lastwritetimeutc\",\"attributes\",\"md5\",\"sha256\",\"sddl\""
+            };
+        }
+        public string Author => "Andrew Rathbun";
+        public string FileDescription => "CSV generated from AndrewRathbun/VanillaWindowsReference";
+        public HashSet<string> ExpectedHeaders { get; }
+
+        public IBindingList DataList { get; }
+        public List<int> TaggedLines { get; set; }
+
+        public string InternalGuid => "e8c703e2-a34c-45df-a444-b133a679ed7a";
+
+        public void ProcessFile(string filename)
+        {
+            DataList.Clear();
+
+            using (var fileReader = File.OpenText(filename))
+            {
+                var csv = new CsvReader(fileReader, CultureInfo.InvariantCulture);
+                
+
+                var o = new TypeConverterOptions
+                {
+                    DateTimeStyle = DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal
+                };
+                csv.Context.TypeConverterOptionsCache.AddOptions<VanillaWindowsReferenceData>(o);
+                
+                var foo = csv.Context.AutoMap<VanillaWindowsReferenceData>();
+
+                //"DirectoryName","Name","FullName","Length","CreationTimeUtc","LastAccessTimeUtc","LastWriteTimeUtc","Attributes","MD5","SHA256","Sddl"
+                //"C:\","PsExec_IgnoreThisFile_ResearchTool.exe","C:\PsExec_IgnoreThisFile_ResearchTool.exe","834936","2021-11-21 20:34:17","2021-11-21 20:34:17","2021-05-25 21:40:08","Archive","C590A84B8C72CF18F35AE166F815C9DF","57492D33B7C0755BB411B22D2DFDFDF088CBBFCD010E30DD8D425D5FE66ADFF4","O:BAG:S-1-5-21-3499336306-2590357158-289705316-513D:AI(A;ID;FA;;;BA)(A;ID;FA;;;SY)(A;ID;0x1200a9;;;BU)(A;ID;0x1301bf;;;AU)"
+
+                //foo.Map(t => t.DirectoryName).Name("DirectoryName");
+
+                //foo.Map(t => t.Name).Name("Filename");
+
+                //foo.Map(t => t.FullName).Name("File Path");
+
+                //foo.Map(t => t.Length).Name("Size (Bytes)");
+
+                //foo.Map(t => t.DirectoryName).Name("Directory Name");
+
+                //foo.Map(t => t.CreationTimeUtc).Convert(row =>
+                //       DateTime.Parse(row.Row.GetField<string>("Creation Time UTC")));
+                //foo.Map(t => t.LastAccessTimeUtc).Convert(row =>
+                //       DateTime.Parse(row.Row.GetField<string>("Last Access Time UTC")));
+                // foo.Map(t => t.LastWriteTimeUtc).Convert(row =>
+                //       DateTime.Parse(row.Row.GetField<string>("Last Write Time UTC")));
+                //foo.Map(t => t.Attributes).Name("Attributes");
+                //foo.Map(t => t.Md5).Name("MD5");
+                foo.Map(t => t.Sha256).Name("SHA256");
+                //foo.Map(t => t.Sddl).Name("Sddl");
+                
+                foo.Map(t => t.Line).Ignore();
+                foo.Map(t => t.Tag).Ignore();
+
+                csv.Context.RegisterClassMap(foo);
+
+                var l = LogManager.GetCurrentClassLogger();
+
+                var records = csv.GetRecords<VanillaWindowsReferenceData>();
+                
+                var ln = 1;
+                foreach (var record in records)
+                {
+                    l.Debug($"Line # {ln}, Record: {csv.Context.Parser.RawRecord}");
+
+                    record.Line = ln;
+
+                    record.Tag = TaggedLines.Contains(ln);
+
+                    DataList.Add(record);
+
+                    ln += 1;
+                }
+            }
+        }
+    }
 }
