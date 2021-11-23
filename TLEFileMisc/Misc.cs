@@ -1013,7 +1013,7 @@ namespace TLEFileMisc
             };
         }
         public string Author => "Andrew Rathbun";
-        public string FileDescription => "CSV generated from AndrewRathbun/VanillaWindowsReference";
+        public string FileDescription => "CSV generated from AndrewRathbun/VanillaWindowsReference"; //https://github.com/AndrewRathbun/VanillaWindowsReference
         public HashSet<string> ExpectedHeaders { get; }
 
         public IBindingList DataList { get; }
