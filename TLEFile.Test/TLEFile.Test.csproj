@@ -1,81 +1,29 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{6A9F9E57-170A-4959-8768-0C0EBBDDCBE8}</ProjectGuid>
-    <OutputType>Library</OutputType>
-    <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>TLEFile.Test</RootNamespace>
-    <AssemblyName>TLEFile.Test</AssemblyName>
-    <TargetFrameworkVersion>v4.6.2</TargetFrameworkVersion>
-    <FileAlignment>512</FileAlignment>
-    <Deterministic>true</Deterministic>
-    <NuGetPackageImportStamp>
-    </NuGetPackageImportStamp>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
-    <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <DebugType>pdbonly</DebugType>
-    <Optimize>true</Optimize>
-    <OutputPath>bin\Release\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
+    <TargetFramework>net462</TargetFramework>
+    <AssemblyTitle>TLEFile.Test</AssemblyTitle>
+    <Product>TLEFile.Test</Product>
+    <Copyright>Copyright ©  2021</Copyright>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="System" />
+    <PackageReference Include="System.IO.Compression" Version="4.*" />
+    <PackageReference Include="System.Data.DataSetExtensions" Version="4.*" />
+    <PackageReference Include="Microsoft.CSharp" Version="4.*" />
+    <PackageReference Include="System.Net.Http" Version="4.*" />
+  </ItemGroup>
+  <ItemGroup>
     <Reference Include="System.Configuration" />
-    <Reference Include="System.Core" />
-    <Reference Include="System.IO.Compression" />
-    <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.ServiceModel" />
     <Reference Include="System.Transactions" />
-    <Reference Include="System.Xml.Linq" />
-    <Reference Include="System.Data.DataSetExtensions" />
-    <Reference Include="Microsoft.CSharp" />
-    <Reference Include="System.Data" />
-    <Reference Include="System.Net.Http" />
-    <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="TestMain.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
+    <ProjectReference Include="..\TLEFileEZTools\TLEFileEZTools.csproj" />
+    <ProjectReference Include="..\TLEFileGenericCsv\TLEFileGenericCsv.csproj" />
+    <ProjectReference Include="..\TLEFileMisc\TLEFileMisc.csproj" />
+    <ProjectReference Include="..\TLEFileTimelines\TLEFileTimelines.csproj" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\TLEFileEZTools\TLEFileEZTools.csproj">
-      <Project>{6caa82ce-3e8c-473c-b48b-e0bd857740d7}</Project>
-      <Name>TLEFileEZTools</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\TLEFileGenericCsv\TLEFileGenericCsv.csproj">
-      <Project>{fc0eb431-2893-41c4-b0ed-c4d2c4290ca4}</Project>
-      <Name>TLEFileGenericCsv</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\TLEFileMisc\TLEFileMisc.csproj">
-      <Project>{EFBB6815-A8EC-40D5-83FF-5D73DB540116}</Project>
-      <Name>TLEFileMisc</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\TLEFileTimelines\TLEFileTimelines.csproj">
-      <Project>{8983b700-afe0-480a-babe-d8dd5a760404}</Project>
-      <Name>TLEFileTimelines</Name>
-    </ProjectReference>
+    <PackageReference Include="NLog" Version="4.7.11" />
+    <PackageReference Include="NUnit" Version="3.13.2" />
   </ItemGroup>
-  <ItemGroup>
-    <PackageReference Include="NLog">
-      <Version>4.7.11</Version>
-    </PackageReference>
-    <PackageReference Include="NUnit">
-      <Version>3.13.2</Version>
-    </PackageReference>
-  </ItemGroup>
-  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
