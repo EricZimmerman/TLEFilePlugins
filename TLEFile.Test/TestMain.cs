@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -21,6 +22,19 @@ namespace TLEFile.Text
 //20210202154458_EvtxECmd_Output.csv
 
     }
+    
+    [Test]
+    public void EzTools_SbeCmd()
+    {
+        var t = new TLEFileEZTools.SbeCmd();
+        t.ProcessFile(@"C:\temp\testdata\M__Forensics_TrainingImages_AliHadi_Challenge5_tout_E_Users_Joker_AppData_Local_Microsoft_Windows_UsrClass.dat.csv");
+        
+        Debug.WriteLine(t.DataList.Count);
+
+//20210202154458_EvtxECmd_Output.csv
+
+    }
+
 
     
     [Test]

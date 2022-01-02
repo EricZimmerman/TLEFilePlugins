@@ -1,9 +1,11 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>net462</TargetFramework>
+    <TargetFrameworks>netstandard2.0;net6.0</TargetFrameworks>
     <AssemblyTitle>ITLEFileSpec</AssemblyTitle>
     <Product>ITLEFileSpec</Product>
-    <Copyright>Copyright ©  2020</Copyright>
+    <Copyright>Copyright © 2022</Copyright>
+    <LangVersion>10</LangVersion>
+    <LangVersion>10</LangVersion>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="System.Data.DataSetExtensions" Version="4.*" />

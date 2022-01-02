@@ -388,61 +388,165 @@ namespace TLEFileEZTools
         {
             DataList.Clear();
 
-            using (var fileReader = File.OpenText(filename))
+            using var fileReader = File.OpenText(filename);
+            var csv = new CsvReader(fileReader, CultureInfo.InvariantCulture);
+
+            var foo = csv.Context.AutoMap<MFTData>();
+
+            var o = new TypeConverterOptions
             {
-                var csv = new CsvReader(fileReader, CultureInfo.InvariantCulture);
-                
+                DateTimeStyle = DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal,
+                NullValues = {"=\"\""}
+            };
+            csv.Context.TypeConverterOptionsCache.AddOptions<MFTData>(o);
 
-                var foo = csv.Context.AutoMap<MFTData>();
+            foo.Map(t => t.Line).Ignore();
+            foo.Map(t => t.Tag).Ignore();
+            foo.Map(t => t.Timestomped).Name("SI<FN");
+            foo.Map(m => m.Created0x10).TypeConverterOption
+                .DateTimeStyles(DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal);
+            foo.Map(m => m.Created0x30).TypeConverterOption
+                .DateTimeStyles(DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal);
+            foo.Map(m => m.LastModified0x10).TypeConverterOption
+                .DateTimeStyles(DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal);
+            foo.Map(m => m.LastModified0x30).TypeConverterOption
+                .DateTimeStyles(DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal);
+            foo.Map(m => m.LastRecordChange0x10).TypeConverterOption
+                .DateTimeStyles(DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal);
+            foo.Map(m => m.LastRecordChange0x30).TypeConverterOption
+                .DateTimeStyles(DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal);
+            foo.Map(m => m.LastAccess0x10).TypeConverterOption
+                .DateTimeStyles(DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal);
+            foo.Map(m => m.LastAccess0x30).TypeConverterOption
+                .DateTimeStyles(DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal);
 
-                var o = new TypeConverterOptions
-                {
-                    DateTimeStyle = DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal,
-                    NullValues = {"=\"\""}
-                };
-                csv.Context.TypeConverterOptionsCache.AddOptions<MFTData>(o);
+            csv.Context.RegisterClassMap(foo);
 
-                foo.Map(t => t.Line).Ignore();
-                foo.Map(t => t.Tag).Ignore();
-                foo.Map(t => t.Timestomped).Name("SI<FN");
-                foo.Map(m => m.Created0x10).TypeConverterOption
-                    .DateTimeStyles(DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal);
-                foo.Map(m => m.Created0x30).TypeConverterOption
-                    .DateTimeStyles(DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal);
-                foo.Map(m => m.LastModified0x10).TypeConverterOption
-                    .DateTimeStyles(DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal);
-                foo.Map(m => m.LastModified0x30).TypeConverterOption
-                    .DateTimeStyles(DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal);
-                foo.Map(m => m.LastRecordChange0x10).TypeConverterOption
-                    .DateTimeStyles(DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal);
-                foo.Map(m => m.LastRecordChange0x30).TypeConverterOption
-                    .DateTimeStyles(DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal);
-                foo.Map(m => m.LastAccess0x10).TypeConverterOption
-                    .DateTimeStyles(DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal);
-                foo.Map(m => m.LastAccess0x30).TypeConverterOption
-                    .DateTimeStyles(DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal);
+            var records = csv.GetRecords<MFTData>();
 
-                csv.Context.RegisterClassMap(foo);
-
-                var records = csv.GetRecords<MFTData>();
-
-                var l = LogManager.GetCurrentClassLogger();
+            var l = LogManager.GetCurrentClassLogger();
 
 
-                var ln = 1;
-                foreach (var record in records)
-                {
-                    l.Debug($"Line # {ln}, Record: {csv.Context.Parser.RawRecord}");
-                    record.Line = ln;
-                    record.Tag = TaggedLines.Contains(ln);
-                    DataList.Add(record);
+            var ln = 1;
+            foreach (var record in records)
+            {
+                l.Debug($"Line # {ln}, Record: {csv.Context.Parser.RawRecord}");
+                record.Line = ln;
+                record.Tag = TaggedLines.Contains(ln);
+                DataList.Add(record);
 
-                    ln += 1;
-                }
+                ln += 1;
             }
         }
     }
+    
+    
+    public class SbeCmdData : IFileSpecData
+    {
+        public string BagPath { get; set; }
+        public int Slot { get; set; }
+        public int NodeSlot { get; set; }
+        public int MRUPosition { get; set; }
+        public string AbsolutePath { get; set; }
+        public string ShellType { get; set; }
+        public string Value { get; set; }
+        public int ChildBags { get; set; }
+        public DateTime? CreatedOn { get; set; }
+        public DateTime? ModifiedOn { get; set; }
+        public DateTime? AccessedOn { get; set; }
+        public DateTime? LastWriteTime { get; set; }
+        public long? MFTEntry { get; set; }
+        public int? MFTSequenceNumber { get; set; }
+        public int ExtensionBlockCount { get; set; }
+        public DateTime? FirstInteracted { get; set; }
+        public DateTime? LastInteracted { get; set; }
 
+        public bool HasExplored { get; set; }
+
+        public string Miscellaneous { get; set; }
+
+        public int Line { get; set; }
+
+        public bool Tag { get; set; }
+
+        public override string ToString()
+        {
+            return
+                $"{BagPath} {Slot} {NodeSlot} {MRUPosition} {AbsolutePath} {ShellType} {Value} {ChildBags} {CreatedOn} {ModifiedOn} {AccessedOn} {MFTEntry} {MFTSequenceNumber} {ExtensionBlockCount} {FirstInteracted} {LastInteracted} {HasExplored} {Miscellaneous} {LastWriteTime}";
+        }
+    }
+
+
+    public class SbeCmd : IFileSpec
+    {
+        public SbeCmd()
+        {
+            //Initialize collections here, one for TaggedLines TLE can add values to, and the collection that TLE will display
+            TaggedLines = new List<int>();
+
+            DataList = new BindingList<SbeCmdData>();
+
+            ExpectedHeaders = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+            {
+                "bagpath,slot,nodeslot,mruposition,absolutepath,shelltype,value,childbags,createdon,modifiedon,accessedon,lastwritetime,mftentry,mftsequencenumber,extensionblockcount,firstinteracted,lastinteracted,hasexplored,miscellaneous"
+            };
+        }
+
+        public string Author => "Eric Zimmerman";
+        public string FileDescription => "CSV generated from SBECmd";
+        public HashSet<string> ExpectedHeaders { get; }
+
+        public IBindingList DataList { get; }
+        public List<int> TaggedLines { get; set; }
+
+        public string InternalGuid => "f5f8b988-c2f1-457b-8c77-653619156713";
+
+        public void ProcessFile(string filename)
+        {
+            DataList.Clear();
+
+            using var fileReader = File.OpenText(filename);
+            var csv = new CsvReader(fileReader, CultureInfo.InvariantCulture);
+                
+            var o = new TypeConverterOptions
+            {
+                DateTimeStyle = DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal
+            };
+            csv.Context.TypeConverterOptionsCache.AddOptions<SbeCmdData>(o);
+                
+            var foo = csv.Context.AutoMap<SbeCmdData>();
+
+            foo.Map(t => t.Line).Ignore();
+            foo.Map(t => t.Tag).Ignore();
+            foo.Map(m => m.AccessedOn).TypeConverterOption
+                .DateTimeStyles(DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal);
+            foo.Map(m => m.CreatedOn).TypeConverterOption
+                .DateTimeStyles(DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal);
+            foo.Map(m => m.ModifiedOn).TypeConverterOption
+                .DateTimeStyles(DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal);
+            foo.Map(m => m.FirstInteracted).TypeConverterOption
+                .DateTimeStyles(DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal);
+            foo.Map(m => m.LastInteracted).TypeConverterOption
+                .DateTimeStyles(DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal);
+            foo.Map(m => m.LastWriteTime).TypeConverterOption
+                .DateTimeStyles(DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal);
+            
+            csv.Context.RegisterClassMap(foo);
+
+            var records = csv.GetRecords<SbeCmdData>();
+            var l = LogManager.GetCurrentClassLogger();
+            var ln = 1;
+            foreach (var record in records)
+            {
+                l.Debug($"Line # {ln}, Record: {csv.Context.Parser.RawRecord}");
+                record.Line = ln;
+                record.Tag = TaggedLines.Contains(ln);
+                DataList.Add(record);
+
+                ln += 1;
+            }
+        }
+    }
 
     public class RbCmdData : IFileSpecData
     {
@@ -1265,102 +1369,6 @@ namespace TLEFileEZTools
     }
 
 
-    public class SbeCmdData : IFileSpecData
-    {
-        public string BagPath { get; set; }
-        public int Slot { get; set; }
-        public int NodeSlot { get; set; }
-        public int MRUPosition { get; set; }
-        public string AbsolutePath { get; set; }
-        public string ShellType { get; set; }
-        public string Value { get; set; }
-        public int ChildBags { get; set; }
-        public DateTime? CreatedOn { get; set; }
-        public DateTime? ModifiedOn { get; set; }
-        public DateTime? AccessedOn { get; set; }
-        public DateTime? LastWriteTime { get; set; }
-        public long? MFTEntry { get; set; }
-        public int? MFTSequenceNumber { get; set; }
-        public int ExtensionBlockCount { get; set; }
-        public DateTime? FirstInteracted { get; set; }
-        public DateTime? LastInteracted { get; set; }
-
-        public bool HasExplored { get; set; }
-
-        public string Miscellaneous { get; set; }
-
-        public int Line { get; set; }
-
-        public bool Tag { get; set; }
-
-        public override string ToString()
-        {
-            return
-                $"{BagPath} {Slot} {NodeSlot} {MRUPosition} {AbsolutePath} {ShellType} {Value} {ChildBags} {CreatedOn} {ModifiedOn} {AccessedOn} {MFTEntry} {MFTSequenceNumber} {ExtensionBlockCount} {FirstInteracted} {LastInteracted} {HasExplored} {Miscellaneous} {LastWriteTime}";
-        }
-    }
-
-
-    public class SbeCmd : IFileSpec
-    {
-        public SbeCmd()
-        {
-            //Initialize collections here, one for TaggedLines TLE can add values to, and the collection that TLE will display
-            TaggedLines = new List<int>();
-
-            DataList = new BindingList<SbeCmdData>();
-
-            ExpectedHeaders = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
-            {
-                "bagpath,nodeid,slot,nodeslot,mruposition,absolutepath,shelltype,value,childbags,createdon,modifiedon,accessedon,lastwritetime,mftentry,mftsequencenumber,extensionblockcount,firstinteracted,lastinteracted,miscellaneous,hasexplored"
-            };
-        }
-
-        public string Author => "Eric Zimmerman";
-        public string FileDescription => "CSV generated from SBECmd";
-        public HashSet<string> ExpectedHeaders { get; }
-
-        public IBindingList DataList { get; }
-        public List<int> TaggedLines { get; set; }
-
-        public string InternalGuid => "f5f8b988-c2f1-457b-8c77-653619156713";
-
-        public void ProcessFile(string filename)
-        {
-            DataList.Clear();
-
-            using (var fileReader = File.OpenText(filename))
-            {
-                var csv = new CsvReader(fileReader, CultureInfo.InvariantCulture);
-                
-                var o = new TypeConverterOptions
-                {
-                    DateTimeStyle = DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal
-                };
-                csv.Context.TypeConverterOptionsCache.AddOptions<SbeCmdData>(o);
-                
-                var foo = csv.Context.AutoMap<SbeCmdData>();
-
-                foo.Map(t => t.Line).Ignore();
-                foo.Map(t => t.Tag).Ignore();
-
-                csv.Context.RegisterClassMap(foo);
-
-                var records = csv.GetRecords<SbeCmdData>();
-                var l = LogManager.GetCurrentClassLogger();
-                var ln = 1;
-                foreach (var record in records)
-                {
-                    l.Debug($"Line # {ln}, Record: {csv.Context.Parser.RawRecord}");
-                    record.Line = ln;
-                    record.Tag = TaggedLines.Contains(ln);
-                    DataList.Add(record);
-
-                    ln += 1;
-                }
-            }
-        }
-    }
 
 
     public class AppCompatCacheData : IFileSpecData

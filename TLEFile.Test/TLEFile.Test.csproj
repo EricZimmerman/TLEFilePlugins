@@ -1,21 +1,19 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>net462</TargetFramework>
+    <TargetFrameworks>net6.0;net462</TargetFrameworks>
     <AssemblyTitle>TLEFile.Test</AssemblyTitle>
     <Product>TLEFile.Test</Product>
-    <Copyright>Copyright ©  2021</Copyright>
+    <Copyright>Copyright © 2022</Copyright>
+    <LangVersion>10</LangVersion>
   </PropertyGroup>
   <ItemGroup>
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.0.0" />
     <PackageReference Include="System.IO.Compression" Version="4.*" />
     <PackageReference Include="System.Data.DataSetExtensions" Version="4.*" />
     <PackageReference Include="Microsoft.CSharp" Version="4.*" />
-    <PackageReference Include="System.Net.Http" Version="4.*" />
+
   </ItemGroup>
-  <ItemGroup>
-    <Reference Include="System.Configuration" />
-    <Reference Include="System.ServiceModel" />
-    <Reference Include="System.Transactions" />
-  </ItemGroup>
+
   <ItemGroup>
     <ProjectReference Include="..\TLEFileEZTools\TLEFileEZTools.csproj" />
     <ProjectReference Include="..\TLEFileGenericCsv\TLEFileGenericCsv.csproj" />
