@@ -8,7 +8,7 @@ using CsvHelper;
 using CsvHelper.Configuration;
 using CsvHelper.TypeConversion;
 using ITLEFileSpec;
-using NLog;
+using Serilog;
 
 namespace TLEFileMicrosoft
 {
@@ -74,51 +74,49 @@ namespace TLEFileMicrosoft
         {
             DataList.Clear();
 
-            using (var fileReader = new StreamReader(filename, Encoding.GetEncoding(1252)))
+            using var fileReader = new StreamReader(filename, Encoding.GetEncoding(1252));
+            var config = new CsvConfiguration(CultureInfo.InvariantCulture)
             {
-                var config = new CsvConfiguration(CultureInfo.InvariantCulture)
-                {
-                    BadDataFound = null,
-                };
+                BadDataFound = null,
+            };
 
-                var csv = new CsvReader(fileReader, config);
+            var csv = new CsvReader(fileReader, config);
                 
-                var o = new TypeConverterOptions
-                {
-                    DateTimeStyle = DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal
-                };
-                csv.Context.TypeConverterOptionsCache.AddOptions<SigcheckData>(o);
+            var o = new TypeConverterOptions
+            {
+                DateTimeStyle = DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal
+            };
+            csv.Context.TypeConverterOptionsCache.AddOptions<SigcheckData>(o);
 
-                var foo = csv.Context.AutoMap<SigcheckData>();
+            var foo = csv.Context.AutoMap<SigcheckData>();
 
-                foo.Map(t => t.Line).Ignore();
-                foo.Map(t => t.Tag).Ignore();
+            foo.Map(t => t.Line).Ignore();
+            foo.Map(t => t.Tag).Ignore();
 
-                foo.Map(t => t.Verified).Convert(t => t.Row.GetField("Verified") == "Signed");
+            foo.Map(t => t.Verified).Convert(t => t.Row.GetField("Verified") == "Signed");
 
-                foo.Map(t => t.Timestamp).Name("Date");
-                foo.Map(t => t.ProductVersion).Name("Product Version");
-                foo.Map(t => t.FileVersion).Name("File Version");
-                foo.Map(t => t.MachineType).Name("Machine Type");
-                foo.Map(t => t.VTDetection).Name("VT detection");
-                foo.Map(t => t.VTLink).Name("VT link");
+            foo.Map(t => t.Timestamp).Name("Date");
+            foo.Map(t => t.ProductVersion).Name("Product Version");
+            foo.Map(t => t.FileVersion).Name("File Version");
+            foo.Map(t => t.MachineType).Name("Machine Type");
+            foo.Map(t => t.VTDetection).Name("VT detection");
+            foo.Map(t => t.VTLink).Name("VT link");
 
-                csv.Context.RegisterClassMap(foo);
+            csv.Context.RegisterClassMap(foo);
 
-                var l = LogManager.GetCurrentClassLogger();
+                
 
-                var records = csv.GetRecords<SigcheckData>();
+            var records = csv.GetRecords<SigcheckData>();
 
-                var ln = 1;
-                foreach (var sc in records)
-                {
-                    l.Debug($"Line # {ln}, Record: {csv.Context.Parser.RawRecord}");
+            var ln = 1;
+            foreach (var sc in records)
+            {
+                Log.Debug("Line # {Line}, Record: {RawRecord}",ln,csv.Context.Parser.RawRecord);
 
-                    sc.Line = ln;
-                    sc.Tag = TaggedLines.Contains(ln);
-                    DataList.Add(sc);
-                    ln += 1;
-                }
+                sc.Line = ln;
+                sc.Tag = TaggedLines.Contains(ln);
+                DataList.Add(sc);
+                ln += 1;
             }
         }
     }
@@ -190,57 +188,55 @@ namespace TLEFileMicrosoft
         {
             DataList.Clear();
 
-            using (var fileReader = new StreamReader(filename, Encoding.GetEncoding(1252)))
+            using var fileReader = new StreamReader(filename, Encoding.GetEncoding(1252));
+            var config = new CsvConfiguration(CultureInfo.InvariantCulture)
             {
-                var config = new CsvConfiguration(CultureInfo.InvariantCulture)
-                {
-                    BadDataFound = null,
-                };
+                BadDataFound = null,
+            };
 
-                var csv = new CsvReader(fileReader, config);
+            var csv = new CsvReader(fileReader, config);
                 
             
 
-                var o = new TypeConverterOptions
-                {
-                    DateTimeStyle = DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal
-                };
-                csv.Context.TypeConverterOptionsCache.AddOptions<SigcheckTroyData>(o);
+            var o = new TypeConverterOptions
+            {
+                DateTimeStyle = DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal
+            };
+            csv.Context.TypeConverterOptionsCache.AddOptions<SigcheckTroyData>(o);
 
-                var foo = csv.Context.AutoMap<SigcheckTroyData>();
+            var foo = csv.Context.AutoMap<SigcheckTroyData>();
 
-                //path,verified,date,publisher,company,description,product,product version,file version,machine type,binary version,original name,internal name,copyright,comments,entropy,md5,sha1,pesha1,pesha256,sha256,imp
+            //path,verified,date,publisher,company,description,product,product version,file version,machine type,binary version,original name,internal name,copyright,comments,entropy,md5,sha1,pesha1,pesha256,sha256,imp
 
-                foo.Map(t => t.Line).Ignore();
-                foo.Map(t => t.Tag).Ignore();
+            foo.Map(t => t.Line).Ignore();
+            foo.Map(t => t.Tag).Ignore();
 
-                foo.Map(t => t.Verified).Convert(t => t.Row.GetField("Verified") == "Signed");
+            foo.Map(t => t.Verified).Convert(t => t.Row.GetField("Verified") == "Signed");
 
-                foo.Map(t => t.Timestamp).Name("Date");
-                foo.Map(t => t.ProductVersion).Name("Product Version");
-                foo.Map(t => t.FileVersion).Name("File Version");
-                foo.Map(t => t.MachineType).Name("Machine Type");
-                foo.Map(t => t.BinaryVersion).Name("Binary Version");
-                foo.Map(t => t.OriginalName).Name("Original Name");
-                foo.Map(t => t.InternalName).Name("Internal Name");
+            foo.Map(t => t.Timestamp).Name("Date");
+            foo.Map(t => t.ProductVersion).Name("Product Version");
+            foo.Map(t => t.FileVersion).Name("File Version");
+            foo.Map(t => t.MachineType).Name("Machine Type");
+            foo.Map(t => t.BinaryVersion).Name("Binary Version");
+            foo.Map(t => t.OriginalName).Name("Original Name");
+            foo.Map(t => t.InternalName).Name("Internal Name");
 
 
-                csv.Context.RegisterClassMap(foo);
+            csv.Context.RegisterClassMap(foo);
 
-                var l = LogManager.GetCurrentClassLogger();
+                
 
-                var records = csv.GetRecords<SigcheckTroyData>();
+            var records = csv.GetRecords<SigcheckTroyData>();
 
-                var ln = 1;
-                foreach (var sc in records)
-                {
-                    l.Debug($"Line # {ln}, Record: {csv.Context.Parser.RawRecord}");
+            var ln = 1;
+            foreach (var sc in records)
+            {
+                Log.Debug("Line # {Line}, Record: {RawRecord}",ln,csv.Context.Parser.RawRecord);
 
-                    sc.Line = ln;
-                    sc.Tag = TaggedLines.Contains(ln);
-                    DataList.Add(sc);
-                    ln += 1;
-                }
+                sc.Line = ln;
+                sc.Tag = TaggedLines.Contains(ln);
+                DataList.Add(sc);
+                ln += 1;
             }
         }
     }
@@ -307,45 +303,43 @@ namespace TLEFileMicrosoft
         {
             DataList.Clear();
 
-            using (var fileReader = File.OpenText(filename))
-            {
-                var csv = new CsvReader(fileReader, CultureInfo.InvariantCulture);
+            using var fileReader = File.OpenText(filename);
+            var csv = new CsvReader(fileReader, CultureInfo.InvariantCulture);
                 
-                var foo = csv.Context.AutoMap<AutorunsData>();
+            var foo = csv.Context.AutoMap<AutorunsData>();
 
-                //"Time","Entry Location","Entry","Enabled","Category","Profile","Description","Signer","Company",
-                //"Image Path","Version","Launch String","MD5","SHA-1","PESHA-1","PESHA-256","SHA-256","IMP",
-                //"PSComputerName","RunspaceId","PSShowComputerName"
+            //"Time","Entry Location","Entry","Enabled","Category","Profile","Description","Signer","Company",
+            //"Image Path","Version","Launch String","MD5","SHA-1","PESHA-1","PESHA-256","SHA-256","IMP",
+            //"PSComputerName","RunspaceId","PSShowComputerName"
 
-                foo.Map(t => t.Line).Ignore();
-                foo.Map(t => t.Tag).Ignore();
+            foo.Map(t => t.Line).Ignore();
+            foo.Map(t => t.Tag).Ignore();
 
-                foo.Map(t => t.EntryLocation).Name("Entry Location");
-                foo.Map(t => t.Enabled).Convert(t => t.Row[3] == "enabled");
-                foo.Map(t => t.ImagePath).Name("Image Path");
-                foo.Map(t => t.LaunchString).Name("Launch String");
-                foo.Map(t => t.SHA1).Name("SHA-1");
-                foo.Map(t => t.PESHA1).Name("PESHA-1");
-                foo.Map(t => t.SHA256).Name("SHA-256");
-                foo.Map(t => t.PESHA256).Name("PESHA-256");
-                foo.Map(t => t.Imp).Name("IMP");
+            foo.Map(t => t.EntryLocation).Name("Entry Location");
+            foo.Map(t => t.Enabled).Convert(t => t.Row[3] == "enabled");
+            foo.Map(t => t.ImagePath).Name("Image Path");
+            foo.Map(t => t.LaunchString).Name("Launch String");
+            foo.Map(t => t.SHA1).Name("SHA-1");
+            foo.Map(t => t.PESHA1).Name("PESHA-1");
+            foo.Map(t => t.SHA256).Name("SHA-256");
+            foo.Map(t => t.PESHA256).Name("PESHA-256");
+            foo.Map(t => t.Imp).Name("IMP");
 
-                csv.Context.RegisterClassMap(foo);
+            csv.Context.RegisterClassMap(foo);
 
-                var l = LogManager.GetCurrentClassLogger();
+                
 
-                var records = csv.GetRecords<AutorunsData>();
+            var records = csv.GetRecords<AutorunsData>();
 
-                var ln = 1;
-                foreach (var autorunsEntry in records)
-                {
-                    l.Debug($"Line # {ln}, Record: {csv.Context.Parser.RawRecord}");
+            var ln = 1;
+            foreach (var autorunsEntry in records)
+            {
+                Log.Debug("Line # {Line}, Record: {RawRecord}",ln,csv.Context.Parser.RawRecord);
 
-                    autorunsEntry.Line = ln;
-                    autorunsEntry.Tag = TaggedLines.Contains(ln);
-                    DataList.Add(autorunsEntry);
-                    ln += 1;
-                }
+                autorunsEntry.Line = ln;
+                autorunsEntry.Tag = TaggedLines.Contains(ln);
+                DataList.Add(autorunsEntry);
+                ln += 1;
             }
         }
     }
@@ -435,58 +429,56 @@ namespace TLEFileMicrosoft
         {
             DataList.Clear();
 
-            using (var fileReader = File.OpenText(filename))
-            {
-                var csv = new CsvReader(fileReader, CultureInfo.InvariantCulture);
+            using var fileReader = File.OpenText(filename);
+            var csv = new CsvReader(fileReader, CultureInfo.InvariantCulture);
                 
 
 
-                var foo = csv.Context.AutoMap<MsftMftData>();
+            var foo = csv.Context.AutoMap<MsftMftData>();
 
-                var o = new TypeConverterOptions
-                {
-                    DateTimeStyle = DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal
-                };
+            var o = new TypeConverterOptions
+            {
+                DateTimeStyle = DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal
+            };
 
-                csv.Context.TypeConverterOptionsCache.AddOptions<MsftMftData>(o);
+            csv.Context.TypeConverterOptionsCache.AddOptions<MsftMftData>(o);
 
-                foo.Map(t => t.Line).Ignore();
-                foo.Map(t => t.Tag).Ignore();
+            foo.Map(t => t.Line).Ignore();
+            foo.Map(t => t.Tag).Ignore();
 
-                foo.Map(m => m.CreationTime0x10).Convert(row =>
-                    DateTime.Parse(row.Row.GetField<string>("CreationTime0x10").Replace("Z", "")));
-                foo.Map(m => m.CreationTime0x30).Convert(row =>
-                    DateTime.Parse(row.Row.GetField<string>("CreationTime0x30").Replace("Z", "")));
-                foo.Map(m => m.LastModificationTime0x10).Convert(row =>
-                    DateTime.Parse(row.Row.GetField<string>("LastModificationTime0x10").Replace("Z", "")));
-                foo.Map(m => m.LastModificationTime0x30).Convert(row =>
-                    DateTime.Parse(row.Row.GetField<string>("LastModificationTime0x30").Replace("Z", "")));
-                foo.Map(m => m.LastChangeTime0x10).Convert(row =>
-                    DateTime.Parse(row.Row.GetField<string>("LastChangeTime0x10").Replace("Z", "")));
-                foo.Map(m => m.LastChangeTime0x30).Convert(row =>
-                    DateTime.Parse(row.Row.GetField<string>("LastChangeTime0x30").Replace("Z", "")));
-                foo.Map(m => m.LastAccessTime0x10).Convert(row =>
-                    DateTime.Parse(row.Row.GetField<string>("LastAccessTime0x10").Replace("Z", "")));
-                foo.Map(m => m.LastAccessTime0x30).Convert(row =>
-                    DateTime.Parse(row.Row.GetField<string>("LastAccessTime0x30").Replace("Z", "")));
+            foo.Map(m => m.CreationTime0x10).Convert(row =>
+                DateTime.Parse(row.Row.GetField<string>("CreationTime0x10").Replace("Z", "")));
+            foo.Map(m => m.CreationTime0x30).Convert(row =>
+                DateTime.Parse(row.Row.GetField<string>("CreationTime0x30").Replace("Z", "")));
+            foo.Map(m => m.LastModificationTime0x10).Convert(row =>
+                DateTime.Parse(row.Row.GetField<string>("LastModificationTime0x10").Replace("Z", "")));
+            foo.Map(m => m.LastModificationTime0x30).Convert(row =>
+                DateTime.Parse(row.Row.GetField<string>("LastModificationTime0x30").Replace("Z", "")));
+            foo.Map(m => m.LastChangeTime0x10).Convert(row =>
+                DateTime.Parse(row.Row.GetField<string>("LastChangeTime0x10").Replace("Z", "")));
+            foo.Map(m => m.LastChangeTime0x30).Convert(row =>
+                DateTime.Parse(row.Row.GetField<string>("LastChangeTime0x30").Replace("Z", "")));
+            foo.Map(m => m.LastAccessTime0x10).Convert(row =>
+                DateTime.Parse(row.Row.GetField<string>("LastAccessTime0x10").Replace("Z", "")));
+            foo.Map(m => m.LastAccessTime0x30).Convert(row =>
+                DateTime.Parse(row.Row.GetField<string>("LastAccessTime0x30").Replace("Z", "")));
 
 
-                csv.Context.RegisterClassMap(foo);
+            csv.Context.RegisterClassMap(foo);
 
-                var l = LogManager.GetCurrentClassLogger();
+                
 
-                var records = csv.GetRecords<MsftMftData>();
+            var records = csv.GetRecords<MsftMftData>();
 
-                var ln = 1;
-                foreach (var record in records)
-                {
-                    l.Debug($"Line # {ln}, Record: {csv.Context.Parser.RawRecord}");
-                    record.Line = ln;
-                    record.Tag = TaggedLines.Contains(ln);
-                    DataList.Add(record);
+            var ln = 1;
+            foreach (var record in records)
+            {
+                Log.Debug("Line # {Line}, Record: {RawRecord}",ln,csv.Context.Parser.RawRecord);
+                record.Line = ln;
+                record.Tag = TaggedLines.Contains(ln);
+                DataList.Add(record);
 
-                    ln += 1;
-                }
+                ln += 1;
             }
         }
     }

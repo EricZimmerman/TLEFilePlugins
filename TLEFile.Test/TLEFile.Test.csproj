@@ -3,17 +3,12 @@
     <TargetFrameworks>net6.0;net462</TargetFrameworks>
     <AssemblyTitle>TLEFile.Test</AssemblyTitle>
     <Product>TLEFile.Test</Product>
-    <Copyright>Copyright © 2022</Copyright>
+    <Copyright>Eric Zimmerman</Copyright>
     <LangVersion>10</LangVersion>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.0.0" />
-    <PackageReference Include="System.IO.Compression" Version="4.*" />
-    <PackageReference Include="System.Data.DataSetExtensions" Version="4.*" />
-    <PackageReference Include="Microsoft.CSharp" Version="4.*" />
-
   </ItemGroup>
-
   <ItemGroup>
     <ProjectReference Include="..\TLEFileEZTools\TLEFileEZTools.csproj" />
     <ProjectReference Include="..\TLEFileGenericCsv\TLEFileGenericCsv.csproj" />
@@ -21,7 +16,7 @@
     <ProjectReference Include="..\TLEFileTimelines\TLEFileTimelines.csproj" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="NLog" Version="4.7.11" />
+    <PackageReference Include="Serilog" Version="2.10.0" />
     <PackageReference Include="NUnit" Version="3.13.2" />
   </ItemGroup>
 </Project>

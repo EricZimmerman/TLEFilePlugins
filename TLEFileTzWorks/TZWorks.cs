@@ -7,7 +7,7 @@ using CsvHelper;
 using CsvHelper.Configuration;
 using CsvHelper.TypeConversion;
 using ITLEFileSpec;
-using NLog;
+using Serilog;
 using ServiceStack;
 
 namespace TLEFileTzWorks
@@ -86,138 +86,136 @@ namespace TLEFileTzWorks
         {
             DataList.Clear();
 
-            using (var fileReader = File.OpenText(filename))
+            using var fileReader = File.OpenText(filename);
+            var config = new CsvConfiguration(CultureInfo.InvariantCulture)
             {
-                var config = new CsvConfiguration(CultureInfo.InvariantCulture)
-                {
-                    BadDataFound = null,
-                };
+                BadDataFound = null,
+            };
 
-                var csv = new CsvReader(fileReader, config);
+            var csv = new CsvReader(fileReader, config);
                 
 
-                var o = new TypeConverterOptions
-                {
-                    DateTimeStyle = DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal
-                };
-                csv.Context.TypeConverterOptionsCache.AddOptions<PeScanOutData>(o);
+            var o = new TypeConverterOptions
+            {
+                DateTimeStyle = DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal
+            };
+            csv.Context.TypeConverterOptionsCache.AddOptions<PeScanOutData>(o);
 
 
+            csv.Read();
+
+            if (csv.Context.Parser.RawRecord.StartsWith("pescan - "))
+            {
+                //dumb ass non-csv, so skip it
                 csv.Read();
+                csv.Read();
+                csv.Read();
+                csv.Read();
+            }
 
-                if (csv.Context.Parser.RawRecord.StartsWith("pescan - "))
-                {
-                    //dumb ass non-csv, so skip it
-                    csv.Read();
-                    csv.Read();
-                    csv.Read();
-                    csv.Read();
-                }
+                
 
-                var l = LogManager.GetCurrentClassLogger();
-
-                csv.ReadHeader();
+            csv.ReadHeader();
 
         
 
-                var ln11 = 1;
-                while (csv.Read())
+            var ln11 = 1;
+            while (csv.Read())
+            {
+                Log.Debug("Line # {Line}, Record: {Record}",ln11,csv.Context.Parser.RawRecord);
+
+                var compiled = csv.GetField(0);
+                var compTime = csv.GetField(1);
+                var created = csv.GetField(2);
+                var createdTime = csv.GetField(3);
+                var accessd = csv.GetField(4);
+                var accessedTime = csv.GetField(5);
+                var modified = csv.GetField(6);
+                var modTime = csv.GetField(7);
+                var size = csv.GetField(8);
+                var fileType = csv.GetField(9);
+                var cpu = csv.GetField(10);
+                var linker = csv.GetField(11);
+                var codeSize = csv.GetField(12);
+                var initData = csv.GetField(13);
+                var uinitData = csv.GetField(14);
+                var imageVer = csv.GetField(15);
+                var subsysVer = csv.GetField(16);
+                var minOs = csv.GetField(17);
+                var entryRva = csv.GetField(18);
+                var entryfAddr = csv.GetField(19);
+                var imagebase = csv.GetField(20);
+                var cert = csv.GetField(21);
+                var checksum = csv.GetField(22);
+                var md5 = csv.GetField(23);
+                var company = csv.GetField(24);
+                var file = csv.GetField(25);
+                var rating = csv.GetField(26);
+                var notes = csv.GetField(27);
+                var peid = csv.GetField(28);
+                var symbolFile = csv.GetField(29);
+
+                var pe = new PeScanOutData {Line = ln11};
+                pe.Tag = TaggedLines.Contains(ln11);
+                if (compiled.Length > 0)
                 {
-                    l.Debug($"Line # {ln11}, Record: {csv.Context.Parser.RawRecord}");
-
-                    var compiled = csv.GetField(0);
-                    var compTime = csv.GetField(1);
-                    var created = csv.GetField(2);
-                    var createdTime = csv.GetField(3);
-                    var accessd = csv.GetField(4);
-                    var accessedTime = csv.GetField(5);
-                    var modified = csv.GetField(6);
-                    var modTime = csv.GetField(7);
-                    var size = csv.GetField(8);
-                    var fileType = csv.GetField(9);
-                    var cpu = csv.GetField(10);
-                    var linker = csv.GetField(11);
-                    var codeSize = csv.GetField(12);
-                    var initData = csv.GetField(13);
-                    var uinitData = csv.GetField(14);
-                    var imageVer = csv.GetField(15);
-                    var subsysVer = csv.GetField(16);
-                    var minOs = csv.GetField(17);
-                    var entryRva = csv.GetField(18);
-                    var entryfAddr = csv.GetField(19);
-                    var imagebase = csv.GetField(20);
-                    var cert = csv.GetField(21);
-                    var checksum = csv.GetField(22);
-                    var md5 = csv.GetField(23);
-                    var company = csv.GetField(24);
-                    var file = csv.GetField(25);
-                    var rating = csv.GetField(26);
-                    var notes = csv.GetField(27);
-                    var peid = csv.GetField(28);
-                    var symbolFile = csv.GetField(29);
-
-                    var pe = new PeScanOutData {Line = ln11};
-                    pe.Tag = TaggedLines.Contains(ln11);
-                    if (compiled.Length > 0)
-                    {
-                        pe.CompiledTime = DateTime.Parse($"{compiled} {compTime}", CultureInfo.InvariantCulture,
-                                DateTimeStyles.AssumeUniversal)
-                            .ToUniversalTime();
-                    }
-
-                    pe.CreatedTime = DateTime.Parse($"{created} {createdTime}", CultureInfo.InvariantCulture,
+                    pe.CompiledTime = DateTime.Parse($"{compiled} {compTime}", CultureInfo.InvariantCulture,
                             DateTimeStyles.AssumeUniversal)
                         .ToUniversalTime();
-                    pe.AccessedTime = DateTime.Parse($"{accessd} {accessedTime}", CultureInfo.InvariantCulture,
-                            DateTimeStyles.AssumeUniversal)
-                        .ToUniversalTime();
-                    pe.ModifiedTime = DateTime
-                        .Parse($"{modified} {modTime}", null, DateTimeStyles.AssumeUniversal)
-                        .ToUniversalTime();
-
-                    pe.Size = int.Parse(size);
-                    pe.FileType = fileType;
-                    pe.CPU = cpu;
-                    if (linker.Length > 0)
-                    {
-                        pe.Linker = float.Parse(linker);
-                    }
-
-                    pe.CodeSize = codeSize;
-                    pe.InitData = initData;
-                    pe.UInitData = uinitData;
-                    pe.ImageVer = imageVer;
-                    pe.SubsysVer = subsysVer;
-                    pe.SymbolFile = symbolFile;
-                    pe.PeId = peid;
-
-                    pe.MinimumOS = minOs;
-                    if (entryRva.Length > 0)
-                    {
-                        pe.EntryOva = int.Parse(entryRva);
-                    }
-
-                    if (entryfAddr.Length > 0)
-                    {
-                        pe.EntryFAddress = int.Parse(entryfAddr);
-                    }
-
-                    if (imagebase.Length > 0)
-                    {
-                        pe.ImageBase = ulong.Parse(imagebase);
-                    }
-
-                    pe.Signed = cert.Equals("yes");
-                    pe.CheckSum = checksum.Equals("yes");
-                    pe.MD5 = md5;
-                    pe.Company = company;
-                    pe.FilePath = file;
-                    pe.Rating = int.Parse(rating);
-                    pe.Notes = notes;
-
-                    DataList.Add(pe);
-                    ln11 += 1;
                 }
+
+                pe.CreatedTime = DateTime.Parse($"{created} {createdTime}", CultureInfo.InvariantCulture,
+                        DateTimeStyles.AssumeUniversal)
+                    .ToUniversalTime();
+                pe.AccessedTime = DateTime.Parse($"{accessd} {accessedTime}", CultureInfo.InvariantCulture,
+                        DateTimeStyles.AssumeUniversal)
+                    .ToUniversalTime();
+                pe.ModifiedTime = DateTime
+                    .Parse($"{modified} {modTime}", null, DateTimeStyles.AssumeUniversal)
+                    .ToUniversalTime();
+
+                pe.Size = int.Parse(size);
+                pe.FileType = fileType;
+                pe.CPU = cpu;
+                if (linker.Length > 0)
+                {
+                    pe.Linker = float.Parse(linker);
+                }
+
+                pe.CodeSize = codeSize;
+                pe.InitData = initData;
+                pe.UInitData = uinitData;
+                pe.ImageVer = imageVer;
+                pe.SubsysVer = subsysVer;
+                pe.SymbolFile = symbolFile;
+                pe.PeId = peid;
+
+                pe.MinimumOS = minOs;
+                if (entryRva.Length > 0)
+                {
+                    pe.EntryOva = int.Parse(entryRva);
+                }
+
+                if (entryfAddr.Length > 0)
+                {
+                    pe.EntryFAddress = int.Parse(entryfAddr);
+                }
+
+                if (imagebase.Length > 0)
+                {
+                    pe.ImageBase = ulong.Parse(imagebase);
+                }
+
+                pe.Signed = cert.Equals("yes");
+                pe.CheckSum = checksum.Equals("yes");
+                pe.MD5 = md5;
+                pe.Company = company;
+                pe.FilePath = file;
+                pe.Rating = int.Parse(rating);
+                pe.Notes = notes;
+
+                DataList.Add(pe);
+                ln11 += 1;
             }
         }
     }
@@ -280,155 +278,154 @@ namespace TLEFileTzWorks
             DataList.Clear();
 
             int rawFlag;
-            using (var fileReader = File.OpenText(filename))
-            {
-                var csv = new CsvReader(fileReader, CultureInfo.InvariantCulture);
+            using var fileReader = File.OpenText(filename);
+            var csv = new CsvReader(fileReader, CultureInfo.InvariantCulture);
                 
 
-                var o = new TypeConverterOptions
-                {
-                    DateTimeStyle = DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal
-                };
-                csv.Context.TypeConverterOptionsCache.AddOptions<WispOutData>(o);
+            var o = new TypeConverterOptions
+            {
+                DateTimeStyle = DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal
+            };
+            csv.Context.TypeConverterOptionsCache.AddOptions<WispOutData>(o);
 
+            csv.Read();
+
+            if (csv.Context.Parser.RawRecord.StartsWith("wisp - "))
+            {
+                //dumb ass non-csv, so skip it
                 csv.Read();
+                csv.Read();
+                csv.Read();
+                csv.Read();
+            }
 
-                if (csv.Context.Parser.RawRecord.StartsWith("wisp - "))
+            csv.ReadHeader();
+                
+
+            var ln11 = 1;
+            while (csv.Read())
+            {
+                Log.Debug("Line # {Line}, Record: {RawRecord}",ln11,csv.Context.Parser.RawRecord);
+                
+                var mftEntry = csv.GetField(0);
+                var mftSeq = csv.GetField(1);
+                var parentMftEntry = csv.GetField(2);
+                var parentMftSeq = csv.GetField(3);
+                var entryType = csv.GetField(4);
+                var modified = csv.GetField(5);
+                var modTime = csv.GetField(6);
+                var accessd = csv.GetField(7);
+                var accessedTime = csv.GetField(8);
+                var recordChanged = csv.GetField(9);
+                var recordChangedTime = csv.GetField(10);
+                var created = csv.GetField(11);
+                var createTime = csv.GetField(12);
+
+                var fileType = csv.GetField(13);
+                var sizeRes = csv.GetField(14);
+                var sizeAct = csv.GetField(15);
+                var flags = csv.GetField(16);
+                var name = csv.GetField(17);
+                var comment = csv.GetField(18);
+
+
+                var wi = new WispOutData
                 {
-                    //dumb ass non-csv, so skip it
-                    csv.Read();
-                    csv.Read();
-                    csv.Read();
-                    csv.Read();
+                    Line = ln11
+                };
+
+                wi.Tag = TaggedLines.Contains(ln11);
+
+                if (created.IsNullOrEmpty() == false)
+                {
+                    wi.CreatedTime = DateTime.Parse($"{created} {createTime}", CultureInfo.InvariantCulture,
+                            DateTimeStyles.AssumeUniversal)
+                        .ToUniversalTime();
                 }
 
-                csv.ReadHeader();
-                var l = LogManager.GetCurrentClassLogger();
-
-                var ln11 = 1;
-                while (csv.Read())
+                if (recordChanged.IsNullOrEmpty() == false)
                 {
-                    l.Debug($"Line # {ln11}, Record: {csv.Context.Parser.RawRecord}");
-                    var mftEntry = csv.GetField(0);
-                    var mftSeq = csv.GetField(1);
-                    var parentMftEntry = csv.GetField(2);
-                    var parentMftSeq = csv.GetField(3);
-                    var entryType = csv.GetField(4);
-                    var modified = csv.GetField(5);
-                    var modTime = csv.GetField(6);
-                    var accessd = csv.GetField(7);
-                    var accessedTime = csv.GetField(8);
-                    var recordChanged = csv.GetField(9);
-                    var recordChangedTime = csv.GetField(10);
-                    var created = csv.GetField(11);
-                    var createTime = csv.GetField(12);
-
-                    var fileType = csv.GetField(13);
-                    var sizeRes = csv.GetField(14);
-                    var sizeAct = csv.GetField(15);
-                    var flags = csv.GetField(16);
-                    var name = csv.GetField(17);
-                    var comment = csv.GetField(18);
-
-
-                    var wi = new WispOutData
-                    {
-                        Line = ln11
-                    };
-
-                    wi.Tag = TaggedLines.Contains(ln11);
-
-                    if (created.IsNullOrEmpty() == false)
-                    {
-                        wi.CreatedTime = DateTime.Parse($"{created} {createTime}", CultureInfo.InvariantCulture,
-                                DateTimeStyles.AssumeUniversal)
-                            .ToUniversalTime();
-                    }
-
-                    if (recordChanged.IsNullOrEmpty() == false)
-                    {
-                        wi.RecordChangedTime = DateTime.Parse($"{recordChanged} {recordChangedTime}",
-                                CultureInfo.InvariantCulture,
-                                DateTimeStyles.AssumeUniversal)
-                            .ToUniversalTime();
-                    }
-
-                    if (accessd.IsNullOrEmpty() == false)
-                    {
-                        wi.AccessedTime = DateTime.Parse($"{accessd} {accessedTime}", CultureInfo.InvariantCulture,
-                                DateTimeStyles.AssumeUniversal)
-                            .ToUniversalTime();
-                    }
-
-                    if (modified.IsNullOrEmpty() == false)
-                    {
-                        wi.ModifiedTime = DateTime
-                            .Parse($"{modified} {modTime}", null, DateTimeStyles.AssumeUniversal)
-                            .ToUniversalTime();
-                    }
-
-                    if (mftEntry.Length > 0)
-                    {
-                        wi.MftEntry = ulong.Parse(mftEntry);
-                    }
-
-                    if (mftSeq.Length > 0)
-                    {
-                        wi.MftSequence = ulong.Parse(mftSeq);
-                    }
-
-                    if (parentMftEntry.Length > 0)
-                    {
-                        wi.ParentEntry = ulong.Parse(parentMftEntry);
-                    }
-
-                    if (parentMftSeq.Length > 0)
-                    {
-                        wi.ParentSequence = ulong.Parse(parentMftSeq);
-                    }
-
-                    wi.EntryType = entryType;
-                    if (fileType == "dir")
-                    {
-                        wi.FileType = "Directory";
-                    }
-                    else
-                    {
-                        wi.FileType = "File";
-                    }
-
-
-                    if (sizeAct.Length > 0)
-                    {
-                        wi.SizeUsed = ulong.Parse(sizeAct);
-                    }
-
-                    if (sizeRes.Length > 0)
-                    {
-                        wi.SizeReserved = ulong.Parse(sizeRes);
-                    }
-
-                    if (flags.Length > 0)
-                    {
-                        var rawNum = flags.Replace("0x", "");
-
-
-                        var valOk = int.TryParse(rawNum, NumberStyles.HexNumber, CultureInfo.InvariantCulture,
-                            out rawFlag);
-
-                        if (valOk)
-                        {
-                            wi.Flags = ((FileFlag) rawFlag).ToString().Replace(", ", " | ");
-                        }
-                    }
-
-                    wi.Name = name;
-                    wi.Comment = comment;
-
-
-                    DataList.Add(wi);
-                    ln11 += 1;
+                    wi.RecordChangedTime = DateTime.Parse($"{recordChanged} {recordChangedTime}",
+                            CultureInfo.InvariantCulture,
+                            DateTimeStyles.AssumeUniversal)
+                        .ToUniversalTime();
                 }
+
+                if (accessd.IsNullOrEmpty() == false)
+                {
+                    wi.AccessedTime = DateTime.Parse($"{accessd} {accessedTime}", CultureInfo.InvariantCulture,
+                            DateTimeStyles.AssumeUniversal)
+                        .ToUniversalTime();
+                }
+
+                if (modified.IsNullOrEmpty() == false)
+                {
+                    wi.ModifiedTime = DateTime
+                        .Parse($"{modified} {modTime}", null, DateTimeStyles.AssumeUniversal)
+                        .ToUniversalTime();
+                }
+
+                if (mftEntry.Length > 0)
+                {
+                    wi.MftEntry = ulong.Parse(mftEntry);
+                }
+
+                if (mftSeq.Length > 0)
+                {
+                    wi.MftSequence = ulong.Parse(mftSeq);
+                }
+
+                if (parentMftEntry.Length > 0)
+                {
+                    wi.ParentEntry = ulong.Parse(parentMftEntry);
+                }
+
+                if (parentMftSeq.Length > 0)
+                {
+                    wi.ParentSequence = ulong.Parse(parentMftSeq);
+                }
+
+                wi.EntryType = entryType;
+                if (fileType == "dir")
+                {
+                    wi.FileType = "Directory";
+                }
+                else
+                {
+                    wi.FileType = "File";
+                }
+
+
+                if (sizeAct.Length > 0)
+                {
+                    wi.SizeUsed = ulong.Parse(sizeAct);
+                }
+
+                if (sizeRes.Length > 0)
+                {
+                    wi.SizeReserved = ulong.Parse(sizeRes);
+                }
+
+                if (flags.Length > 0)
+                {
+                    var rawNum = flags.Replace("0x", "");
+
+
+                    var valOk = int.TryParse(rawNum, NumberStyles.HexNumber, CultureInfo.InvariantCulture,
+                        out rawFlag);
+
+                    if (valOk)
+                    {
+                        wi.Flags = ((FileFlag) rawFlag).ToString().Replace(", ", " | ");
+                    }
+                }
+
+                wi.Name = name;
+                wi.Comment = comment;
+
+
+                DataList.Add(wi);
+                ln11 += 1;
             }
         }
     }

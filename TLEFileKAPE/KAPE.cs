@@ -6,7 +6,7 @@ using System.IO;
 using CsvHelper;
 using CsvHelper.TypeConversion;
 using ITLEFileSpec;
-using NLog;
+using Serilog;
 
 namespace TLEFileKAPE
 {
@@ -64,41 +64,39 @@ namespace TLEFileKAPE
         {
             DataList.Clear();
 
-            using (var fileReader = File.OpenText(filename))
-            {
-                var csv = new CsvReader(fileReader, CultureInfo.InvariantCulture);
+            using var fileReader = File.OpenText(filename);
+            var csv = new CsvReader(fileReader, CultureInfo.InvariantCulture);
                 
 
-                var o = new TypeConverterOptions
-                {
-                    DateTimeStyle = DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal
-                };
-                csv.Context.TypeConverterOptionsCache.AddOptions<KapeCopyLogData>(o);
+            var o = new TypeConverterOptions
+            {
+                DateTimeStyle = DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal
+            };
+            csv.Context.TypeConverterOptionsCache.AddOptions<KapeCopyLogData>(o);
 
 
-                var foo = csv.Context.AutoMap<KapeCopyLogData>();
+            var foo = csv.Context.AutoMap<KapeCopyLogData>();
 
-                foo.Map(t => t.Line).Ignore();
-                foo.Map(t => t.Tag).Ignore();
+            foo.Map(t => t.Line).Ignore();
+            foo.Map(t => t.Tag).Ignore();
 
-                csv.Context.RegisterClassMap(foo);
+            csv.Context.RegisterClassMap(foo);
 
-                var l = LogManager.GetCurrentClassLogger();
+                
 
-                var records = csv.GetRecords<KapeCopyLogData>();
+            var records = csv.GetRecords<KapeCopyLogData>();
 
-                var ln = 1;
-                foreach (var record in records)
-                {
-                    l.Debug($"Line # {ln}, Record: {csv.Context.Parser.RawRecord}");
-                    record.Line = ln;
+            var ln = 1;
+            foreach (var record in records)
+            {
+                Log.Debug("Line # {Line}, Record: {RawRecord}",ln,csv.Context.Parser.RawRecord);
+                record.Line = ln;
 
-                    record.Tag = TaggedLines.Contains(ln);
+                record.Tag = TaggedLines.Contains(ln);
 
-                    DataList.Add(record);
+                DataList.Add(record);
 
-                    ln += 1;
-                }
+                ln += 1;
             }
         }
     }
@@ -148,41 +146,39 @@ namespace TLEFileKAPE
         {
             DataList.Clear();
 
-            using (var fileReader = File.OpenText(filename))
-            {
-                var csv = new CsvReader(fileReader, CultureInfo.InvariantCulture);
+            using var fileReader = File.OpenText(filename);
+            var csv = new CsvReader(fileReader, CultureInfo.InvariantCulture);
                 
 
-                var o = new TypeConverterOptions
-                {
-                    DateTimeStyle = DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal
-                };
-                csv.Context.TypeConverterOptionsCache.AddOptions<KapeSkipLogData>(o);
+            var o = new TypeConverterOptions
+            {
+                DateTimeStyle = DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal
+            };
+            csv.Context.TypeConverterOptionsCache.AddOptions<KapeSkipLogData>(o);
 
 
-                var foo = csv.Context.AutoMap<KapeSkipLogData>();
+            var foo = csv.Context.AutoMap<KapeSkipLogData>();
 
-                foo.Map(t => t.Line).Ignore();
-                foo.Map(t => t.Tag).Ignore();
+            foo.Map(t => t.Line).Ignore();
+            foo.Map(t => t.Tag).Ignore();
 
-                csv.Context.RegisterClassMap(foo);
+            csv.Context.RegisterClassMap(foo);
 
-                var l = LogManager.GetCurrentClassLogger();
+                
 
-                var records = csv.GetRecords<KapeSkipLogData>();
+            var records = csv.GetRecords<KapeSkipLogData>();
 
-                var ln = 1;
-                foreach (var record in records)
-                {
-                    l.Debug($"Line # {ln}, Record: {csv.Context.Parser.RawRecord}");
-                    record.Line = ln;
+            var ln = 1;
+            foreach (var record in records)
+            {
+                Log.Debug("Line # {Line}, Record: {RawRecord}",ln,csv.Context.Parser.RawRecord);
+                record.Line = ln;
 
-                    record.Tag = TaggedLines.Contains(ln);
+                record.Tag = TaggedLines.Contains(ln);
 
-                    DataList.Add(record);
+                DataList.Add(record);
 
-                    ln += 1;
-                }
+                ln += 1;
             }
         }
     }
@@ -247,39 +243,37 @@ namespace TLEFileKAPE
         {
             DataList.Clear();
 
-            using (var fileReader = File.OpenText(filename))
-            {
-                var csv = new CsvReader(fileReader, CultureInfo.InvariantCulture);
+            using var fileReader = File.OpenText(filename);
+            var csv = new CsvReader(fileReader, CultureInfo.InvariantCulture);
                 
 
-                var o = new TypeConverterOptions
-                {
-                    DateTimeStyle = DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal
-                };
-                csv.Context.TypeConverterOptionsCache.AddOptions<KapeTriageData>(o);
+            var o = new TypeConverterOptions
+            {
+                DateTimeStyle = DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal
+            };
+            csv.Context.TypeConverterOptionsCache.AddOptions<KapeTriageData>(o);
 
-                var foo = csv.Context.AutoMap<KapeTriageData>();
+            var foo = csv.Context.AutoMap<KapeTriageData>();
 
-                foo.Map(t => t.Line).Ignore();
-                foo.Map(t => t.Tag).Ignore();
+            foo.Map(t => t.Line).Ignore();
+            foo.Map(t => t.Tag).Ignore();
 
-                csv.Context.RegisterClassMap(foo);
-                var l = LogManager.GetCurrentClassLogger();
+            csv.Context.RegisterClassMap(foo);
+                
 
-                var records = csv.GetRecords<KapeTriageData>();
+            var records = csv.GetRecords<KapeTriageData>();
 
-                var ln = 1;
-                foreach (var record in records)
-                {
-                    l.Debug($"Line # {ln}, Record: {csv.Context.Parser.RawRecord}");
-                    record.Line = ln;
+            var ln = 1;
+            foreach (var record in records)
+            {
+                Log.Debug("Line # {Line}, Record: {RawRecord}",ln,csv.Context.Parser.RawRecord);
+                record.Line = ln;
 
-                    record.Tag = TaggedLines.Contains(ln);
+                record.Tag = TaggedLines.Contains(ln);
 
-                    DataList.Add(record);
+                DataList.Add(record);
 
-                    ln += 1;
-                }
+                ln += 1;
             }
         }
     }

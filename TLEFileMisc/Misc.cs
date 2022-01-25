@@ -7,7 +7,7 @@ using System.Linq;
 using CsvHelper;
 using CsvHelper.TypeConversion;
 using ITLEFileSpec;
-using NLog;
+using Serilog;
 
 namespace TLEFileMisc
 {
@@ -117,311 +117,309 @@ namespace TLEFileMisc
         {
             DataList.Clear();
 
-            using (var fileReader = File.OpenText(filename))
-            {
-                var csv = new CsvReader(fileReader, CultureInfo.InvariantCulture);
+            using var fileReader = File.OpenText(filename);
+            var csv = new CsvReader(fileReader, CultureInfo.InvariantCulture);
                 
-                var foo = csv.Context.AutoMap<AnalyzeMftData>();
+            var foo = csv.Context.AutoMap<AnalyzeMftData>();
 
-                var o = new TypeConverterOptions
+            var o = new TypeConverterOptions
+            {
+                DateTimeStyle = DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal
+            };
+            csv.Context.TypeConverterOptionsCache.AddOptions<AnalyzeMftData>(o);
+
+            foo.Map(t => t.Line).Ignore();
+            foo.Map(t => t.Tag).Ignore();
+
+            foo.Map(t => t.RecordNumber).Name("Record Number");
+            foo.Map(t => t.Good).Name("Good");
+            foo.Map(t => t.Active).Name("Active");
+            foo.Map(t => t.RecordType).Name("Record type");
+            foo.Map(t => t.SequenceNumber).Name("Sequence Number");
+            foo.Map(t => t.ParentFileRecordNumber).Name("Parent File Rec. #");
+            foo.Map(t => t.ParentFileRecordSequence).Name("Parent File Rec. Seq. #");
+            foo.Map(t => t.FileName1).Name("Filename #1");
+            foo.Map(t => t.StdInfoCreated).Name("Std Info Creation date");
+            foo.Map(t => t.StdInfoModified).Name("Std Info Modification date");
+            foo.Map(t => t.StdInfoAccessed).Name("Std Info Access date");
+            foo.Map(t => t.StdInfoEntryDate).Name("Std Info Entry date");
+            foo.Map(t => t.FileNameCreated).Name("FN Info Creation date");
+            foo.Map(t => t.FileNameModified).Name("FN Info Modification date");
+            foo.Map(t => t.FileNameAccessed).Name("FN Info Access date");
+            foo.Map(t => t.FileNameEntryDate).Name("FN Info Entry date");
+            foo.Map(t => t.ObjectId).Name("Object ID");
+            foo.Map(t => t.BirthVolumeId).Name("Birth Volume ID");
+            foo.Map(t => t.BirthObjectId).Name("Birth Object ID");
+            foo.Map(t => t.BirthVolumeId).Name("Birth Domain ID");
+
+            foo.Map(t => t.FileName2).Name("Filename #2");
+            foo.Map(t => t.FileNameCreated2).Name("FN Info Creation date");
+            foo.Map(t => t.FileNameModified2).Name("FN Info Modification date");
+            foo.Map(t => t.FileNameAccessed2).Name("FN Info Access date");
+            foo.Map(t => t.FileNameEntryDate2).Name("FN Info Entry date");
+
+            foo.Map(t => t.FileName3).Name("Filename #3");
+            foo.Map(t => t.FileNameCreated3).Name("FN Info Creation date");
+            foo.Map(t => t.FileNameModified3).Name("FN Info Modification date");
+            foo.Map(t => t.FileNameAccessed3).Name("FN Info Access date");
+            foo.Map(t => t.FileNameEntryDate3).Name("FN Info Entry date");
+
+            foo.Map(t => t.FileName4).Name("Filename #4");
+            foo.Map(t => t.FileNameCreated4).Name("FN Info Creation date");
+            foo.Map(t => t.FileNameModified4).Name("FN Info Modification date");
+            foo.Map(t => t.FileNameAccessed4).Name("FN Info Access date");
+            foo.Map(t => t.FileNameEntryDate4).Name("FN Info Entry date");
+
+            foo.Map(t => t.StandardInformation).Name("Standard Information");
+            foo.Map(t => t.AttributeList).Name("Attribute List");
+            foo.Map(t => t.Filename).Name("Filename");
+            foo.Map(t => t.ObjectId2).Name("Object ID");
+            foo.Map(t => t.VolumeName).Name("Volume Name");
+            foo.Map(t => t.VolumeInfo).Name("Volume Info");
+            foo.Map(t => t.Data).Name("Data");
+            foo.Map(t => t.IndexRoot).Name("Index Root");
+            foo.Map(t => t.IndexAllocation).Name("Index Allocation");
+            foo.Map(t => t.Bitmap).Name("Bitmap");
+            foo.Map(t => t.ReparsePoint).Name("Reparse Point");
+            foo.Map(t => t.EaInformation).Name("EA Information");
+            foo.Map(t => t.Ea).Name("EA");
+            foo.Map(t => t.PropertySet).Name("Property Set");
+            foo.Map(t => t.LoggedUtilityStream).Name("Logged Utility Stream");
+            foo.Map(t => t.LogNotes).Name("Log/Notes");
+            foo.Map(t => t.StfFnShift).Name("STF FN Shift");
+            foo.Map(t => t.uSecZero).Name("uSec Zero");
+            foo.Map(t => t.Ads).Name("ADS");
+
+
+            csv.Context.RegisterClassMap(foo);
+
+                
+
+            csv.Read();
+            csv.ReadHeader();
+
+            var ln = 1;
+            while (csv.Read())
+            {
+                Log.Debug("Line # {Line}, Record: {RawRecord}",ln,csv.Context.Parser.RawRecord);
+
+                if (csv.Context.Parser.RawRecord.Contains("BAAD MFT Record"))
                 {
-                    DateTimeStyle = DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal
-                };
-                csv.Context.TypeConverterOptionsCache.AddOptions<AnalyzeMftData>(o);
-
-                foo.Map(t => t.Line).Ignore();
-                foo.Map(t => t.Tag).Ignore();
-
-                foo.Map(t => t.RecordNumber).Name("Record Number");
-                foo.Map(t => t.Good).Name("Good");
-                foo.Map(t => t.Active).Name("Active");
-                foo.Map(t => t.RecordType).Name("Record type");
-                foo.Map(t => t.SequenceNumber).Name("Sequence Number");
-                foo.Map(t => t.ParentFileRecordNumber).Name("Parent File Rec. #");
-                foo.Map(t => t.ParentFileRecordSequence).Name("Parent File Rec. Seq. #");
-                foo.Map(t => t.FileName1).Name("Filename #1");
-                foo.Map(t => t.StdInfoCreated).Name("Std Info Creation date");
-                foo.Map(t => t.StdInfoModified).Name("Std Info Modification date");
-                foo.Map(t => t.StdInfoAccessed).Name("Std Info Access date");
-                foo.Map(t => t.StdInfoEntryDate).Name("Std Info Entry date");
-                foo.Map(t => t.FileNameCreated).Name("FN Info Creation date");
-                foo.Map(t => t.FileNameModified).Name("FN Info Modification date");
-                foo.Map(t => t.FileNameAccessed).Name("FN Info Access date");
-                foo.Map(t => t.FileNameEntryDate).Name("FN Info Entry date");
-                foo.Map(t => t.ObjectId).Name("Object ID");
-                foo.Map(t => t.BirthVolumeId).Name("Birth Volume ID");
-                foo.Map(t => t.BirthObjectId).Name("Birth Object ID");
-                foo.Map(t => t.BirthVolumeId).Name("Birth Domain ID");
-
-                foo.Map(t => t.FileName2).Name("Filename #2");
-                foo.Map(t => t.FileNameCreated2).Name("FN Info Creation date");
-                foo.Map(t => t.FileNameModified2).Name("FN Info Modification date");
-                foo.Map(t => t.FileNameAccessed2).Name("FN Info Access date");
-                foo.Map(t => t.FileNameEntryDate2).Name("FN Info Entry date");
-
-                foo.Map(t => t.FileName3).Name("Filename #3");
-                foo.Map(t => t.FileNameCreated3).Name("FN Info Creation date");
-                foo.Map(t => t.FileNameModified3).Name("FN Info Modification date");
-                foo.Map(t => t.FileNameAccessed3).Name("FN Info Access date");
-                foo.Map(t => t.FileNameEntryDate3).Name("FN Info Entry date");
-
-                foo.Map(t => t.FileName4).Name("Filename #4");
-                foo.Map(t => t.FileNameCreated4).Name("FN Info Creation date");
-                foo.Map(t => t.FileNameModified4).Name("FN Info Modification date");
-                foo.Map(t => t.FileNameAccessed4).Name("FN Info Access date");
-                foo.Map(t => t.FileNameEntryDate4).Name("FN Info Entry date");
-
-                foo.Map(t => t.StandardInformation).Name("Standard Information");
-                foo.Map(t => t.AttributeList).Name("Attribute List");
-                foo.Map(t => t.Filename).Name("Filename");
-                foo.Map(t => t.ObjectId2).Name("Object ID");
-                foo.Map(t => t.VolumeName).Name("Volume Name");
-                foo.Map(t => t.VolumeInfo).Name("Volume Info");
-                foo.Map(t => t.Data).Name("Data");
-                foo.Map(t => t.IndexRoot).Name("Index Root");
-                foo.Map(t => t.IndexAllocation).Name("Index Allocation");
-                foo.Map(t => t.Bitmap).Name("Bitmap");
-                foo.Map(t => t.ReparsePoint).Name("Reparse Point");
-                foo.Map(t => t.EaInformation).Name("EA Information");
-                foo.Map(t => t.Ea).Name("EA");
-                foo.Map(t => t.PropertySet).Name("Property Set");
-                foo.Map(t => t.LoggedUtilityStream).Name("Logged Utility Stream");
-                foo.Map(t => t.LogNotes).Name("Log/Notes");
-                foo.Map(t => t.StfFnShift).Name("STF FN Shift");
-                foo.Map(t => t.uSecZero).Name("uSec Zero");
-                foo.Map(t => t.Ads).Name("ADS");
-
-
-                csv.Context.RegisterClassMap(foo);
-
-                var l = LogManager.GetCurrentClassLogger();
-
-                csv.Read();
-                csv.ReadHeader();
-
-                var ln = 1;
-                while (csv.Read())
-                {
-                    l.Debug($"Line # {ln}, Record: {csv.Context.Parser.RawRecord}");
-
-                    if (csv.Context.Parser.RawRecord.Contains("BAAD MFT Record"))
-                    {
-                        continue;
-                    }
-
-                    var recNum = int.Parse(csv.GetField(0));
-                    var isGood = csv.GetField(1).Equals("Good");
-                    var isActive = csv.GetField(2).Equals("Active");
-                    var recType = csv.GetField(3);
-                    var seqNumber = csv.GetField(4);
-
-                    var parentEntryNum = csv.GetField(5);
-                    var parentSeqNum = csv.GetField(6);
-
-                    if (parentSeqNum == "NoParent")
-                    {
-                        parentSeqNum = "-1";
-                    }
-
-                    if (parentEntryNum == "NoParent")
-                    {
-                        parentEntryNum = "-1";
-                    }
-
-                    var fileName1 = csv.GetField(7);
-
-                    var siCreate1 = csv.GetField(8).Trim('=').Trim('"');
-
-                    DateTime? siCreate1D = null;
-                    DateTime? siModify1d = null;
-                    DateTime? siAccess1d = null;
-                    DateTime? siEntry1d = null;
-
-                    if (siCreate1.Equals("NoSIRecord") == false && siCreate1.Length > 0)
-                    {
-                        siCreate1D = DateTime.Parse(siCreate1,
-                            CultureInfo.InvariantCulture, DateTimeStyles.AssumeUniversal).ToUniversalTime();
-                        siModify1d = DateTime.Parse(csv.GetField(9).Trim('=').Trim('"'),
-                            CultureInfo.InvariantCulture, DateTimeStyles.AssumeUniversal).ToUniversalTime();
-                        siAccess1d = DateTime.Parse(csv.GetField(10).Trim('=').Trim('"'),
-                            CultureInfo.InvariantCulture, DateTimeStyles.AssumeUniversal).ToUniversalTime();
-                        siEntry1d = DateTime.Parse(csv.GetField(11).Trim('=').Trim('"'),
-                            CultureInfo.InvariantCulture, DateTimeStyles.AssumeUniversal).ToUniversalTime();
-                    }
-
-                    var fnCreate1 = csv.GetField(12).Trim('=').Trim('"');
-                    var fnModify1 = csv.GetField(13).Trim('=').Trim('"');
-                    var fnAccess1 = csv.GetField(14).Trim('=').Trim('"');
-                    var fnEntry1 = csv.GetField(15).Trim('=').Trim('"');
-
-                    DateTime? fnCreate1d = null;
-                    DateTime? fnModify1d = null;
-                    DateTime? fnAccess1d = null;
-                    DateTime? fnEntry1d = null;
-
-                    if (fnCreate1.Equals("NoFNRecord") == false && fnCreate1.Length > 0)
-                    {
-                        fnCreate1d = DateTime.Parse(fnCreate1,
-                            CultureInfo.InvariantCulture, DateTimeStyles.AssumeUniversal).ToUniversalTime();
-
-                        fnModify1d = DateTime.Parse(fnModify1,
-                            CultureInfo.InvariantCulture, DateTimeStyles.AssumeUniversal).ToUniversalTime();
-                        fnAccess1d = DateTime.Parse(fnAccess1,
-                            CultureInfo.InvariantCulture, DateTimeStyles.AssumeUniversal).ToUniversalTime();
-                        fnEntry1d = DateTime.Parse(fnEntry1,
-                            CultureInfo.InvariantCulture, DateTimeStyles.AssumeUniversal).ToUniversalTime();
-                    }
-
-                    var objectId = csv.GetField(16);
-                    var birthVolId = csv.GetField(17);
-                    var birthObjectId = csv.GetField(18);
-                    var birthDomainId = csv.GetField(19);
-
-                    var fileName2 = csv.GetField(20);
-
-                    var fnCreate2 = csv.GetField(21).Trim('=').Trim('"');
-                    DateTime? fnCreate2d = null;
-                    DateTime? fnModify2d = null;
-                    DateTime? fnAccess2d = null;
-                    DateTime? fnEntry2d = null;
-
-                    if (fnCreate2.Equals("NoFNRecord") == false && fnCreate2.Length > 0)
-                    {
-                        fnCreate2d = DateTime.Parse(fnCreate2,
-                            CultureInfo.InvariantCulture, DateTimeStyles.AssumeUniversal).ToUniversalTime();
-                        fnModify2d = DateTime.Parse(csv.GetField(22).Trim('=').Trim('"'),
-                            CultureInfo.InvariantCulture, DateTimeStyles.AssumeUniversal).ToUniversalTime();
-                        fnAccess2d = DateTime.Parse(csv.GetField(23).Trim('=').Trim('"'),
-                            CultureInfo.InvariantCulture, DateTimeStyles.AssumeUniversal).ToUniversalTime();
-                        fnEntry2d = DateTime.Parse(csv.GetField(24).Trim('=').Trim('"'),
-                            CultureInfo.InvariantCulture, DateTimeStyles.AssumeUniversal).ToUniversalTime();
-                    }
-
-
-                    var fileName3 = csv.GetField(25);
-
-                    var fnCreate3 = csv.GetField(26).Trim('=').Trim('"');
-                    DateTime? fnCreate3d = null;
-                    DateTime? fnModify3d = null;
-                    DateTime? fnAccess3d = null;
-                    DateTime? fnEntry3d = null;
-
-                    if (fnCreate3.Equals("NoFNRecord") == false && fnCreate3.Length > 0)
-                    {
-                        fnCreate3d = DateTime.Parse(fnCreate3,
-                            CultureInfo.InvariantCulture, DateTimeStyles.AssumeUniversal).ToUniversalTime();
-                        fnModify3d = DateTime.Parse(csv.GetField(27).Trim('=').Trim('"'),
-                            CultureInfo.InvariantCulture, DateTimeStyles.AssumeUniversal).ToUniversalTime();
-                        fnAccess3d = DateTime.Parse(csv.GetField(29).Trim('=').Trim('"'),
-                            CultureInfo.InvariantCulture, DateTimeStyles.AssumeUniversal).ToUniversalTime();
-                        fnEntry3d = DateTime.Parse(csv.GetField(29).Trim('=').Trim('"'),
-                            CultureInfo.InvariantCulture, DateTimeStyles.AssumeUniversal).ToUniversalTime();
-                    }
-
-                    var fileName4 = csv.GetField(30);
-
-                    var fnCreate4 = csv.GetField(31).Trim('=').Trim('"');
-                    DateTime? fnCreate4d = null;
-                    DateTime? fnModify4d = null;
-                    DateTime? fnAccess4d = null;
-                    DateTime? fnEntry4d = null;
-
-                    if (fnCreate4.Equals("NoFNRecord") == false && fnCreate4.Length > 0)
-                    {
-                        fnCreate4d = DateTime.Parse(fnCreate4,
-                            CultureInfo.InvariantCulture, DateTimeStyles.AssumeUniversal).ToUniversalTime();
-                        fnModify4d = DateTime.Parse(csv.GetField(32).Trim('=').Trim('"'),
-                            CultureInfo.InvariantCulture, DateTimeStyles.AssumeUniversal).ToUniversalTime();
-                        fnAccess4d = DateTime.Parse(csv.GetField(33).Trim('=').Trim('"'),
-                            CultureInfo.InvariantCulture, DateTimeStyles.AssumeUniversal).ToUniversalTime();
-                        fnEntry4d = DateTime.Parse(csv.GetField(34).Trim('=').Trim('"'),
-                            CultureInfo.InvariantCulture, DateTimeStyles.AssumeUniversal).ToUniversalTime();
-                    }
-
-                    var stdInfo = csv.GetField(35).Equals("True");
-                    var attrList = csv.GetField(36).Equals("True");
-                    var fn = csv.GetField(37).Equals("True");
-                    var objectId2 = csv.GetField(38).Equals("True");
-                    var volName = csv.GetField(39).Equals("True");
-                    var volInfo = csv.GetField(40).Equals("True");
-                    var data = csv.GetField(41).Equals("True");
-                    var indexRoot = csv.GetField(42).Equals("True");
-
-                    var indexAlloc = csv.GetField(43).Equals("True");
-                    var bitmap = csv.GetField(44).Equals("True");
-                    var reparsePoint = csv.GetField(45).Equals("True");
-                    var eaInfo = csv.GetField(46).Equals("True");
-                    var ea = csv.GetField(47).Equals("True");
-                    var propSet = csv.GetField(48).Equals("True");
-                    var loggedUtil = csv.GetField(49).Equals("True");
-                    var logNotes = csv.GetField(50);
-                    var fnShift = csv.GetField(51).Equals("Y");
-                    var uSecZero = csv.GetField(52).Equals("Y");
-                    var hasAds = csv.GetField(53).Equals("Y");
-
-                    var e = new AnalyzeMftData
-                    {
-                        RecordNumber = recNum,
-                        Good = isGood,
-                        Active = isActive,
-                        RecordType = recType,
-                        SequenceNumber = int.Parse(seqNumber),
-                        ParentFileRecordNumber = long.Parse(parentEntryNum),
-                        ParentFileRecordSequence = int.Parse(parentSeqNum),
-                        FileName1 = fileName1,
-                        FileNameCreated = fnCreate1d,
-                        FileNameModified = fnModify1d,
-                        FileNameAccessed = fnAccess1d,
-                        FileNameEntryDate = fnEntry1d,
-                        StdInfoCreated = siCreate1D,
-                        StdInfoModified = siModify1d,
-                        StdInfoAccessed = siAccess1d,
-                        StdInfoEntryDate = siEntry1d,
-                        FileName2 = fileName2,
-                        FileNameCreated2 = fnCreate2d,
-                        FileNameModified2 = fnModify2d,
-                        FileNameAccessed2 = fnAccess2d,
-                        FileNameEntryDate2 = fnEntry2d,
-                        FileName3 = fileName3,
-                        FileNameCreated3 = fnCreate3d,
-                        FileNameModified3 = fnModify3d,
-                        FileNameAccessed3 = fnAccess3d,
-                        FileNameEntryDate3 = fnEntry3d,
-                        FileName4 = fileName4,
-                        FileNameCreated4 = fnCreate4d,
-                        FileNameModified4 = fnModify4d,
-                        FileNameAccessed4 = fnAccess4d,
-                        FileNameEntryDate4 = fnEntry4d,
-                        ObjectId = objectId,
-                        BirthDomainId = birthDomainId,
-                        BirthObjectId = birthObjectId,
-                        BirthVolumeId = birthVolId,
-                        LogNotes = logNotes,
-                        StandardInformation = stdInfo,
-                        AttributeList = attrList,
-                        Filename = fn,
-                        ObjectId2 = objectId2,
-                        VolumeName = volName,
-                        VolumeInfo = volInfo,
-                        Data = data,
-                        IndexRoot = indexRoot,
-                        IndexAllocation = indexAlloc,
-                        Bitmap = bitmap,
-                        ReparsePoint = reparsePoint,
-                        EaInformation = eaInfo,
-                        Ea = ea,
-                        PropertySet = propSet,
-                        LoggedUtilityStream = loggedUtil,
-                        StfFnShift = fnShift,
-                        uSecZero = uSecZero,
-                        Ads = hasAds,
-                        Line = ln
-                    };
-                    e.Tag = TaggedLines.Contains(ln);
-
-                    DataList.Add(e);
-                    ln += 1;
+                    continue;
                 }
+
+                var recNum = int.Parse(csv.GetField(0));
+                var isGood = csv.GetField(1).Equals("Good");
+                var isActive = csv.GetField(2).Equals("Active");
+                var recType = csv.GetField(3);
+                var seqNumber = csv.GetField(4);
+
+                var parentEntryNum = csv.GetField(5);
+                var parentSeqNum = csv.GetField(6);
+
+                if (parentSeqNum == "NoParent")
+                {
+                    parentSeqNum = "-1";
+                }
+
+                if (parentEntryNum == "NoParent")
+                {
+                    parentEntryNum = "-1";
+                }
+
+                var fileName1 = csv.GetField(7);
+
+                var siCreate1 = csv.GetField(8).Trim('=').Trim('"');
+
+                DateTime? siCreate1D = null;
+                DateTime? siModify1d = null;
+                DateTime? siAccess1d = null;
+                DateTime? siEntry1d = null;
+
+                if (siCreate1.Equals("NoSIRecord") == false && siCreate1.Length > 0)
+                {
+                    siCreate1D = DateTime.Parse(siCreate1,
+                        CultureInfo.InvariantCulture, DateTimeStyles.AssumeUniversal).ToUniversalTime();
+                    siModify1d = DateTime.Parse(csv.GetField(9).Trim('=').Trim('"'),
+                        CultureInfo.InvariantCulture, DateTimeStyles.AssumeUniversal).ToUniversalTime();
+                    siAccess1d = DateTime.Parse(csv.GetField(10).Trim('=').Trim('"'),
+                        CultureInfo.InvariantCulture, DateTimeStyles.AssumeUniversal).ToUniversalTime();
+                    siEntry1d = DateTime.Parse(csv.GetField(11).Trim('=').Trim('"'),
+                        CultureInfo.InvariantCulture, DateTimeStyles.AssumeUniversal).ToUniversalTime();
+                }
+
+                var fnCreate1 = csv.GetField(12).Trim('=').Trim('"');
+                var fnModify1 = csv.GetField(13).Trim('=').Trim('"');
+                var fnAccess1 = csv.GetField(14).Trim('=').Trim('"');
+                var fnEntry1 = csv.GetField(15).Trim('=').Trim('"');
+
+                DateTime? fnCreate1d = null;
+                DateTime? fnModify1d = null;
+                DateTime? fnAccess1d = null;
+                DateTime? fnEntry1d = null;
+
+                if (fnCreate1.Equals("NoFNRecord") == false && fnCreate1.Length > 0)
+                {
+                    fnCreate1d = DateTime.Parse(fnCreate1,
+                        CultureInfo.InvariantCulture, DateTimeStyles.AssumeUniversal).ToUniversalTime();
+
+                    fnModify1d = DateTime.Parse(fnModify1,
+                        CultureInfo.InvariantCulture, DateTimeStyles.AssumeUniversal).ToUniversalTime();
+                    fnAccess1d = DateTime.Parse(fnAccess1,
+                        CultureInfo.InvariantCulture, DateTimeStyles.AssumeUniversal).ToUniversalTime();
+                    fnEntry1d = DateTime.Parse(fnEntry1,
+                        CultureInfo.InvariantCulture, DateTimeStyles.AssumeUniversal).ToUniversalTime();
+                }
+
+                var objectId = csv.GetField(16);
+                var birthVolId = csv.GetField(17);
+                var birthObjectId = csv.GetField(18);
+                var birthDomainId = csv.GetField(19);
+
+                var fileName2 = csv.GetField(20);
+
+                var fnCreate2 = csv.GetField(21).Trim('=').Trim('"');
+                DateTime? fnCreate2d = null;
+                DateTime? fnModify2d = null;
+                DateTime? fnAccess2d = null;
+                DateTime? fnEntry2d = null;
+
+                if (fnCreate2.Equals("NoFNRecord") == false && fnCreate2.Length > 0)
+                {
+                    fnCreate2d = DateTime.Parse(fnCreate2,
+                        CultureInfo.InvariantCulture, DateTimeStyles.AssumeUniversal).ToUniversalTime();
+                    fnModify2d = DateTime.Parse(csv.GetField(22).Trim('=').Trim('"'),
+                        CultureInfo.InvariantCulture, DateTimeStyles.AssumeUniversal).ToUniversalTime();
+                    fnAccess2d = DateTime.Parse(csv.GetField(23).Trim('=').Trim('"'),
+                        CultureInfo.InvariantCulture, DateTimeStyles.AssumeUniversal).ToUniversalTime();
+                    fnEntry2d = DateTime.Parse(csv.GetField(24).Trim('=').Trim('"'),
+                        CultureInfo.InvariantCulture, DateTimeStyles.AssumeUniversal).ToUniversalTime();
+                }
+
+
+                var fileName3 = csv.GetField(25);
+
+                var fnCreate3 = csv.GetField(26).Trim('=').Trim('"');
+                DateTime? fnCreate3d = null;
+                DateTime? fnModify3d = null;
+                DateTime? fnAccess3d = null;
+                DateTime? fnEntry3d = null;
+
+                if (fnCreate3.Equals("NoFNRecord") == false && fnCreate3.Length > 0)
+                {
+                    fnCreate3d = DateTime.Parse(fnCreate3,
+                        CultureInfo.InvariantCulture, DateTimeStyles.AssumeUniversal).ToUniversalTime();
+                    fnModify3d = DateTime.Parse(csv.GetField(27).Trim('=').Trim('"'),
+                        CultureInfo.InvariantCulture, DateTimeStyles.AssumeUniversal).ToUniversalTime();
+                    fnAccess3d = DateTime.Parse(csv.GetField(29).Trim('=').Trim('"'),
+                        CultureInfo.InvariantCulture, DateTimeStyles.AssumeUniversal).ToUniversalTime();
+                    fnEntry3d = DateTime.Parse(csv.GetField(29).Trim('=').Trim('"'),
+                        CultureInfo.InvariantCulture, DateTimeStyles.AssumeUniversal).ToUniversalTime();
+                }
+
+                var fileName4 = csv.GetField(30);
+
+                var fnCreate4 = csv.GetField(31).Trim('=').Trim('"');
+                DateTime? fnCreate4d = null;
+                DateTime? fnModify4d = null;
+                DateTime? fnAccess4d = null;
+                DateTime? fnEntry4d = null;
+
+                if (fnCreate4.Equals("NoFNRecord") == false && fnCreate4.Length > 0)
+                {
+                    fnCreate4d = DateTime.Parse(fnCreate4,
+                        CultureInfo.InvariantCulture, DateTimeStyles.AssumeUniversal).ToUniversalTime();
+                    fnModify4d = DateTime.Parse(csv.GetField(32).Trim('=').Trim('"'),
+                        CultureInfo.InvariantCulture, DateTimeStyles.AssumeUniversal).ToUniversalTime();
+                    fnAccess4d = DateTime.Parse(csv.GetField(33).Trim('=').Trim('"'),
+                        CultureInfo.InvariantCulture, DateTimeStyles.AssumeUniversal).ToUniversalTime();
+                    fnEntry4d = DateTime.Parse(csv.GetField(34).Trim('=').Trim('"'),
+                        CultureInfo.InvariantCulture, DateTimeStyles.AssumeUniversal).ToUniversalTime();
+                }
+
+                var stdInfo = csv.GetField(35).Equals("True");
+                var attrList = csv.GetField(36).Equals("True");
+                var fn = csv.GetField(37).Equals("True");
+                var objectId2 = csv.GetField(38).Equals("True");
+                var volName = csv.GetField(39).Equals("True");
+                var volInfo = csv.GetField(40).Equals("True");
+                var data = csv.GetField(41).Equals("True");
+                var indexRoot = csv.GetField(42).Equals("True");
+
+                var indexAlloc = csv.GetField(43).Equals("True");
+                var bitmap = csv.GetField(44).Equals("True");
+                var reparsePoint = csv.GetField(45).Equals("True");
+                var eaInfo = csv.GetField(46).Equals("True");
+                var ea = csv.GetField(47).Equals("True");
+                var propSet = csv.GetField(48).Equals("True");
+                var loggedUtil = csv.GetField(49).Equals("True");
+                var logNotes = csv.GetField(50);
+                var fnShift = csv.GetField(51).Equals("Y");
+                var uSecZero = csv.GetField(52).Equals("Y");
+                var hasAds = csv.GetField(53).Equals("Y");
+
+                var e = new AnalyzeMftData
+                {
+                    RecordNumber = recNum,
+                    Good = isGood,
+                    Active = isActive,
+                    RecordType = recType,
+                    SequenceNumber = int.Parse(seqNumber),
+                    ParentFileRecordNumber = long.Parse(parentEntryNum),
+                    ParentFileRecordSequence = int.Parse(parentSeqNum),
+                    FileName1 = fileName1,
+                    FileNameCreated = fnCreate1d,
+                    FileNameModified = fnModify1d,
+                    FileNameAccessed = fnAccess1d,
+                    FileNameEntryDate = fnEntry1d,
+                    StdInfoCreated = siCreate1D,
+                    StdInfoModified = siModify1d,
+                    StdInfoAccessed = siAccess1d,
+                    StdInfoEntryDate = siEntry1d,
+                    FileName2 = fileName2,
+                    FileNameCreated2 = fnCreate2d,
+                    FileNameModified2 = fnModify2d,
+                    FileNameAccessed2 = fnAccess2d,
+                    FileNameEntryDate2 = fnEntry2d,
+                    FileName3 = fileName3,
+                    FileNameCreated3 = fnCreate3d,
+                    FileNameModified3 = fnModify3d,
+                    FileNameAccessed3 = fnAccess3d,
+                    FileNameEntryDate3 = fnEntry3d,
+                    FileName4 = fileName4,
+                    FileNameCreated4 = fnCreate4d,
+                    FileNameModified4 = fnModify4d,
+                    FileNameAccessed4 = fnAccess4d,
+                    FileNameEntryDate4 = fnEntry4d,
+                    ObjectId = objectId,
+                    BirthDomainId = birthDomainId,
+                    BirthObjectId = birthObjectId,
+                    BirthVolumeId = birthVolId,
+                    LogNotes = logNotes,
+                    StandardInformation = stdInfo,
+                    AttributeList = attrList,
+                    Filename = fn,
+                    ObjectId2 = objectId2,
+                    VolumeName = volName,
+                    VolumeInfo = volInfo,
+                    Data = data,
+                    IndexRoot = indexRoot,
+                    IndexAllocation = indexAlloc,
+                    Bitmap = bitmap,
+                    ReparsePoint = reparsePoint,
+                    EaInformation = eaInfo,
+                    Ea = ea,
+                    PropertySet = propSet,
+                    LoggedUtilityStream = loggedUtil,
+                    StfFnShift = fnShift,
+                    uSecZero = uSecZero,
+                    Ads = hasAds,
+                    Line = ln
+                };
+                e.Tag = TaggedLines.Contains(ln);
+
+                DataList.Add(e);
+                ln += 1;
             }
         }
     }
@@ -484,62 +482,60 @@ namespace TLEFileMisc
         {
             DataList.Clear();
 
-            using (var fileReader = File.OpenText(filename))
-            {
-                var csv = new CsvReader(fileReader, CultureInfo.InvariantCulture);
+            using var fileReader = File.OpenText(filename);
+            var csv = new CsvReader(fileReader, CultureInfo.InvariantCulture);
                 
 
-                var o = new TypeConverterOptions
-                {
-                    DateTimeStyle = DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal
-                };
-                csv.Context.TypeConverterOptionsCache.AddOptions<BrowsingHistoryViewEventData>(o);
+            var o = new TypeConverterOptions
+            {
+                DateTimeStyle = DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal
+            };
+            csv.Context.TypeConverterOptionsCache.AddOptions<BrowsingHistoryViewEventData>(o);
 
 
-                var foo = csv.Context.AutoMap<BrowsingHistoryViewEventData>();
+            var foo = csv.Context.AutoMap<BrowsingHistoryViewEventData>();
 
-                //URL,Title,Visit Time,Visit Count,Visited From,Visit Type,Web Browser,User Profile,Browser Profile,URL Length,Typed Count,History File,Record ID
-                //file:///C:/Program%20Files/Commvault/ContentStore/Reports/BackupJobSummaryReport_15460_670556_7872_1618863877.html,,4/19/2021 8:24:43 PM,4,,,Internet Explorer 10/11 / Edge,jasonb,,114,,H:\C\Users\jasonb\AppData\Local\Microsoft\Windows\WebCache\WebCacheV01.dat,212
+            //URL,Title,Visit Time,Visit Count,Visited From,Visit Type,Web Browser,User Profile,Browser Profile,URL Length,Typed Count,History File,Record ID
+            //file:///C:/Program%20Files/Commvault/ContentStore/Reports/BackupJobSummaryReport_15460_670556_7872_1618863877.html,,4/19/2021 8:24:43 PM,4,,,Internet Explorer 10/11 / Edge,jasonb,,114,,H:\C\Users\jasonb\AppData\Local\Microsoft\Windows\WebCache\WebCacheV01.dat,212
 
-                foo.Map(t => t.Url).Name("URL");
+            foo.Map(t => t.Url).Name("URL");
 
-                foo.Map(m => m.VisitTimeUtc).Convert(row =>
-                    DateTime.Parse(row.Row.GetField<string>("Visit Time")).ToUniversalTime());
+            foo.Map(m => m.VisitTimeUtc).Convert(row =>
+                DateTime.Parse(row.Row.GetField<string>("Visit Time")).ToUniversalTime());
 
-                foo.Map(t => t.VisitCount).Name("Visit Count");
-                foo.Map(t => t.VisitedFrom).Name("Visited From");
-                foo.Map(t => t.VisitType).Name("Visit Type");
-                foo.Map(t => t.WebBrowser).Name("Web Browser");
-                foo.Map(t => t.UserProfile).Name("User Profile");
-                foo.Map(t => t.BrowserProfile).Name("Browser Profile");
-                foo.Map(t => t.UrlLength).Name("URL Length");
-                foo.Map(t => t.TypedCount).Name("Typed Count");
-                foo.Map(t => t.HistoryFile).Name("History File");
-                foo.Map(t => t.RecordId).Name("Record ID");
+            foo.Map(t => t.VisitCount).Name("Visit Count");
+            foo.Map(t => t.VisitedFrom).Name("Visited From");
+            foo.Map(t => t.VisitType).Name("Visit Type");
+            foo.Map(t => t.WebBrowser).Name("Web Browser");
+            foo.Map(t => t.UserProfile).Name("User Profile");
+            foo.Map(t => t.BrowserProfile).Name("Browser Profile");
+            foo.Map(t => t.UrlLength).Name("URL Length");
+            foo.Map(t => t.TypedCount).Name("Typed Count");
+            foo.Map(t => t.HistoryFile).Name("History File");
+            foo.Map(t => t.RecordId).Name("Record ID");
 
 
-                foo.Map(t => t.Line).Ignore();
-                foo.Map(t => t.Tag).Ignore();
+            foo.Map(t => t.Line).Ignore();
+            foo.Map(t => t.Tag).Ignore();
 
-                csv.Context.RegisterClassMap(foo);
+            csv.Context.RegisterClassMap(foo);
 
-                var l = LogManager.GetCurrentClassLogger();
+                
 
-                var records = csv.GetRecords<BrowsingHistoryViewEventData>();
+            var records = csv.GetRecords<BrowsingHistoryViewEventData>();
 
-                var ln = 1;
-                foreach (var record in records)
-                {
-                    l.Debug($"Line # {ln}, Record: {csv.Context.Parser.RawRecord}");
+            var ln = 1;
+            foreach (var record in records)
+            {
+                Log.Debug("Line # {Line}, Record: {RawRecord}",ln,csv.Context.Parser.RawRecord);
 
-                    record.Line = ln;
+                record.Line = ln;
 
-                    record.Tag = TaggedLines.Contains(ln);
+                record.Tag = TaggedLines.Contains(ln);
 
-                    DataList.Add(record);
+                DataList.Add(record);
 
-                    ln += 1;
-                }
+                ln += 1;
             }
         }
     }
@@ -601,56 +597,54 @@ namespace TLEFileMisc
         {
             DataList.Clear();
 
-            using (var fileReader = File.OpenText(filename))
-            {
-                var csv = new CsvReader(fileReader, CultureInfo.InvariantCulture);
+            using var fileReader = File.OpenText(filename);
+            var csv = new CsvReader(fileReader, CultureInfo.InvariantCulture);
                 
 
-                var o = new TypeConverterOptions
-                {
-                    DateTimeStyle = DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal
-                };
-                csv.Context.TypeConverterOptionsCache.AddOptions<CrowdStrikeEventData>(o);
+            var o = new TypeConverterOptions
+            {
+                DateTimeStyle = DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal
+            };
+            csv.Context.TypeConverterOptionsCache.AddOptions<CrowdStrikeEventData>(o);
 
 
-                var foo = csv.Context.AutoMap<CrowdStrikeEventData>();
+            var foo = csv.Context.AutoMap<CrowdStrikeEventData>();
 
-                foo.Map(m => m.Timestamp).Convert(row =>
-                    DateTime.Parse(row.Row.GetField<string>("Timestamp").Replace("Z", "")));
+            foo.Map(m => m.Timestamp).Convert(row =>
+                DateTime.Parse(row.Row.GetField<string>("Timestamp").Replace("Z", "")));
 
-                foo.Map(t => t.ProcessId).Name("Process ID");
-                foo.Map(t => t.ParentProcessId).Name("Parent Process ID");
-                foo.Map(t => t.TreeId).Name("TreeID");
-                foo.Map(t => t.PatternId).Name("PatternID");
-                foo.Map(t => t.FileLoadedExecuted).Name("File Loaded/Executed");
-                foo.Map(t => t.DestIP).Name("DestIP");
-                foo.Map(t => t.FileAccessedWritten).Name("File Accessed/Written");
-                foo.Map(t => t.UserSid).Name("UserSid_readable");
-                foo.Map(t => t.Aid).Name("aid");
+            foo.Map(t => t.ProcessId).Name("Process ID");
+            foo.Map(t => t.ParentProcessId).Name("Parent Process ID");
+            foo.Map(t => t.TreeId).Name("TreeID");
+            foo.Map(t => t.PatternId).Name("PatternID");
+            foo.Map(t => t.FileLoadedExecuted).Name("File Loaded/Executed");
+            foo.Map(t => t.DestIP).Name("DestIP");
+            foo.Map(t => t.FileAccessedWritten).Name("File Accessed/Written");
+            foo.Map(t => t.UserSid).Name("UserSid_readable");
+            foo.Map(t => t.Aid).Name("aid");
 
 
-                foo.Map(t => t.Line).Ignore();
-                foo.Map(t => t.Tag).Ignore();
+            foo.Map(t => t.Line).Ignore();
+            foo.Map(t => t.Tag).Ignore();
 
-                csv.Context.RegisterClassMap(foo);
+            csv.Context.RegisterClassMap(foo);
 
-                var l = LogManager.GetCurrentClassLogger();
+                
 
-                var records = csv.GetRecords<CrowdStrikeEventData>();
+            var records = csv.GetRecords<CrowdStrikeEventData>();
 
-                var ln = 1;
-                foreach (var record in records)
-                {
-                    l.Debug($"Line # {ln}, Record: {csv.Context.Parser.RawRecord}");
+            var ln = 1;
+            foreach (var record in records)
+            {
+                Log.Debug("Line # {Line}, Record: {RawRecord}",ln,csv.Context.Parser.RawRecord);
 
-                    record.Line = ln;
+                record.Line = ln;
 
-                    record.Tag = TaggedLines.Contains(ln);
+                record.Tag = TaggedLines.Contains(ln);
 
-                    DataList.Add(record);
+                DataList.Add(record);
 
-                    ln += 1;
-                }
+                ln += 1;
             }
         }
     }
@@ -717,61 +711,59 @@ namespace TLEFileMisc
         {
             DataList.Clear();
 
-            using (var fileReader = File.OpenText(filename))
-            {
-                var csv = new CsvReader(fileReader, CultureInfo.InvariantCulture);
+            using var fileReader = File.OpenText(filename);
+            var csv = new CsvReader(fileReader, CultureInfo.InvariantCulture);
                 
-                var foo = csv.Context.AutoMap<ShimcacheParserData>();
+            var foo = csv.Context.AutoMap<ShimcacheParserData>();
 
-                var o = new TypeConverterOptions
+            var o = new TypeConverterOptions
+            {
+                DateTimeStyle = DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal
+            };
+            csv.Context.TypeConverterOptionsCache.AddOptions<ShimcacheParserData>(o);
+
+            foo.Map(t => t.Line).Ignore();
+            foo.Map(t => t.Tag).Ignore();
+
+            foo.Map(t => t.LastModified).Name("Last Modified");
+            foo.Map(t => t.LastUpdate).Name("Last Update");
+            foo.Map(t => t.Executed).Name("Exec Flag");
+            foo.Map(t => t.FileSize).Name("File Size");
+            foo.Map(t => t.FilePath).Name("Path");
+
+            csv.Context.RegisterClassMap(foo);
+
+                
+
+            csv.Read();
+            csv.ReadHeader();
+
+            var ln = 1;
+            while (csv.Read())
+            {
+                Log.Debug("Line # {Line}, Record: {RawRecord}",ln,csv.Context.Parser.RawRecord);
+
+                var modified = DateTime.Parse(csv.GetField("Last Modified"),
+                    CultureInfo.InvariantCulture, DateTimeStyles.AssumeUniversal).ToUniversalTime();
+
+                var upraw = csv.GetField("Last Update");
+                DateTime? update = null;
+                if (upraw.Length > 0 && upraw != "N/A")
                 {
-                    DateTimeStyle = DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal
-                };
-                csv.Context.TypeConverterOptionsCache.AddOptions<ShimcacheParserData>(o);
-
-                foo.Map(t => t.Line).Ignore();
-                foo.Map(t => t.Tag).Ignore();
-
-                foo.Map(t => t.LastModified).Name("Last Modified");
-                foo.Map(t => t.LastUpdate).Name("Last Update");
-                foo.Map(t => t.Executed).Name("Exec Flag");
-                foo.Map(t => t.FileSize).Name("File Size");
-                foo.Map(t => t.FilePath).Name("Path");
-
-                csv.Context.RegisterClassMap(foo);
-
-                var l = LogManager.GetCurrentClassLogger();
-
-                csv.Read();
-                csv.ReadHeader();
-
-                var ln = 1;
-                while (csv.Read())
-                {
-                    l.Debug($"Line # {ln}, Record: {csv.Context.Parser.RawRecord}");
-
-                    var modified = DateTime.Parse(csv.GetField("Last Modified"),
+                    update = DateTime.Parse(upraw,
                         CultureInfo.InvariantCulture, DateTimeStyles.AssumeUniversal).ToUniversalTime();
-
-                    var upraw = csv.GetField("Last Update");
-                    DateTime? update = null;
-                    if (upraw.Length > 0 && upraw != "N/A")
-                    {
-                        update = DateTime.Parse(upraw,
-                            CultureInfo.InvariantCulture, DateTimeStyles.AssumeUniversal).ToUniversalTime();
-                    }
-
-                    var executed = csv.GetField("Exec Flag") == "True";
-                    var fileSize = csv.GetField("File Size").Length > 0 && csv.GetField("File Size") != "N/A"
-                        ? long.Parse(csv.GetField("File Size"))
-                        : 0;
-                    var filePath = csv.GetField("Path");
-
-                    var e = new ShimcacheParserData(ln, modified, update, executed, fileSize, filePath);
-                    e.Tag = TaggedLines.Contains(ln);
-                    DataList.Add(e);
-                    ln += 1;
                 }
+
+                var executed = csv.GetField("Exec Flag") == "True";
+                var fileSize = csv.GetField("File Size").Length > 0 && csv.GetField("File Size") != "N/A"
+                    ? long.Parse(csv.GetField("File Size"))
+                    : 0;
+                var filePath = csv.GetField("Path");
+
+                var e = new ShimcacheParserData(ln, modified, update, executed, fileSize, filePath);
+                e.Tag = TaggedLines.Contains(ln);
+                DataList.Add(e);
+                ln += 1;
             }
         }
     }
@@ -840,69 +832,67 @@ namespace TLEFileMisc
         {
             DataList.Clear();
 
-            using (var fileReader = File.OpenText(filename))
-            {
-                var csv = new CsvReader(fileReader, CultureInfo.InvariantCulture);
+            using var fileReader = File.OpenText(filename);
+            var csv = new CsvReader(fileReader, CultureInfo.InvariantCulture);
                 
-                var foo = csv.Context.AutoMap<ShimcacheVolatilityData>();
+            var foo = csv.Context.AutoMap<ShimcacheVolatilityData>();
 
-                var o = new TypeConverterOptions
+            var o = new TypeConverterOptions
+            {
+                DateTimeStyle = DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal
+            };
+            csv.Context.TypeConverterOptionsCache.AddOptions<ShimcacheVolatilityData>(o);
+
+            foo.Map(t => t.Line).Ignore();
+            foo.Map(t => t.Tag).Ignore();
+
+            foo.Map(t => t.Order).Name("Order");
+            foo.Map(t => t.LastModified).Name("Last Modified");
+            foo.Map(t => t.LastUpdate).Name("Last Update");
+            foo.Map(t => t.Executed).Name("Exec Flag");
+            foo.Map(t => t.FileSize).Name("File Size");
+            foo.Map(t => t.FilePath).Name("File Path");
+
+            csv.Context.RegisterClassMap(foo);
+
+                
+
+            csv.Read();
+            csv.ReadHeader();
+
+            var ln = 1;
+            while (csv.Read())
+            {
+                Log.Debug("Line # {Line}, Record: {RawRecord}",ln,csv.Context.Parser.RawRecord);
+
+                var order = int.Parse(csv.GetField("Order"));
+
+                var lastMod = csv.GetField("Last Modified");
+                DateTime? lastModTs = null;
+                if (lastMod.Length > 0)
                 {
-                    DateTimeStyle = DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal
-                };
-                csv.Context.TypeConverterOptionsCache.AddOptions<ShimcacheVolatilityData>(o);
-
-                foo.Map(t => t.Line).Ignore();
-                foo.Map(t => t.Tag).Ignore();
-
-                foo.Map(t => t.Order).Name("Order");
-                foo.Map(t => t.LastModified).Name("Last Modified");
-                foo.Map(t => t.LastUpdate).Name("Last Update");
-                foo.Map(t => t.Executed).Name("Exec Flag");
-                foo.Map(t => t.FileSize).Name("File Size");
-                foo.Map(t => t.FilePath).Name("File Path");
-
-                csv.Context.RegisterClassMap(foo);
-
-                var l = LogManager.GetCurrentClassLogger();
-
-                csv.Read();
-                csv.ReadHeader();
-
-                var ln = 1;
-                while (csv.Read())
-                {
-                    l.Debug($"Line # {ln}, Record: {csv.Context.Parser.RawRecord}");
-
-                    var order = int.Parse(csv.GetField("Order"));
-
-                    var lastMod = csv.GetField("Last Modified");
-                    DateTime? lastModTs = null;
-                    if (lastMod.Length > 0)
-                    {
-                        lastModTs = DateTime.Parse(lastMod,
-                            CultureInfo.InvariantCulture, DateTimeStyles.AssumeUniversal).ToUniversalTime();
-                    }
-
-                    var upraw = csv.GetField("Last Update");
-                    DateTime? update = null;
-                    if (upraw.Length > 0)
-                    {
-                        update = DateTime.Parse(upraw,
-                            CultureInfo.InvariantCulture, DateTimeStyles.AssumeUniversal).ToUniversalTime();
-                    }
-
-                    var executed = csv.GetField("Exec Flag") == "True";
-                    var fileSize = csv.GetField("File Size").Length > 0
-                        ? long.Parse(csv.GetField("File Size"))
-                        : 0;
-                    var filePath = csv.GetField("File Path");
-
-                    var e = new ShimcacheVolatilityData(ln, order, lastModTs, update, executed, fileSize, filePath);
-                    e.Tag = TaggedLines.Contains(ln);
-                    DataList.Add(e);
-                    ln += 1;
+                    lastModTs = DateTime.Parse(lastMod,
+                        CultureInfo.InvariantCulture, DateTimeStyles.AssumeUniversal).ToUniversalTime();
                 }
+
+                var upraw = csv.GetField("Last Update");
+                DateTime? update = null;
+                if (upraw.Length > 0)
+                {
+                    update = DateTime.Parse(upraw,
+                        CultureInfo.InvariantCulture, DateTimeStyles.AssumeUniversal).ToUniversalTime();
+                }
+
+                var executed = csv.GetField("Exec Flag") == "True";
+                var fileSize = csv.GetField("File Size").Length > 0
+                    ? long.Parse(csv.GetField("File Size"))
+                    : 0;
+                var filePath = csv.GetField("File Path");
+
+                var e = new ShimcacheVolatilityData(ln, order, lastModTs, update, executed, fileSize, filePath);
+                e.Tag = TaggedLines.Contains(ln);
+                DataList.Add(e);
+                ln += 1;
             }
         }
     }
@@ -948,30 +938,26 @@ namespace TLEFileMisc
         {
             DataList.Clear();
 
-            using (var fileReader = File.OpenText(filename))
+            using var fileReader = File.OpenText(filename);
+            var ln = fileReader.ReadLine();
+            var ln1 = 1;
+            while (ln != null)
             {
-                var l = LogManager.GetCurrentClassLogger();
+                Log.Debug($"Line # {ln1}, Record: {ln}",ln1,ln);
+                    
+                var d = new DensityScoutData();
 
-                var ln = fileReader.ReadLine();
-                var ln1 = 1;
-                while (ln != null)
-                {
-                    l.Debug($"Line # {ln1}, Record: {ln}");
+                var dsegs = ln.Split('|');
 
-                    var d = new DensityScoutData();
+                var rawNum = dsegs.First().Substring(1, dsegs.First().Length - 3);
 
-                    var dsegs = ln.Split('|');
-
-                    var rawNum = dsegs.First().Substring(1, dsegs.First().Length - 3);
-
-                    d.Score = float.Parse(rawNum);
-                    d.Path = dsegs.Last();
-                    d.Line = ln1;
-                    d.Tag = TaggedLines.Contains(ln1);
-                    DataList.Add(d);
-                    ln1 += 1;
-                    ln = fileReader.ReadLine();
-                }
+                d.Score = float.Parse(rawNum);
+                d.Path = dsegs.Last();
+                d.Line = ln1;
+                d.Tag = TaggedLines.Contains(ln1);
+                DataList.Add(d);
+                ln1 += 1;
+                ln = fileReader.ReadLine();
             }
         }
     }
@@ -1025,65 +1011,63 @@ namespace TLEFileMisc
         {
             DataList.Clear();
 
-            using (var fileReader = File.OpenText(filename))
+            using var fileReader = File.OpenText(filename);
+            var csv = new CsvReader(fileReader, CultureInfo.InvariantCulture);
+                
+
+            var o = new TypeConverterOptions
             {
-                var csv = new CsvReader(fileReader, CultureInfo.InvariantCulture);
+                DateTimeStyle = DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal
+            };
+            csv.Context.TypeConverterOptionsCache.AddOptions<VanillaWindowsReferenceData>(o);
+                
+            var foo = csv.Context.AutoMap<VanillaWindowsReferenceData>();
+
+            //"DirectoryName","Name","FullName","Length","CreationTimeUtc","LastAccessTimeUtc","LastWriteTimeUtc","Attributes","MD5","SHA256","Sddl"
+            //"C:\","PsExec_IgnoreThisFile_ResearchTool.exe","C:\PsExec_IgnoreThisFile_ResearchTool.exe","834936","2021-11-21 20:34:17","2021-11-21 20:34:17","2021-05-25 21:40:08","Archive","C590A84B8C72CF18F35AE166F815C9DF","57492D33B7C0755BB411B22D2DFDFDF088CBBFCD010E30DD8D425D5FE66ADFF4","O:BAG:S-1-5-21-3499336306-2590357158-289705316-513D:AI(A;ID;FA;;;BA)(A;ID;FA;;;SY)(A;ID;0x1200a9;;;BU)(A;ID;0x1301bf;;;AU)"
+
+            //foo.Map(t => t.DirectoryName).Name("DirectoryName");
+
+            //foo.Map(t => t.Name).Name("Filename");
+
+            //foo.Map(t => t.FullName).Name("File Path");
+
+            //foo.Map(t => t.Length).Name("Size (Bytes)");
+
+            //foo.Map(t => t.DirectoryName).Name("Directory Name");
+
+            //foo.Map(t => t.CreationTimeUtc).Convert(row =>
+            //       DateTime.Parse(row.Row.GetField<string>("Creation Time UTC")));
+            //foo.Map(t => t.LastAccessTimeUtc).Convert(row =>
+            //       DateTime.Parse(row.Row.GetField<string>("Last Access Time UTC")));
+            // foo.Map(t => t.LastWriteTimeUtc).Convert(row =>
+            //       DateTime.Parse(row.Row.GetField<string>("Last Write Time UTC")));
+            //foo.Map(t => t.Attributes).Name("Attributes");
+            foo.Map(t => t.Md5).Name("MD5");
+            foo.Map(t => t.Sha256).Name("SHA256");
+            //foo.Map(t => t.Sddl).Name("Sddl");
+                
+            foo.Map(t => t.Line).Ignore();
+            foo.Map(t => t.Tag).Ignore();
+
+            csv.Context.RegisterClassMap(foo);
+
                 
 
-                var o = new TypeConverterOptions
-                {
-                    DateTimeStyle = DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal
-                };
-                csv.Context.TypeConverterOptionsCache.AddOptions<VanillaWindowsReferenceData>(o);
+            var records = csv.GetRecords<VanillaWindowsReferenceData>();
                 
-                var foo = csv.Context.AutoMap<VanillaWindowsReferenceData>();
+            var ln = 1;
+            foreach (var record in records)
+            {
+                Log.Debug("Line # {Line}, Record: {RawRecord}",ln,csv.Context.Parser.RawRecord);
 
-                //"DirectoryName","Name","FullName","Length","CreationTimeUtc","LastAccessTimeUtc","LastWriteTimeUtc","Attributes","MD5","SHA256","Sddl"
-                //"C:\","PsExec_IgnoreThisFile_ResearchTool.exe","C:\PsExec_IgnoreThisFile_ResearchTool.exe","834936","2021-11-21 20:34:17","2021-11-21 20:34:17","2021-05-25 21:40:08","Archive","C590A84B8C72CF18F35AE166F815C9DF","57492D33B7C0755BB411B22D2DFDFDF088CBBFCD010E30DD8D425D5FE66ADFF4","O:BAG:S-1-5-21-3499336306-2590357158-289705316-513D:AI(A;ID;FA;;;BA)(A;ID;FA;;;SY)(A;ID;0x1200a9;;;BU)(A;ID;0x1301bf;;;AU)"
+                record.Line = ln;
 
-                //foo.Map(t => t.DirectoryName).Name("DirectoryName");
+                record.Tag = TaggedLines.Contains(ln);
 
-                //foo.Map(t => t.Name).Name("Filename");
+                DataList.Add(record);
 
-                //foo.Map(t => t.FullName).Name("File Path");
-
-                //foo.Map(t => t.Length).Name("Size (Bytes)");
-
-                //foo.Map(t => t.DirectoryName).Name("Directory Name");
-
-                //foo.Map(t => t.CreationTimeUtc).Convert(row =>
-                //       DateTime.Parse(row.Row.GetField<string>("Creation Time UTC")));
-                //foo.Map(t => t.LastAccessTimeUtc).Convert(row =>
-                //       DateTime.Parse(row.Row.GetField<string>("Last Access Time UTC")));
-                // foo.Map(t => t.LastWriteTimeUtc).Convert(row =>
-                //       DateTime.Parse(row.Row.GetField<string>("Last Write Time UTC")));
-                //foo.Map(t => t.Attributes).Name("Attributes");
-                foo.Map(t => t.Md5).Name("MD5");
-                foo.Map(t => t.Sha256).Name("SHA256");
-                //foo.Map(t => t.Sddl).Name("Sddl");
-                
-                foo.Map(t => t.Line).Ignore();
-                foo.Map(t => t.Tag).Ignore();
-
-                csv.Context.RegisterClassMap(foo);
-
-                var l = LogManager.GetCurrentClassLogger();
-
-                var records = csv.GetRecords<VanillaWindowsReferenceData>();
-                
-                var ln = 1;
-                foreach (var record in records)
-                {
-                    l.Debug($"Line # {ln}, Record: {csv.Context.Parser.RawRecord}");
-
-                    record.Line = ln;
-
-                    record.Tag = TaggedLines.Contains(ln);
-
-                    DataList.Add(record);
-
-                    ln += 1;
-                }
+                ln += 1;
             }
         }
     }

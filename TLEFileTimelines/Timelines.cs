@@ -7,7 +7,7 @@ using CsvHelper;
 using CsvHelper.Configuration;
 using CsvHelper.TypeConversion;
 using ITLEFileSpec;
-using NLog;
+using Serilog;
 
 namespace TLEFileTimelines
 {
@@ -218,103 +218,100 @@ namespace TLEFileTimelines
         {
             DataList.Clear();
 
-            using (var fileReader = File.OpenText(filename))
+            using var fileReader = File.OpenText(filename);
+            var config = new CsvConfiguration(CultureInfo.InvariantCulture)
             {
-
-                var config = new CsvConfiguration(CultureInfo.InvariantCulture)
-                {
-                    BadDataFound = null,
-                    MissingFieldFound = null
-                };
+                BadDataFound = null,
+                MissingFieldFound = null
+            };
 
 
-                var csv = new CsvReader(fileReader, config);
+            var csv = new CsvReader(fileReader, config);
                 
 
-                var foo = csv.Context.AutoMap<SuperTimelineData>();
+            var foo = csv.Context.AutoMap<SuperTimelineData>();
 
-                foo.Map(t => t.Line).Ignore();
-                foo.Map(t => t.Tag).Ignore();
-                foo.Map(t => t.Color).Ignore();
-                foo.Map(t => t.Timestamp).Name("date");
-                foo.Map(t => t.TimeZone).Name("timezone");
-                foo.Map(t => t.Macb).Name("macb");
-                foo.Map(t => t.SourceName).Name("source");
-                foo.Map(t => t.ShortDescription).Name("sourcetype");
-                foo.Map(t => t.Timestamp).Name("sourcetype");
-                foo.Map(t => t.Type).Name("type");
-                foo.Map(t => t.Username).Name("user");
-                foo.Map(t => t.HostName).Name("host");
-                foo.Map(t => t.ShortDescription).Name("short");
-                foo.Map(t => t.LongDescription).Name("desc");
-                foo.Map(t => t.Version).Name("version");
-                foo.Map(t => t.FileName).Name("filename");
-                foo.Map(t => t.Inode).Name("inode");
-                foo.Map(t => t.Notes).Name("notes");
-                foo.Map(t => t.Format).Name("format");
-                foo.Map(t => t.Extra).Name("extra");
+            foo.Map(t => t.Line).Ignore();
+            foo.Map(t => t.Tag).Ignore();
+            foo.Map(t => t.Color).Ignore();
+            foo.Map(t => t.Timestamp).Name("date");
+            foo.Map(t => t.TimeZone).Name("timezone");
+            foo.Map(t => t.Macb).Name("macb");
+            foo.Map(t => t.SourceName).Name("source");
+            foo.Map(t => t.ShortDescription).Name("sourcetype");
+            foo.Map(t => t.Timestamp).Name("sourcetype");
+            foo.Map(t => t.Type).Name("type");
+            foo.Map(t => t.Username).Name("user");
+            foo.Map(t => t.HostName).Name("host");
+            foo.Map(t => t.ShortDescription).Name("short");
+            foo.Map(t => t.LongDescription).Name("desc");
+            foo.Map(t => t.Version).Name("version");
+            foo.Map(t => t.FileName).Name("filename");
+            foo.Map(t => t.Inode).Name("inode");
+            foo.Map(t => t.Notes).Name("notes");
+            foo.Map(t => t.Format).Name("format");
+            foo.Map(t => t.Extra).Name("extra");
 
-                var o = new TypeConverterOptions
+            var o = new TypeConverterOptions
+            {
+                DateTimeStyle = DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal
+            };
+            csv.Context.TypeConverterOptionsCache.AddOptions<SuperTimelineData>(o);
+
+            csv.Context.RegisterClassMap(foo);
+
+            csv.Read();
+            csv.ReadHeader();
+
+                
+
+            var ln = 1;
+
+            try
+            {
+                while (csv.Read())
                 {
-                    DateTimeStyle = DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal
-                };
-                csv.Context.TypeConverterOptionsCache.AddOptions<SuperTimelineData>(o);
+                    Log.Debug("Line # {Line}, Record: {RawRecord}",ln,csv.Context.Parser.RawRecord);
 
-                csv.Context.RegisterClassMap(foo);
+                    //"date,time,timezone,macb,source,sourcetype,type,user,host,short,desc,version,filename,inode,notes,format,extra":
+                    var dt = csv.GetField("date");
 
-                csv.Read();
-                csv.ReadHeader();
-
-                var l = LogManager.GetCurrentClassLogger();
-
-                var ln = 1;
-
-                try
-                {
-                    while (csv.Read())
+                    if (dt.StartsWith("Processing"))
                     {
-                        l.Debug($"Line # {ln}, Record: {csv.Context.Parser.RawRecord}");
-
-                        //"date,time,timezone,macb,source,sourcetype,type,user,host,short,desc,version,filename,inode,notes,format,extra":
-                        var dt = csv.GetField("date");
-
-                        if (dt.StartsWith("Processing"))
-                        {
-                            break;
-                        }
-
-                        var time = csv.GetField("time");
-                        var tz = csv.GetField("timezone");
-                        var macb = csv.GetField("MACB");
-                        var sourceName = csv.GetField("source");
-                        var sourceDesc = csv.GetField("sourcetype");
-                        var type = csv.GetField("type");
-                        var username = csv.GetField("user");
-                        var hostname = csv.GetField("host");
-                        var shortDesc = csv.GetField("short");
-                        var longDesc = csv.GetField("desc");
-                        var version = csv.GetField("version");
-                        var filename1 = csv.GetField("filename");
-                        var inodeRaw = csv.GetField("inode");
-                        var notes = csv.GetField("notes");
-                        var format = csv.GetField("format");
-                        var extra = csv.GetField("extra");
-
-                        int.TryParse(inodeRaw, out var inode);
-
-                        var lfe = new SuperTimelineData(ln, dt, time, tz, macb, sourceName, sourceDesc, type,
-                            username, hostname, shortDesc, longDesc, version, filename1, inode, notes, format,
-                            extra);
-                        lfe.Tag = TaggedLines.Contains(ln);
-                        DataList.Add(lfe);
-                        ln += 1;
+                        break;
                     }
+
+                    var time = csv.GetField("time");
+                    var tz = csv.GetField("timezone");
+                    var macb = csv.GetField("MACB");
+                    var sourceName = csv.GetField("source");
+                    var sourceDesc = csv.GetField("sourcetype");
+                    var type = csv.GetField("type");
+                    var username = csv.GetField("user");
+                    var hostname = csv.GetField("host");
+                    var shortDesc = csv.GetField("short");
+                    var longDesc = csv.GetField("desc");
+                    var version = csv.GetField("version");
+                    var filename1 = csv.GetField("filename");
+                    var inodeRaw = csv.GetField("inode");
+                    var notes = csv.GetField("notes");
+                    var format = csv.GetField("format");
+                    var extra = csv.GetField("extra");
+
+                    int.TryParse(inodeRaw, out var inode);
+
+                    var lfe = new SuperTimelineData(ln, dt, time, tz, macb, sourceName, sourceDesc, type,
+                        username, hostname, shortDesc, longDesc, version, filename1, inode, notes, format,
+                        extra);
+                    lfe.Tag = TaggedLines.Contains(ln);
+                    DataList.Add(lfe);
+                    ln += 1;
                 }
-                catch (Exception e)
-                {
-                    throw new Exception(
-                        $"Error loading data on line '{ln}': {e.Message}. Line: {csv.Context.Parser.RawRecord}", e);
-                }
+            }
+            catch (Exception e)
+            {
+                throw new Exception(
+                    $"Error loading data on line '{ln}': {e.Message}. Line: {csv.Context.Parser.RawRecord}", e);
             }
         }
     }
@@ -434,65 +431,63 @@ namespace TLEFileTimelines
         {
             DataList.Clear();
 
-            using (var fileReader = File.OpenText(filename))
-            {
-                var csv = new CsvReader(fileReader, CultureInfo.InvariantCulture);
+            using var fileReader = File.OpenText(filename);
+            var csv = new CsvReader(fileReader, CultureInfo.InvariantCulture);
                 
-                var foo = csv.Context.AutoMap<MacTimeData>();
+            var foo = csv.Context.AutoMap<MacTimeData>();
 
-                var o = new TypeConverterOptions
+            var o = new TypeConverterOptions
+            {
+                DateTimeStyle = DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal &
+                                DateTimeStyles.AdjustToUniversal
+            };
+            csv.Context.TypeConverterOptionsCache.AddOptions<MacTimeData>(o);
+
+            foo.Map(t => t.Line).Ignore();
+            foo.Map(t => t.Tag).Ignore();
+            foo.Map(t => t.Color).Ignore();
+            //
+            foo.Map(t => t.Timestamp).Name("Date");
+            foo.Map(m => m.Timestamp).Convert(row =>
+                DateTime.TryParse(row.Row.Context.Parser.Record[0], CultureInfo.InvariantCulture,
+                    DateTimeStyles.AssumeUniversal, out var outDate)
+                    ? outDate.ToUniversalTime()
+                    : new DateTime?());
+            foo.Map(m => m.Timestamp).TypeConverterOption.DateTimeStyles(DateTimeStyles.AssumeUniversal);
+
+            foo.Map(t => t.FileSize).Name("Size");
+            foo.Map(t => t.Macb).Name("Type");
+            foo.Map(t => t.Permissions).Name("Mode");
+            foo.Map(t => t.UId).Name("UID");
+            foo.Map(t => t.GId).Name("GID");
+            foo.Map(t => t.Meta).Name("Meta");
+            foo.Map(t => t.FileName).Name("File Name");
+
+            csv.Context.RegisterClassMap(foo);
+
+            csv.Read();
+            csv.ReadHeader();
+
+                
+
+            var ln = 1;
+            while (csv.Read())
+            {
+                Log.Debug("Line # {Line}, Record: {RawRecord}",ln,csv.Context.Parser.RawRecord);
+
+                var f = csv.GetRecord<MacTimeData>();
+                f.Line = ln;
+                f.Tag = TaggedLines.Contains(ln);
+                if (f.Timestamp != null && f.Timestamp?.Year == 1)
                 {
-                    DateTimeStyle = DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal &
-                                    DateTimeStyles.AdjustToUniversal
-                };
-                csv.Context.TypeConverterOptionsCache.AddOptions<MacTimeData>(o);
-
-                foo.Map(t => t.Line).Ignore();
-                foo.Map(t => t.Tag).Ignore();
-                foo.Map(t => t.Color).Ignore();
-                //
-                foo.Map(t => t.Timestamp).Name("Date");
-                foo.Map(m => m.Timestamp).Convert(row =>
-                    DateTime.TryParse(row.Row.Context.Parser.Record[0], CultureInfo.InvariantCulture,
-                        DateTimeStyles.AssumeUniversal, out var outDate)
-                        ? outDate.ToUniversalTime()
-                        : new DateTime?());
-                foo.Map(m => m.Timestamp).TypeConverterOption.DateTimeStyles(DateTimeStyles.AssumeUniversal);
-
-                foo.Map(t => t.FileSize).Name("Size");
-                foo.Map(t => t.Macb).Name("Type");
-                foo.Map(t => t.Permissions).Name("Mode");
-                foo.Map(t => t.UId).Name("UID");
-                foo.Map(t => t.GId).Name("GID");
-                foo.Map(t => t.Meta).Name("Meta");
-                foo.Map(t => t.FileName).Name("File Name");
-
-                csv.Context.RegisterClassMap(foo);
-
-                csv.Read();
-                csv.ReadHeader();
-
-                var l = LogManager.GetCurrentClassLogger();
-
-                var ln = 1;
-                while (csv.Read())
-                {
-                    l.Debug($"Line # {ln}, Record: {csv.Context.Parser.RawRecord}");
-
-                    var f = csv.GetRecord<MacTimeData>();
-                    f.Line = ln;
-                    f.Tag = TaggedLines.Contains(ln);
-                    if (f.Timestamp != null && f.Timestamp?.Year == 1)
-                    {
-                        f.Timestamp = null;
-                    }
-
-                    f.UpdateColor();
-
-                    DataList.Add(f);
-
-                    ln += 1;
+                    f.Timestamp = null;
                 }
+
+                f.UpdateColor();
+
+                DataList.Add(f);
+
+                ln += 1;
             }
         }
     }
@@ -549,66 +544,61 @@ namespace TLEFileTimelines
         {
             DataList.Clear();
 
-            using (var fileReader = File.OpenText(filename))
+            using var fileReader = File.OpenText(filename);
+            var csvO = new CsvConfiguration(CultureInfo.InvariantCulture)
             {
-
-                var csvO = new CsvConfiguration(CultureInfo.InvariantCulture)
-			{
               
             };
 
-                var csv = new CsvReader(fileReader, csvO);
+            var csv = new CsvReader(fileReader, csvO);
                 
                 
 
-                var foo = csv.Context.AutoMap<KapeMiniTimelineData>();
+            var foo = csv.Context.AutoMap<KapeMiniTimelineData>();
 
-                var o = new TypeConverterOptions
-                {
-                    DateTimeStyle = DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal &
-                                    DateTimeStyles.AdjustToUniversal
-                };
-                csv.Context.TypeConverterOptionsCache.AddOptions<KapeMiniTimelineData>(o);
+            var o = new TypeConverterOptions
+            {
+                DateTimeStyle = DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal &
+                                DateTimeStyles.AdjustToUniversal
+            };
+            csv.Context.TypeConverterOptionsCache.AddOptions<KapeMiniTimelineData>(o);
 
-                foo.Map(t => t.Line).Ignore();
-                foo.Map(t => t.Tag).Ignore();
+            foo.Map(t => t.Line).Ignore();
+            foo.Map(t => t.Tag).Ignore();
              
-                foo.Map(t => t.Timestamp).Name("Time");
-                foo.Map(t => t.DataType).Name("Type");
+            foo.Map(t => t.Timestamp).Name("Time");
+            foo.Map(t => t.DataType).Name("Type");
              
-                foo.Map(m => m.Timestamp).TypeConverterOption.DateTimeStyles(DateTimeStyles.AssumeUniversal);
+            foo.Map(m => m.Timestamp).TypeConverterOption.DateTimeStyles(DateTimeStyles.AssumeUniversal);
 
-                foo.Map(t => t.UserSource).Name("User/Source");
+            foo.Map(t => t.UserSource).Name("User/Source");
 
-                csv.Context.RegisterClassMap(foo);
+            csv.Context.RegisterClassMap(foo);
                 
-                csv.Read();
-                csv.ReadHeader();
+            csv.Read();
+            csv.ReadHeader();
+            
+            var ln = 1;
+            while (csv.Read())
+            {
+                Log.Debug("Line # {Line}, Record: {RawRecord}",ln,csv.Context.Parser.RawRecord);
 
-                var l = LogManager.GetCurrentClassLogger();
+                var testStr = csv.GetField<string>(0);
 
-                var ln = 1;
-                while (csv.Read())
+                if (DateTime.TryParse(testStr, out var s) == false)
                 {
-                    l.Debug($"Line # {ln}, Record: {csv.Context.Parser.RawRecord}");
+                    Log.Warning("Bad data found! Skipping. Raw data: {RawRecord}",csv.Context.Parser.RawRecord);
+                    continue;
+                }
 
-                    var testStr = csv.GetField<string>(0);
-
-                    if (DateTime.TryParse(testStr, out var s) == false)
-                    {
-                        l.Warn($"Bad data found! Skipping. Raw data: '{csv.Context.Parser.RawRecord}'");
-                        continue;
-                    }
-
-                    var f = csv.GetRecord<KapeMiniTimelineData>();
-                    f.Line = ln;
-                    f.Tag = TaggedLines.Contains(ln);
+                var f = csv.GetRecord<KapeMiniTimelineData>();
+                f.Line = ln;
+                f.Tag = TaggedLines.Contains(ln);
                  
 
-                    DataList.Add(f);
+                DataList.Add(f);
 
-                    ln += 1;
-                }
+                ln += 1;
             }
         }
     }
