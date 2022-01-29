@@ -43,7 +43,7 @@ namespace TLEFileGenericCsv
                     
                 BadDataFound = context =>
                 {
-                    Log.Warning("Bad data found! Skipping. Raw data: {RawRecord}",context.RawRecord);
+                    Log.Warning("Bad data found in {Field}! Skipping. Raw data: {RawRecord}",context.Field, context.RawRecord);
                 },
             };
 

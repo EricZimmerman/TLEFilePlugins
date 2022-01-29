@@ -1,6 +1,9 @@
-﻿using System.Diagnostics;
+﻿using System;
+using System.Diagnostics;
 using NUnit.Framework;
+using Serilog;
 using TLEFileEZTools;
+using TLEFileTimelines;
 
 namespace TLEFile.Text
 {
@@ -65,11 +68,42 @@ namespace TLEFile.Text
 
     }
 
+
+        //PsortTimeline
+
+        
+        [Test]
+        public void PsortTimelineTest()
+        {
+
+            Log.Logger = new LoggerConfiguration()
+                .WriteTo.Debug()
+                .WriteTo.Console()
+                
+                .CreateLogger();
+
+            Console.WriteLine(1);
+            Debug.WriteLine("Test 1");
+            var t = new TLEFileTimelines.PsortTimeline();
+            t.ProcessFile(@"C:\temp\Testing-TLE-for-608\SmallTest.csv");
+
+            Console.WriteLine(2);
+            t = new PsortTimeline();
+            t.ProcessFile(@"C:\temp\Testing-TLE-for-608\base-av-log2timeline.csv");
+
+            Console.WriteLine(3);
+            t = new PsortTimeline();
+            t.ProcessFile(@"C:\temp\Testing-TLE-for-608\base-rd-01-log2timeline.csv");
+
+            
+            
+        }
+
     [Test]
     public void GenericTest()
     {
         var t = new TLEFileGenericCsv.GenericCsv();
-        t.ProcessFile(@"C:\Temp\minitimeline.csv");
+        t.ProcessFile(@"C:\temp\Testing-TLE-for-608\SmallTest.csv");
 
     }
 

@@ -11,6 +11,279 @@ using Serilog;
 
 namespace TLEFileTimelines
 {
+    public class PsortTimelineData : IFileSpecData
+    {
+        public PsortTimelineData(int line, string timestamp, string timestampDescription, string source, string sourceLong, string message, string parser, string displayName, string tagInfo)
+        {
+            Line = line;
+            TimestampDescription = timestampDescription;
+            Source = source;
+            SourceLong = sourceLong;
+            Message = message;
+            Parser = parser;
+            DisplayName = displayName;
+            TagInfo = tagInfo;
+
+            try
+            {
+                //Timestamp = DateTime.ParseExact($"{date} {time}", "MM/dd/yyyy HH:mm:ss", CultureInfo.InvariantCulture, DateTimeStyles.AssumeUniversal).ToUniversalTime();
+                Timestamp = DateTime.Parse(timestamp, CultureInfo.InvariantCulture, DateTimeStyles.AssumeUniversal).ToUniversalTime();
+            }
+            catch (Exception)
+            {
+                Timestamp = DateTime.MinValue;
+            }
+
+            TimestampDescription = timestampDescription;
+            Source = source;
+            SourceLong = sourceLong;
+            Message = message;
+            Parser = parser;
+            DisplayName = displayName;
+            TagInfo = tagInfo;
+
+            if (sourceLong == null)
+            {
+                return;
+            }
+
+            if (sourceLong.Contains("RECYCLE") ||
+                sourceLong.Contains("DELETED") ||
+                sourceLong.Contains("Deleted Registry") ||
+                sourceLong.Contains("$Recycle.Bin"))
+            {
+                Color = "DeletedData";
+            }
+
+            if (sourceLong.Contains("Expiration Time") ||
+                sourceLong.Contains("Cookie") ||
+                sourceLong.Contains("Visited") ||
+                sourceLong.Contains("URL") && source.Contains("FILE") == false ||
+                sourceLong.Contains("Flash Cookie") ||
+                sourceLong.Contains("LSO") && source.Contains("REG") == false ||
+                sourceLong.ToLowerInvariant().Contains("http://") ||
+                sourceLong.ToLowerInvariant().Contains("https://") ||
+                sourceLong.Contains("Location:") ||
+                sourceLong.Contains("time(s) [HTTP") ||
+                sourceLong.Contains("Last Visited Time") ||
+                source.StartsWith("WEBHIST"))
+            {
+                Color = "WebHistory";
+            }
+
+
+            if (sourceLong.Contains("lnk/shell_items") ||
+                source.Contains("File entry shell item") ||
+                sourceLong.Contains("BagMRU") ||
+                sourceLong.Contains("ShellNoRoam/Bags"))
+            {
+                Color = "FolderOpening";
+            }
+
+            if (sourceLong.Contains("visited file://") ||
+                sourceLong.Contains("CreateDate") ||
+                sourceLong.Contains("URL:file://") ||
+                sourceLong.Contains("File Opened") ||
+                sourceLong.Contains("Folder opened") ||
+                sourceLong.Contains("Shortcut LNK") ||
+                sourceLong.Contains("RecentDocs key") ||
+                sourceLong.Contains("Link target:") ||
+                sourceLong.Contains("File attribute flags") ||
+                sourceLong.Contains("Birth droid volume identifier:") ||
+                sourceLong.Contains("UserAssist entry") ||
+                sourceLong.ToLowerInvariant().EndsWith(".lnk") ||
+                sourceLong.Contains("Recently opened file") ||
+                sourceLong.Contains("file of extension") ||
+                sourceLong.Contains("Recently") && source.Contains("Firefox") == false ||
+                sourceLong.EndsWith("LNK") ||
+                sourceLong.Contains("file://") && source.Contains("Firefox") == false ||
+                sourceLong.Contains("RecentDocs"))
+            {
+                Color = "FileOpening";
+            }
+
+            if (sourceLong.Contains("MountPoints2") ||
+                sourceLong.Contains("volume mounted") ||
+                sourceLong.Contains("USB") ||
+                sourceLong.Contains("/USB/Vid_") ||
+                sourceLong.Contains("Enum/USBSTOR/Disk") ||
+                sourceLong.Contains("RemovableMedia") ||
+                sourceLong.Contains("STORAGE/RemovableMedia") ||
+                sourceLong.Contains("drive mounted") ||
+                sourceLong.Contains("Drive last mounted") ||
+                sourceLong.Contains("SetupAPI Log"))
+            {
+                Color = "Device|USBUsage";
+            }
+
+            if (sourceLong.Contains("EVT") ||
+                sourceLong.Contains("XP Firewall Log") ||
+                sourceLong.Contains("Event Level:") ||
+                source.StartsWith("EVT")
+            )
+            {
+                Color = "LogFile";
+            }
+
+            if (sourceLong.Contains("Prefetch {") ||
+                sourceLong.Contains("AppCompatCache") ||
+                sourceLong.Contains(@"\Software\Sysinternals") ||
+                sourceLong.Contains("typed the following cmd") ||
+                sourceLong.Contains("CMD typed") ||
+                sourceLong.Contains("Last run") ||
+                sourceLong.Contains("RunMRU") ||
+                sourceLong.Contains("MUICache") ||
+                sourceLong.Contains("UserAssist key") ||
+                sourceLong.Contains("Time of Launch") ||
+                sourceLong.Contains("Prefetch") ||
+                sourceLong.Contains("SHIMCACHE") ||
+                sourceLong.Contains("Scheduled") ||
+                sourceLong.ToLowerInvariant().EndsWith(".pf") ||
+                sourceLong.Contains("was run") ||
+                sourceLong.Contains("UEME_") ||
+                sourceLong.StartsWith("[PROCESS]")
+            )
+            {
+                Color = "Execution";
+            }
+        }
+
+
+        public DateTime Timestamp { get; }
+        public string TimestampDescription { get; }
+        public string Source { get; }
+        public string SourceLong { get; }
+        public string Message { get; }
+        public string Parser { get; }
+        public string DisplayName { get; }
+        public string TagInfo { get; }
+        
+        public string Color { get; set; }
+
+        public int Line { get; set; }
+        public bool Tag { get; set; }
+
+        public override string ToString()
+        {
+            return
+                $"{Timestamp} {TimestampDescription} {Source} {SourceLong} {Message} {Parser} {DisplayName} {TagInfo}";
+        }
+    }
+
+    public class PsortTimeline : IFileSpec
+    {
+        public PsortTimeline()
+        {
+            TaggedLines = new List<int>();
+
+            DataList = new BindingList<PsortTimelineData>();
+
+            ExpectedHeaders = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+            {
+                "datetime,timestamp_desc,source,source_long,message,parser,display_name,tag"
+            };
+        }
+
+        public string Author => "Eric Zimmerman";
+        public string FileDescription => "CSV generated from Plaso in psort format";
+        public HashSet<string> ExpectedHeaders { get; }
+
+        public IBindingList DataList { get; }
+        public List<int> TaggedLines { get; set; }
+
+        public string InternalGuid => "40ee3432-12eb-4612-a480-9a021e2a3353";
+
+        public void ProcessFile(string filename)
+        {
+            DataList.Clear();
+
+            using var fileReader = File.OpenText(filename);
+            var config = new CsvConfiguration(CultureInfo.InvariantCulture)
+            {
+                BadDataFound = context =>
+                {
+                    Log.Warning("Bad data found in {Field}! Skipping. Raw data: {RawRecord}",context.Field, context.RawRecord);
+                },
+                MissingFieldFound = null,
+                Mode = CsvMode.Escape
+            };
+
+
+            var csv = new CsvReader(fileReader, config);
+         
+
+            var foo = csv.Context.AutoMap<PsortTimelineData>();
+
+            foo.Map(t => t.Line).Ignore();
+            foo.Map(t => t.Tag).Ignore();
+            foo.Map(t => t.Color).Ignore();
+            foo.Map(t => t.Timestamp).Name("datetime");
+            foo.Map(t => t.TimestampDescription).Name("timestamp_desc");
+            foo.Map(t => t.Source).Name("source");
+            foo.Map(t => t.SourceLong).Name("source_long");
+            foo.Map(t => t.Message).Name("message");
+            foo.Map(t => t.Parser).Name("parser");
+            foo.Map(t => t.DisplayName).Name("display_name");
+            foo.Map(t => t.TagInfo).Name("tag");
+            
+
+            var o = new TypeConverterOptions
+            {
+                DateTimeStyle = DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal
+            };
+            csv.Context.TypeConverterOptionsCache.AddOptions<PsortTimelineData>(o);
+
+            csv.Context.RegisterClassMap(foo);
+
+            csv.Read();
+            csv.ReadHeader();
+
+                
+
+            var ln = 1;
+
+            try
+            {
+                while (csv.Read())
+                {
+                    Log.Debug("Line # {Line}, Record: {RawRecord}",ln,csv.Context.Parser.RawRecord);
+
+                    // "datetime,timestamp_desc,source,source_long,message,parser,display_name,tag"
+                    // var dt = csv.GetField("date");
+                    //
+                    // if (dt.StartsWith("Processing"))
+                    // {
+                    //     break;
+                    // }
+
+                    var dt = csv.GetField("datetime");
+                    var tsD = csv.GetField("timestamp_desc");
+                    var source = csv.GetField("source");
+                    var sourceLong = csv.GetField("source_long");
+                    var message = csv.GetField("message");
+                    var parser = csv.GetField("parser");
+                    var displayName = csv.GetField("display_name");
+                    var tag = csv.GetField("tag");
+                    
+
+                    var psd = new PsortTimelineData(ln, dt,tsD,source,sourceLong,message,parser,displayName,tag);
+                    psd.Tag = TaggedLines.Contains(ln);
+                    DataList.Add(psd);
+                    ln += 1;
+                }
+            }
+            catch (Exception e)
+            {
+                throw new Exception(
+                    $"Error loading data on line '{ln}': {e.Message}. Line: {csv.Context.Parser.RawRecord}", e);
+            }
+        }
+    }
+
+
+    //3333333333333333333333333333333333333333
+
+
     public class SuperTimelineData : IFileSpecData
     {
         public SuperTimelineData(int line, string date, string time, string tz, string macb, string sourceName,
@@ -496,9 +769,6 @@ namespace TLEFileTimelines
 
       public class KapeMiniTimelineData : IFileSpecData
     {
-       
-  
-
         public DateTime Timestamp { get; set; }
 
         public string DataType { get; set; }
