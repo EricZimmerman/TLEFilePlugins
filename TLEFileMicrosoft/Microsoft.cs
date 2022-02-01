@@ -74,7 +74,7 @@ namespace TLEFileMicrosoft
         {
             DataList.Clear();
 
-            using var fileReader = new StreamReader(filename, Encoding.GetEncoding(1252));
+            using var fileReader = new StreamReader(filename, CodePagesEncodingProvider.Instance.GetEncoding(1252));
             var config = new CsvConfiguration(CultureInfo.InvariantCulture)
             {
                 BadDataFound = null,
@@ -188,7 +188,7 @@ namespace TLEFileMicrosoft
         {
             DataList.Clear();
 
-            using var fileReader = new StreamReader(filename, Encoding.GetEncoding(1252));
+            using var fileReader = new StreamReader(filename, CodePagesEncodingProvider.Instance.GetEncoding(1252));
             var config = new CsvConfiguration(CultureInfo.InvariantCulture)
             {
                 BadDataFound = null,
