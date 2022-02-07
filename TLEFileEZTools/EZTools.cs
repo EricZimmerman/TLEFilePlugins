@@ -1149,8 +1149,8 @@ namespace TLEFileEZTools
 
     public class EvtxECmdData : IFileSpecData
     {
-        public int RecordNumber { get; set; }
-        public int EventRecordId { get; set; }
+        public ulong RecordNumber { get; set; }
+        public ulong EventRecordId { get; set; }
         public DateTime TimeCreated { get; set; }
         public int EventId { get; set; }
         public string Level { get; set; }

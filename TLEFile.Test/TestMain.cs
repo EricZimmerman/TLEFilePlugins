@@ -55,7 +55,7 @@ namespace TLEFile.Text
     public void EzTools_Evtx4()
     {
         var t = new TLEFileEZTools.EvtxECmd();
-        t.ProcessFile(@"C:\temp\foo2.csv");
+        t.ProcessFile(@"C:\temp\Large_RecordNumber-EventRecordId.csv");
 
     }
 
