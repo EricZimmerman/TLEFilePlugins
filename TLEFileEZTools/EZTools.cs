@@ -1980,6 +1980,7 @@ namespace TLEFileEZTools
         public string BinProductVersion { get; set; }
         public int Language { get; set; }
         public long Usn { get; set; }
+        public string Description { get; set; }
 
         public int Line { get; set; }
         public bool Tag { get; set; }
@@ -1987,7 +1988,7 @@ namespace TLEFileEZTools
         public override string ToString()
         {
             return
-                $"{ApplicationName} {Name} {ProgramId} {FileKeyLastWriteTimestamp} {SHA1} {IsOsComponent} {FullPath} {FileExtension} {LinkDate} {ProductName} {Size} {Version} {ProductVersion} {LongPathHash} {BinaryType} {IsPeFile} {BinFileVersion} {BinProductVersion} {Language} {Usn}";
+                $"{ApplicationName} {ProgramId} {FileKeyLastWriteTimestamp} {SHA1} {IsOsComponent} {FullPath} {Name} {FileExtension} {LinkDate} {ProductName} {Size} {Version} {ProductVersion} {LongPathHash} {BinaryType} {IsPeFile} {BinFileVersion} {BinProductVersion} {Usn} {Language} {Description}";
         }
     }
 
@@ -2003,7 +2004,7 @@ namespace TLEFileEZTools
 
             ExpectedHeaders = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
             {
-                "ApplicationName,ProgramId,FileKeyLastWriteTimestamp,SHA1,IsOsComponent,FullPath,Name,FileExtension,LinkDate,ProductName,Size,Version,ProductVersion,LongPathHash,BinaryType,IsPeFile,BinFileVersion,BinProductVersion,Language,Usn,Description"
+                "ApplicationName,ProgramId,FileKeyLastWriteTimestamp,SHA1,IsOsComponent,FullPath,Name,FileExtension,LinkDate,ProductName,Size,Version,ProductVersion,LongPathHash,BinaryType,IsPeFile,BinFileVersion,BinProductVersion,Usn,Language,Description"
             };
         }
 
