@@ -225,7 +225,7 @@ namespace TLEFileEZTools
         public override string ToString()
         {
             return
-                $"{Name} {Extension} {EntryNumber} {SequenceNumber} {ParentEntryNumber} {ParentSequenceNumber} {UpdateSequenceNumber} {UpdateReasons} {FileAttributes} {OffsetToData} {SourceFile}";
+                $"{Name} {Extension} {EntryNumber} {SequenceNumber} {ParentEntryNumber} {ParentSequenceNumber} {ParentPath} {UpdateSequenceNumber} {UpdateTimestamp} {UpdateReasons} {FileAttributes} {OffsetToData} {SourceFile}";
         }
     }
 
@@ -239,7 +239,7 @@ namespace TLEFileEZTools
 
             ExpectedHeaders = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
             {
-                "name,extension,entrynumber,sequencenumber,parententrynumber,parentsequencenumber,parentpath,updatesequencenumber,updatetimestamp,updatereasons,fileattributes,offsettodata,sourcefile"
+                "Name,Extension,EntryNumber,SequenceNumber,ParentEntryNumber,ParentSequenceNumber,ParentPath,UpdateSequenceNumber,UpdateTimestamp,UpdateReasons,FileAttributes,OffsetToData,SourceFile"
             };
         }
 
