@@ -2509,8 +2509,11 @@ namespace TLEFileEZTools
         public string Name { get; set; }
         public string Version { get; set; }
         public string Publisher { get; set; }
+        public DateTime? InstallDateArpLastModified { get; set; }
         public DateTime? InstallDate { get; set; }
+        public DateTime? InstallDateMsi { get; set; }
         public string OSVersionAtInstallTime { get; set; }
+        public DateTime? InstallDateFromLinkFile { get; set; }
         public string BundleManifestPath { get; set; }
         public bool HiddenArp { get; set; }
         public bool InboxModernApp { get; set; }
@@ -2526,14 +2529,19 @@ namespace TLEFileEZTools
         public string Source { get; set; }
         public string StoreAppType { get; set; }
         public string UninstallString { get; set; }
+        public string Manufacturer { get; set; }
         public int Line { get; set; }
         public bool Tag { get; set; }
 
         public override string ToString()
         {
             return
-                $"{ProgramId} {KeyLastWriteTimestamp} {Name} {Version} {Publisher} {InstallDate} {OSVersionAtInstallTime} {BundleManifestPath} {HiddenArp} {InboxModernApp} {Language} {ManifestPath} {MsiPackageCode} {MsiProductCode} {PackageFullName} {ProgramInstanceId} {RegistryKeyPath} {RootDirPath} {Type} {Source} {StoreAppType} {UninstallString}";
+                $"{ProgramId} {KeyLastWriteTimestamp} {Name} {Version} {Publisher} {InstallDateArpLastModified} {InstallDate} {InstallDateMsi} {OSVersionAtInstallTime} {InstallDateFromLinkFile} {BundleManifestPath} {HiddenArp} {InboxModernApp} {Language} {ManifestPath} {MsiPackageCode} {MsiProductCode} {PackageFullName} {ProgramInstanceId} {RegistryKeyPath} {RootDirPath} {Type} {Source} {StoreAppType} {UninstallString} {Manufacturer}";
         }
+
+        
+        
+        
     }
 
 
@@ -2548,7 +2556,7 @@ namespace TLEFileEZTools
 
             ExpectedHeaders = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
             {
-                "ProgramId,KeyLastWriteTimestamp,Name,Version,Publisher,InstallDate,OSVersionAtInstallTime,BundleManifestPath,HiddenArp,InboxModernApp,Language,ManifestPath,MsiPackageCode,MsiProductCode,PackageFullName,ProgramInstanceId,RegistryKeyPath,RootDirPath,Type,Source,StoreAppType,UninstallString,InstallDateArpLastModified,InstallDateMsi,InstallDateFromLinkFile,Manufacturer"
+                "ProgramId,KeyLastWriteTimestamp,Name,Version,Publisher,InstallDateArpLastModified,InstallDate,InstallDateMsi,OSVersionAtInstallTime,InstallDateFromLinkFile,BundleManifestPath,HiddenArp,InboxModernApp,Language,ManifestPath,MsiPackageCode,MsiProductCode,PackageFullName,ProgramInstanceId,RegistryKeyPath,RootDirPath,Type,Source,StoreAppType,UninstallString,Manufacturer"
             };
         }
 
