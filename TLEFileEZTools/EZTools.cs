@@ -2538,10 +2538,6 @@ namespace TLEFileEZTools
             return
                 $"{ProgramId} {KeyLastWriteTimestamp} {Name} {Version} {Publisher} {InstallDateArpLastModified} {InstallDate} {InstallDateMsi} {OSVersionAtInstallTime} {InstallDateFromLinkFile} {BundleManifestPath} {HiddenArp} {InboxModernApp} {Language} {ManifestPath} {MsiPackageCode} {MsiProductCode} {PackageFullName} {ProgramInstanceId} {RegistryKeyPath} {RootDirPath} {Type} {Source} {StoreAppType} {UninstallString} {Manufacturer}";
         }
-
-        
-        
-        
     }
 
 
