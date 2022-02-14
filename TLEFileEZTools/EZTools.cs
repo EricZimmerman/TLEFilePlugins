@@ -225,7 +225,7 @@ namespace TLEFileEZTools
         public override string ToString()
         {
             return
-                $"{Name} {Extension} {EntryNumber} {SequenceNumber} {ParentEntryNumber} {ParentSequenceNumber} {UpdateSequenceNumber} {UpdateReasons} {FileAttributes} {OffsetToData} {SourceFile}";
+                $"{Name} {Extension} {EntryNumber} {SequenceNumber} {ParentEntryNumber} {ParentSequenceNumber} {ParentPath} {UpdateSequenceNumber} {UpdateTimestamp} {UpdateReasons} {FileAttributes} {OffsetToData} {SourceFile}";
         }
     }
 
@@ -239,7 +239,7 @@ namespace TLEFileEZTools
 
             ExpectedHeaders = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
             {
-                "name,extension,entrynumber,sequencenumber,parententrynumber,parentsequencenumber,parentpath,updatesequencenumber,updatetimestamp,updatereasons,fileattributes,offsettodata,sourcefile"
+                "Name,Extension,EntryNumber,SequenceNumber,ParentEntryNumber,ParentSequenceNumber,ParentPath,UpdateSequenceNumber,UpdateTimestamp,UpdateReasons,FileAttributes,OffsetToData,SourceFile"
             };
         }
 
@@ -1980,6 +1980,7 @@ namespace TLEFileEZTools
         public string BinProductVersion { get; set; }
         public int Language { get; set; }
         public long Usn { get; set; }
+        public string Description { get; set; }
 
         public int Line { get; set; }
         public bool Tag { get; set; }
@@ -1987,7 +1988,7 @@ namespace TLEFileEZTools
         public override string ToString()
         {
             return
-                $"{ApplicationName} {Name} {ProgramId} {FileKeyLastWriteTimestamp} {SHA1} {IsOsComponent} {FullPath} {FileExtension} {LinkDate} {ProductName} {Size} {Version} {ProductVersion} {LongPathHash} {BinaryType} {IsPeFile} {BinFileVersion} {BinProductVersion} {Language} {Usn}";
+                $"{ApplicationName} {ProgramId} {FileKeyLastWriteTimestamp} {SHA1} {IsOsComponent} {FullPath} {Name} {FileExtension} {LinkDate} {ProductName} {Size} {Version} {ProductVersion} {LongPathHash} {BinaryType} {IsPeFile} {BinFileVersion} {BinProductVersion} {Usn} {Language} {Description}";
         }
     }
 
@@ -2003,7 +2004,7 @@ namespace TLEFileEZTools
 
             ExpectedHeaders = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
             {
-                "ApplicationName,ProgramId,FileKeyLastWriteTimestamp,SHA1,IsOsComponent,FullPath,Name,FileExtension,LinkDate,ProductName,Size,Version,ProductVersion,LongPathHash,BinaryType,IsPeFile,BinFileVersion,BinProductVersion,Language,Usn,Description"
+                "ApplicationName,ProgramId,FileKeyLastWriteTimestamp,SHA1,IsOsComponent,FullPath,Name,FileExtension,LinkDate,ProductName,Size,Version,ProductVersion,LongPathHash,BinaryType,IsPeFile,BinFileVersion,BinProductVersion,Usn,Language,Description"
             };
         }
 
@@ -2508,8 +2509,11 @@ namespace TLEFileEZTools
         public string Name { get; set; }
         public string Version { get; set; }
         public string Publisher { get; set; }
+        public DateTime? InstallDateArpLastModified { get; set; }
         public DateTime? InstallDate { get; set; }
+        public DateTime? InstallDateMsi { get; set; }
         public string OSVersionAtInstallTime { get; set; }
+        public DateTime? InstallDateFromLinkFile { get; set; }
         public string BundleManifestPath { get; set; }
         public bool HiddenArp { get; set; }
         public bool InboxModernApp { get; set; }
@@ -2525,13 +2529,14 @@ namespace TLEFileEZTools
         public string Source { get; set; }
         public string StoreAppType { get; set; }
         public string UninstallString { get; set; }
+        public string Manufacturer { get; set; }
         public int Line { get; set; }
         public bool Tag { get; set; }
 
         public override string ToString()
         {
             return
-                $"{ProgramId} {KeyLastWriteTimestamp} {Name} {Version} {Publisher} {InstallDate} {OSVersionAtInstallTime} {BundleManifestPath} {HiddenArp} {InboxModernApp} {Language} {ManifestPath} {MsiPackageCode} {MsiProductCode} {PackageFullName} {ProgramInstanceId} {RegistryKeyPath} {RootDirPath} {Type} {Source} {StoreAppType} {UninstallString}";
+                $"{ProgramId} {KeyLastWriteTimestamp} {Name} {Version} {Publisher} {InstallDateArpLastModified} {InstallDate} {InstallDateMsi} {OSVersionAtInstallTime} {InstallDateFromLinkFile} {BundleManifestPath} {HiddenArp} {InboxModernApp} {Language} {ManifestPath} {MsiPackageCode} {MsiProductCode} {PackageFullName} {ProgramInstanceId} {RegistryKeyPath} {RootDirPath} {Type} {Source} {StoreAppType} {UninstallString} {Manufacturer}";
         }
     }
 
@@ -2547,7 +2552,7 @@ namespace TLEFileEZTools
 
             ExpectedHeaders = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
             {
-                "ProgramId,KeyLastWriteTimestamp,Name,Version,Publisher,InstallDate,OSVersionAtInstallTime,BundleManifestPath,HiddenArp,InboxModernApp,Language,ManifestPath,MsiPackageCode,MsiProductCode,PackageFullName,ProgramInstanceId,RegistryKeyPath,RootDirPath,Type,Source,StoreAppType,UninstallString,InstallDateArpLastModified,InstallDateMsi,InstallDateFromLinkFile,Manufacturer"
+                "ProgramId,KeyLastWriteTimestamp,Name,Version,Publisher,InstallDateArpLastModified,InstallDate,InstallDateMsi,OSVersionAtInstallTime,InstallDateFromLinkFile,BundleManifestPath,HiddenArp,InboxModernApp,Language,ManifestPath,MsiPackageCode,MsiProductCode,PackageFullName,ProgramInstanceId,RegistryKeyPath,RootDirPath,Type,Source,StoreAppType,UninstallString,Manufacturer"
             };
         }
 
