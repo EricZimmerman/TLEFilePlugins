@@ -5,6 +5,9 @@
     <Product>ITLEFileSpec</Product>
     <Copyright>Eric Zimmerman</Copyright>
     <LangVersion>10</LangVersion>
-    <LangVersion>10</LangVersion>
+    
   </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="System.Text.Encoding.CodePages" Version="6.0.0" />
+  </ItemGroup>
 </Project>
