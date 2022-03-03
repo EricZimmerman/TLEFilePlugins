@@ -119,7 +119,7 @@ namespace TLEFileMisc
 
             using var fileReader = File.OpenText(filename);
             var csv = new CsvReader(fileReader, CultureInfo.InvariantCulture);
-                
+
             var foo = csv.Context.AutoMap<AnalyzeMftData>();
 
             var o = new TypeConverterOptions
@@ -193,7 +193,6 @@ namespace TLEFileMisc
 
             csv.Context.RegisterClassMap(foo);
 
-                
 
             csv.Read();
             csv.ReadHeader();
@@ -201,7 +200,7 @@ namespace TLEFileMisc
             var ln = 1;
             while (csv.Read())
             {
-                Log.Debug("Line # {Line}, Record: {RawRecord}",ln,csv.Context.Parser.RawRecord);
+                Log.Debug("Line # {Line}, Record: {RawRecord}", ln, csv.Context.Parser.RawRecord);
 
                 if (csv.Context.Parser.RawRecord.Contains("BAAD MFT Record"))
                 {
@@ -424,13 +423,134 @@ namespace TLEFileMisc
         }
     }
 
+    //public string VisitDuration { get; set; }
 
-     public class BrowsingHistoryViewEventData : IFileSpecData
+    
+    
+      public class BrowsingHistoryViewEventData251AndNewer : IFileSpecData
     {
         public string Url { get; set; }
         public string Title { get; set; }
+        public DateTime VisitTime { get; set; }
+        public int VisitCount { get; set; }
+        public string VisitedFrom { get; set; }
+        public string VisitType { get; set; }
+        public string VisitDuration { get; set; }
+        public string WebBrowser { get; set; }
+        public string UserProfile { get; set; }
+        public string BrowserProfile { get; set; }
+        public int UrlLength { get; set; }
+        public int? TypedCount { get; set; }
+        public string HistoryFile { get; set; }
+        public int RecordId { get; set; }
+
+
+        public int Line { get; set; }
+        public bool Tag { get; set; }
+
+        public override string ToString()
+        {
+            return
+                $"{Url} {Title} {VisitTime} {VisitedFrom} {VisitCount} {VisitType} {VisitDuration} {WebBrowser} {UserProfile} {BrowserProfile} {UrlLength} {TypedCount} {HistoryFile} {RecordId}";
+        }
+    }
+
+
+    public class BrowsingHistoryView251AndNewer : IFileSpec
+    {
+        public BrowsingHistoryView251AndNewer()
+        {
+            //Initialize collections here, one for TaggedLines TLE can add values to, and the collection that TLE will display
+            TaggedLines = new List<int>();
+
+            DataList = new BindingList<BrowsingHistoryViewEventData251AndNewer>();
+
+            ExpectedHeaders = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+            {
+                "URL,Title,Visit Time,Visit Count,Visited From,Visit Type,Visit Duration,Web Browser,User Profile,Browser Profile,URL Length,Typed Count,History File,Record ID"
+            };
+        }
+
+        //Version 2.51:
+        //Added 'Visit Duration' column. This column is available only for Chrome and Chromium-based Web browsers.
+        //Improved the 'Visited From' column in new versions of Chrome.
         
-        public DateTime VisitTimeUtc { get; set; }
+        public string Author => "Eric Zimmerman";
+        public string FileDescription => "CSV generated from BrowsingHistoryView 2.51 or newer";
+        public HashSet<string> ExpectedHeaders { get; }
+
+        public IBindingList DataList { get; }
+        public List<int> TaggedLines { get; set; }
+
+        public string InternalGuid => "cba7c7d7-eefd-431d-898c-07b9ea93c120";
+
+        public void ProcessFile(string filename)
+        {
+            DataList.Clear();
+
+            using var fileReader = File.OpenText(filename);
+            var csv = new CsvReader(fileReader, CultureInfo.InvariantCulture);
+
+
+            var o = new TypeConverterOptions
+            {
+                DateTimeStyle = DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal
+            };
+            csv.Context.TypeConverterOptionsCache.AddOptions<BrowsingHistoryViewEventData251AndNewer>(o);
+
+
+            var foo = csv.Context.AutoMap<BrowsingHistoryViewEventData251AndNewer>();
+
+            //URL,Title,Visit Time,Visit Count,Visited From,Visit Type,Web Browser,User Profile,Browser Profile,URL Length,Typed Count,History File,Record ID
+            //file:///C:/Program%20Files/Commvault/ContentStore/Reports/BackupJobSummaryReport_15460_670556_7872_1618863877.html,,4/19/2021 8:24:43 PM,4,,,Internet Explorer 10/11 / Edge,jasonb,,114,,H:\C\Users\jasonb\AppData\Local\Microsoft\Windows\WebCache\WebCacheV01.dat,212
+
+            foo.Map(t => t.Url).Name("URL");
+
+            foo.Map(m => m.VisitTime).Convert(row =>
+                DateTime.Parse(row.Row.GetField<string>("Visit Time")).ToUniversalTime());
+
+            foo.Map(t => t.VisitCount).Name("Visit Count");
+            foo.Map(t => t.VisitedFrom).Name("Visited From");
+            foo.Map(t => t.VisitType).Name("Visit Type");
+            foo.Map(t => t.VisitDuration).Name("Visit Duration");
+            foo.Map(t => t.WebBrowser).Name("Web Browser");
+            foo.Map(t => t.UserProfile).Name("User Profile");
+            foo.Map(t => t.BrowserProfile).Name("Browser Profile");
+            foo.Map(t => t.UrlLength).Name("URL Length");
+            foo.Map(t => t.TypedCount).Name("Typed Count");
+            foo.Map(t => t.HistoryFile).Name("History File");
+            foo.Map(t => t.RecordId).Name("Record ID");
+
+
+            foo.Map(t => t.Line).Ignore();
+            foo.Map(t => t.Tag).Ignore();
+
+            csv.Context.RegisterClassMap(foo);
+
+
+            var records = csv.GetRecords<BrowsingHistoryViewEventData251AndNewer>();
+
+            var ln = 1;
+            foreach (var record in records)
+            {
+                Log.Debug("Line # {Line}, Record: {RawRecord}", ln, csv.Context.Parser.RawRecord);
+
+                record.Line = ln;
+
+                record.Tag = TaggedLines.Contains(ln);
+
+                DataList.Add(record);
+
+                ln += 1;
+            }
+        }
+    }
+
+    public class BrowsingHistoryViewEventData250AndOlder : IFileSpecData
+    {
+        public string Url { get; set; }
+        public string Title { get; set; }
+        public DateTime VisitTime { get; set; }
         public int VisitCount { get; set; }
         public string VisitedFrom { get; set; }
         public string VisitType { get; set; }
@@ -449,19 +569,19 @@ namespace TLEFileMisc
         public override string ToString()
         {
             return
-                $"{Url} {Title} {VisitTimeUtc} {VisitedFrom} {VisitCount} {VisitType} {WebBrowser} {UserProfile} {BrowserProfile} {UrlLength} {TypedCount} {HistoryFile} {RecordId}";
+                $"{Url} {Title} {VisitTime} {VisitedFrom} {VisitCount} {VisitType} {WebBrowser} {UserProfile} {BrowserProfile} {UrlLength} {TypedCount} {HistoryFile} {RecordId}";
         }
     }
 
 
-    public class BrowsingHistoryView : IFileSpec
+    public class BrowsingHistoryView250AndOlder : IFileSpec
     {
-        public BrowsingHistoryView()
+        public BrowsingHistoryView250AndOlder()
         {
             //Initialize collections here, one for TaggedLines TLE can add values to, and the collection that TLE will display
             TaggedLines = new List<int>();
 
-            DataList = new BindingList<BrowsingHistoryViewEventData>();
+            DataList = new BindingList<BrowsingHistoryViewEventData250AndOlder>();
 
             ExpectedHeaders = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
             {
@@ -470,13 +590,13 @@ namespace TLEFileMisc
         }
 
         public string Author => "Eric Zimmerman";
-        public string FileDescription => "CSV generated from BrowsingHistoryView";
+        public string FileDescription => "CSV generated from BrowsingHistoryView 2.50 or older";
         public HashSet<string> ExpectedHeaders { get; }
 
         public IBindingList DataList { get; }
         public List<int> TaggedLines { get; set; }
 
-        public string InternalGuid => "e8c703e2-a34c-45df-a444-b133a250ed7a";
+        public string InternalGuid => "30a260e2-0630-4937-9ab7-c3f86bdee49d";
 
         public void ProcessFile(string filename)
         {
@@ -484,23 +604,23 @@ namespace TLEFileMisc
 
             using var fileReader = File.OpenText(filename);
             var csv = new CsvReader(fileReader, CultureInfo.InvariantCulture);
-                
+
 
             var o = new TypeConverterOptions
             {
                 DateTimeStyle = DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal
             };
-            csv.Context.TypeConverterOptionsCache.AddOptions<BrowsingHistoryViewEventData>(o);
+            csv.Context.TypeConverterOptionsCache.AddOptions<BrowsingHistoryViewEventData250AndOlder>(o);
 
 
-            var foo = csv.Context.AutoMap<BrowsingHistoryViewEventData>();
+            var foo = csv.Context.AutoMap<BrowsingHistoryViewEventData250AndOlder>();
 
             //URL,Title,Visit Time,Visit Count,Visited From,Visit Type,Web Browser,User Profile,Browser Profile,URL Length,Typed Count,History File,Record ID
             //file:///C:/Program%20Files/Commvault/ContentStore/Reports/BackupJobSummaryReport_15460_670556_7872_1618863877.html,,4/19/2021 8:24:43 PM,4,,,Internet Explorer 10/11 / Edge,jasonb,,114,,H:\C\Users\jasonb\AppData\Local\Microsoft\Windows\WebCache\WebCacheV01.dat,212
 
             foo.Map(t => t.Url).Name("URL");
 
-            foo.Map(m => m.VisitTimeUtc).Convert(row =>
+            foo.Map(m => m.VisitTime).Convert(row =>
                 DateTime.Parse(row.Row.GetField<string>("Visit Time")).ToUniversalTime());
 
             foo.Map(t => t.VisitCount).Name("Visit Count");
@@ -520,14 +640,13 @@ namespace TLEFileMisc
 
             csv.Context.RegisterClassMap(foo);
 
-                
 
-            var records = csv.GetRecords<BrowsingHistoryViewEventData>();
+            var records = csv.GetRecords<BrowsingHistoryViewEventData250AndOlder>();
 
             var ln = 1;
             foreach (var record in records)
             {
-                Log.Debug("Line # {Line}, Record: {RawRecord}",ln,csv.Context.Parser.RawRecord);
+                Log.Debug("Line # {Line}, Record: {RawRecord}", ln, csv.Context.Parser.RawRecord);
 
                 record.Line = ln;
 
@@ -599,7 +718,7 @@ namespace TLEFileMisc
 
             using var fileReader = File.OpenText(filename);
             var csv = new CsvReader(fileReader, CultureInfo.InvariantCulture);
-                
+
 
             var o = new TypeConverterOptions
             {
@@ -629,14 +748,13 @@ namespace TLEFileMisc
 
             csv.Context.RegisterClassMap(foo);
 
-                
 
             var records = csv.GetRecords<CrowdStrikeEventData>();
 
             var ln = 1;
             foreach (var record in records)
             {
-                Log.Debug("Line # {Line}, Record: {RawRecord}",ln,csv.Context.Parser.RawRecord);
+                Log.Debug("Line # {Line}, Record: {RawRecord}", ln, csv.Context.Parser.RawRecord);
 
                 record.Line = ln;
 
@@ -713,7 +831,7 @@ namespace TLEFileMisc
 
             using var fileReader = File.OpenText(filename);
             var csv = new CsvReader(fileReader, CultureInfo.InvariantCulture);
-                
+
             var foo = csv.Context.AutoMap<ShimcacheParserData>();
 
             var o = new TypeConverterOptions
@@ -733,7 +851,6 @@ namespace TLEFileMisc
 
             csv.Context.RegisterClassMap(foo);
 
-                
 
             csv.Read();
             csv.ReadHeader();
@@ -741,7 +858,7 @@ namespace TLEFileMisc
             var ln = 1;
             while (csv.Read())
             {
-                Log.Debug("Line # {Line}, Record: {RawRecord}",ln,csv.Context.Parser.RawRecord);
+                Log.Debug("Line # {Line}, Record: {RawRecord}", ln, csv.Context.Parser.RawRecord);
 
                 var modified = DateTime.Parse(csv.GetField("Last Modified"),
                     CultureInfo.InvariantCulture, DateTimeStyles.AssumeUniversal).ToUniversalTime();
@@ -834,7 +951,7 @@ namespace TLEFileMisc
 
             using var fileReader = File.OpenText(filename);
             var csv = new CsvReader(fileReader, CultureInfo.InvariantCulture);
-                
+
             var foo = csv.Context.AutoMap<ShimcacheVolatilityData>();
 
             var o = new TypeConverterOptions
@@ -855,7 +972,6 @@ namespace TLEFileMisc
 
             csv.Context.RegisterClassMap(foo);
 
-                
 
             csv.Read();
             csv.ReadHeader();
@@ -863,7 +979,7 @@ namespace TLEFileMisc
             var ln = 1;
             while (csv.Read())
             {
-                Log.Debug("Line # {Line}, Record: {RawRecord}",ln,csv.Context.Parser.RawRecord);
+                Log.Debug("Line # {Line}, Record: {RawRecord}", ln, csv.Context.Parser.RawRecord);
 
                 var order = int.Parse(csv.GetField("Order"));
 
@@ -943,8 +1059,8 @@ namespace TLEFileMisc
             var ln1 = 1;
             while (ln != null)
             {
-                Log.Debug($"Line # {ln1}, Record: {ln}",ln1,ln);
-                    
+                Log.Debug($"Line # {ln1}, Record: {ln}", ln1, ln);
+
                 var d = new DensityScoutData();
 
                 var dsegs = ln.Split('|');
@@ -961,7 +1077,8 @@ namespace TLEFileMisc
             }
         }
     }
-         public class VanillaWindowsReferenceData : IFileSpecData
+
+    public class VanillaWindowsReferenceData : IFileSpecData
     {
         public string DirectoryName { get; set; }
         public string Name { get; set; }
@@ -974,7 +1091,7 @@ namespace TLEFileMisc
         public string Md5 { get; set; }
         public string Sha256 { get; set; }
         public string Sddl { get; set; }
-        
+
         public int Line { get; set; }
         public bool Tag { get; set; }
 
@@ -984,6 +1101,7 @@ namespace TLEFileMisc
                 $"{DirectoryName} {Name} {FullName} {Length} {CreationTimeUtc} {LastAccessTimeUtc} {LastWriteTimeUtc} {Attributes} {Md5} {Sha256} {Sddl}";
         }
     }
+
     public class VanillaWindowsReference : IFileSpec
     {
         public VanillaWindowsReference()
@@ -998,8 +1116,12 @@ namespace TLEFileMisc
                 "\"directoryname\",\"name\",\"fullname\",\"length\",\"creationtimeutc\",\"lastaccesstimeutc\",\"lastwritetimeutc\",\"attributes\",\"md5\",\"sha256\",\"sddl\""
             };
         }
+
         public string Author => "Andrew Rathbun";
-        public string FileDescription => "CSV generated from AndrewRathbun/VanillaWindowsReference"; //https://github.com/AndrewRathbun/VanillaWindowsReference
+
+        public string FileDescription =>
+            "CSV generated from AndrewRathbun/VanillaWindowsReference"; //https://github.com/AndrewRathbun/VanillaWindowsReference
+
         public HashSet<string> ExpectedHeaders { get; }
 
         public IBindingList DataList { get; }
@@ -1013,14 +1135,14 @@ namespace TLEFileMisc
 
             using var fileReader = File.OpenText(filename);
             var csv = new CsvReader(fileReader, CultureInfo.InvariantCulture);
-                
+
 
             var o = new TypeConverterOptions
             {
                 DateTimeStyle = DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal
             };
             csv.Context.TypeConverterOptionsCache.AddOptions<VanillaWindowsReferenceData>(o);
-                
+
             var foo = csv.Context.AutoMap<VanillaWindowsReferenceData>();
 
             //"DirectoryName","Name","FullName","Length","CreationTimeUtc","LastAccessTimeUtc","LastWriteTimeUtc","Attributes","MD5","SHA256","Sddl"
@@ -1046,20 +1168,19 @@ namespace TLEFileMisc
             foo.Map(t => t.Md5).Name("MD5");
             foo.Map(t => t.Sha256).Name("SHA256");
             //foo.Map(t => t.Sddl).Name("Sddl");
-                
+
             foo.Map(t => t.Line).Ignore();
             foo.Map(t => t.Tag).Ignore();
 
             csv.Context.RegisterClassMap(foo);
 
-                
 
             var records = csv.GetRecords<VanillaWindowsReferenceData>();
-                
+
             var ln = 1;
             foreach (var record in records)
             {
-                Log.Debug("Line # {Line}, Record: {RawRecord}",ln,csv.Context.Parser.RawRecord);
+                Log.Debug("Line # {Line}, Record: {RawRecord}", ln, csv.Context.Parser.RawRecord);
 
                 record.Line = ln;
 
