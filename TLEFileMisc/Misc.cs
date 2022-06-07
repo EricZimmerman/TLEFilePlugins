@@ -1193,3 +1193,122 @@ namespace TLEFileMisc
         }
     }
 }
+
+    public class EVTXETWResourcesData : IFileSpecData
+    {
+        public int EventID { get; set; }
+        public int EventVersion { get; set; }
+        public string Level { get; set; }
+        public string Channel { get; set; }
+        public string Task { get; set; }
+        public string Opcode { get; set; }
+        public string Keyword { get; set; }
+        public string Windows { get; set; }
+        public string Version { get; set; }
+        public string Edition { get; set; }
+        public DateTime Date { get; set; }
+        public float Build { get; set; }
+        public string EventMessage { get; set; }
+        public string EventFields { get; set; }
+
+        
+        public int Line { get; set; }
+        public bool Tag { get; set; }
+
+        public override string ToString()
+        {
+            return
+                $"{EventID} {EventVersion} {Level} {Channel} {Task} {Opcode} {Keyword} {Windows} {Version} {Edition} {Date} {Build} {EventMessage} {EventFields}";
+        }
+    }
+
+    public class EVTXETWResources : IFileSpec
+    {
+        public EVTXETWResources()
+        {
+            //Initialize collections here, one for TaggedLines TLE can add values to, and the collection that TLE will display
+            TaggedLines = new List<int>();
+
+            DataList = new BindingList<EVTXETWResourcesData>();
+
+            ExpectedHeaders = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+            {
+                "Event ID,Event Version,Level,Channel,Task,Opcode,Keyword,Windows,Version,Edition,Date,Build,Event Message,Event Fields"
+            };
+        }
+
+        public string Author => "Andrew Rathbun";
+
+        public string FileDescription =>
+            "CSV generated from nasbench/EVTX-ETW-Resources/ETWProvidersCSVs"; //https://github.com/nasbench/EVTX-ETW-Resources/tree/main/ETWProvidersCSVs
+
+        public HashSet<string> ExpectedHeaders { get; }
+
+        public IBindingList DataList { get; }
+        public List<int> TaggedLines { get; set; }
+
+        public string InternalGuid => "8e99eb91-8056-41bc-a65f-6db43b1a692a";
+
+        public void ProcessFile(string filename)
+        {
+            DataList.Clear();
+
+            using var fileReader = File.OpenText(filename);
+            var csv = new CsvReader(fileReader, CultureInfo.InvariantCulture);
+
+
+            var o = new TypeConverterOptions
+            {
+                DateTimeStyle = DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal
+            };
+            csv.Context.TypeConverterOptionsCache.AddOptions<EVTXETWResourcesData>(o);
+
+            var foo = csv.Context.AutoMap<EVTXETWResourcesData>();
+
+            //foo.Map(t => t.Url).Name("URL");
+
+            foo.Map(m => m.Date).Convert(row =>
+                DateTime.Parse(row.Row.GetField<string>("Date")).ToUniversalTime());
+            
+            //"Event ID,Event Version,Level,Channel,Task,Opcode,Keyword,Windows,Version,Edition,Date,Build,Event Message,Event Fields"
+
+            foo.Map(t => t.EventID).Name("Event ID");
+            foo.Map(t => t.EventVersion).Name("Event Version");
+            foo.Map(t => t.Level).Name("Level");
+            foo.Map(t => t.Channel).Name("Channel");
+            foo.Map(t => t.Task).Name("Task");
+            foo.Map(t => t.Opcode).Name("Opcode");
+            foo.Map(t => t.Keyword).Name("Keyword");
+            foo.Map(t => t.Windows).Name("Windows");
+            foo.Map(t => t.Version).Name("Version");
+            foo.Map(t => t.Edition).Name("Edition");
+            //foo.Map(t => t.Date).Name("Date");
+            foo.Map(t => t.Build).Name("Build");
+            foo.Map(t => t.Version).Name("Version");
+            foo.Map(t => t.EventMessage).Name("Event Message");
+            foo.Map(t => t.EventFields).Name("Event Fields");
+
+            foo.Map(t => t.Line).Ignore();
+            foo.Map(t => t.Tag).Ignore();
+
+            csv.Context.RegisterClassMap(foo);
+
+
+            var records = csv.GetRecords<EVTXETWResourcesData>();
+
+            var ln = 1;
+            foreach (var record in records)
+            {
+                Log.Debug("Line # {Line}, Record: {RawRecord}", ln, csv.Context.Parser.RawRecord);
+
+                record.Line = ln;
+
+                record.Tag = TaggedLines.Contains(ln);
+
+                DataList.Add(record);
+
+                ln += 1;
+            }
+        }
+    }
+
