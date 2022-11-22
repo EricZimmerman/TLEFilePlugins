@@ -57,10 +57,18 @@ namespace TLEFileGenericCsv
             }
 
             var csv = new CsvReader(ff, config);
+            
+            
 
             var ln = 1;
             while (csv.Read())
             {
+                if (csv.Parser.RawRecord.StartsWith("#TYPE"))
+                {
+                    csv.Read();
+                }
+                
+                
                 Log.Debug("Line # {Line}, Record: {RawRecord}",ln,csv.Context.Parser.RawRecord);
 
                 var f = csv.GetRecord<dynamic>();

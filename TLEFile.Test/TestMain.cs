@@ -103,7 +103,7 @@ namespace TLEFile.Text
     public void GenericTest()
     {
         var t = new TLEFileGenericCsv.GenericCsv();
-        t.ProcessFile(@"C:\temp\Testing-TLE-for-608\SmallTest.csv");
+        t.ProcessFile(@"C:\temp\Test.csv");
 
     }
 
