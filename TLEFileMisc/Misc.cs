@@ -425,9 +425,9 @@ namespace TLEFileMisc
 
     //public string VisitDuration { get; set; }
 
-    
-    
-      public class BrowsingHistoryViewEventData251AndNewer : IFileSpecData
+
+
+    public class BrowsingHistoryViewEventData251AndNewer : IFileSpecData
     {
         public string Url { get; set; }
         public string Title { get; set; }
@@ -474,7 +474,7 @@ namespace TLEFileMisc
         //Version 2.51:
         //Added 'Visit Duration' column. This column is available only for Chrome and Chromium-based Web browsers.
         //Improved the 'Visited From' column in new versions of Chrome.
-        
+
         public string Author => "Eric Zimmerman";
         public string FileDescription => "CSV generated from BrowsingHistoryView 2.51 or newer";
         public HashSet<string> ExpectedHeaders { get; }
@@ -1192,7 +1192,6 @@ namespace TLEFileMisc
             }
         }
     }
-}
 
     public class EVTXETWResourcesData : IFileSpecData
     {
@@ -1211,7 +1210,7 @@ namespace TLEFileMisc
         public string EventMessage { get; set; }
         public string EventFields { get; set; }
 
-        
+
         public int Line { get; set; }
         public bool Tag { get; set; }
 
@@ -1269,7 +1268,7 @@ namespace TLEFileMisc
 
             foo.Map(m => m.Date).Convert(row =>
                 DateTime.Parse(row.Row.GetField<string>("Date")).ToUniversalTime());
-            
+
             //"Event ID,Event Version,Level,Channel,Task,Opcode,Keyword,Windows,Version,Edition,Date,Build,Event Message,Event Fields"
 
             foo.Map(t => t.EventID).Name("Event ID");
@@ -1293,7 +1292,6 @@ namespace TLEFileMisc
 
             csv.Context.RegisterClassMap(foo);
 
-
             var records = csv.GetRecords<EVTXETWResourcesData>();
 
             var ln = 1;
@@ -1311,4 +1309,121 @@ namespace TLEFileMisc
             }
         }
     }
+    
+        public class ConvertPSHistoryToCSVData : IFileSpecData
+    {
+        // https://gist.github.com/Qazeer/a0c1c14bb1eae233c1147d1d9dfb3e93
+        public string User { get; set; }
+        public int CommandIndex { get; set; }
+        public string Command { get; set; }
+        public DateTime ExecutionTimestamp { get; set; }
+        public string File { get; set; }
 
+        public int Line { get; set; }
+        public bool Tag { get; set; }
+
+        public override string ToString()
+        {
+            return
+                $"{User} {CommandIndex} {Command} {ExecutionTimestamp} {File}";
+        }
+    }
+
+    public class ConvertPSHistoryToCSV : IFileSpec
+    {
+        // https://gist.github.com/Qazeer/a0c1c14bb1eae233c1147d1d9dfb3e93
+        public ConvertPSHistoryToCSV()
+        {
+            //Initialize collections here, one for TaggedLines TLE can add values to, and the collection that TLE will display
+            TaggedLines = new List<int>();
+
+            DataList = new BindingList<ConvertPSHistoryToCSVData>();
+
+            ExpectedHeaders = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+            {
+                "\"User\",\"CommandIndex\",\"Command\",\"ExecutionTimestamp\",\"File\""
+            };
+        }
+
+        public string Author => "Andrew Rathbun";
+
+        public string FileDescription =>
+            "CSV generated from Qazeer/ConvertPSHistoryTo-CSV.ps1"; //https://gist.github.com/Qazeer/a0c1c14bb1eae233c1147d1d9dfb3e93
+
+        public HashSet<string> ExpectedHeaders { get; }
+
+        public IBindingList DataList { get; }
+        public List<int> TaggedLines { get; set; }
+
+        public string InternalGuid => "63B74A10-2ECE-4314-82F0-85E83146FEE1";
+
+        public void ProcessFile(string filename)
+        {
+            DataList.Clear();
+
+            using var fileReader = File.OpenText(filename);
+            var csv = new CsvReader(fileReader, CultureInfo.InvariantCulture);
+
+            var o = new TypeConverterOptions
+            {
+                DateTimeStyle = DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal
+            };
+            csv.Context.TypeConverterOptionsCache.AddOptions<ConvertPSHistoryToCSVData>(o);
+
+            var foo = csv.Context.AutoMap<ConvertPSHistoryToCSVData>();
+
+            //foo.Map(t => t.Url).Name("URL");
+
+            //"User","CommandIndex","Command","ExecutionTimestamp","File"
+
+            foo.Map(t => t.User).Name("User");
+            foo.Map(t => t.CommandIndex).Name("CommandIndex");
+            foo.Map(t => t.Command).Name("Command");
+            foo.Map(m => m.ExecutionTimestamp).Convert(args =>
+            {
+                var executionTimestamp = args.Row.GetField<string>("ExecutionTimestamp");
+
+                if (string.IsNullOrEmpty(executionTimestamp))
+                {
+                    return default(DateTime);
+                }
+
+                DateTime result;
+                return DateTime.TryParseExact(executionTimestamp, "yyyy-MM-dd'T'HH:mm:ss'Z'", CultureInfo.InvariantCulture, DateTimeStyles.AssumeUniversal | DateTimeStyles.AdjustToUniversal, out result)
+                    ? result
+                    : default(DateTime);
+            });
+
+            foo.Map(t => t.File).Name("File");
+
+            foo.Map(t => t.Line).Ignore();
+            foo.Map(t => t.Tag).Ignore();
+
+            csv.Context.RegisterClassMap(foo);
+
+            var records = csv.GetRecords<ConvertPSHistoryToCSVData>();
+
+            var ln = 1;
+            try
+            {
+                foreach (var record in records)
+                {
+                    Console.WriteLine("Line # {0}, Record: {1}", ln, csv.Context.Parser.RawRecord);
+                    Log.Debug("Line # {Line}, Record: {RawRecord}",ln,csv.Context.Parser.RawRecord);
+
+                    record.Line = ln;
+
+                    record.Tag = TaggedLines.Contains(ln);
+
+                    DataList.Add(record);
+
+                    ln += 1;
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("Error processing line #{0}: {1}", ln, e.Message);
+            }
+        }
+    }
+}
