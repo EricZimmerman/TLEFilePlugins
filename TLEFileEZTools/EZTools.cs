@@ -207,7 +207,7 @@ namespace TLEFileEZTools
         public ulong EntryNumber { get; set; }
         public int SequenceNumber { get; set; }
         public ulong ParentEntryNumber { get; set; }
-        public int ParentSequenceNumber { get; set; }
+        public uint ParentSequenceNumber { get; set; }
         
         public string ParentPath { get; set; }
         public ulong UpdateSequenceNumber { get; set; }
@@ -300,7 +300,7 @@ namespace TLEFileEZTools
         public uint EntryNumber { get; set; }
         public ushort SequenceNumber { get; set; }
         public uint ParentEntryNumber { get; set; }
-        public short? ParentSequenceNumber { get; set; }
+        public ushort? ParentSequenceNumber { get; set; }
 
         public bool InUse { get; set; }
         public string ParentPath { get; set; }
