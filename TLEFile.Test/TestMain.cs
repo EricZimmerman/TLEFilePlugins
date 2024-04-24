@@ -3,6 +3,7 @@ using System.Diagnostics;
 using NUnit.Framework;
 using Serilog;
 using TLEFileEZTools;
+using TLEFileMisc;
 using TLEFileTimelines;
 
 namespace TLEFile.Text
@@ -65,6 +66,38 @@ namespace TLEFile.Text
     {
         var t = new TLEFileTimelines.KapeMiniTimeline();
         t.ProcessFile(@"C:\Temp\minitimeline.csv");
+
+    }
+    
+    [Test]
+    public void HyabMin()
+    {
+        var t = new HyabusaMinimal();
+        t.ProcessFile(@"C:\temp\hayabusa__minimal.csv");
+
+    }
+    
+    [Test]
+    public void HyabStd()
+    {
+        var t = new HyabusaStandard();
+        t.ProcessFile(@"C:\temp\hayabusa_standard.csv");
+
+    }
+    
+    [Test]
+    public void HyabVer()
+    {
+        var t = new HyabusaVerbose();
+        t.ProcessFile(@"C:\temp\hayabusa_verbose.csv");
+
+    }
+    
+    [Test]
+    public void HyabSuperVer()
+    {
+        var t = new HyabusaSuperVerbose();
+        t.ProcessFile(@"C:\temp\hayabusa_super_verbose.csv");
 
     }
 

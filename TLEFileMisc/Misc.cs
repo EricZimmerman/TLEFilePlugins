@@ -5,12 +5,419 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using CsvHelper;
+using CsvHelper.Configuration;
 using CsvHelper.TypeConversion;
 using ITLEFileSpec;
 using Serilog;
 
 namespace TLEFileMisc
 {
+
+    #region Hyabusa
+
+    
+    public class HyabusaStandardData : IFileSpecData
+    {
+        public DateTime Timestamp { get; set; }
+        public string RuleTitle { get; set; }
+        public string Level { get; set; }
+        public string Computer { get; set; }
+        public string Channel { get; set; }
+        
+        public int EventId { get; set; }
+        public int RecordId { get; set; }
+        public string Details { get; set; }
+        public string ExtraFieldInfo { get; set; }
+        
+        public int Line { get; set; }
+        public bool Tag { get; set; }
+
+        public override string ToString()
+        {
+            return $"{Timestamp} {RuleTitle} {Level} {Computer} {Channel} {EventId} {RecordId} {Details} {ExtraFieldInfo}";
+        }
+    }
+
+    public class HyabusaStandard: IFileSpec
+    {
+        public HyabusaStandard()
+        {
+            //Initialize collections here, one for TaggedLines TLE can add values to, and the collection that TLE will display
+            TaggedLines = new List<int>();
+
+            DataList = new BindingList<HyabusaStandardData>();
+
+            ExpectedHeaders = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+            {
+                "\"Timestamp\",\"RuleTitle\",\"Level\",\"Computer\",\"Channel\",\"EventID\",\"RecordID\",\"Details\",\"ExtraFieldInfo\""
+            };
+        }
+
+        public string Author => "Eric Zimmerman";
+        public string FileDescription => "CSV generated from Hyabusa Standard";
+        public HashSet<string> ExpectedHeaders { get; }
+
+        public IBindingList DataList { get; }
+        public List<int> TaggedLines { get; set; }
+
+        public string InternalGuid => "33de9217-f9b5-4d91-9324-1a17b03d44df";
+
+        public void ProcessFile(string filename)
+        {
+            DataList.Clear();
+
+            using var fileReader = File.OpenText(filename);
+            var csv = new CsvReader(fileReader, CultureInfo.InvariantCulture);
+
+            var foo = csv.Context.AutoMap<HyabusaStandardData>();
+
+            var o = new TypeConverterOptions
+            {
+                DateTimeStyle = DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal
+            };
+            csv.Context.TypeConverterOptionsCache.AddOptions<HyabusaStandardData>(o);
+
+            foo.Map(t => t.EventId).Name("EventID");
+            foo.Map(t => t.RecordId).Name("RecordID");
+            
+            foo.Map(t => t.Line).Ignore();
+            foo.Map(t => t.Tag).Ignore();
+
+            csv.Context.RegisterClassMap(foo);
+
+            var records = csv.GetRecords<HyabusaStandardData>();
+
+            var ln = 1;
+            foreach (var record in records)
+            {
+                Log.Debug("Line # {Line}, Record: {RawRecord}", ln, csv.Context.Parser.RawRecord);
+
+                record.Line = ln;
+
+                record.Tag = TaggedLines.Contains(ln);
+
+                DataList.Add(record);
+
+                ln += 1;
+            }
+        }
+        
+    }
+    
+    
+    public class HyabusaVerboseData : IFileSpecData
+    {
+        
+        public DateTime Timestamp { get; set; }
+        public string RuleTitle { get; set; }
+        public string Level { get; set; }
+        public string Computer { get; set; }
+        public string Channel { get; set; }
+        
+        public int EventId { get; set; }
+        
+        public string MitreTactics { get; set; }
+        public string MitreTags { get; set; }
+        public string OtherTags { get; set; }
+        
+        public int RecordId { get; set; }
+        public string Details { get; set; }
+        public string ExtraFieldInfo { get; set; }
+        public string RuleFile { get; set; }
+        public string EvtxFile { get; set; }
+        
+        public int Line { get; set; }
+        public bool Tag { get; set; }
+
+        public override string ToString()
+        {
+            return $"{Timestamp} {RuleTitle} {Level} {Computer} {Channel} {EventId} {MitreTactics} {MitreTags} {OtherTags} {RecordId} {Details} {ExtraFieldInfo} {RuleFile} {EvtxFile}";
+        }
+    }
+
+    public class HyabusaVerbose : IFileSpec
+    {
+        public HyabusaVerbose()
+        {
+            //Initialize collections here, one for TaggedLines TLE can add values to, and the collection that TLE will display
+            TaggedLines = new List<int>();
+
+            DataList = new BindingList<HyabusaVerboseData>();
+
+            ExpectedHeaders = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+            {
+                "\"Timestamp\",\"RuleTitle\",\"Level\",\"Computer\",\"Channel\",\"EventID\",\"MitreTactics\",\"MitreTags\",\"OtherTags\",\"RecordID\",\"Details\",\"ExtraFieldInfo\",\"RuleFile\",\"EvtxFile\""
+            };
+        }
+
+        public string Author => "Eric Zimmerman";
+        public string FileDescription => "CSV generated from Hyabusa Verbose";
+        public HashSet<string> ExpectedHeaders { get; }
+
+        public IBindingList DataList { get; }
+        public List<int> TaggedLines { get; set; }
+
+        public string InternalGuid => "72de9223-f9b5-4d91-9324-0a17b03d22df";
+
+        public void ProcessFile(string filename)
+        {
+            DataList.Clear();
+
+            using var fileReader = File.OpenText(filename);
+            var csv = new CsvReader(fileReader, CultureInfo.InvariantCulture);
+
+            var foo = csv.Context.AutoMap<HyabusaVerboseData>();
+
+            var o = new TypeConverterOptions
+            {
+                DateTimeStyle = DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal
+            };
+            csv.Context.TypeConverterOptionsCache.AddOptions<HyabusaVerboseData>(o);
+
+            foo.Map(t => t.EventId).Name("EventID");
+            foo.Map(t => t.RecordId).Name("RecordID");
+            
+
+            
+            foo.Map(t => t.Line).Ignore();
+            foo.Map(t => t.Tag).Ignore();
+
+            csv.Context.RegisterClassMap(foo);
+
+            var records = csv.GetRecords<HyabusaVerboseData>();
+
+            var ln = 1;
+            foreach (var record in records)
+            {
+                Log.Debug("Line # {Line}, Record: {RawRecord}", ln, csv.Context.Parser.RawRecord);
+
+                record.Line = ln;
+
+                record.Tag = TaggedLines.Contains(ln);
+
+                DataList.Add(record);
+
+                ln += 1;
+            }
+        }
+        
+    }
+    
+    
+    public class HyabusaSuperVerboseData : IFileSpecData
+    {
+        //"EventID","RuleAuthor","RuleModifiedDate","Status",
+        //"ExtraFieldInfo","MitreTactics","MitreTags","OtherTags","Provider","RuleCreationDate","RuleFile","EvtxFile"
+        public DateTime Timestamp { get; set; }
+        public string RuleTitle { get; set; }
+        public string Level { get; set; }
+        public string Computer { get; set; }
+        public string Channel { get; set; }
+        
+        public int EventId { get; set; }
+        
+        public string RuleAuthor { get; set; }
+        public string RuleModifiedDate { get; set; }
+        public string Status { get; set; }
+        public int RecordId { get; set; }
+        public string Details { get; set; }
+        public string ExtraFieldInfo { get; set; }
+        public string MitreTactics { get; set; }
+        public string MitreTags { get; set; }
+        public string OtherTags { get; set; }
+        public string Provider { get; set; }
+        public string RuleCreationDate { get; set; }
+        public string RuleFile { get; set; }
+        public string EvtxFile { get; set; }
+        
+        //"2020-07-09 21:22:31.163 +00:00","Active Directory User Backdoors","high","rootdc1.offsec.lan","Sec",5136,"@neu5ron",
+        //"2024/02/26","test",15779594,"User: lambda-user ¦ SID: S-1-5-21-4230534742-2542757381-3142984815-1158 ¦ ObjDN: CN=honey-pot1,OU=Test-OU,OU=OFFSEC-COMPANY,DC=offsec,DC=lan ¦ AttrLDAPName: servicePrincipalName ¦ OpType: %%14674 ¦ LID: 0x6529663","AppCorrelationID: - ¦ AttributeSyntaxOID: 2.5.5.12 ¦ AttributeValue: HTTP/HACK-ME-PC.offsec.lan ¦ DSName: offsec.lan ¦ DSType: %%14676 ¦ ObjectClass: user ¦ ObjectGUID: 259162F1-58E4-4EE9-9B9C-2BAF2A03D376 ¦ OpCorrelationID: 52BFBF59-4CF4-4D5E-98D1-09D1EBE12FDE ¦ SubjectDomainName: OFFSEC",
+        //"Persis","T1098","","Sec","2017/04/13","win_security_alert_ad_user_backdoors.yml","C:\Users\KOHDA\Downloads\tmp\ID4738,5136-SPN set on user account.evtx"
+        
+        public int Line { get; set; }
+        public bool Tag { get; set; }
+
+        public override string ToString()
+        {
+            return $"{Timestamp} {RuleTitle} {Level} {Computer} {Channel} {EventId} {RecordId} {Details}";
+        }
+    }
+
+    public class HyabusaSuperVerbose : IFileSpec
+    {
+        public HyabusaSuperVerbose()
+        {
+            //Initialize collections here, one for TaggedLines TLE can add values to, and the collection that TLE will display
+            TaggedLines = new List<int>();
+
+            DataList = new BindingList<HyabusaSuperVerboseData>();
+
+            ExpectedHeaders = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+            {
+                "\"Timestamp\",\"RuleTitle\",\"Level\",\"Computer\",\"Channel\",\"EventID\",\"RuleAuthor\",\"RuleModifiedDate\",\"Status\",\"RecordID\",\"Details\",\"ExtraFieldInfo\",\"MitreTactics\",\"MitreTags\",\"OtherTags\",\"Provider\",\"RuleCreationDate\",\"RuleFile\",\"EvtxFile\""
+            };
+        }
+
+        public string Author => "Eric Zimmerman";
+        public string FileDescription => "CSV generated from Hyabusa Super Verbose";
+        public HashSet<string> ExpectedHeaders { get; }
+
+        public IBindingList DataList { get; }
+        public List<int> TaggedLines { get; set; }
+
+        public string InternalGuid => "72de8888-f9b5-4d91-9324-0b17b03d44df";
+
+        public void ProcessFile(string filename)
+        {
+            DataList.Clear();
+
+            using var fileReader = File.OpenText(filename);
+            var csv = new CsvReader(fileReader, CultureInfo.InvariantCulture);
+
+            var foo = csv.Context.AutoMap<HyabusaSuperVerboseData>();
+
+            var o = new TypeConverterOptions
+            {
+                DateTimeStyle = DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal
+            };
+            csv.Context.TypeConverterOptionsCache.AddOptions<HyabusaSuperVerboseData>(o);
+
+            foo.Map(t => t.EventId).Name("EventID");
+            foo.Map(t => t.RecordId).Name("RecordID");
+            
+          //  foo.Map(m => m.RuleModifiedDate).TypeConverter<StupidDateConverter>();
+            
+            foo.Map(t => t.Line).Ignore();
+            foo.Map(t => t.Tag).Ignore();
+
+            csv.Context.RegisterClassMap(foo);
+
+            var records = csv.GetRecords<HyabusaSuperVerboseData>();
+
+            var ln = 1;
+            foreach (var record in records)
+            {
+                Log.Debug("Line # {Line}, Record: {RawRecord}", ln, csv.Context.Parser.RawRecord);
+
+                record.Line = ln;
+
+                record.Tag = TaggedLines.Contains(ln);
+
+                DataList.Add(record);
+
+                ln += 1;
+            }
+        }
+        
+        public class StupidDateConverter : DefaultTypeConverter
+        {
+            public override object ConvertFromString(string text, IReaderRow row, MemberMapData memberMapData)
+            {
+                if (text.Contains("-"))
+                {
+                    return null;
+                }
+
+                return text;
+            }
+        }
+        
+    }
+    
+    public class HyabusaMinimalData : IFileSpecData
+    {
+        public DateTime Timestamp { get; set; }
+        public string RuleTitle { get; set; }
+        public string Level { get; set; }
+        public string Computer { get; set; }
+        public string Channel { get; set; }
+        
+        public int EventId { get; set; }
+        public int RecordId { get; set; }
+        public string Details { get; set; }
+        
+        public int Line { get; set; }
+        public bool Tag { get; set; }
+
+        public override string ToString()
+        {
+            return $"{Timestamp} {RuleTitle} {Level} {Computer} {Channel} {EventId} {RecordId} {Details}";
+        }
+    }
+
+    public class HyabusaMinimal : IFileSpec
+    {
+        public HyabusaMinimal()
+        {
+            //Initialize collections here, one for TaggedLines TLE can add values to, and the collection that TLE will display
+            TaggedLines = new List<int>();
+
+            DataList = new BindingList<HyabusaMinimalData>();
+
+            ExpectedHeaders = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+            {
+                "\"Timestamp\",\"RuleTitle\",\"Level\",\"Computer\",\"Channel\",\"EventID\",\"RecordID\",\"Details\""
+            };
+        }
+
+        public string Author => "Eric Zimmerman";
+        public string FileDescription => "CSV generated from Hyabusa Minimal";
+        public HashSet<string> ExpectedHeaders { get; }
+
+        public IBindingList DataList { get; }
+        public List<int> TaggedLines { get; set; }
+
+        public string InternalGuid => "72de9217-f9b5-4d91-9324-0a17b02d44df";
+
+        public void ProcessFile(string filename)
+        {
+            DataList.Clear();
+
+            using var fileReader = File.OpenText(filename);
+            var csv = new CsvReader(fileReader, CultureInfo.InvariantCulture);
+
+            var foo = csv.Context.AutoMap<HyabusaMinimalData>();
+
+            var o = new TypeConverterOptions
+            {
+                DateTimeStyle = DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal
+            };
+            csv.Context.TypeConverterOptionsCache.AddOptions<HyabusaMinimalData>(o);
+
+            foo.Map(t => t.EventId).Name("EventID");
+            foo.Map(t => t.RecordId).Name("RecordID");
+            
+            foo.Map(t => t.Line).Ignore();
+            foo.Map(t => t.Tag).Ignore();
+
+            csv.Context.RegisterClassMap(foo);
+
+            var records = csv.GetRecords<HyabusaMinimalData>();
+
+            var ln = 1;
+            foreach (var record in records)
+            {
+                Log.Debug("Line # {Line}, Record: {RawRecord}", ln, csv.Context.Parser.RawRecord);
+
+                record.Line = ln;
+
+                record.Tag = TaggedLines.Contains(ln);
+
+                DataList.Add(record);
+
+                ln += 1;
+            }
+        }
+        
+    }
+
+    #endregion
+    
+    
+    
+    
+    
+    
     public class AnalyzeMftData : IFileSpecData
     {
         public int RecordNumber { get; set; }
