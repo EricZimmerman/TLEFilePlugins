@@ -6,7 +6,7 @@ using TLEFileEZTools;
 using TLEFileMisc;
 using TLEFileTimelines;
 
-namespace TLEFile.Text
+namespace TLEFile.Test
 {
     public class TestMain
     {
@@ -72,7 +72,7 @@ namespace TLEFile.Text
     [Test]
     public void HyabMin()
     {
-        var t = new HyabusaMinimal();
+        var t = new HayabusaMinimal();
         t.ProcessFile(@"C:\temp\hayabusa__minimal.csv");
 
     }
@@ -80,7 +80,7 @@ namespace TLEFile.Text
     [Test]
     public void HyabStd()
     {
-        var t = new HyabusaStandard();
+        var t = new HayabusaStandard();
         t.ProcessFile(@"C:\temp\hayabusa_standard.csv");
 
     }
@@ -88,16 +88,21 @@ namespace TLEFile.Text
     [Test]
     public void HyabVer()
     {
-        var t = new HyabusaVerbose();
-        t.ProcessFile(@"C:\temp\hayabusa_verbose.csv");
+        var t = new HayabusaVerbose();
+        t.ProcessFile(@"C:\temp\hayabusa-results\hayabusa-results.csv");
 
     }
     
     [Test]
     public void HyabSuperVer()
     {
-        var t = new HyabusaSuperVerbose();
+        var t = new HayabusaSuperVerbose();
         t.ProcessFile(@"C:\temp\hayabusa_super_verbose.csv");
+        
+        var t2 = new HayabusaSuperVerbose();
+        t2.ProcessFile(@"C:\temp\sample-hayabusa-results.csv");
+
+        
 
     }
 

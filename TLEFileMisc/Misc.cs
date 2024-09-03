@@ -13,10 +13,10 @@ using Serilog;
 namespace TLEFileMisc
 {
 
-    #region Hyabusa
+    #region Hayabusa
 
     
-    public class HyabusaStandardData : IFileSpecData
+    public class HayabusaStandardData : IFileSpecData
     {
         public DateTime Timestamp { get; set; }
         public string RuleTitle { get; set; }
@@ -38,14 +38,14 @@ namespace TLEFileMisc
         }
     }
 
-    public class HyabusaStandard: IFileSpec
+    public class HayabusaStandard: IFileSpec
     {
-        public HyabusaStandard()
+        public HayabusaStandard()
         {
             //Initialize collections here, one for TaggedLines TLE can add values to, and the collection that TLE will display
             TaggedLines = new List<int>();
 
-            DataList = new BindingList<HyabusaStandardData>();
+            DataList = new BindingList<HayabusaStandardData>();
 
             ExpectedHeaders = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
             {
@@ -54,7 +54,7 @@ namespace TLEFileMisc
         }
 
         public string Author => "Eric Zimmerman";
-        public string FileDescription => "CSV generated from Hyabusa Standard";
+        public string FileDescription => "CSV generated from Hayabusa Standard";
         public HashSet<string> ExpectedHeaders { get; }
 
         public IBindingList DataList { get; }
@@ -69,14 +69,15 @@ namespace TLEFileMisc
             using var fileReader = File.OpenText(filename);
             var csv = new CsvReader(fileReader, CultureInfo.InvariantCulture);
 
-            var foo = csv.Context.AutoMap<HyabusaStandardData>();
+            var foo = csv.Context.AutoMap<HayabusaStandardData>();
 
             var o = new TypeConverterOptions
             {
                 DateTimeStyle = DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal
             };
-            csv.Context.TypeConverterOptionsCache.AddOptions<HyabusaStandardData>(o);
+            csv.Context.TypeConverterOptionsCache.AddOptions<HayabusaStandardData>(o);
 
+            foo.Map(m=>m.Timestamp).Convert(row => DateTime.Parse(row.Row.GetField<string>("Timestamp")).ToUniversalTime());
             foo.Map(t => t.EventId).Name("EventID");
             foo.Map(t => t.RecordId).Name("RecordID");
             
@@ -85,7 +86,7 @@ namespace TLEFileMisc
 
             csv.Context.RegisterClassMap(foo);
 
-            var records = csv.GetRecords<HyabusaStandardData>();
+            var records = csv.GetRecords<HayabusaStandardData>();
 
             var ln = 1;
             foreach (var record in records)
@@ -105,7 +106,7 @@ namespace TLEFileMisc
     }
     
     
-    public class HyabusaVerboseData : IFileSpecData
+    public class HayabusaVerboseData : IFileSpecData
     {
         
         public DateTime Timestamp { get; set; }
@@ -135,14 +136,14 @@ namespace TLEFileMisc
         }
     }
 
-    public class HyabusaVerbose : IFileSpec
+    public class HayabusaVerbose : IFileSpec
     {
-        public HyabusaVerbose()
+        public HayabusaVerbose()
         {
             //Initialize collections here, one for TaggedLines TLE can add values to, and the collection that TLE will display
             TaggedLines = new List<int>();
 
-            DataList = new BindingList<HyabusaVerboseData>();
+            DataList = new BindingList<HayabusaVerboseData>();
 
             ExpectedHeaders = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
             {
@@ -151,7 +152,7 @@ namespace TLEFileMisc
         }
 
         public string Author => "Eric Zimmerman";
-        public string FileDescription => "CSV generated from Hyabusa Verbose";
+        public string FileDescription => "CSV generated from Hayabusa Verbose";
         public HashSet<string> ExpectedHeaders { get; }
 
         public IBindingList DataList { get; }
@@ -166,25 +167,24 @@ namespace TLEFileMisc
             using var fileReader = File.OpenText(filename);
             var csv = new CsvReader(fileReader, CultureInfo.InvariantCulture);
 
-            var foo = csv.Context.AutoMap<HyabusaVerboseData>();
+            var foo = csv.Context.AutoMap<HayabusaVerboseData>();
 
             var o = new TypeConverterOptions
             {
                 DateTimeStyle = DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal
             };
-            csv.Context.TypeConverterOptionsCache.AddOptions<HyabusaVerboseData>(o);
+            csv.Context.TypeConverterOptionsCache.AddOptions<HayabusaVerboseData>(o);
 
             foo.Map(t => t.EventId).Name("EventID");
             foo.Map(t => t.RecordId).Name("RecordID");
-            
 
-            
+            foo.Map(m=>m.Timestamp).Convert(row => DateTime.Parse(row.Row.GetField<string>("Timestamp")).ToUniversalTime());
             foo.Map(t => t.Line).Ignore();
             foo.Map(t => t.Tag).Ignore();
 
             csv.Context.RegisterClassMap(foo);
 
-            var records = csv.GetRecords<HyabusaVerboseData>();
+            var records = csv.GetRecords<HayabusaVerboseData>();
 
             var ln = 1;
             foreach (var record in records)
@@ -204,7 +204,7 @@ namespace TLEFileMisc
     }
     
     
-    public class HyabusaSuperVerboseData : IFileSpecData
+    public class HayabusaSuperVerboseData : IFileSpecData
     {
         //"EventID","RuleAuthor","RuleModifiedDate","Status",
         //"ExtraFieldInfo","MitreTactics","MitreTags","OtherTags","Provider","RuleCreationDate","RuleFile","EvtxFile"
@@ -243,14 +243,14 @@ namespace TLEFileMisc
         }
     }
 
-    public class HyabusaSuperVerbose : IFileSpec
+    public class HayabusaSuperVerbose : IFileSpec
     {
-        public HyabusaSuperVerbose()
+        public HayabusaSuperVerbose()
         {
             //Initialize collections here, one for TaggedLines TLE can add values to, and the collection that TLE will display
             TaggedLines = new List<int>();
 
-            DataList = new BindingList<HyabusaSuperVerboseData>();
+            DataList = new BindingList<HayabusaSuperVerboseData>();
 
             ExpectedHeaders = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
             {
@@ -259,7 +259,7 @@ namespace TLEFileMisc
         }
 
         public string Author => "Eric Zimmerman";
-        public string FileDescription => "CSV generated from Hyabusa Super Verbose";
+        public string FileDescription => "CSV generated from Hayabusa Super Verbose";
         public HashSet<string> ExpectedHeaders { get; }
 
         public IBindingList DataList { get; }
@@ -274,25 +274,25 @@ namespace TLEFileMisc
             using var fileReader = File.OpenText(filename);
             var csv = new CsvReader(fileReader, CultureInfo.InvariantCulture);
 
-            var foo = csv.Context.AutoMap<HyabusaSuperVerboseData>();
+            var foo = csv.Context.AutoMap<HayabusaSuperVerboseData>();
 
             var o = new TypeConverterOptions
             {
                 DateTimeStyle = DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal
             };
-            csv.Context.TypeConverterOptionsCache.AddOptions<HyabusaSuperVerboseData>(o);
+            csv.Context.TypeConverterOptionsCache.AddOptions<HayabusaSuperVerboseData>(o);
 
             foo.Map(t => t.EventId).Name("EventID");
             foo.Map(t => t.RecordId).Name("RecordID");
             
           //  foo.Map(m => m.RuleModifiedDate).TypeConverter<StupidDateConverter>();
-            
+            foo.Map(m=>m.Timestamp).Convert(row => DateTime.Parse(row.Row.GetField<string>("Timestamp")).ToUniversalTime());
             foo.Map(t => t.Line).Ignore();
             foo.Map(t => t.Tag).Ignore();
 
             csv.Context.RegisterClassMap(foo);
 
-            var records = csv.GetRecords<HyabusaSuperVerboseData>();
+            var records = csv.GetRecords<HayabusaSuperVerboseData>();
 
             var ln = 1;
             foreach (var record in records)
@@ -302,7 +302,7 @@ namespace TLEFileMisc
                 record.Line = ln;
 
                 record.Tag = TaggedLines.Contains(ln);
-
+               
                 DataList.Add(record);
 
                 ln += 1;
@@ -324,7 +324,7 @@ namespace TLEFileMisc
         
     }
     
-    public class HyabusaMinimalData : IFileSpecData
+    public class HayabusaMinimalData : IFileSpecData
     {
         public DateTime Timestamp { get; set; }
         public string RuleTitle { get; set; }
@@ -345,14 +345,14 @@ namespace TLEFileMisc
         }
     }
 
-    public class HyabusaMinimal : IFileSpec
+    public class HayabusaMinimal : IFileSpec
     {
-        public HyabusaMinimal()
+        public HayabusaMinimal()
         {
             //Initialize collections here, one for TaggedLines TLE can add values to, and the collection that TLE will display
             TaggedLines = new List<int>();
 
-            DataList = new BindingList<HyabusaMinimalData>();
+            DataList = new BindingList<HayabusaMinimalData>();
 
             ExpectedHeaders = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
             {
@@ -361,7 +361,7 @@ namespace TLEFileMisc
         }
 
         public string Author => "Eric Zimmerman";
-        public string FileDescription => "CSV generated from Hyabusa Minimal";
+        public string FileDescription => "CSV generated from Hayabusa Minimal";
         public HashSet<string> ExpectedHeaders { get; }
 
         public IBindingList DataList { get; }
@@ -376,14 +376,15 @@ namespace TLEFileMisc
             using var fileReader = File.OpenText(filename);
             var csv = new CsvReader(fileReader, CultureInfo.InvariantCulture);
 
-            var foo = csv.Context.AutoMap<HyabusaMinimalData>();
+            var foo = csv.Context.AutoMap<HayabusaMinimalData>();
 
             var o = new TypeConverterOptions
             {
                 DateTimeStyle = DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal
             };
-            csv.Context.TypeConverterOptionsCache.AddOptions<HyabusaMinimalData>(o);
+            csv.Context.TypeConverterOptionsCache.AddOptions<HayabusaMinimalData>(o);
 
+            foo.Map(m=>m.Timestamp).Convert(row => DateTime.Parse(row.Row.GetField<string>("Timestamp")).ToUniversalTime());
             foo.Map(t => t.EventId).Name("EventID");
             foo.Map(t => t.RecordId).Name("RecordID");
             
@@ -392,7 +393,7 @@ namespace TLEFileMisc
 
             csv.Context.RegisterClassMap(foo);
 
-            var records = csv.GetRecords<HyabusaMinimalData>();
+            var records = csv.GetRecords<HayabusaMinimalData>();
 
             var ln = 1;
             foreach (var record in records)
