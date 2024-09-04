@@ -3880,4 +3880,81 @@ namespace TLEFileEZTools
         }
     }
 
+    public class SumDnsInfoData : IFileSpecData
+    {
+        public string HostName { get; set; }
+        public string Address { get; set; }
+        public DateTime LastSeen { get; set; }
+        public string SourceFile{ get; set; }
+
+        public int Line { get; set; }
+        public bool Tag { get; set; }
+
+        public override string ToString()
+        {
+            return
+                $"{HostName} {Address} {LastSeen} {SourceFile}";
+        }
+    }
+
+    public class SumDnsInfo : IFileSpec
+    {
+        public SumDnsInfo()
+        {
+            TaggedLines = new List<int>();
+
+            DataList = new BindingList<SumDnsInfoData>();
+
+            ExpectedHeaders = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+            {
+                "HostName,Address,LastSeen,SourceFile"
+            };
+        }
+
+        public string Author => "Andrew Rathbun";
+        public string FileDescription => "CSV generated from SumECmd DNS Info";
+        public HashSet<string> ExpectedHeaders { get; }
+
+        public IBindingList DataList { get; }
+        public List<int> TaggedLines { get; set; }
+
+        public string InternalGuid => "12cb4452-81ef-2723-b313-3b234e1a9679";
+
+        public void ProcessFile(string filename)
+        {
+            DataList.Clear();
+            using var fileReader = File.OpenText(filename);
+            var csv = new CsvReader(fileReader, CultureInfo.InvariantCulture);
+
+            var o = new TypeConverterOptions
+            {
+                DateTimeStyle = DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal
+            };
+            csv.Context.TypeConverterOptionsCache.AddOptions<SumDnsInfoData>(o);
+
+            var foo = csv.Context.AutoMap<SumDnsInfoData>();
+
+            foo.Map(m => m.LastSeen).TypeConverterOption
+                .DateTimeStyles(DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal);
+
+            foo.Map(t => t.Line).Ignore();
+            foo.Map(t => t.Tag).Ignore();
+
+            csv.Context.RegisterClassMap(foo);
+
+            var records = csv.GetRecords<SumDnsInfoData>();
+
+            var ln = 1;
+            foreach (var record in records)
+            {
+                Log.Debug("Line # {Line}, Record: {RawRecord}", ln, csv.Context.Parser.RawRecord);
+                record.Line = ln;
+                record.Tag = TaggedLines.Contains(ln);
+                DataList.Add(record);
+
+                ln += 1;
+            }
+        }
+    }
+
 }
