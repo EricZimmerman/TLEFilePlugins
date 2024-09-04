@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Dynamic;
 using System.Globalization;
 using System.IO;
 using CsvHelper;
@@ -29,6 +30,17 @@ namespace TLEFileGenericCsv
         public List<int> TaggedLines { get; set; }
         public string InternalGuid => "40dd7405-16cf-4612-a480-9a050d0a9952";
 
+      
+
+        private ExpandoObject ConvertToDynamic(IDictionary<string, object> fastDynamicObject) {
+            if (fastDynamicObject == null) return null;  
+            IDictionary<string,object> result = new ExpandoObject();
+            foreach (var item in fastDynamicObject) 
+                result.Add(item.Key, item.Value);
+            return (ExpandoObject)result;
+        }
+        
+        
         public void ProcessFile(string filename)
         {
             
@@ -71,16 +83,23 @@ namespace TLEFileGenericCsv
                 
                 Log.Debug("Line # {Line}, Record: {RawRecord}",ln,csv.Context.Parser.RawRecord);
 
-                var f = csv.GetRecord<dynamic>();
-                f.Line = ln;
-                f.Tag = TaggedLines.Contains(ln);
+               var f = csv.GetRecord<dynamic>();
+               f.Line = ln;
+               f.Tag = TaggedLines.Contains(ln);
+               
+                ExpandoObject f1= ConvertToDynamic(f);
+                
+                
+                
 
-                tempList.Add(f);
+                tempList.Add(f1);
 
                 ln += 1;
             }
 
             // var records = csv.GetRecords<dynamic>().ToList();
+            
+            
 
             DataList = new BindingList<dynamic>(tempList);
         }

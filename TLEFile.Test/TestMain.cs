@@ -5,6 +5,7 @@ using Serilog;
 using TLEFileEZTools;
 using TLEFileMisc;
 using TLEFileTimelines;
+using TLEFileGenericCsv;
 
 namespace TLEFile.Test
 {
@@ -102,6 +103,16 @@ namespace TLEFile.Test
         var t2 = new HayabusaSuperVerbose();
         t2.ProcessFile(@"C:\temp\sample-hayabusa-results.csv");
 
+        
+
+    }
+    
+    
+    [Test]
+    public void GenTest()
+    {
+        var t = new GenericCsv();
+        t.ProcessFile(@"C:\temp\20240904144034_SumECmd_DETAIL_DnsInfo_Output.csv");
         
 
     }
