@@ -605,8 +605,8 @@ namespace TLEFileTimelines
         }
 
         public MacTimeData(int line, DateTime? timestamp, long fileSize, string macb, string permissions,
-            int uid,
-            int gid,
+            string uid,
+            string gid,
             string meta, string filename)
         {
             //Mon Apr 02 2012 00:46:02,1938,m...,r/rrwxrwxrwx,0,0,51206-128-4,"C:/Users/nromanoff/AppData/LocalLow/Microsoft/CryptnetUrlCache/Content/F4B372709D6C2AD766C34D274501DC76_516445E2D2E0044FF0510B085B354A0C"
