@@ -631,8 +631,8 @@ namespace TLEFileTimelines
         public long FileSize { get; set; }
         public string Macb { get; set; }
         public string Permissions { get; set; }
-        public int UId { get; set; }
-        public int GId { get; set; }
+        public string UId { get; set; }
+        public string GId { get; set; }
         public string Meta { get; set; }
         public string FileName { get; set; }
 
