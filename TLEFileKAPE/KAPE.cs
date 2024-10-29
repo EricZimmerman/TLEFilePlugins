@@ -222,7 +222,7 @@ namespace TLEFileKAPE
             //Initialize collections here, one for TaggedLines TLE can add values to, and the collection that TLE will display
             TaggedLines = new List<int>();
 
-            DataList = new BindingList<KapeSkipLogData>();
+            DataList = new BindingList<KapeTriageData>();
 
             ExpectedHeaders = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
             {
