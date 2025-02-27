@@ -295,7 +295,149 @@ namespace TLEFileEZTools
     }
 
 
-    public class MFTData : IFileSpecData
+    public class MFTSourceFileData : IFileSpecData
+    {
+        public uint EntryNumber { get; set; }
+        public ushort SequenceNumber { get; set; }
+        public uint ParentEntryNumber { get; set; }
+        public ushort? ParentSequenceNumber { get; set; }
+
+        public bool InUse { get; set; }
+        public string ParentPath { get; set; }
+        public string FileName { get; set; }
+
+        public string Extension { get; set; }
+
+        public bool IsDirectory { get; set; }
+        public bool HasAds { get; set; }
+        public bool IsAds { get; set; }
+
+        public ulong FileSize { get; set; }
+
+        public DateTime? Created0x10 { get; set; }
+        public DateTime? Created0x30 { get; set; }
+
+        public DateTime? LastModified0x10 { get; set; }
+        public DateTime? LastModified0x30 { get; set; }
+
+        public DateTime? LastRecordChange0x10 { get; set; }
+        public DateTime? LastRecordChange0x30 { get; set; }
+
+        public DateTime? LastAccess0x10 { get; set; }
+
+        public DateTime? LastAccess0x30 { get; set; }
+
+        public long UpdateSequenceNumber { get; set; }
+        public long LogfileSequenceNumber { get; set; }
+
+        public int SecurityId { get; set; }
+
+        public string ZoneIdContents { get; set; }
+        public string SiFlags { get; set; }
+        public string ObjectIdFileDroid { get; set; }
+        public string ReparseTarget { get; set; }
+        public int ReferenceCount { get; set; }
+        public string NameType { get; set; }
+        public string LoggedUtilStream { get; set; }
+        public bool Timestomped { get; set; }
+        public bool uSecZeros { get; set; }
+        public bool Copied { get; set; }
+        public string SourceFile { get; set; }
+
+        public int Line { get; set; }
+
+        public bool Tag { get; set; }
+
+        public override string ToString()
+        {
+            return
+                $"{EntryNumber} {SequenceNumber} {ParentEntryNumber} {ParentSequenceNumber} {InUse} {ParentPath} {FileName} {Extension} {IsDirectory} {HasAds} {IsAds} {FileSize} {Created0x10} {Created0x30} {LastModified0x10} {LastModified0x30} {LastRecordChange0x10} {LastRecordChange0x30} {LastAccess0x10} {LastAccess0x30} {UpdateSequenceNumber} {LogfileSequenceNumber} {SecurityId} {ZoneIdContents} {SiFlags} {ObjectIdFileDroid} {ReparseTarget}" +
+                $" {ReferenceCount} {NameType} {LoggedUtilStream} {Timestomped} {uSecZeros} {Copied} {SourceFile}";
+        }
+    }
+
+    public class MFTSourceFile : IFileSpec
+    {
+        public MFTSourceFile()
+        {
+            TaggedLines = new List<int>();
+
+            DataList = new BindingList<MFTSourceFileData>();
+
+            ExpectedHeaders = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+            {
+                "entrynumber,sequencenumber,inuse,parententrynumber,parentsequencenumber,parentpath,filename,extension,filesize,referencecount,reparsetarget,isdirectory,hasads,isads,si<fn,useczeros,copied,siflags,nametype,created0x10,created0x30,lastmodified0x10,lastmodified0x30,lastrecordchange0x10,lastrecordchange0x30,lastaccess0x10,lastaccess0x30,updatesequencenumber,logfilesequencenumber,securityid,objectidfiledroid,loggedutilstream,zoneidcontents,sourcefile"
+            };
+        }
+
+        public string Author => "Eric Zimmerman";
+        public string FileDescription => "CSV generated from MFTECmd for $MFT with SourceFile";
+        public HashSet<string> ExpectedHeaders { get; }
+
+        public IBindingList DataList { get; }
+        public List<int> TaggedLines { get; set; }
+
+        public string InternalGuid => "f47ac10b-58cc-4372-a567-0e02b2c3d479";
+
+        public void ProcessFile(string filename)
+        {
+            DataList.Clear();
+
+            using var fileReader = File.OpenText(filename);
+            var csv = new CsvReader(fileReader, CultureInfo.InvariantCulture);
+
+            var foo = csv.Context.AutoMap<MFTSourceFileData>();
+
+            var o = new TypeConverterOptions
+            {
+                DateTimeStyle = DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal,
+                NullValues = {"=\"\""}
+            };
+            csv.Context.TypeConverterOptionsCache.AddOptions<MFTSourceFileData>(o);
+
+            foo.Map(t => t.Timestomped).Name("SI<FN");
+            foo.Map(m => m.Created0x10).TypeConverterOption
+                .DateTimeStyles(DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal);
+            foo.Map(m => m.Created0x30).TypeConverterOption
+                .DateTimeStyles(DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal);
+            foo.Map(m => m.LastModified0x10).TypeConverterOption
+                .DateTimeStyles(DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal);
+            foo.Map(m => m.LastModified0x30).TypeConverterOption
+                .DateTimeStyles(DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal);
+            foo.Map(m => m.LastRecordChange0x10).TypeConverterOption
+                .DateTimeStyles(DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal);
+            foo.Map(m => m.LastRecordChange0x30).TypeConverterOption
+                .DateTimeStyles(DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal);
+            foo.Map(m => m.LastAccess0x10).TypeConverterOption
+                .DateTimeStyles(DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal);
+            foo.Map(m => m.LastAccess0x30).TypeConverterOption
+                .DateTimeStyles(DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal);
+
+            foo.Map(t => t.Line).Ignore();
+            foo.Map(t => t.Tag).Ignore();
+
+            csv.Context.RegisterClassMap(foo);
+
+            var records = csv.GetRecords<MFTSourceFileData>();
+
+            
+
+
+            var ln = 1;
+            foreach (var record in records)
+            {
+                Log.Debug("Line # {Line}, Record: {RawRecord}",ln,csv.Context.Parser.RawRecord);
+                record.Line = ln;
+                record.Tag = TaggedLines.Contains(ln);
+                DataList.Add(record);
+
+                ln += 1;
+            }
+        }
+    }
+  
+
+        public class MFTData : IFileSpecData
     {
         public uint EntryNumber { get; set; }
         public ushort SequenceNumber { get; set; }
@@ -433,8 +575,8 @@ namespace TLEFileEZTools
             }
         }
     }
-    
-    
+
+
     public class SbeCmdData : IFileSpecData
     {
         public string BagPath { get; set; }
