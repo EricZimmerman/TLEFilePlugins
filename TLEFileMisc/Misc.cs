@@ -413,12 +413,2089 @@ namespace TLEFileMisc
     }
 
     #endregion
-    
-    
-    
-    
-    
-    
+
+
+    #region Chainsaw
+
+
+    public class ChainsawSigmaData : IFileSpecData
+    {
+        public DateTime Timestamp { get; set; }
+        public string Detections { get; set; }
+        public string Path { get; set; }
+        public int Count { get; set; }
+        public string EventSystemProvider { get; set; }
+
+        public int? EventID { get; set; }
+        public int? RecordID { get; set; }
+        public string Computer { get; set; }
+        public string EventData { get; set; }
+
+        public int Line { get; set; }
+        public bool Tag { get; set; }
+
+        public override string ToString()
+        {
+            return $"{Timestamp} {Detections} {Path} {Count} {EventSystemProvider} {EventID} {RecordID} {Computer} {EventData}";
+        }
+    }
+
+    public class ChainsawSigma : IFileSpec
+    {
+        public ChainsawSigma()
+        {
+            //Initialize collections here, one for TaggedLines TLE can add values to, and the collection that TLE will display
+            TaggedLines = new List<int>();
+
+            DataList = new BindingList<ChainsawSigmaData>();
+
+            ExpectedHeaders = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+            {
+                "timestamp,detections,path,count,Event.System.Provider,Event ID,Record ID,Computer,Event Data"
+            };
+        }
+
+        public string Author => "Reece394";
+        public string FileDescription => "CSV generated from Chainsaw - sigma.csv";
+        public HashSet<string> ExpectedHeaders { get; }
+
+        public IBindingList DataList { get; }
+        public List<int> TaggedLines { get; set; }
+
+        public string InternalGuid => "16edcafd-2bd9-4f89-8493-7dc72244aff6";
+
+        public void ProcessFile(string filename)
+        {
+            DataList.Clear();
+
+            using var fileReader = File.OpenText(filename);
+            var csv = new CsvReader(fileReader, CultureInfo.InvariantCulture);
+
+            var foo = csv.Context.AutoMap<ChainsawSigmaData>();
+
+            var o = new TypeConverterOptions
+            {
+                DateTimeStyle = DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal,
+                NullValues = {"=\"\""}
+            };
+            csv.Context.TypeConverterOptionsCache.AddOptions<ChainsawSigmaData>(o);
+
+            foo.Map(m => m.Timestamp).Convert(row => DateTime.Parse(row.Row.GetField<string>("timestamp")).ToUniversalTime());
+            foo.Map(t => t.Detections).Name("detections");
+            foo.Map(t => t.Path).Name("path");
+            foo.Map(t => t.Count).Name("count");
+            foo.Map(t => t.EventSystemProvider).Name("Event.System.Provider");
+            foo.Map(t => t.EventID).Name("Event ID");
+            foo.Map(t => t.RecordID).Name("Record ID");
+            foo.Map(t => t.EventData).Name("Event Data");
+
+            foo.Map(t => t.Line).Ignore();
+            foo.Map(t => t.Tag).Ignore();
+
+            csv.Context.RegisterClassMap(foo);
+
+            var records = csv.GetRecords<ChainsawSigmaData>();
+
+            var ln = 1;
+            foreach (var record in records)
+            {
+                Log.Debug("Line # {Line}, Record: {RawRecord}", ln, csv.Context.Parser.RawRecord);
+
+                record.Line = ln;
+
+                record.Tag = TaggedLines.Contains(ln);
+
+                DataList.Add(record);
+
+                ln += 1;
+            }
+        }
+
+    }
+
+    public class ChainsawAntivirusData : IFileSpecData
+    {
+        public DateTime Timestamp { get; set; }
+        public string Detections { get; set; }
+        public string Path { get; set; }
+
+        public int EventID { get; set; }
+        public int? RecordID { get; set; }
+        public string Computer { get; set; }
+        public string ThreatName { get; set; }
+        public string ThreatPath { get; set; }
+        public string SHA1 { get; set; }
+        public string User { get; set; }
+        public string ThreatType { get; set; }
+
+        public int Line { get; set; }
+        public bool Tag { get; set; }
+
+        public override string ToString()
+        {
+            return $"{Timestamp} {Detections} {Path} {EventID} {RecordID} {Computer} {ThreatName} {ThreatPath} {SHA1} {User} {ThreatType}";
+        }
+    }
+
+    public class ChainsawAntivirus : IFileSpec
+    {
+        public ChainsawAntivirus()
+        {
+            //Initialize collections here, one for TaggedLines TLE can add values to, and the collection that TLE will display
+            TaggedLines = new List<int>();
+
+            DataList = new BindingList<ChainsawAntivirusData>();
+
+            ExpectedHeaders = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+            {
+                "timestamp,detections,path,Event ID,Record ID,Computer,Threat Name,Threat Path,SHA1,User,Threat Type"
+            };
+        }
+
+        public string Author => "Reece394";
+        public string FileDescription => "CSV generated from Chainsaw - antivirus.csv";
+        public HashSet<string> ExpectedHeaders { get; }
+
+        public IBindingList DataList { get; }
+        public List<int> TaggedLines { get; set; }
+
+        public string InternalGuid => "c9f944e2-31ae-449b-9500-9c60633e2535";
+
+        public void ProcessFile(string filename)
+        {
+            DataList.Clear();
+
+            using var fileReader = File.OpenText(filename);
+            var csv = new CsvReader(fileReader, CultureInfo.InvariantCulture);
+
+            var foo = csv.Context.AutoMap<ChainsawAntivirusData>();
+
+            var o = new TypeConverterOptions
+            {
+                DateTimeStyle = DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal,
+                NullValues = {"=\"\""}
+            };
+            csv.Context.TypeConverterOptionsCache.AddOptions<ChainsawAntivirusData>(o);
+
+            foo.Map(m => m.Timestamp).Convert(row => DateTime.Parse(row.Row.GetField<string>("timestamp")).ToUniversalTime());
+            foo.Map(t => t.Detections).Name("detections");
+            foo.Map(t => t.Path).Name("path");
+            foo.Map(t => t.EventID).Name("Event ID");
+            foo.Map(t => t.RecordID).Name("Record ID");
+            foo.Map(t => t.Computer).Name("Computer");
+            foo.Map(t => t.ThreatName).Name("Threat Name");
+            foo.Map(t => t.ThreatPath).Name("Threat Path");
+            foo.Map(t => t.SHA1).Name("SHA1");
+            foo.Map(t => t.User).Name("User");
+            foo.Map(t => t.ThreatType).Name("Threat Type");
+
+            foo.Map(t => t.Line).Ignore();
+            foo.Map(t => t.Tag).Ignore();
+
+            csv.Context.RegisterClassMap(foo);
+
+            var records = csv.GetRecords<ChainsawAntivirusData>();
+
+            var ln = 1;
+            foreach (var record in records)
+            {
+                Log.Debug("Line # {Line}, Record: {RawRecord}", ln, csv.Context.Parser.RawRecord);
+
+                record.Line = ln;
+
+                record.Tag = TaggedLines.Contains(ln);
+
+                DataList.Add(record);
+
+                ln += 1;
+            }
+        }
+
+    }
+
+    public class ChainsawAccountTamperingData : IFileSpecData
+    {
+        public DateTime Timestamp { get; set; }
+        public string Detections { get; set; }
+        public string Path { get; set; }
+
+        public int EventID { get; set; }
+        public int? RecordID { get; set; }
+        public string Computer { get; set; }
+        public string User { get; set; }
+        public string UserSID { get; set; }
+        public string MemberSID { get; set; }
+
+        public int Line { get; set; }
+        public bool Tag { get; set; }
+
+        public override string ToString()
+        {
+            return $"{Timestamp} {Detections} {Path} {EventID} {RecordID} {Computer} {User} {UserSID} {MemberSID}";
+        }
+    }
+
+    public class ChainsawAccountTampering : IFileSpec
+    {
+        public ChainsawAccountTampering()
+        {
+            //Initialize collections here, one for TaggedLines TLE can add values to, and the collection that TLE will display
+            TaggedLines = new List<int>();
+
+            DataList = new BindingList<ChainsawAccountTamperingData>();
+
+            ExpectedHeaders = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+            {
+                "timestamp,detections,path,Event ID,Record ID,Computer,User,User SID,Member SID"
+            };
+        }
+
+        public string Author => "Reece394";
+        public string FileDescription => "CSV generated from Chainsaw - account_tampering.csv";
+        public HashSet<string> ExpectedHeaders { get; }
+
+        public IBindingList DataList { get; }
+        public List<int> TaggedLines { get; set; }
+
+        public string InternalGuid => "e1afe1bd-c8c3-4406-9059-3d111a41aa06";
+
+        public void ProcessFile(string filename)
+        {
+            DataList.Clear();
+
+            using var fileReader = File.OpenText(filename);
+            var csv = new CsvReader(fileReader, CultureInfo.InvariantCulture);
+
+            var foo = csv.Context.AutoMap<ChainsawAccountTamperingData>();
+
+            var o = new TypeConverterOptions
+            {
+                DateTimeStyle = DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal,
+                NullValues = {"=\"\""}
+            };
+            csv.Context.TypeConverterOptionsCache.AddOptions<ChainsawAccountTamperingData>(o);
+
+            foo.Map(m => m.Timestamp).Convert(row => DateTime.Parse(row.Row.GetField<string>("timestamp")).ToUniversalTime());
+            foo.Map(t => t.Detections).Name("detections");
+            foo.Map(t => t.Path).Name("path");
+            foo.Map(t => t.EventID).Name("Event ID");
+            foo.Map(t => t.RecordID).Name("Record ID");
+            foo.Map(t => t.Computer).Name("Computer");
+            foo.Map(t => t.User).Name("User");
+            foo.Map(t => t.UserSID).Name("User SID");
+            foo.Map(t => t.MemberSID).Name("Member SID");
+
+            foo.Map(t => t.Line).Ignore();
+            foo.Map(t => t.Tag).Ignore();
+
+            csv.Context.RegisterClassMap(foo);
+
+            var records = csv.GetRecords<ChainsawAccountTamperingData>();
+
+            var ln = 1;
+            foreach (var record in records)
+            {
+                Log.Debug("Line # {Line}, Record: {RawRecord}", ln, csv.Context.Parser.RawRecord);
+
+                record.Line = ln;
+
+                record.Tag = TaggedLines.Contains(ln);
+
+                DataList.Add(record);
+
+                ln += 1;
+            }
+        }
+
+    }
+
+    public class ChainsawCredentialAccessData : IFileSpecData
+    {
+        public DateTime Timestamp { get; set; }
+        public string Detections { get; set; }
+        public string Path { get; set; }
+
+        public int EventID { get; set; }
+        public string Computer { get; set; }
+        public string User { get; set; }
+        public string ServiceName { get; set; }
+        public string IPAddress { get; set; }
+
+        public int Line { get; set; }
+        public bool Tag { get; set; }
+
+        public override string ToString()
+        {
+            return $"{Timestamp} {Detections} {Path} {EventID} {Computer} {User} {ServiceName} {IPAddress}";
+        }
+    }
+
+    public class ChainsawCredentialAccess : IFileSpec
+    {
+        public ChainsawCredentialAccess()
+        {
+            //Initialize collections here, one for TaggedLines TLE can add values to, and the collection that TLE will display
+            TaggedLines = new List<int>();
+
+            DataList = new BindingList<ChainsawCredentialAccessData>();
+
+            ExpectedHeaders = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+            {
+                "timestamp,detections,path,Event ID,Computer,User,Service Name,IP Address"
+            };
+        }
+
+        public string Author => "Reece394";
+        public string FileDescription => "CSV generated from Chainsaw - credential_access.csv";
+        public HashSet<string> ExpectedHeaders { get; }
+
+        public IBindingList DataList { get; }
+        public List<int> TaggedLines { get; set; }
+
+        public string InternalGuid => "80ffe0b8-0abe-4cf2-8742-e737e72a9cb5";
+
+        public void ProcessFile(string filename)
+        {
+            DataList.Clear();
+
+            using var fileReader = File.OpenText(filename);
+            var csv = new CsvReader(fileReader, CultureInfo.InvariantCulture);
+
+            var foo = csv.Context.AutoMap<ChainsawCredentialAccessData>();
+
+            var o = new TypeConverterOptions
+            {
+                DateTimeStyle = DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal
+            };
+            csv.Context.TypeConverterOptionsCache.AddOptions<ChainsawCredentialAccessData>(o);
+
+            foo.Map(m => m.Timestamp).Convert(row => DateTime.Parse(row.Row.GetField<string>("timestamp")).ToUniversalTime());
+            foo.Map(t => t.Detections).Name("detections");
+            foo.Map(t => t.Path).Name("path");
+            foo.Map(t => t.EventID).Name("Event ID");
+            foo.Map(t => t.Computer).Name("Computer");
+            foo.Map(t => t.User).Name("User");
+            foo.Map(t => t.ServiceName).Name("Service Name");
+            foo.Map(t => t.IPAddress).Name("IP Address");
+
+            foo.Map(t => t.Line).Ignore();
+            foo.Map(t => t.Tag).Ignore();
+
+            csv.Context.RegisterClassMap(foo);
+
+            var records = csv.GetRecords<ChainsawCredentialAccessData>();
+
+            var ln = 1;
+            foreach (var record in records)
+            {
+                Log.Debug("Line # {Line}, Record: {RawRecord}", ln, csv.Context.Parser.RawRecord);
+
+                record.Line = ln;
+
+                record.Tag = TaggedLines.Contains(ln);
+
+                DataList.Add(record);
+
+                ln += 1;
+            }
+        }
+
+    }
+
+    public class ChainsawLateralMovementData : IFileSpecData
+    {
+        public DateTime Timestamp { get; set; }
+        public string Detections { get; set; }
+        public string Path { get; set; }
+
+        public int EventID { get; set; }
+        public int? RecordID { get; set; }
+        public string Computer { get; set; }
+        public string User { get; set; }
+        public string LogonType { get; set; }
+        public string IPAddress { get; set; }
+        public string ProcessName { get; set; }
+        public string ProcessID { get; set; }
+        public string InterfaceIndex { get; set; }
+        public string SourceAddress { get; set; }
+        public string SourcePort { get; set; }
+        public string DestAddress { get; set; }
+        public string DestPort { get; set; }
+
+        public int Line { get; set; }
+        public bool Tag { get; set; }
+
+        public override string ToString()
+        {
+            return $"{Timestamp} {Detections} {Path} {EventID} {RecordID} {Computer} {User} {LogonType} {IPAddress} {ProcessName} {ProcessID} {InterfaceIndex} {SourceAddress} {SourcePort} {DestAddress} {DestPort}";
+        }
+    }
+
+    public class ChainsawLateralMovement : IFileSpec
+    {
+        public ChainsawLateralMovement()
+        {
+            //Initialize collections here, one for TaggedLines TLE can add values to, and the collection that TLE will display
+            TaggedLines = new List<int>();
+
+            DataList = new BindingList<ChainsawLateralMovementData>();
+
+            ExpectedHeaders = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+            {
+                "timestamp,detections,path,Event ID,Record ID,Computer,User,Logon Type,IP Address,Process Name,Process ID,Interface Index,Source Address,Source Port,Dest Address,Dest Port"
+            };
+        }
+
+        public string Author => "Reece394";
+        public string FileDescription => "CSV generated from Chainsaw - lateral_movement.csv";
+        public HashSet<string> ExpectedHeaders { get; }
+
+        public IBindingList DataList { get; }
+        public List<int> TaggedLines { get; set; }
+
+        public string InternalGuid => "7fce9e8e-7d40-437b-9545-9e3c446285c2";
+
+        public void ProcessFile(string filename)
+        {
+            DataList.Clear();
+
+            using var fileReader = File.OpenText(filename);
+            var csv = new CsvReader(fileReader, CultureInfo.InvariantCulture);
+
+            var foo = csv.Context.AutoMap<ChainsawLateralMovementData>();
+
+            var o = new TypeConverterOptions
+            {
+                DateTimeStyle = DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal,
+                NullValues = {"=\"\""}
+            };
+            csv.Context.TypeConverterOptionsCache.AddOptions<ChainsawLateralMovementData>(o);
+
+            foo.Map(m => m.Timestamp).Convert(row => DateTime.Parse(row.Row.GetField<string>("timestamp")).ToUniversalTime());
+            foo.Map(t => t.Detections).Name("detections");
+            foo.Map(t => t.Path).Name("path");
+            foo.Map(t => t.EventID).Name("Event ID");
+            foo.Map(t => t.RecordID).Name("Record ID");
+            foo.Map(t => t.Computer).Name("Computer");
+            foo.Map(t => t.User).Name("User");
+            foo.Map(t => t.LogonType).Name("Logon Type");
+            foo.Map(t => t.IPAddress).Name("IP Address");
+            foo.Map(t => t.ProcessName).Name("Process Name");
+            foo.Map(t => t.ProcessID).Name("Process ID");
+            foo.Map(t => t.InterfaceIndex).Name("Interface Index");
+            foo.Map(t => t.SourceAddress).Name("Source Address");
+            foo.Map(t => t.SourcePort).Name("Source Port");
+            foo.Map(t => t.DestAddress).Name("Dest Address");
+            foo.Map(t => t.DestPort).Name("Dest Port");
+
+            foo.Map(t => t.Line).Ignore();
+            foo.Map(t => t.Tag).Ignore();
+
+            csv.Context.RegisterClassMap(foo);
+
+            var records = csv.GetRecords<ChainsawLateralMovementData>();
+
+            var ln = 1;
+            foreach (var record in records)
+            {
+                Log.Debug("Line # {Line}, Record: {RawRecord}", ln, csv.Context.Parser.RawRecord);
+
+                record.Line = ln;
+
+                record.Tag = TaggedLines.Contains(ln);
+
+                DataList.Add(record);
+
+                ln += 1;
+            }
+        }
+
+    }
+
+    public class ChainsawLateralMovementOldData : IFileSpecData
+    {
+        public DateTime Timestamp { get; set; }
+        public string Detections { get; set; }
+        public string Path { get; set; }
+
+        public int EventID { get; set; }
+        public int? RecordID { get; set; }
+        public string Computer { get; set; }
+        public string User { get; set; }
+        public string LogonType { get; set; }
+        public string IPAddress { get; set; }
+
+        public int Line { get; set; }
+        public bool Tag { get; set; }
+
+        public override string ToString()
+        {
+            return $"{Timestamp} {Detections} {Path} {EventID} {RecordID} {Computer} {User} {LogonType} {IPAddress}";
+        }
+    }
+
+    public class ChainsawLateralMovementOld : IFileSpec
+    {
+        public ChainsawLateralMovementOld()
+        {
+            //Initialize collections here, one for TaggedLines TLE can add values to, and the collection that TLE will display
+            TaggedLines = new List<int>();
+
+            DataList = new BindingList<ChainsawLateralMovementOldData>();
+
+            ExpectedHeaders = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+            {
+                "timestamp,detections,path,Event ID,Record ID,Computer,User,Logon Type,IP Address"
+            };
+        }
+
+        public string Author => "Reece394";
+        public string FileDescription => "CSV generated from Chainsaw Older Version - lateral_movement.csv";
+        public HashSet<string> ExpectedHeaders { get; }
+
+        public IBindingList DataList { get; }
+        public List<int> TaggedLines { get; set; }
+
+        public string InternalGuid => "fb499ec4-ac70-43d4-8607-fcff501cc58c";
+
+        public void ProcessFile(string filename)
+        {
+            DataList.Clear();
+
+            using var fileReader = File.OpenText(filename);
+            var csv = new CsvReader(fileReader, CultureInfo.InvariantCulture);
+
+            var foo = csv.Context.AutoMap<ChainsawLateralMovementOldData>();
+
+            var o = new TypeConverterOptions
+            {
+                DateTimeStyle = DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal,
+                NullValues = {"=\"\""}
+            };
+            csv.Context.TypeConverterOptionsCache.AddOptions<ChainsawLateralMovementOldData>(o);
+
+            foo.Map(m => m.Timestamp).Convert(row => DateTime.Parse(row.Row.GetField<string>("timestamp")).ToUniversalTime());
+            foo.Map(t => t.Detections).Name("detections");
+            foo.Map(t => t.Path).Name("path");
+            foo.Map(t => t.EventID).Name("Event ID");
+            foo.Map(t => t.RecordID).Name("Record ID");
+            foo.Map(t => t.Computer).Name("Computer");
+            foo.Map(t => t.User).Name("User");
+            foo.Map(t => t.LogonType).Name("Logon Type");
+            foo.Map(t => t.IPAddress).Name("IP Address");
+
+            foo.Map(t => t.Line).Ignore();
+            foo.Map(t => t.Tag).Ignore();
+
+            csv.Context.RegisterClassMap(foo);
+
+            var records = csv.GetRecords<ChainsawLateralMovementOldData>();
+
+            var ln = 1;
+            foreach (var record in records)
+            {
+                Log.Debug("Line # {Line}, Record: {RawRecord}", ln, csv.Context.Parser.RawRecord);
+
+                record.Line = ln;
+
+                record.Tag = TaggedLines.Contains(ln);
+
+                DataList.Add(record);
+
+                ln += 1;
+            }
+        }
+
+    }
+
+    public class ChainsawRDSPowerShellScriptData : IFileSpecData
+    {
+        public DateTime Timestamp { get; set; }
+        public string Detections { get; set; }
+        public string Path { get; set; }
+
+        public int EventID { get; set; }
+        public string Channel { get; set; }
+        public string Computer { get; set; }
+        public string Information { get; set; }
+
+        public int Line { get; set; }
+        public bool Tag { get; set; }
+
+        public override string ToString()
+        {
+            return $"{Timestamp} {Detections} {Path} {EventID} {Channel} {Computer} {Information}";
+        }
+    }
+
+    public class ChainsawRDSPowerShellScript : IFileSpec
+    {
+        public ChainsawRDSPowerShellScript()
+        {
+            //Initialize collections here, one for TaggedLines TLE can add values to, and the collection that TLE will display
+            TaggedLines = new List<int>();
+
+            DataList = new BindingList<ChainsawRDSPowerShellScriptData>();
+
+            ExpectedHeaders = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+            {
+                "timestamp,detections,path,Event ID,Channel,Computer,Information"
+            };
+        }
+
+        public string Author => "Reece394";
+        public string FileDescription => "CSV generated from Chainsaw - powershell_script.csv and RDS csvs";
+        public HashSet<string> ExpectedHeaders { get; }
+
+        public IBindingList DataList { get; }
+        public List<int> TaggedLines { get; set; }
+
+        public string InternalGuid => "50d882ec-4c60-46bf-892e-3f8045372185";
+
+        public void ProcessFile(string filename)
+        {
+            DataList.Clear();
+
+            using var fileReader = File.OpenText(filename);
+            var csv = new CsvReader(fileReader, CultureInfo.InvariantCulture);
+
+            var foo = csv.Context.AutoMap<ChainsawRDSPowerShellScriptData>();
+
+            var o = new TypeConverterOptions
+            {
+                DateTimeStyle = DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal
+            };
+            csv.Context.TypeConverterOptionsCache.AddOptions<ChainsawRDSPowerShellScriptData>(o);
+
+            foo.Map(m => m.Timestamp).Convert(row => DateTime.Parse(row.Row.GetField<string>("timestamp")).ToUniversalTime());
+            foo.Map(t => t.Detections).Name("detections");
+            foo.Map(t => t.Path).Name("path");
+            foo.Map(t => t.EventID).Name("Event ID");
+            foo.Map(t => t.Channel).Name("Channel");
+            foo.Map(t => t.Computer).Name("Computer");
+            foo.Map(t => t.Information).Name("Information");
+
+            foo.Map(t => t.Line).Ignore();
+            foo.Map(t => t.Tag).Ignore();
+
+            csv.Context.RegisterClassMap(foo);
+
+            var records = csv.GetRecords<ChainsawRDSPowerShellScriptData>();
+
+            var ln = 1;
+            foreach (var record in records)
+            {
+                Log.Debug("Line # {Line}, Record: {RawRecord}", ln, csv.Context.Parser.RawRecord);
+
+                record.Line = ln;
+
+                record.Tag = TaggedLines.Contains(ln);
+
+                DataList.Add(record);
+
+                ln += 1;
+            }
+        }
+
+    }
+
+    public class ChainsawRDSWebAccessData : IFileSpecData
+    {
+        public DateTime Timestamp { get; set; }
+        public string Detections { get; set; }
+        public string Path { get; set; }
+
+        public int EventID { get; set; }
+        public string Channel { get; set; }
+        public string Computer { get; set; }
+        public string IPAddress { get; set; }
+        public string LogonType { get; set; }
+        public string TargetUserName { get; set; }
+        public string WorkstationName { get; set; }
+
+        public int Line { get; set; }
+        public bool Tag { get; set; }
+
+        public override string ToString()
+        {
+            return $"{Timestamp} {Detections} {Path} {EventID} {Channel} {Computer} {IPAddress} {LogonType} {TargetUserName} {WorkstationName}";
+        }
+    }
+
+    public class ChainsawRDSWebAccess : IFileSpec
+    {
+        public ChainsawRDSWebAccess()
+        {
+            //Initialize collections here, one for TaggedLines TLE can add values to, and the collection that TLE will display
+            TaggedLines = new List<int>();
+
+            DataList = new BindingList<ChainsawRDSWebAccessData>();
+
+            ExpectedHeaders = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+            {
+                "timestamp,detections,path,Event ID,Channel,Computer,IpAddress,LogonType,TargetUserName,WorkstationName"
+            };
+        }
+
+        public string Author => "Reece394";
+        public string FileDescription => "CSV generated from Chainsaw - microsoft_rds_events_-_rd_web_access_successful_logon.csv";
+        public HashSet<string> ExpectedHeaders { get; }
+
+        public IBindingList DataList { get; }
+        public List<int> TaggedLines { get; set; }
+
+        public string InternalGuid => "92f5a8df-bd8e-4996-bbe9-2561f12932e2";
+
+        public void ProcessFile(string filename)
+        {
+            DataList.Clear();
+
+            using var fileReader = File.OpenText(filename);
+            var csv = new CsvReader(fileReader, CultureInfo.InvariantCulture);
+
+            var foo = csv.Context.AutoMap<ChainsawRDSWebAccessData>();
+
+            var o = new TypeConverterOptions
+            {
+                DateTimeStyle = DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal
+            };
+            csv.Context.TypeConverterOptionsCache.AddOptions<ChainsawRDSWebAccessData>(o);
+
+            foo.Map(m => m.Timestamp).Convert(row => DateTime.Parse(row.Row.GetField<string>("timestamp")).ToUniversalTime());
+            foo.Map(t => t.Detections).Name("detections");
+            foo.Map(t => t.Path).Name("path");
+            foo.Map(t => t.EventID).Name("Event ID");
+            foo.Map(t => t.Channel).Name("Channel");
+            foo.Map(t => t.Computer).Name("Computer");
+            foo.Map(t => t.IPAddress).Name("IpAddress");
+            foo.Map(t => t.LogonType).Name("LogonType");
+            foo.Map(t => t.TargetUserName).Name("TargetUserName");
+            foo.Map(t => t.WorkstationName).Name("WorkstationName");
+
+            foo.Map(t => t.Line).Ignore();
+            foo.Map(t => t.Tag).Ignore();
+
+            csv.Context.RegisterClassMap(foo);
+
+            var records = csv.GetRecords<ChainsawRDSWebAccessData>();
+
+            var ln = 1;
+            foreach (var record in records)
+            {
+                Log.Debug("Line # {Line}, Record: {RawRecord}", ln, csv.Context.Parser.RawRecord);
+
+                record.Line = ln;
+
+                record.Tag = TaggedLines.Contains(ln);
+
+                DataList.Add(record);
+
+                ln += 1;
+            }
+        }
+
+    }
+
+    public class ChainsawLogTamperingData : IFileSpecData
+    {
+        public DateTime Timestamp { get; set; }
+        public string Detections { get; set; }
+        public string Path { get; set; }
+
+        public int EventID { get; set; }
+        public int? RecordID { get; set; }
+        public string Computer { get; set; }
+        public string User { get; set; }
+
+        public int Line { get; set; }
+        public bool Tag { get; set; }
+
+        public override string ToString()
+        {
+            return $"{Timestamp} {Detections} {Path} {EventID} {RecordID} {Computer} {User}";
+        }
+    }
+
+    public class ChainsawLogTampering : IFileSpec
+    {
+        public ChainsawLogTampering()
+        {
+            //Initialize collections here, one for TaggedLines TLE can add values to, and the collection that TLE will display
+            TaggedLines = new List<int>();
+
+            DataList = new BindingList<ChainsawLogTamperingData>();
+
+            ExpectedHeaders = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+            {
+                "timestamp,detections,path,Event ID,Record ID,Computer,User"
+            };
+        }
+
+        public string Author => "Reece394";
+        public string FileDescription => "CSV generated from Chainsaw - log_tampering.csv";
+        public HashSet<string> ExpectedHeaders { get; }
+
+        public IBindingList DataList { get; }
+        public List<int> TaggedLines { get; set; }
+
+        public string InternalGuid => "c98793ac-0c36-4874-8fad-35fad0789da4";
+
+        public void ProcessFile(string filename)
+        {
+            DataList.Clear();
+
+            using var fileReader = File.OpenText(filename);
+            var csv = new CsvReader(fileReader, CultureInfo.InvariantCulture);
+
+            var foo = csv.Context.AutoMap<ChainsawLogTamperingData>();
+
+            var o = new TypeConverterOptions
+            {
+                DateTimeStyle = DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal,
+                NullValues = {"=\"\""}
+            };
+            csv.Context.TypeConverterOptionsCache.AddOptions<ChainsawLogTamperingData>(o);
+
+            foo.Map(m => m.Timestamp).Convert(row => DateTime.Parse(row.Row.GetField<string>("timestamp")).ToUniversalTime());
+            foo.Map(t => t.Detections).Name("detections");
+            foo.Map(t => t.Path).Name("path");
+            foo.Map(t => t.EventID).Name("Event ID");
+            foo.Map(t => t.RecordID).Name("Record ID");
+            foo.Map(t => t.Computer).Name("Computer");
+            foo.Map(t => t.User).Name("User");
+
+            foo.Map(t => t.Line).Ignore();
+            foo.Map(t => t.Tag).Ignore();
+
+            csv.Context.RegisterClassMap(foo);
+
+            var records = csv.GetRecords<ChainsawLogTamperingData>();
+
+            var ln = 1;
+            foreach (var record in records)
+            {
+                Log.Debug("Line # {Line}, Record: {RawRecord}", ln, csv.Context.Parser.RawRecord);
+
+                record.Line = ln;
+
+                record.Tag = TaggedLines.Contains(ln);
+
+                DataList.Add(record);
+
+                ln += 1;
+            }
+        }
+
+    }
+
+    public class ChainsawPowerShellEngineStateData : IFileSpecData
+    {
+        public DateTime Timestamp { get; set; }
+        public string Detections { get; set; }
+        public string Path { get; set; }
+
+        public int EventID { get; set; }
+        public string Channel { get; set; }
+        public string Computer { get; set; }
+        public string HostName { get; set; }
+        public string HostVersion { get; set; }
+        public string HostApplication { get; set; }
+        public string PipelineID { get; set; }
+        public string CommandName { get; set; }
+        public string CommandType { get; set; }
+        public string ScriptName { get; set; }
+        public string CommandPath { get; set; }
+        public string CommandLine { get; set; }
+
+        public int Line { get; set; }
+        public bool Tag { get; set; }
+
+        public override string ToString()
+        {
+            return $"{Timestamp} {Detections} {Path} {EventID} {Channel} {Computer} {HostName} {HostVersion} {HostApplication} {PipelineID} {CommandName} {CommandType} {ScriptName} {CommandPath} {CommandLine}";
+        }
+    }
+
+    public class ChainsawPowerShellEngineState : IFileSpec
+    {
+        public ChainsawPowerShellEngineState()
+        {
+            //Initialize collections here, one for TaggedLines TLE can add values to, and the collection that TLE will display
+            TaggedLines = new List<int>();
+
+            DataList = new BindingList<ChainsawPowerShellEngineStateData>();
+
+            ExpectedHeaders = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+            {
+                "timestamp,detections,path,Event ID,Channel,Computer,HostName,HostVersion,HostApplication,PipelineId,CommandName,CommandType,ScriptName,CommandPath,CommandLine"
+            };
+        }
+
+        public string Author => "Reece394";
+        public string FileDescription => "CSV generated from Chainsaw - powershell_engine_state.csv";
+        public HashSet<string> ExpectedHeaders { get; }
+
+        public IBindingList DataList { get; }
+        public List<int> TaggedLines { get; set; }
+
+        public string InternalGuid => "9b464d8e-7b62-44d1-9319-5d4998797f3f";
+
+        public void ProcessFile(string filename)
+        {
+            DataList.Clear();
+
+            using var fileReader = File.OpenText(filename);
+            var csv = new CsvReader(fileReader, CultureInfo.InvariantCulture);
+
+            var foo = csv.Context.AutoMap<ChainsawPowerShellEngineStateData>();
+
+            var o = new TypeConverterOptions
+            {
+                DateTimeStyle = DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal
+            };
+            csv.Context.TypeConverterOptionsCache.AddOptions<ChainsawPowerShellEngineStateData>(o);
+
+            foo.Map(m => m.Timestamp).Convert(row => DateTime.Parse(row.Row.GetField<string>("timestamp")).ToUniversalTime());
+            foo.Map(t => t.Detections).Name("detections");
+            foo.Map(t => t.Path).Name("path");
+            foo.Map(t => t.EventID).Name("Event ID");
+            foo.Map(t => t.Channel).Name("Channel");
+            foo.Map(t => t.Computer).Name("Computer");
+            foo.Map(t => t.HostName).Name("HostName");
+            foo.Map(t => t.HostVersion).Name("HostVersion");
+            foo.Map(t => t.HostApplication).Name("HostApplication");
+            foo.Map(t => t.PipelineID).Name("PipelineId");
+            foo.Map(t => t.CommandName).Name("CommandName");
+            foo.Map(t => t.CommandType).Name("CommandType");
+            foo.Map(t => t.ScriptName).Name("ScriptName");
+            foo.Map(t => t.CommandPath).Name("CommandPath");
+            foo.Map(t => t.CommandLine).Name("CommandLine");
+
+            foo.Map(t => t.Line).Ignore();
+            foo.Map(t => t.Tag).Ignore();
+
+            csv.Context.RegisterClassMap(foo);
+
+            var records = csv.GetRecords<ChainsawPowerShellEngineStateData>();
+
+            var ln = 1;
+            foreach (var record in records)
+            {
+                Log.Debug("Line # {Line}, Record: {RawRecord}", ln, csv.Context.Parser.RawRecord);
+
+                record.Line = ln;
+
+                record.Tag = TaggedLines.Contains(ln);
+
+                DataList.Add(record);
+
+                ln += 1;
+            }
+        }
+
+    }
+
+    public class ChainsawLoginAttacksData : IFileSpecData
+    {
+        public DateTime Timestamp { get; set; }
+        public string Detections { get; set; }
+        public string Path { get; set; }
+
+        public int Count { get; set; }
+        public int EventID { get; set; }
+        public string User { get; set; }
+
+        public int Line { get; set; }
+        public bool Tag { get; set; }
+
+        public override string ToString()
+        {
+            return $"{Timestamp} {Detections} {Path} {Count} {EventID} {User}";
+        }
+    }
+
+    public class ChainsawLoginAttacks : IFileSpec
+    {
+        public ChainsawLoginAttacks()
+        {
+            //Initialize collections here, one for TaggedLines TLE can add values to, and the collection that TLE will display
+            TaggedLines = new List<int>();
+
+            DataList = new BindingList<ChainsawLoginAttacksData>();
+
+            ExpectedHeaders = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+            {
+                "timestamp,detections,path,count,Event ID,User"
+            };
+        }
+
+        public string Author => "Reece394";
+        public string FileDescription => "CSV generated from Chainsaw - login_attacks.csv";
+        public HashSet<string> ExpectedHeaders { get; }
+
+        public IBindingList DataList { get; }
+        public List<int> TaggedLines { get; set; }
+
+        public string InternalGuid => "01cf0187-3706-447d-bec7-956abdd798cc";
+
+        public void ProcessFile(string filename)
+        {
+            DataList.Clear();
+
+            using var fileReader = File.OpenText(filename);
+            var csv = new CsvReader(fileReader, CultureInfo.InvariantCulture);
+
+            var foo = csv.Context.AutoMap<ChainsawLoginAttacksData>();
+
+            var o = new TypeConverterOptions
+            {
+                DateTimeStyle = DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal
+            };
+            csv.Context.TypeConverterOptionsCache.AddOptions<ChainsawLoginAttacksData>(o);
+
+            foo.Map(m => m.Timestamp).Convert(row => DateTime.Parse(row.Row.GetField<string>("timestamp")).ToUniversalTime());
+            foo.Map(t => t.Detections).Name("detections");
+            foo.Map(t => t.Path).Name("path");
+            foo.Map(t => t.Count).Name("count");
+            foo.Map(t => t.EventID).Name("Event ID");
+            foo.Map(t => t.User).Name("User");
+
+            foo.Map(t => t.Line).Ignore();
+            foo.Map(t => t.Tag).Ignore();
+
+            csv.Context.RegisterClassMap(foo);
+
+            var records = csv.GetRecords<ChainsawLoginAttacksData>();
+
+            var ln = 1;
+            foreach (var record in records)
+            {
+                Log.Debug("Line # {Line}, Record: {RawRecord}", ln, csv.Context.Parser.RawRecord);
+
+                record.Line = ln;
+
+                record.Tag = TaggedLines.Contains(ln);
+
+                DataList.Add(record);
+
+                ln += 1;
+            }
+        }
+
+    }
+
+    public class ChainsawIndicatorRemovalData : IFileSpecData
+    {
+        public DateTime Timestamp { get; set; }
+        public string Detections { get; set; }
+        public string Path { get; set; }
+
+        public int EventID { get; set; }
+        public int? RecordID { get; set; }
+        public string Computer { get; set; }
+        public string UserName { get; set; }
+        public string ScheduledTaskName { get; set; }
+
+        public int Line { get; set; }
+        public bool Tag { get; set; }
+
+        public override string ToString()
+        {
+            return $"{Timestamp} {Detections} {Path} {EventID} {RecordID} {Computer} {UserName} {ScheduledTaskName}";
+        }
+    }
+
+    public class ChainsawIndicatorRemoval : IFileSpec
+    {
+        public ChainsawIndicatorRemoval()
+        {
+            //Initialize collections here, one for TaggedLines TLE can add values to, and the collection that TLE will display
+            TaggedLines = new List<int>();
+
+            DataList = new BindingList<ChainsawIndicatorRemovalData>();
+
+            ExpectedHeaders = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+            {
+                "timestamp,detections,path,Event ID,Record ID,Computer,User Name,Scheduled Task Name"
+            };
+        }
+
+        public string Author => "Reece394";
+        public string FileDescription => "CSV generated from Chainsaw - indicator_removal.csv";
+        public HashSet<string> ExpectedHeaders { get; }
+
+        public IBindingList DataList { get; }
+        public List<int> TaggedLines { get; set; }
+
+        public string InternalGuid => "30e3b579-3f45-4e19-a4ac-c302a7551c14";
+
+        public void ProcessFile(string filename)
+        {
+            DataList.Clear();
+
+            using var fileReader = File.OpenText(filename);
+            var csv = new CsvReader(fileReader, CultureInfo.InvariantCulture);
+
+            var foo = csv.Context.AutoMap<ChainsawIndicatorRemovalData>();
+
+            var o = new TypeConverterOptions
+            {
+                DateTimeStyle = DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal,
+                NullValues = {"=\"\""}
+            };
+            csv.Context.TypeConverterOptionsCache.AddOptions<ChainsawIndicatorRemovalData>(o);
+
+            foo.Map(m => m.Timestamp).Convert(row => DateTime.Parse(row.Row.GetField<string>("timestamp")).ToUniversalTime());
+            foo.Map(t => t.Detections).Name("detections");
+            foo.Map(t => t.Path).Name("path");
+            foo.Map(t => t.EventID).Name("Event ID");
+            foo.Map(t => t.RecordID).Name("Record ID");
+            foo.Map(t => t.Computer).Name("Computer");
+            foo.Map(t => t.UserName).Name("User Name");
+            foo.Map(t => t.ScheduledTaskName).Name("Scheduled Task Name");
+
+            foo.Map(t => t.Line).Ignore();
+            foo.Map(t => t.Tag).Ignore();
+
+            csv.Context.RegisterClassMap(foo);
+
+            var records = csv.GetRecords<ChainsawIndicatorRemovalData>();
+
+            var ln = 1;
+            foreach (var record in records)
+            {
+                Log.Debug("Line # {Line}, Record: {RawRecord}", ln, csv.Context.Parser.RawRecord);
+
+                record.Line = ln;
+
+                record.Tag = TaggedLines.Contains(ln);
+
+                DataList.Add(record);
+
+                ln += 1;
+            }
+        }
+
+    }
+
+    public class ChainsawPersistenceData : IFileSpecData
+    {
+        public DateTime Timestamp { get; set; }
+        public string Detections { get; set; }
+        public string Path { get; set; }
+
+        public int EventID { get; set; }
+        public int? RecordID { get; set; }
+        public string Computer { get; set; }
+        public string UserName { get; set; }
+        public string ScheduledTaskName { get; set; }
+        public string DomainName { get; set; }
+        public string LogonID { get; set; }
+        public string ParentProcessName { get; set; }
+        public string ParentProcessCommandLine { get; set; }
+        public string NewProcessName { get; set; }
+        public string NewProcessID { get; set; }
+
+        public int Line { get; set; }
+        public bool Tag { get; set; }
+
+        public override string ToString()
+        {
+            return $"{Timestamp} {Detections} {Path} {EventID} {RecordID} {Computer} {UserName} {ScheduledTaskName} {DomainName} {LogonID} {ParentProcessName} {ParentProcessCommandLine} {NewProcessName} {NewProcessID}";
+        }
+    }
+
+    public class ChainsawPersistence : IFileSpec
+    {
+        public ChainsawPersistence()
+        {
+            //Initialize collections here, one for TaggedLines TLE can add values to, and the collection that TLE will display
+            TaggedLines = new List<int>();
+
+            DataList = new BindingList<ChainsawPersistenceData>();
+
+            ExpectedHeaders = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+            {
+                "timestamp,detections,path,Event ID,Record ID,Computer,User Name,Scheduled Task Name,Domain Name,Logon ID,Parent Process Name,Parent Process Command Line,New Process Name,New Process ID"
+            };
+        }
+
+        public string Author => "Reece394";
+        public string FileDescription => "CSV generated from Chainsaw - persistence.csv";
+        public HashSet<string> ExpectedHeaders { get; }
+
+        public IBindingList DataList { get; }
+        public List<int> TaggedLines { get; set; }
+
+        public string InternalGuid => "411f33d8-aece-4b58-b7f2-26d24e5e9a9d";
+
+        public void ProcessFile(string filename)
+        {
+            DataList.Clear();
+
+            using var fileReader = File.OpenText(filename);
+            var csv = new CsvReader(fileReader, CultureInfo.InvariantCulture);
+
+            var foo = csv.Context.AutoMap<ChainsawPersistenceData>();
+
+            var o = new TypeConverterOptions
+            {
+                DateTimeStyle = DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal,
+                NullValues = {"=\"\""}
+            };
+            csv.Context.TypeConverterOptionsCache.AddOptions<ChainsawPersistenceData>(o);
+
+            foo.Map(m => m.Timestamp).Convert(row => DateTime.Parse(row.Row.GetField<string>("timestamp")).ToUniversalTime());
+            foo.Map(t => t.Detections).Name("detections");
+            foo.Map(t => t.Path).Name("path");
+            foo.Map(t => t.EventID).Name("Event ID");
+            foo.Map(t => t.RecordID).Name("Record ID");
+            foo.Map(t => t.Computer).Name("Computer");
+            foo.Map(t => t.UserName).Name("User Name");
+            foo.Map(t => t.ScheduledTaskName).Name("Scheduled Task Name");
+            foo.Map(t => t.DomainName).Name("Domain Name");
+            foo.Map(t => t.LogonID).Name("Logon ID");
+            foo.Map(t => t.ParentProcessName).Name("Parent Process Name");
+            foo.Map(t => t.ParentProcessCommandLine).Name("Parent Process Command Line");
+            foo.Map(t => t.NewProcessName).Name("New Process Name");
+            foo.Map(t => t.NewProcessID).Name("New Process ID");
+
+            foo.Map(t => t.Line).Ignore();
+            foo.Map(t => t.Tag).Ignore();
+
+            csv.Context.RegisterClassMap(foo);
+
+            var records = csv.GetRecords<ChainsawPersistenceData>();
+
+            var ln = 1;
+            foreach (var record in records)
+            {
+                Log.Debug("Line # {Line}, Record: {RawRecord}", ln, csv.Context.Parser.RawRecord);
+
+                record.Line = ln;
+
+                record.Tag = TaggedLines.Contains(ln);
+
+                DataList.Add(record);
+
+                ln += 1;
+            }
+        }
+
+    }
+
+    public class ChainsawRDPAttacksData : IFileSpecData
+    {
+        public DateTime Timestamp { get; set; }
+        public string Detections { get; set; }
+        public string Path { get; set; }
+
+        public int EventID { get; set; }
+        public string Computer { get; set; }
+        public string IPAddress { get; set; }
+        public string Username { get; set; }
+        public string Provider { get; set; }
+        public string LogonType { get; set; }
+        public int? RecordID { get; set; }
+        public string Domain { get; set; }
+
+        public int Line { get; set; }
+        public bool Tag { get; set; }
+
+        public override string ToString()
+        {
+            return $"{Timestamp} {Detections} {Path} {EventID} {Computer} {IPAddress} {Username} {Provider} {LogonType} {RecordID} {Domain}";
+        }
+    }
+
+    public class ChainsawRDPAttacks : IFileSpec
+    {
+        public ChainsawRDPAttacks()
+        {
+            //Initialize collections here, one for TaggedLines TLE can add values to, and the collection that TLE will display
+            TaggedLines = new List<int>();
+
+            DataList = new BindingList<ChainsawRDPAttacksData>();
+
+            ExpectedHeaders = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+            {
+                "timestamp,detections,path,event id,computer,ip address,username,provider,logon type,record id,domain"
+            };
+        }
+
+        public string Author => "Reece394";
+        public string FileDescription => "CSV generated from Chainsaw - rdp_attacks.csv";
+        public HashSet<string> ExpectedHeaders { get; }
+
+        public IBindingList DataList { get; }
+        public List<int> TaggedLines { get; set; }
+
+        public string InternalGuid => "861eb62e-8bcd-4410-9afe-b2ceddc9a82e";
+
+        public void ProcessFile(string filename)
+        {
+            DataList.Clear();
+
+            using var fileReader = File.OpenText(filename);
+            var csv = new CsvReader(fileReader, CultureInfo.InvariantCulture);
+
+            var foo = csv.Context.AutoMap<ChainsawRDPAttacksData>();
+
+            var o = new TypeConverterOptions
+            {
+                DateTimeStyle = DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal,
+                NullValues = {"=\"\""}
+            };
+            csv.Context.TypeConverterOptionsCache.AddOptions<ChainsawRDPAttacksData>(o);
+
+            foo.Map(m => m.Timestamp).Convert(row => DateTime.Parse(row.Row.GetField<string>("timestamp")).ToUniversalTime());
+            foo.Map(t => t.Detections).Name("detections");
+            foo.Map(t => t.Path).Name("path");
+            foo.Map(t => t.EventID).Name("event id");
+
+            foo.Map(t => t.Computer).Name("computer");
+            foo.Map(t => t.IPAddress).Name("ip address");
+            foo.Map(t => t.Username).Name("username");
+            foo.Map(t => t.Provider).Name("provider");
+            foo.Map(t => t.LogonType).Name("logon type");
+            foo.Map(t => t.RecordID).Name("record id");
+            foo.Map(t => t.Domain).Name("domain");
+
+            foo.Map(t => t.Line).Ignore();
+            foo.Map(t => t.Tag).Ignore();
+
+            csv.Context.RegisterClassMap(foo);
+
+            var records = csv.GetRecords<ChainsawRDPAttacksData>();
+
+            var ln = 1;
+            foreach (var record in records)
+            {
+                Log.Debug("Line # {Line}, Record: {RawRecord}", ln, csv.Context.Parser.RawRecord);
+
+                record.Line = ln;
+
+                record.Tag = TaggedLines.Contains(ln);
+
+                DataList.Add(record);
+
+                ln += 1;
+            }
+        }
+
+    }
+
+    public class ChainsawRasVPNData : IFileSpecData
+    {
+        public DateTime Timestamp { get; set; }
+        public string Detections { get; set; }
+        public string Path { get; set; }
+
+        public int EventID { get; set; }
+        public string Channel { get; set; }
+        public string Provider { get; set; }
+        public string Computer { get; set; }
+        public string Data { get; set; }
+
+        public int Line { get; set; }
+        public bool Tag { get; set; }
+
+        public override string ToString()
+        {
+            return $"{Timestamp} {Detections} {Path} {EventID} {Channel} {Provider} {Computer} {Data}";
+        }
+    }
+
+    public class ChainsawRasVPN : IFileSpec
+    {
+        public ChainsawRasVPN()
+        {
+            //Initialize collections here, one for TaggedLines TLE can add values to, and the collection that TLE will display
+            TaggedLines = new List<int>();
+
+            DataList = new BindingList<ChainsawRasVPNData>();
+
+            ExpectedHeaders = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+            {
+                "timestamp,detections,path,Event ID,Channel,Provider,Computer,Data"
+            };
+        }
+
+        public string Author => "Reece394";
+        public string FileDescription => "CSV generated from Chainsaw - microsoft_rasvpn_events";
+        public HashSet<string> ExpectedHeaders { get; }
+
+        public IBindingList DataList { get; }
+        public List<int> TaggedLines { get; set; }
+
+        public string InternalGuid => "11000a42-a916-4116-a35c-2bfeaa02b40d";
+
+        public void ProcessFile(string filename)
+        {
+            DataList.Clear();
+
+            using var fileReader = File.OpenText(filename);
+            var csv = new CsvReader(fileReader, CultureInfo.InvariantCulture);
+
+            var foo = csv.Context.AutoMap<ChainsawRasVPNData>();
+
+            var o = new TypeConverterOptions
+            {
+                DateTimeStyle = DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal
+            };
+            csv.Context.TypeConverterOptionsCache.AddOptions<ChainsawRasVPNData>(o);
+
+            foo.Map(m => m.Timestamp).Convert(row => DateTime.Parse(row.Row.GetField<string>("timestamp")).ToUniversalTime());
+            foo.Map(t => t.Detections).Name("detections");
+            foo.Map(t => t.Path).Name("path");
+            foo.Map(t => t.EventID).Name("Event ID");
+            foo.Map(t => t.Channel).Name("Channel");
+            foo.Map(t => t.Provider).Name("Provider");
+            foo.Map(t => t.Computer).Name("Computer");
+            foo.Map(t => t.Data).Name("Data");
+
+            foo.Map(t => t.Line).Ignore();
+            foo.Map(t => t.Tag).Ignore();
+
+            csv.Context.RegisterClassMap(foo);
+
+            var records = csv.GetRecords<ChainsawRasVPNData>();
+
+            var ln = 1;
+            foreach (var record in records)
+            {
+                Log.Debug("Line # {Line}, Record: {RawRecord}", ln, csv.Context.Parser.RawRecord);
+
+                record.Line = ln;
+
+                record.Tag = TaggedLines.Contains(ln);
+
+                DataList.Add(record);
+
+                ln += 1;
+            }
+        }
+
+    }
+
+    public class ChainsawServiceInstallationData : IFileSpecData
+    {
+        public DateTime Timestamp { get; set; }
+        public string Detections { get; set; }
+        public string Path { get; set; }
+
+        public int EventID { get; set; }
+        public int? RecordID { get; set; }
+        public string Computer { get; set; }
+        public string ServiceName { get; set; }
+        public string ServiceFileName { get; set; }
+        public string ServiceType { get; set; }
+        public string ServiceStartType { get; set; }
+        public string ServiceAccount { get; set; }
+
+        public int Line { get; set; }
+        public bool Tag { get; set; }
+
+        public override string ToString()
+        {
+            return $"{Timestamp} {Detections} {Path} {EventID} {RecordID} {Computer} {ServiceName} {ServiceFileName} {ServiceType} {ServiceStartType} {ServiceAccount}";
+        }
+    }
+
+    public class ChainsawServiceInstallation : IFileSpec
+    {
+        public ChainsawServiceInstallation()
+        {
+            //Initialize collections here, one for TaggedLines TLE can add values to, and the collection that TLE will display
+            TaggedLines = new List<int>();
+
+            DataList = new BindingList<ChainsawServiceInstallationData>();
+
+            ExpectedHeaders = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+            {
+                "timestamp,detections,path,Event ID,Record ID,Computer,Service Name,Service File Name,Service Type,Service Start Type,Service Account"
+            };
+        }
+
+        public string Author => "Reece394";
+        public string FileDescription => "CSV generated from Chainsaw - service_installation.csv";
+        public HashSet<string> ExpectedHeaders { get; }
+
+        public IBindingList DataList { get; }
+        public List<int> TaggedLines { get; set; }
+
+        public string InternalGuid => "995c4f43-cca4-4993-9f27-18b1a58ec124";
+
+        public void ProcessFile(string filename)
+        {
+            DataList.Clear();
+
+            using var fileReader = File.OpenText(filename);
+            var csv = new CsvReader(fileReader, CultureInfo.InvariantCulture);
+
+            var foo = csv.Context.AutoMap<ChainsawServiceInstallationData>();
+
+            var o = new TypeConverterOptions
+            {
+                DateTimeStyle = DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal,
+                NullValues = {"=\"\""}
+            };
+            csv.Context.TypeConverterOptionsCache.AddOptions<ChainsawServiceInstallationData>(o);
+
+            foo.Map(m => m.Timestamp).Convert(row => DateTime.Parse(row.Row.GetField<string>("timestamp")).ToUniversalTime());
+            foo.Map(t => t.Detections).Name("detections");
+            foo.Map(t => t.Path).Name("path");
+            foo.Map(t => t.EventID).Name("Event ID");
+            foo.Map(t => t.RecordID).Name("Record ID");
+            foo.Map(t => t.Computer).Name("Computer");
+            foo.Map(t => t.ServiceName).Name("Service Name");
+            foo.Map(t => t.ServiceFileName).Name("Service File Name");
+            foo.Map(t => t.ServiceType).Name("Service Type");
+            foo.Map(t => t.ServiceStartType).Name("Service Start Type");
+            foo.Map(t => t.ServiceAccount).Name("Service Account");
+
+            foo.Map(t => t.Line).Ignore();
+            foo.Map(t => t.Tag).Ignore();
+
+            csv.Context.RegisterClassMap(foo);
+
+            var records = csv.GetRecords<ChainsawServiceInstallationData>();
+
+            var ln = 1;
+            foreach (var record in records)
+            {
+                Log.Debug("Line # {Line}, Record: {RawRecord}", ln, csv.Context.Parser.RawRecord);
+
+                record.Line = ln;
+
+                record.Tag = TaggedLines.Contains(ln);
+
+                DataList.Add(record);
+
+                ln += 1;
+            }
+        }
+
+    }
+
+    public class ChainsawServiceTamperingData : IFileSpecData
+    {
+        public DateTime Timestamp { get; set; }
+        public string Detections { get; set; }
+        public string Path { get; set; }
+
+        public int EventID { get; set; }
+        public string Username { get; set; }
+        public string Computer { get; set; }
+        public string Command { get; set; }
+        public string OldValue { get; set; }
+        public string NewValue { get; set; }
+        public string Service { get; set; }
+        public string OldState { get; set; }
+        public string NewState { get; set; }
+        public string SID { get; set; }
+        public int? RecordID { get; set; }
+        public string ServiceName { get; set; }
+        public string Action { get; set; }
+
+        public int Line { get; set; }
+        public bool Tag { get; set; }
+
+        public override string ToString()
+        {
+            return $"{Timestamp} {Detections} {Path} {EventID} {Username} {Computer} {Command} {OldValue} {NewValue} {Service} {OldState} {NewState} {SID} {RecordID} {ServiceName} {Action}";
+        }
+    }
+
+    public class ChainsawServiceTampering : IFileSpec
+    {
+        public ChainsawServiceTampering()
+        {
+            //Initialize collections here, one for TaggedLines TLE can add values to, and the collection that TLE will display
+            TaggedLines = new List<int>();
+
+            DataList = new BindingList<ChainsawServiceTamperingData>();
+
+            ExpectedHeaders = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+            {
+                "timestamp,detections,path,Event ID,Username,Computer,Command,Old Value,New Value,Service,Old State,New State,SID,Record ID,Service Name,Action"
+            };
+        }
+
+        public string Author => "Reece394";
+        public string FileDescription => "CSV generated from Chainsaw - service_tampering.csv";
+        public HashSet<string> ExpectedHeaders { get; }
+
+        public IBindingList DataList { get; }
+        public List<int> TaggedLines { get; set; }
+
+        public string InternalGuid => "2f9108dc-aa19-47fb-8875-af31531cb913";
+
+        public void ProcessFile(string filename)
+        {
+            DataList.Clear();
+
+            using var fileReader = File.OpenText(filename);
+            var csv = new CsvReader(fileReader, CultureInfo.InvariantCulture);
+
+            var foo = csv.Context.AutoMap<ChainsawServiceTamperingData>();
+
+            var o = new TypeConverterOptions
+            {
+                DateTimeStyle = DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal,
+                NullValues = {"=\"\""}
+            };
+            csv.Context.TypeConverterOptionsCache.AddOptions<ChainsawServiceTamperingData>(o);
+
+            foo.Map(m => m.Timestamp).Convert(row => DateTime.Parse(row.Row.GetField<string>("timestamp")).ToUniversalTime());
+            foo.Map(t => t.Detections).Name("detections");
+            foo.Map(t => t.Path).Name("path");
+            foo.Map(t => t.EventID).Name("Event ID");
+            foo.Map(t => t.Username).Name("Username");
+            foo.Map(t => t.Computer).Name("Computer");
+            foo.Map(t => t.Command).Name("Command");
+            foo.Map(t => t.OldValue).Name("Old Value");
+            foo.Map(t => t.NewValue).Name("New Value");
+            foo.Map(t => t.Service).Name("Service");
+            foo.Map(t => t.OldState).Name("Old State");
+            foo.Map(t => t.NewState).Name("New State");
+            foo.Map(t => t.SID).Name("SID");
+            foo.Map(t => t.RecordID).Name("Record ID");
+            foo.Map(t => t.ServiceName).Name("Service Name");
+            foo.Map(t => t.Action).Name("Action");
+
+            foo.Map(t => t.Line).Ignore();
+            foo.Map(t => t.Tag).Ignore();
+
+            csv.Context.RegisterClassMap(foo);
+
+            var records = csv.GetRecords<ChainsawServiceTamperingData>();
+
+            var ln = 1;
+            foreach (var record in records)
+            {
+                Log.Debug("Line # {Line}, Record: {RawRecord}", ln, csv.Context.Parser.RawRecord);
+
+                record.Line = ln;
+
+                record.Tag = TaggedLines.Contains(ln);
+
+                DataList.Add(record);
+
+                ln += 1;
+            }
+        }
+
+    }
+
+    public class ChainsawAppLockerData : IFileSpecData
+    {
+        public DateTime Timestamp { get; set; }
+        public string Detections { get; set; }
+        public string Path { get; set; }
+
+        public int EventID { get; set; }
+        public string Channel { get; set; }
+        public string Computer { get; set; }
+        public string TargetUser { get; set; }
+        public string FullFilePath { get; set; }
+
+        public int Line { get; set; }
+        public bool Tag { get; set; }
+
+        public override string ToString()
+        {
+            return $"{Timestamp} {Detections} {Path} {EventID} {Channel} {Computer} {TargetUser} {FullFilePath}";
+        }
+    }
+
+    public class ChainsawAppLocker : IFileSpec
+    {
+        public ChainsawAppLocker()
+        {
+            //Initialize collections here, one for TaggedLines TLE can add values to, and the collection that TLE will display
+            TaggedLines = new List<int>();
+
+            DataList = new BindingList<ChainsawAppLockerData>();
+
+            ExpectedHeaders = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+            {
+                "timestamp,detections,path,Event ID,Channel,Computer,TargetUser,FullFilePath"
+            };
+        }
+
+        public string Author => "Reece394";
+        public string FileDescription => "CSV generated from Chainsaw - applocker.csv";
+        public HashSet<string> ExpectedHeaders { get; }
+
+        public IBindingList DataList { get; }
+        public List<int> TaggedLines { get; set; }
+
+        public string InternalGuid => "c62ddff9-9cb7-4d86-8c0e-640d1dcda014";
+
+        public void ProcessFile(string filename)
+        {
+            DataList.Clear();
+
+            using var fileReader = File.OpenText(filename);
+            var csv = new CsvReader(fileReader, CultureInfo.InvariantCulture);
+
+            var foo = csv.Context.AutoMap<ChainsawAppLockerData>();
+
+            var o = new TypeConverterOptions
+            {
+                DateTimeStyle = DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal
+            };
+            csv.Context.TypeConverterOptionsCache.AddOptions<ChainsawAppLockerData>(o);
+
+            foo.Map(m => m.Timestamp).Convert(row => DateTime.Parse(row.Row.GetField<string>("timestamp")).ToUniversalTime());
+            foo.Map(t => t.Detections).Name("detections");
+            foo.Map(t => t.Path).Name("path");
+            foo.Map(t => t.EventID).Name("Event ID");
+            foo.Map(t => t.Channel).Name("Channel");
+            foo.Map(t => t.Computer).Name("Computer");
+            foo.Map(t => t.TargetUser).Name("TargetUser");
+            foo.Map(t => t.FullFilePath).Name("FullFilePath");
+
+            foo.Map(t => t.Line).Ignore();
+            foo.Map(t => t.Tag).Ignore();
+
+            csv.Context.RegisterClassMap(foo);
+
+            var records = csv.GetRecords<ChainsawAppLockerData>();
+
+            var ln = 1;
+            foreach (var record in records)
+            {
+                Log.Debug("Line # {Line}, Record: {RawRecord}", ln, csv.Context.Parser.RawRecord);
+
+                record.Line = ln;
+
+                record.Tag = TaggedLines.Contains(ln);
+
+                DataList.Add(record);
+
+                ln += 1;
+            }
+        }
+
+    }
+
+    public class ChainsawDefenseEvasionData : IFileSpecData
+    {
+        public DateTime Timestamp { get; set; }
+        public string Detections { get; set; }
+        public string Path { get; set; }
+
+        public int EventID { get; set; }
+        public int? RecordID { get; set; }
+        public string Computer { get; set; }
+        public string ServiceName { get; set; }
+        public string OldStartupType { get; set; }
+        public string CurrentStartupType { get; set; }
+
+        public int Line { get; set; }
+        public bool Tag { get; set; }
+
+        public override string ToString()
+        {
+            return $"{Timestamp} {Detections} {Path} {EventID} {RecordID} {Computer} {ServiceName} {OldStartupType} {CurrentStartupType}";
+        }
+    }
+
+    public class ChainsawDefenseEvasion : IFileSpec
+    {
+        public ChainsawDefenseEvasion()
+        {
+            //Initialize collections here, one for TaggedLines TLE can add values to, and the collection that TLE will display
+            TaggedLines = new List<int>();
+
+            DataList = new BindingList<ChainsawDefenseEvasionData>();
+
+            ExpectedHeaders = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+            {
+                "timestamp,detections,path,Event ID,Record ID,Computer,Service Name,Old Startup Type,Current Startup Type"
+            };
+        }
+
+        public string Author => "Reece394";
+        public string FileDescription => "CSV generated from Chainsaw - defense_evasion.csv";
+        public HashSet<string> ExpectedHeaders { get; }
+
+        public IBindingList DataList { get; }
+        public List<int> TaggedLines { get; set; }
+
+        public string InternalGuid => "287772d7-4aec-4638-b108-46e7419686d6";
+
+        public void ProcessFile(string filename)
+        {
+            DataList.Clear();
+
+            using var fileReader = File.OpenText(filename);
+            var csv = new CsvReader(fileReader, CultureInfo.InvariantCulture);
+
+            var foo = csv.Context.AutoMap<ChainsawDefenseEvasionData>();
+
+            var o = new TypeConverterOptions
+            {
+                DateTimeStyle = DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal,
+                NullValues = {"=\"\""}
+            };
+            csv.Context.TypeConverterOptionsCache.AddOptions<ChainsawDefenseEvasionData>(o);
+
+            foo.Map(m => m.Timestamp).Convert(row => DateTime.Parse(row.Row.GetField<string>("timestamp")).ToUniversalTime());
+            foo.Map(t => t.Detections).Name("detections");
+            foo.Map(t => t.Path).Name("path");
+            foo.Map(t => t.EventID).Name("Event ID");
+            foo.Map(t => t.RecordID).Name("Record ID");
+            foo.Map(t => t.Computer).Name("Computer");
+            foo.Map(t => t.ServiceName).Name("Service Name");
+            foo.Map(t => t.OldStartupType).Name("Old Startup Type");
+            foo.Map(t => t.CurrentStartupType).Name("Current Startup Type");
+
+            foo.Map(t => t.Line).Ignore();
+            foo.Map(t => t.Tag).Ignore();
+
+            csv.Context.RegisterClassMap(foo);
+
+            var records = csv.GetRecords<ChainsawDefenseEvasionData>();
+
+            var ln = 1;
+            foreach (var record in records)
+            {
+                Log.Debug("Line # {Line}, Record: {RawRecord}", ln, csv.Context.Parser.RawRecord);
+
+                record.Line = ln;
+
+                record.Tag = TaggedLines.Contains(ln);
+
+                DataList.Add(record);
+
+                ln += 1;
+            }
+        }
+
+    }
+
+    public class ChainsawMFTData : IFileSpecData
+    {
+        public DateTime Timestamp { get; set; }
+        public string Detections { get; set; }
+        public string Path { get; set; }
+        public string FileNamePath { get; set; }
+        public DateTime? StandardInfoLastModified0x10 { get; set; }
+        public DateTime? StandardInfoLastAccess0x10 { get; set; }
+        public DateTime? FileNameCreated0x30 { get; set; }
+        public DateTime? FileNameLastModified0x30 { get; set; }
+        public DateTime? FileNameLastAccess0x30 { get; set; }
+        public ulong FileSize { get; set; }
+
+        public bool Directory { get; set; }
+        public bool Deleted { get; set; }
+        public bool HasAlternateDataStreams { get; set; }
+
+        public int Line { get; set; }
+
+        public bool Tag { get; set; }
+
+        public override string ToString()
+        {
+            return
+                $"{Timestamp} {Detections} {Path} {FileNamePath} {StandardInfoLastModified0x10} {StandardInfoLastAccess0x10} {FileNameCreated0x30} {FileNameLastModified0x30} {FileNameLastAccess0x30} {FileSize} {Directory} {Deleted} {HasAlternateDataStreams}";
+        }
+    }
+
+    public class ChainsawMFT : IFileSpec
+    {
+        public ChainsawMFT()
+        {
+            TaggedLines = new List<int>();
+
+            DataList = new BindingList<ChainsawMFTData>();
+
+            ExpectedHeaders = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+            {
+                "timestamp,detections,path,FileNamePath,StandardInfoLastModified0x10,StandardInfoLastAccess0x10,FileNameCreated0x30,FileNameLastModified0x30,FileNameLastAccess0x30,FileSize,IsADirectory,IsDeleted,HasAlternateDataStreams"
+            };
+        }
+
+        public string Author => "Reece394";
+        public string FileDescription => "CSV generated from Chainsaw - mft.csv";
+        public HashSet<string> ExpectedHeaders { get; }
+
+        public IBindingList DataList { get; }
+        public List<int> TaggedLines { get; set; }
+
+        public string InternalGuid => "e9d1c745-972f-40ad-b7f5-5d00d88d9c18";
+
+        public void ProcessFile(string filename)
+        {
+            DataList.Clear();
+
+            using var fileReader = File.OpenText(filename);
+            var csv = new CsvReader(fileReader, CultureInfo.InvariantCulture);
+
+            var foo = csv.Context.AutoMap<ChainsawMFTData>();
+
+            var o = new TypeConverterOptions
+            {
+                DateTimeStyle = DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal,
+                NullValues = {"=\"\""}
+            };
+            csv.Context.TypeConverterOptionsCache.AddOptions<ChainsawMFTData>(o);
+
+            foo.Map(m => m.Timestamp).Convert(row => DateTime.Parse(row.Row.GetField<string>("timestamp")).ToUniversalTime());
+            foo.Map(t => t.Detections).Name("detections");
+            foo.Map(t => t.Path).Name("path");
+            foo.Map(t => t.FileNamePath).Name("FileNamePath");
+            foo.Map(m => m.StandardInfoLastModified0x10).TypeConverterOption
+                .DateTimeStyles(DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal);
+            foo.Map(m => m.StandardInfoLastAccess0x10).TypeConverterOption
+                .DateTimeStyles(DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal);
+            foo.Map(m => m.FileNameCreated0x30).TypeConverterOption
+                .DateTimeStyles(DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal);
+            foo.Map(m => m.FileNameLastModified0x30).TypeConverterOption
+                .DateTimeStyles(DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal);
+            foo.Map(m => m.FileNameLastAccess0x30).TypeConverterOption
+                .DateTimeStyles(DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal);
+
+            foo.Map(t => t.Directory).Name("IsADirectory");
+            foo.Map(t => t.Deleted).Name("IsDeleted");
+
+            foo.Map(t => t.Line).Ignore();
+            foo.Map(t => t.Tag).Ignore();
+
+            csv.Context.RegisterClassMap(foo);
+
+            var records = csv.GetRecords<ChainsawMFTData>();
+
+            
+
+
+            var ln = 1;
+            foreach (var record in records)
+            {
+                Log.Debug("Line # {Line}, Record: {RawRecord}",ln,csv.Context.Parser.RawRecord);
+                record.Line = ln;
+                record.Tag = TaggedLines.Contains(ln);
+                DataList.Add(record);
+
+                ln += 1;
+            }
+        }
+    }
+
+    public class ChainsawMFTDataStreamsData : IFileSpecData
+    {
+        public DateTime Timestamp { get; set; }
+        public string Detections { get; set; }
+        public string Path { get; set; }
+        public string FileNamePath { get; set; }
+        public DateTime? StandardInfoLastModified0x10 { get; set; }
+        public DateTime? StandardInfoLastAccess0x10 { get; set; }
+        public DateTime? FileNameCreated0x30 { get; set; }
+        public DateTime? FileNameLastModified0x30 { get; set; }
+        public DateTime? FileNameLastAccess0x30 { get; set; }
+        public ulong FileSize { get; set; }
+
+        public bool Directory { get; set; }
+        public bool Deleted { get; set; }
+        public bool HasAlternateDataStreams { get; set; }
+        public string DataStreams { get; set; }
+
+        public int Line { get; set; }
+
+        public bool Tag { get; set; }
+
+        public override string ToString()
+        {
+            return
+                $"{Timestamp} {Detections} {Path} {FileNamePath} {StandardInfoLastModified0x10} {StandardInfoLastAccess0x10} {FileNameCreated0x30} {FileNameLastModified0x30} {FileNameLastAccess0x30} {FileSize} {Directory} {Deleted} {HasAlternateDataStreams} {DataStreams}";
+        }
+    }
+
+    public class ChainsawMFTDataStreams : IFileSpec
+    {
+        public ChainsawMFTDataStreams()
+        {
+            TaggedLines = new List<int>();
+
+            DataList = new BindingList<ChainsawMFTDataStreamsData>();
+
+            ExpectedHeaders = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+            {
+                "timestamp,detections,path,FileNamePath,StandardInfoLastModified0x10,StandardInfoLastAccess0x10,FileNameCreated0x30,FileNameLastModified0x30,FileNameLastAccess0x30,FileSize,IsADirectory,IsDeleted,HasAlternateDataStreams,DataStreams"
+            };
+        }
+
+        public string Author => "Reece394";
+        public string FileDescription => "CSV generated from Chainsaw - mft.csv with DataStreams";
+        public HashSet<string> ExpectedHeaders { get; }
+
+        public IBindingList DataList { get; }
+        public List<int> TaggedLines { get; set; }
+
+        public string InternalGuid => "e959e33c-01c0-4200-aeb9-91e2da42f127";
+
+        public void ProcessFile(string filename)
+        {
+            DataList.Clear();
+
+            using var fileReader = File.OpenText(filename);
+            var csv = new CsvReader(fileReader, CultureInfo.InvariantCulture);
+
+            var foo = csv.Context.AutoMap<ChainsawMFTDataStreamsData>();
+
+            var o = new TypeConverterOptions
+            {
+                DateTimeStyle = DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal,
+                NullValues = {"=\"\""}
+            };
+            csv.Context.TypeConverterOptionsCache.AddOptions<ChainsawMFTDataStreamsData>(o);
+
+            foo.Map(m => m.Timestamp).Convert(row => DateTime.Parse(row.Row.GetField<string>("timestamp")).ToUniversalTime());
+            foo.Map(t => t.Detections).Name("detections");
+            foo.Map(t => t.Path).Name("path");
+            foo.Map(t => t.FileNamePath).Name("FileNamePath");
+            foo.Map(m => m.StandardInfoLastModified0x10).TypeConverterOption
+                .DateTimeStyles(DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal);
+            foo.Map(m => m.StandardInfoLastAccess0x10).TypeConverterOption
+                .DateTimeStyles(DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal);
+            foo.Map(m => m.FileNameCreated0x30).TypeConverterOption
+                .DateTimeStyles(DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal);
+            foo.Map(m => m.FileNameLastModified0x30).TypeConverterOption
+                .DateTimeStyles(DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal);
+            foo.Map(m => m.FileNameLastAccess0x30).TypeConverterOption
+                .DateTimeStyles(DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal);
+
+            foo.Map(t => t.Directory).Name("IsADirectory");
+            foo.Map(t => t.Deleted).Name("IsDeleted");
+
+            foo.Map(t => t.Line).Ignore();
+            foo.Map(t => t.Tag).Ignore();
+
+            csv.Context.RegisterClassMap(foo);
+
+            var records = csv.GetRecords<ChainsawMFTDataStreamsData>();
+
+            
+
+
+            var ln = 1;
+            foreach (var record in records)
+            {
+                Log.Debug("Line # {Line}, Record: {RawRecord}",ln,csv.Context.Parser.RawRecord);
+                record.Line = ln;
+                record.Tag = TaggedLines.Contains(ln);
+                DataList.Add(record);
+
+                ln += 1;
+            }
+        }
+    }
+
+    #endregion
+
     public class AnalyzeMftData : IFileSpecData
     {
         public int RecordNumber { get; set; }
