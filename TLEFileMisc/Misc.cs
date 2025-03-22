@@ -25,7 +25,7 @@ namespace TLEFileMisc
         public string Channel { get; set; }
         
         public int EventId { get; set; }
-        public int RecordId { get; set; }
+        public ulong RecordId { get; set; }
         public string Details { get; set; }
         public string ExtraFieldInfo { get; set; }
         
@@ -121,7 +121,7 @@ namespace TLEFileMisc
         public string MitreTags { get; set; }
         public string OtherTags { get; set; }
         
-        public int RecordId { get; set; }
+        public ulong RecordId { get; set; }
         public string Details { get; set; }
         public string ExtraFieldInfo { get; set; }
         public string RuleFile { get; set; }
@@ -219,7 +219,7 @@ namespace TLEFileMisc
         public string RuleAuthor { get; set; }
         public string RuleModifiedDate { get; set; }
         public string Status { get; set; }
-        public int RecordId { get; set; }
+        public ulong RecordId { get; set; }
         public string Details { get; set; }
         public string ExtraFieldInfo { get; set; }
         public string MitreTactics { get; set; }
@@ -333,7 +333,7 @@ namespace TLEFileMisc
         public string Channel { get; set; }
         
         public int EventId { get; set; }
-        public int RecordId { get; set; }
+        public ulong RecordId { get; set; }
         public string Details { get; set; }
         
         public int Line { get; set; }
@@ -427,7 +427,7 @@ namespace TLEFileMisc
         public string EventSystemProvider { get; set; }
 
         public int? EventID { get; set; }
-        public int? RecordID { get; set; }
+        public ulong? RecordID { get; set; }
         public string Computer { get; set; }
         public string EventData { get; set; }
 
@@ -520,7 +520,7 @@ namespace TLEFileMisc
         public string Path { get; set; }
 
         public int EventID { get; set; }
-        public int? RecordID { get; set; }
+        public ulong? RecordID { get; set; }
         public string Computer { get; set; }
         public string ThreatName { get; set; }
         public string ThreatPath { get; set; }
@@ -620,7 +620,7 @@ namespace TLEFileMisc
         public string Path { get; set; }
 
         public int EventID { get; set; }
-        public int? RecordID { get; set; }
+        public ulong? RecordID { get; set; }
         public string Computer { get; set; }
         public string User { get; set; }
         public string UserSID { get; set; }
@@ -809,7 +809,7 @@ namespace TLEFileMisc
         public string Path { get; set; }
 
         public int EventID { get; set; }
-        public int? RecordID { get; set; }
+        public ulong? RecordID { get; set; }
         public string Computer { get; set; }
         public string User { get; set; }
         public string LogonType { get; set; }
@@ -919,7 +919,7 @@ namespace TLEFileMisc
         public string Path { get; set; }
 
         public int EventID { get; set; }
-        public int? RecordID { get; set; }
+        public ulong? RecordID { get; set; }
         public string Computer { get; set; }
         public string User { get; set; }
         public string LogonType { get; set; }
@@ -1203,7 +1203,7 @@ namespace TLEFileMisc
         public string Path { get; set; }
 
         public int EventID { get; set; }
-        public int? RecordID { get; set; }
+        public ulong? RecordID { get; set; }
         public string Computer { get; set; }
         public string User { get; set; }
 
@@ -1491,7 +1491,7 @@ namespace TLEFileMisc
         public string Path { get; set; }
 
         public int EventID { get; set; }
-        public int? RecordID { get; set; }
+        public ulong? RecordID { get; set; }
         public string Computer { get; set; }
         public string UserName { get; set; }
         public string ScheduledTaskName { get; set; }
@@ -1585,7 +1585,7 @@ namespace TLEFileMisc
         public string Path { get; set; }
 
         public int EventID { get; set; }
-        public int? RecordID { get; set; }
+        public ulong? RecordID { get; set; }
         public string Computer { get; set; }
         public string UserName { get; set; }
         public string ScheduledTaskName { get; set; }
@@ -1696,7 +1696,7 @@ namespace TLEFileMisc
         public string Username { get; set; }
         public string Provider { get; set; }
         public string LogonType { get; set; }
-        public int? RecordID { get; set; }
+        public ulong? RecordID { get; set; }
         public string Domain { get; set; }
 
         public int Line { get; set; }
@@ -1885,7 +1885,7 @@ namespace TLEFileMisc
         public string Path { get; set; }
 
         public int EventID { get; set; }
-        public int? RecordID { get; set; }
+        public ulong? RecordID { get; set; }
         public string Computer { get; set; }
         public string ServiceName { get; set; }
         public string ServiceFileName { get; set; }
@@ -1994,7 +1994,7 @@ namespace TLEFileMisc
         public string OldState { get; set; }
         public string NewState { get; set; }
         public string SID { get; set; }
-        public int? RecordID { get; set; }
+        public ulong? RecordID { get; set; }
         public string ServiceName { get; set; }
         public string Action { get; set; }
 
@@ -2188,7 +2188,7 @@ namespace TLEFileMisc
         public string Path { get; set; }
 
         public int EventID { get; set; }
-        public int? RecordID { get; set; }
+        public ulong? RecordID { get; set; }
         public string Computer { get; set; }
         public string ServiceName { get; set; }
         public string OldStartupType { get; set; }
