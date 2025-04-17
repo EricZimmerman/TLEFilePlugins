@@ -11,6 +11,140 @@ using Serilog;
 
 namespace TLEFileTimelines
 {
+    public class ForensicTimelineData : IFileSpecData
+    {
+        public DateTime DateTime { get; set;}
+        public string TimestampInfo { get;set; }
+        public string ArtifactName { get; set;}
+        public string Tool { get; set;}
+        public string Description { get;set; }
+        public string DataDetails { get; set;}
+        public string DataPath { get; set;}
+        public string FileExtension { get;set; }
+        
+        public int? EventId { get;set; }
+        public string User { get;set;}
+        public string Computer { get;set;}
+        public double? FileSize { get;set; }
+        
+        public string EvidencePath { get; set;}
+        public string Level { get;set; }
+        
+        public string Color { get; set; }
+
+        public int Line { get; set; }
+        public bool Tag { get; set; }
+
+        public override string ToString()
+        {
+            return
+                $"{DateTime} {TimestampInfo} {ArtifactName} {Tool} {Description} {DataDetails} {DataPath} {FileExtension} {User} {Computer}{FileSize} {EvidencePath} {EventId} {Level} {Color}";
+        }
+    }
+
+    public class ForensicTimeline : IFileSpec
+    {
+        public ForensicTimeline()
+        {
+            TaggedLines = new List<int>();
+
+            DataList = new BindingList<ForensicTimelineData>();
+
+            ExpectedHeaders = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+            {
+                "DateTime,TimestampInfo,ArtifactName,Tool,Description,DataDetails,DataPath,FileExtension,EventId,User,Computer,FileSize,EvidencePath,Level"
+            };
+        }
+
+        public string Author => "Eric Zimmerman";
+        public string FileDescription => "CSV generated from Forensic Timeline, by Bradley Roughan";
+        public HashSet<string> ExpectedHeaders { get; }
+
+        public IBindingList DataList { get; }
+        public List<int> TaggedLines { get; set; }
+
+        public string InternalGuid => "40ef1341-42af-4612-a480-9a021e2a3353";
+
+        public void ProcessFile(string filename)
+        {
+            var ln = 1;
+            
+            using var fileReader = File.OpenText(filename);
+     
+            var csv = new CsvReader(fileReader, CultureInfo.InvariantCulture);
+            
+            try
+            {
+                DataList.Clear();
+                var o = new TypeConverterOptions
+                {
+                    DateTimeStyle = DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal
+                };
+                csv.Context.TypeConverterOptionsCache.AddOptions<ForensicTimelineData>(o);
+
+                var foo = csv.Context.AutoMap<ForensicTimelineData>();
+
+                foo.Map(t => t.Line).Ignore();
+                foo.Map(t => t.Tag).Ignore();
+                foo.Map(t => t.Color).Ignore();
+                foo.Map(t => t.DateTime).TypeConverterOption
+                    .DateTimeStyles(DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal);
+
+                csv.Context.RegisterClassMap(foo);
+
+                var records = csv.GetRecords<ForensicTimelineData>();
+
+                foreach (var record in records)
+                {
+                    //In TLE, there is an option to enable Debug messages which lets more context be seen when errors happen. Keep this call here so the last known good line of data is obvious in TLE messages
+                    Log.Debug("Line # {Line}, Record: {RawRecord}", ln, csv.Context.Parser.RawRecord);
+
+                    record.Line = ln;
+                    record.Tag = TaggedLines.Contains(ln);
+                
+                    //add color stuff here
+                    if (record.ArtifactName.Contains("LNK") ||
+                        record.ArtifactName.Contains("JumpLists") ||
+                        record.ArtifactName.Contains("Shellbags") 
+                       )
+                    {
+                        record.Color = "FileFolderOpening";
+                    }
+                
+                    if (record.ArtifactName.Contains("Deleted") )
+                    {
+                        record.Color = "DeletedData";
+                    }
+                
+                    if (record.ArtifactName.Contains("AppCompatCache") ||
+                        record.ArtifactName.Contains("Prefetch") 
+                       )
+                    {
+                        record.Color = "Execution";
+                    }
+                
+                    if (record.ArtifactName.Contains("Web History") )
+                    {
+                        record.Color = "WebHistory";
+                    }
+                
+                    //once you have all the colors in place, rebuild the DLL, exit TLE, replace DLL, start TLE, load the data, then do custom column colors.
+                
+                    //end color stuff
+                
+                    DataList.Add(record);
+                    ln += 1;
+                }
+            }
+            catch (Exception e)
+            {
+                throw new Exception(
+                    $"Error loading data on line '{ln}': {e.Message}. Line: {csv.Context.Parser.RawRecord}", e);
+            }
+        }
+
+    }
+
     public class PsortTimelineData : IFileSpecData
     {
         public PsortTimelineData(int line, string timestamp, string timestampDescription, string source, string sourceLong, string message, string parser, string displayName, string tagInfo)
@@ -169,6 +303,10 @@ namespace TLEFileTimelines
                 $"{Timestamp} {TimestampDescription} {Source} {SourceLong} {Message} {Parser} {DisplayName} {TagInfo}";
         }
     }
+    
+    
+    
+    
 
     public class PsortTimeline : IFileSpec
     {

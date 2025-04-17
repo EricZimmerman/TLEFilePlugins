@@ -107,6 +107,23 @@ namespace TLEFile.Test
 
     }
     
+    [Test]
+    public void FTTest()
+    {
+        Log.Logger = new LoggerConfiguration()
+            .WriteTo.Debug()
+            .WriteTo.Console()
+                
+            .CreateLogger();
+
+        
+        
+        var t = new ForensicTimeline();
+        t.ProcessFile(@"C:\temp\20250416_235546_forensic_timeliner.csv");
+        Log.Information("Count: {C}",t.DataList.Count);
+
+    }
+    
     
     [Test]
     public void GenTest()
