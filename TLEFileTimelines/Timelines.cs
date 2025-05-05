@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Globalization;
 using System.IO;
+using System.Linq;
 using CsvHelper;
 using CsvHelper.Configuration;
 using CsvHelper.TypeConversion;
@@ -13,37 +14,39 @@ namespace TLEFileTimelines
 {
     public class ForensicTimelineData : IFileSpecData
     {
-        public DateTime DateTime { get; set;}
-        public string TimestampInfo { get;set; }
-        public string ArtifactName { get; set;}
-        public string Tool { get; set;}
-        public string Description { get;set; }
-        public string DataDetails { get; set;}
-        public string DataPath { get; set;}
-        public string FileExtension { get;set; }
-        
-        public int? EventId { get;set; }
-        public string User { get;set;}
-        public string Computer { get;set;}
-        public double? FileSize { get;set; }
-        
-        public string EvidencePath { get; set;}
-        public string Level { get;set; }
-        
-        public string Color { get; set; }
+        public DateTime DateTime { get; set; }
+        public string TimestampInfo { get; set; }
+        public string ArtifactName { get; set; }
+        public string Tool { get; set; }
+        public string Description { get; set; }
+        public string DataDetails { get; set; }
+        public string DataPath { get; set; }
+        public string FileExtension { get; set; }
+        public string EvidencePath { get; set; }
+        public string EventId { get; set; }
+        public string User { get; set; }
+        public string Computer { get; set; }
+        public long? FileSize { get; set; }
+        public string IPAddress { get; set; }
+        public string SourceAddress { get; set; }
+        public string DestinationAddress { get; set; }
+        public string SHA1 { get; set; }
+        public string Count { get; set; }
+        public string RawData { get; set; }
 
         public int Line { get; set; }
         public bool Tag { get; set; }
+        public string Color { get; set; }
 
         public override string ToString()
         {
-            return
-                $"{DateTime} {TimestampInfo} {ArtifactName} {Tool} {Description} {DataDetails} {DataPath} {FileExtension} {User} {Computer}{FileSize} {EvidencePath} {EventId} {Level} {Color}";
+            return $"{DateTime} {TimestampInfo} {ArtifactName} {Tool} {Description} {DataDetails} {DataPath} {FileExtension} {EvidencePath} {EventId} {User} {Computer} {FileSize} {IPAddress} {SourceAddress} {DestinationAddress} {SHA1} {Count} {RawData}";
         }
     }
 
     public class ForensicTimeline : IFileSpec
     {
+
         public ForensicTimeline()
         {
             TaggedLines = new List<int>();
@@ -51,28 +54,25 @@ namespace TLEFileTimelines
             DataList = new BindingList<ForensicTimelineData>();
 
             ExpectedHeaders = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
-            {
-                "DateTime,TimestampInfo,ArtifactName,Tool,Description,DataDetails,DataPath,FileExtension,EventId,User,Computer,FileSize,EvidencePath,Level"
-            };
+        {
+            "DateTime,TimestampInfo,ArtifactName,Tool,Description,DataDetails,DataPath,FileExtension,EventId,User,Computer,FileSize,IPAddress,SourceAddress,DestinationAddress,SHA1,Count,EvidencePath,RawData"
+        };
+
         }
 
-        public string Author => "Eric Zimmerman";
-        public string FileDescription => "CSV generated from Forensic Timeline, by Bradley Roughan";
+        public string Author => "Brad Roughan (@acquiredsecurity)";
+        public string FileDescription => "CSV generated for ForensicTimeliner";
         public HashSet<string> ExpectedHeaders { get; }
-
         public IBindingList DataList { get; }
         public List<int> TaggedLines { get; set; }
-
         public string InternalGuid => "40ef1341-42af-4612-a480-9a021e2a3353";
 
         public void ProcessFile(string filename)
         {
             var ln = 1;
-            
             using var fileReader = File.OpenText(filename);
-     
             var csv = new CsvReader(fileReader, CultureInfo.InvariantCulture);
-            
+
             try
             {
                 DataList.Clear();
@@ -84,11 +84,10 @@ namespace TLEFileTimelines
 
                 var foo = csv.Context.AutoMap<ForensicTimelineData>();
 
+                // Ignore internal fields
                 foo.Map(t => t.Line).Ignore();
                 foo.Map(t => t.Tag).Ignore();
                 foo.Map(t => t.Color).Ignore();
-                foo.Map(t => t.DateTime).TypeConverterOption
-                    .DateTimeStyles(DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal);
 
                 csv.Context.RegisterClassMap(foo);
 
@@ -96,44 +95,46 @@ namespace TLEFileTimelines
 
                 foreach (var record in records)
                 {
-                    //In TLE, there is an option to enable Debug messages which lets more context be seen when errors happen. Keep this call here so the last known good line of data is obvious in TLE messages
                     Log.Debug("Line # {Line}, Record: {RawRecord}", ln, csv.Context.Parser.RawRecord);
 
                     record.Line = ln;
                     record.Tag = TaggedLines.Contains(ln);
-                
-                    //add color stuff here
-                    if (record.ArtifactName.Contains("LNK") ||
-                        record.ArtifactName.Contains("JumpLists") ||
-                        record.ArtifactName.Contains("Shellbags") 
-                       )
+
+                    // SIMPLE COLOR LOGIC
+                    if (record.ArtifactName != null)
                     {
-                        record.Color = "FileFolderOpening";
+                        if (record.ArtifactName.Contains("LNK") ||
+                            record.ArtifactName.Contains("JumpLists") ||
+                            record.ArtifactName.Contains("WindowsTimelineActivity") ||
+                            record.ArtifactName.Contains("Shellbags"))
+                        {
+                            record.Color = "FileFolderOpening";
+                        }
+                        else if (record.ArtifactName.Contains("FileDeletion"))
+                        {
+                            record.Color = "DeletedData";
+                        }
+                        else if (record.ArtifactName.Contains("AppCompatCache") ||
+                                 record.ArtifactName.Contains("Prefetch") ||
+                                 record.ArtifactName.Contains("Amcache") ||
+                                 record.ArtifactName.Contains("MFT") ||
+                                 record.ArtifactName.Contains("Registry"))
+                        {
+                            record.Color = "Execution";
+                        }
+                        else if (record.ArtifactName.Contains("Web History"))
+                        {
+                            record.Color = "WebHistory";
+                        }
+                        else if (record.ArtifactName.Contains("Event Logs"))
+                        {
+                            record.Color = "LogFile";
+                        }
                     }
-                
-                    if (record.ArtifactName.Contains("Deleted") )
-                    {
-                        record.Color = "DeletedData";
-                    }
-                
-                    if (record.ArtifactName.Contains("AppCompatCache") ||
-                        record.ArtifactName.Contains("Prefetch") 
-                       )
-                    {
-                        record.Color = "Execution";
-                    }
-                
-                    if (record.ArtifactName.Contains("Web History") )
-                    {
-                        record.Color = "WebHistory";
-                    }
-                
-                    //once you have all the colors in place, rebuild the DLL, exit TLE, replace DLL, start TLE, load the data, then do custom column colors.
-                
-                    //end color stuff
-                
+
+
                     DataList.Add(record);
-                    ln += 1;
+                    ln++;
                 }
             }
             catch (Exception e)
@@ -142,7 +143,6 @@ namespace TLEFileTimelines
                     $"Error loading data on line '{ln}': {e.Message}. Line: {csv.Context.Parser.RawRecord}", e);
             }
         }
-
     }
 
     public class PsortTimelineData : IFileSpecData
@@ -291,7 +291,7 @@ namespace TLEFileTimelines
         public string Parser { get; }
         public string DisplayName { get; }
         public string TagInfo { get; }
-        
+
         public string Color { get; set; }
 
         public int Line { get; set; }
@@ -303,10 +303,10 @@ namespace TLEFileTimelines
                 $"{Timestamp} {TimestampDescription} {Source} {SourceLong} {Message} {Parser} {DisplayName} {TagInfo}";
         }
     }
-    
-    
-    
-    
+
+
+
+
 
     public class PsortTimeline : IFileSpec
     {
@@ -340,7 +340,7 @@ namespace TLEFileTimelines
             {
                 BadDataFound = context =>
                 {
-                    Log.Warning("Bad data found in {Field}! Skipping. Raw data: {RawRecord}",context.Field, context.RawRecord);
+                    Log.Warning("Bad data found in {Field}! Skipping. Raw data: {RawRecord}", context.Field, context.RawRecord);
                 },
                 MissingFieldFound = null,
                 Mode = CsvMode.Escape
@@ -348,7 +348,7 @@ namespace TLEFileTimelines
 
 
             var csv = new CsvReader(fileReader, config);
-         
+
 
             var foo = csv.Context.AutoMap<PsortTimelineData>();
 
@@ -363,7 +363,7 @@ namespace TLEFileTimelines
             foo.Map(t => t.Parser).Name("parser");
             foo.Map(t => t.DisplayName).Name("display_name");
             foo.Map(t => t.TagInfo).Name("tag");
-            
+
 
             var o = new TypeConverterOptions
             {
@@ -376,7 +376,7 @@ namespace TLEFileTimelines
             csv.Read();
             csv.ReadHeader();
 
-                
+
 
             var ln = 1;
 
@@ -384,7 +384,7 @@ namespace TLEFileTimelines
             {
                 while (csv.Read())
                 {
-                    Log.Debug("Line # {Line}, Record: {RawRecord}",ln,csv.Context.Parser.RawRecord);
+                    Log.Debug("Line # {Line}, Record: {RawRecord}", ln, csv.Context.Parser.RawRecord);
 
                     // "datetime,timestamp_desc,source,source_long,message,parser,display_name,tag"
                     // var dt = csv.GetField("date");
@@ -402,9 +402,9 @@ namespace TLEFileTimelines
                     var parser = csv.GetField("parser");
                     var displayName = csv.GetField("display_name");
                     var tag = csv.GetField("tag");
-                    
 
-                    var psd = new PsortTimelineData(ln, dt,tsD,source,sourceLong,message,parser,displayName,tag);
+
+                    var psd = new PsortTimelineData(ln, dt, tsD, source, sourceLong, message, parser, displayName, tag);
                     psd.Tag = TaggedLines.Contains(ln);
                     DataList.Add(psd);
                     ln += 1;
@@ -638,7 +638,7 @@ namespace TLEFileTimelines
 
 
             var csv = new CsvReader(fileReader, config);
-                
+
 
             var foo = csv.Context.AutoMap<SuperTimelineData>();
 
@@ -674,7 +674,7 @@ namespace TLEFileTimelines
             csv.Read();
             csv.ReadHeader();
 
-                
+
 
             var ln = 1;
 
@@ -682,7 +682,7 @@ namespace TLEFileTimelines
             {
                 while (csv.Read())
                 {
-                    Log.Debug("Line # {Line}, Record: {RawRecord}",ln,csv.Context.Parser.RawRecord);
+                    Log.Debug("Line # {Line}, Record: {RawRecord}", ln, csv.Context.Parser.RawRecord);
 
                     //"date,time,timezone,macb,source,sourcetype,type,user,host,short,desc,version,filename,inode,notes,format,extra":
                     var dt = csv.GetField("date");
@@ -844,7 +844,7 @@ namespace TLEFileTimelines
 
             using var fileReader = File.OpenText(filename);
             var csv = new CsvReader(fileReader, CultureInfo.InvariantCulture);
-                
+
             var foo = csv.Context.AutoMap<MacTimeData>();
 
             var o = new TypeConverterOptions
@@ -879,12 +879,12 @@ namespace TLEFileTimelines
             csv.Read();
             csv.ReadHeader();
 
-                
+
 
             var ln = 1;
             while (csv.Read())
             {
-                Log.Debug("Line # {Line}, Record: {RawRecord}",ln,csv.Context.Parser.RawRecord);
+                Log.Debug("Line # {Line}, Record: {RawRecord}", ln, csv.Context.Parser.RawRecord);
 
                 var f = csv.GetRecord<MacTimeData>();
                 f.Line = ln;
@@ -905,7 +905,7 @@ namespace TLEFileTimelines
 
 
 
-      public class KapeMiniTimelineData : IFileSpecData
+    public class KapeMiniTimelineData : IFileSpecData
     {
         public DateTime Timestamp { get; set; }
 
@@ -922,7 +922,7 @@ namespace TLEFileTimelines
         {
             return $"{Timestamp} {DataType} {ComputerName} {UserSource} {Message}";
         }
-    
+
     }
 
     public class KapeMiniTimeline : IFileSpec
@@ -955,12 +955,12 @@ namespace TLEFileTimelines
             using var fileReader = File.OpenText(filename);
             var csvO = new CsvConfiguration(CultureInfo.InvariantCulture)
             {
-              
+
             };
 
             var csv = new CsvReader(fileReader, csvO);
-                
-                
+
+
 
             var foo = csv.Context.AutoMap<KapeMiniTimelineData>();
 
@@ -973,36 +973,36 @@ namespace TLEFileTimelines
 
             foo.Map(t => t.Line).Ignore();
             foo.Map(t => t.Tag).Ignore();
-             
+
             foo.Map(t => t.Timestamp).Name("Time");
             foo.Map(t => t.DataType).Name("Type");
-             
+
             foo.Map(m => m.Timestamp).TypeConverterOption.DateTimeStyles(DateTimeStyles.AssumeUniversal);
 
             foo.Map(t => t.UserSource).Name("User/Source");
 
             csv.Context.RegisterClassMap(foo);
-                
+
             csv.Read();
             csv.ReadHeader();
-            
+
             var ln = 1;
             while (csv.Read())
             {
-                Log.Debug("Line # {Line}, Record: {RawRecord}",ln,csv.Context.Parser.RawRecord);
+                Log.Debug("Line # {Line}, Record: {RawRecord}", ln, csv.Context.Parser.RawRecord);
 
                 var testStr = csv.GetField<string>(0);
 
                 if (DateTime.TryParse(testStr, out var s) == false)
                 {
-                    Log.Warning("Bad data found! Skipping. Raw data: {RawRecord}",csv.Context.Parser.RawRecord);
+                    Log.Warning("Bad data found! Skipping. Raw data: {RawRecord}", csv.Context.Parser.RawRecord);
                     continue;
                 }
 
                 var f = csv.GetRecord<KapeMiniTimelineData>();
                 f.Line = ln;
                 f.Tag = TaggedLines.Contains(ln);
-                 
+
 
                 DataList.Add(f);
 
