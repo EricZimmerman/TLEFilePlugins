@@ -19,6 +19,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TLEFileTzWorks", "TLEFileTz
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TLEFileMisc", "TLEFileMisc\TLEFileMisc.csproj", "{EFBB6815-A8EC-40D5-83FF-5D73DB540116}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TLEFileIrregularCsv", "TLEFileIrregularCsv\TLEFileIrregularCsv.csproj", "{6ae4179a-63f7-4a6a-a2ab-077c8882a056}"
+EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TLEFile.Test", "TLEFile.Test\TLEFile.Test.csproj", "{6A9F9E57-170A-4959-8768-0C0EBBDDCBE8}"
 EndProject
 Global
@@ -59,6 +61,10 @@ Global
 		{EFBB6815-A8EC-40D5-83FF-5D73DB540116}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{EFBB6815-A8EC-40D5-83FF-5D73DB540116}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{EFBB6815-A8EC-40D5-83FF-5D73DB540116}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6ae4179a-63f7-4a6a-a2ab-077c8882a056}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6ae4179a-63f7-4a6a-a2ab-077c8882a056}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6ae4179a-63f7-4a6a-a2ab-077c8882a056}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6ae4179a-63f7-4a6a-a2ab-077c8882a056}.Release|Any CPU.Build.0 = Release|Any CPU
 		{6A9F9E57-170A-4959-8768-0C0EBBDDCBE8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{6A9F9E57-170A-4959-8768-0C0EBBDDCBE8}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6A9F9E57-170A-4959-8768-0C0EBBDDCBE8}.Release|Any CPU.ActiveCfg = Release|Any CPU
