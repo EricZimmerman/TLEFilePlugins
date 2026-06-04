@@ -29,6 +29,7 @@ namespace TLEFileEZTools
         public string VolumeSerialNumber32 { get; set; }
         public string VolumeSerialNumber32Reverse { get; set; }
         public string SectorSignature { get; set; }
+        public string SourceFile { get; set; }
 
         public int Line { get; set; }
         public bool Tag { get; set; }
@@ -40,7 +41,7 @@ namespace TLEFileEZTools
         public override string ToString()
         {
             return
-                $"{EntryPoint} {Signature} {BytesPerSector} {SectorsPerCluster} {ClusterSize} {ReservedSectors} {TotalSectors} {MftClusterBlockNumber} {MftMirrClusterBlockNumber} {MftEntrySize} {IndexEntrySize} {VolumeSerialNumberRaw} {VolumeSerialNumber} {VolumeSerialNumber32} {VolumeSerialNumber32Reverse} {SectorSignature}";
+                $"{EntryPoint} {Signature} {BytesPerSector} {SectorsPerCluster} {ClusterSize} {ReservedSectors} {TotalSectors} {MftClusterBlockNumber} {MftMirrClusterBlockNumber} {MftEntrySize} {IndexEntrySize} {VolumeSerialNumberRaw} {VolumeSerialNumber} {VolumeSerialNumber32} {VolumeSerialNumber32Reverse} {SectorSignature} {SourceFile}";
         }
     }
 
@@ -128,6 +129,7 @@ namespace TLEFileEZTools
         public string UniqueDaclAceTypes { get; set; }
 
         public ulong FileOffset { get; set; }
+        public string SourceFile { get; set; }
 
         public int Line { get; set; }
         public bool Tag { get; set; }
@@ -135,7 +137,7 @@ namespace TLEFileEZTools
         public override string ToString()
         {
             return
-                $"{Hash} {Id} {Offset} {OwnerSid} {GroupSid} {Control} {SaclAceCount} {UniqueSaclAceTypes} {DaclAceCount} {UniqueDaclAceTypes} {FileOffset}";
+                $"{Hash} {Id} {Offset} {OwnerSid} {GroupSid} {Control} {SaclAceCount} {UniqueSaclAceTypes} {DaclAceCount} {UniqueDaclAceTypes} {FileOffset} {SourceFile}";
         }
     }
 
