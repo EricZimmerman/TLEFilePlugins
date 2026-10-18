@@ -136,9 +136,14 @@ public class PluginTests
     [Test]
     public void LayoutsHaveEveryColumn()
     {
+        //TLE runs on Windows, where file names ignore case (AppCompatcache.layout is AppCompatCache's); the tests also
+        //run on Linux
+        var files = Directory.GetFiles(LayoutsDir(), "*.layout")
+            .ToDictionary(f => Path.GetFileNameWithoutExtension(f), StringComparer.OrdinalIgnoreCase);
+
         foreach (var p in Plugins().Where(p => p.GetType().FullName.StartsWith("TLEFileEZTools.")))
         {
-            var layout = File.ReadAllText(Path.Combine(LayoutsDir(), p.GetType().FullName + ".layout"));
+            var layout = File.ReadAllText(files[p.GetType().FullName]);
             var props = DataType(p).GetProperties().Select(x => x.Name);
             props.Where(n => !layout.Contains($"<property name=\"Name\">col{n}</property>", StringComparison.OrdinalIgnoreCase))
                 .Should().BeEmpty($"{p.GetType().FullName}.layout should have every column");

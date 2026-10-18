@@ -2162,7 +2162,7 @@ namespace TLEFileMisc
         //Improved the 'Visited From' column in new versions of Chrome.
 
         public string Author => "Eric Zimmerman";
-        public string FileDescription => "CSV generated from BrowsingHistoryView 2.51 or newer";
+        public string FileDescription => "CSV generated from BrowsingHistoryView 2.51 or newer (Visit Time is shown as written: the local time of the machine BrowsingHistoryView ran on, or UTC when it ran with /ShowTimeInGMT 1)";
         public HashSet<string> ExpectedHeaders { get; }
 
         public IBindingList DataList { get; }
@@ -2175,7 +2175,7 @@ namespace TLEFileMisc
             CsvLoader.Load<BrowsingHistoryViewEventData251AndNewer>(filename, DataList, TaggedLines, map =>
             {
                 map.Map(t => t.Url).Name("URL");
-                map.Map(m => m.VisitTime).Convert(row => CsvLoader.ParseTime(row.Row.GetField<string>("Visit Time")).ToUniversalTime());
+                map.Map(m => m.VisitTime).Convert(row => CsvLoader.ParseTime(row.Row.GetField<string>("Visit Time")));
                 map.Map(t => t.VisitCount).Name("Visit Count");
                 map.Map(t => t.VisitedFrom).Name("Visited From");
                 map.Map(t => t.VisitType).Name("Visit Type");
@@ -2235,7 +2235,7 @@ namespace TLEFileMisc
         }
 
         public string Author => "Eric Zimmerman";
-        public string FileDescription => "CSV generated from BrowsingHistoryView 2.50 or older";
+        public string FileDescription => "CSV generated from BrowsingHistoryView 2.50 or older (Visit Time is shown as written: the local time of the machine BrowsingHistoryView ran on, or UTC when it ran with /ShowTimeInGMT 1)";
         public HashSet<string> ExpectedHeaders { get; }
 
         public IBindingList DataList { get; }
@@ -2248,7 +2248,7 @@ namespace TLEFileMisc
             CsvLoader.Load<BrowsingHistoryViewEventData250AndOlder>(filename, DataList, TaggedLines, map =>
             {
                 map.Map(t => t.Url).Name("URL");
-                map.Map(m => m.VisitTime).Convert(row => CsvLoader.ParseTime(row.Row.GetField<string>("Visit Time")).ToUniversalTime());
+                map.Map(m => m.VisitTime).Convert(row => CsvLoader.ParseTime(row.Row.GetField<string>("Visit Time")));
                 map.Map(t => t.VisitCount).Name("Visit Count");
                 map.Map(t => t.VisitedFrom).Name("Visited From");
                 map.Map(t => t.VisitType).Name("Visit Type");

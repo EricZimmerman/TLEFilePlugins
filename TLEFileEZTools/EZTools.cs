@@ -4338,4 +4338,3738 @@ namespace TLEFileEZTools
             CsvLoader.Load<AmcacheParserMetadataData>(filename, DataList, TaggedLines);
         }
     }
+
+    public class RecmdAdobeData : IFileSpecData
+    {
+        public string ProductName { get; set; }
+        public string BatchKeyPath { get; set; }
+        public string ProductVersion { get; set; }
+        public string BatchValueName { get; set; }
+        public string FullPath { get; set; }
+        public DateTime? LastOpened { get; set; }
+        public string FileName { get; set; }
+        public long? FileSize { get; set; }
+        public string FileSource { get; set; }
+        public long? PageCount { get; set; }
+
+        public int Line { get; set; }
+        public bool Tag { get; set; }
+
+        public override string ToString()
+        {
+            return $"{ProductName} {BatchKeyPath} {ProductVersion} {BatchValueName} {FullPath} {LastOpened} {FileName} {FileSize} {FileSource} {PageCount}";
+        }
+    }
+
+    /// <summary>
+    ///     RECmd's CSV for Adobe program information (RegistryPlugin.Adobe.dll)
+    /// </summary>
+    public class RecmdAdobe : IFileSpec
+    {
+        public RecmdAdobe()
+        {
+            TaggedLines = new List<int>();
+
+            DataList = new BindingList<RecmdAdobeData>();
+
+            ExpectedHeaders = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+            {
+                "ProductName,BatchKeyPath,ProductVersion,BatchValueName,FullPath,LastOpened,FileName,FileSize,FileSource,PageCount"
+            };
+        }
+
+        public string Author => "Eric Zimmerman";
+        public string FileDescription => "CSV generated from RECmd for the Adobe registry plugin";
+        public HashSet<string> ExpectedHeaders { get; }
+
+        public IBindingList DataList { get; }
+        public List<int> TaggedLines { get; set; }
+
+        public string InternalGuid => "e9bc8029-e59a-45a8-9352-dc89eacdd8d8";
+
+        public void ProcessFile(string filename)
+        {
+            CsvLoader.Load<RecmdAdobeData>(filename, DataList, TaggedLines, map =>
+            {
+                map.Map(t => t.LastOpened).TypeConverter<LenientDateTimeConverter>();
+            });
+        }
+    }
+
+    public class RecmdAdobeTrustManagerData : IFileSpecData
+    {
+        public string Website { get; set; }
+        public string BatchKeyPath { get; set; }
+        public string UserChoice { get; set; }
+        public string BatchValueName { get; set; }
+
+        public int Line { get; set; }
+        public bool Tag { get; set; }
+
+        public override string ToString()
+        {
+            return $"{Website} {BatchKeyPath} {UserChoice} {BatchValueName}";
+        }
+    }
+
+    /// <summary>
+    ///     RECmd's CSV for Adobe User Accessed Websites (RegistryPlugin.Adobe.TrustManger-Websites.dll)
+    /// </summary>
+    public class RecmdAdobeTrustManager : IFileSpec
+    {
+        public RecmdAdobeTrustManager()
+        {
+            TaggedLines = new List<int>();
+
+            DataList = new BindingList<RecmdAdobeTrustManagerData>();
+
+            ExpectedHeaders = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+            {
+                "Website,BatchKeyPath,UserChoice,BatchValueName"
+            };
+        }
+
+        public string Author => "Eric Zimmerman";
+        public string FileDescription => "CSV generated from RECmd for the AdobeTrustManager registry plugin";
+        public HashSet<string> ExpectedHeaders { get; }
+
+        public IBindingList DataList { get; }
+        public List<int> TaggedLines { get; set; }
+
+        public string InternalGuid => "2abb96f1-bfde-4ad3-9ec1-433a36d4d65f";
+
+        public void ProcessFile(string filename)
+        {
+            CsvLoader.Load<RecmdAdobeTrustManagerData>(filename, DataList, TaggedLines);
+        }
+    }
+
+    public class RecmdAppCompatData : IFileSpecData
+    {
+        public long? CacheEntryPosition { get; set; }
+        public string BatchKeyPath { get; set; }
+        public string ProgramName { get; set; }
+        public string BatchValueName { get; set; }
+        public DateTime? ModifiedTime { get; set; }
+        public string Executed { get; set; }
+        public bool? FromSlack { get; set; }
+
+        public int Line { get; set; }
+        public bool Tag { get; set; }
+
+        public override string ToString()
+        {
+            return $"{CacheEntryPosition} {BatchKeyPath} {ProgramName} {BatchValueName} {ModifiedTime} {Executed} {FromSlack}";
+        }
+    }
+
+    /// <summary>
+    ///     RECmd's CSV for AppCompatCache (RegistryPlugin.AppCompatCache.dll)
+    /// </summary>
+    public class RecmdAppCompat : IFileSpec
+    {
+        public RecmdAppCompat()
+        {
+            TaggedLines = new List<int>();
+
+            DataList = new BindingList<RecmdAppCompatData>();
+
+            ExpectedHeaders = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+            {
+                "CacheEntryPosition,BatchKeyPath,ProgramName,BatchValueName,ModifiedTime,Executed,FromSlack"
+            };
+        }
+
+        public string Author => "Eric Zimmerman";
+        public string FileDescription => "CSV generated from RECmd for the AppCompat registry plugin";
+        public HashSet<string> ExpectedHeaders { get; }
+
+        public IBindingList DataList { get; }
+        public List<int> TaggedLines { get; set; }
+
+        public string InternalGuid => "7710a603-3afe-4402-8245-fd917ff02d6b";
+
+        public void ProcessFile(string filename)
+        {
+            CsvLoader.Load<RecmdAppCompatData>(filename, DataList, TaggedLines, map =>
+            {
+                map.Map(t => t.ModifiedTime).TypeConverter<LenientDateTimeConverter>();
+            });
+        }
+    }
+
+    public class RecmdAppCompatFlagsData : IFileSpecData
+    {
+        public string Executable { get; set; }
+        public string BatchKeyPath { get; set; }
+        public string ValueName { get; set; }
+        public string BatchValueName { get; set; }
+
+        public int Line { get; set; }
+        public bool Tag { get; set; }
+
+        public override string ToString()
+        {
+            return $"{Executable} {BatchKeyPath} {ValueName} {BatchValueName}";
+        }
+    }
+
+    /// <summary>
+    ///     RECmd's CSV for AppCompatFlags (RegistryPlugin.AppCompatFlags.dll)
+    /// </summary>
+    public class RecmdAppCompatFlags : IFileSpec
+    {
+        public RecmdAppCompatFlags()
+        {
+            TaggedLines = new List<int>();
+
+            DataList = new BindingList<RecmdAppCompatFlagsData>();
+
+            ExpectedHeaders = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+            {
+                "Executable,BatchKeyPath,ValueName,BatchValueName"
+            };
+        }
+
+        public string Author => "Eric Zimmerman";
+        public string FileDescription => "CSV generated from RECmd for the AppCompatFlags registry plugin";
+        public HashSet<string> ExpectedHeaders { get; }
+
+        public IBindingList DataList { get; }
+        public List<int> TaggedLines { get; set; }
+
+        public string InternalGuid => "fc757ccc-39ce-4e49-87bb-f5b97ffcf285";
+
+        public void ProcessFile(string filename)
+        {
+            CsvLoader.Load<RecmdAppCompatFlagsData>(filename, DataList, TaggedLines);
+        }
+    }
+
+    public class RecmdAppCompatFlags2WinRARData : IFileSpecData
+    {
+        public string Path { get; set; }
+        public string BatchKeyPath { get; set; }
+        public string BatchValueName { get; set; }
+
+        public int Line { get; set; }
+        public bool Tag { get; set; }
+
+        public override string ToString()
+        {
+            return $"{Path} {BatchKeyPath} {BatchValueName}";
+        }
+    }
+
+    /// <summary>
+    ///     RECmd's CSV for AppCompatFlags2 (RegistryPlugin.AppCompatFlags2.dll) and WinRAR (RegistryPlugin.WinRAR.dll)
+    /// </summary>
+    public class RecmdAppCompatFlags2WinRAR : IFileSpec
+    {
+        public RecmdAppCompatFlags2WinRAR()
+        {
+            TaggedLines = new List<int>();
+
+            DataList = new BindingList<RecmdAppCompatFlags2WinRARData>();
+
+            ExpectedHeaders = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+            {
+                "Path,BatchKeyPath,BatchValueName"
+            };
+        }
+
+        public string Author => "Eric Zimmerman";
+        public string FileDescription => "CSV generated from RECmd for the AppCompatFlags2 and WinRAR registry plugins";
+        public HashSet<string> ExpectedHeaders { get; }
+
+        public IBindingList DataList { get; }
+        public List<int> TaggedLines { get; set; }
+
+        public string InternalGuid => "dd4ef5ac-6f1e-47c2-bdd3-d619e1b50941";
+
+        public void ProcessFile(string filename)
+        {
+            CsvLoader.Load<RecmdAppCompatFlags2WinRARData>(filename, DataList, TaggedLines);
+        }
+    }
+
+    public class RecmdAppPathsData : IFileSpecData
+    {
+        public DateTime? Timestamp { get; set; }
+        public string BatchKeyPath { get; set; }
+        public string FileName { get; set; }
+        public string BatchValueName { get; set; }
+        public string Path1 { get; set; }
+        public string Path2 { get; set; }
+
+        public int Line { get; set; }
+        public bool Tag { get; set; }
+
+        public override string ToString()
+        {
+            return $"{Timestamp} {BatchKeyPath} {FileName} {BatchValueName} {Path1} {Path2}";
+        }
+    }
+
+    /// <summary>
+    ///     RECmd's CSV for AppPaths (RegistryPlugin.AppPaths.dll)
+    /// </summary>
+    public class RecmdAppPaths : IFileSpec
+    {
+        public RecmdAppPaths()
+        {
+            TaggedLines = new List<int>();
+
+            DataList = new BindingList<RecmdAppPathsData>();
+
+            ExpectedHeaders = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+            {
+                "Timestamp,BatchKeyPath,FileName,BatchValueName,Path1,Path2"
+            };
+        }
+
+        public string Author => "Eric Zimmerman";
+        public string FileDescription => "CSV generated from RECmd for the AppPaths registry plugin";
+        public HashSet<string> ExpectedHeaders { get; }
+
+        public IBindingList DataList { get; }
+        public List<int> TaggedLines { get; set; }
+
+        public string InternalGuid => "32d9229a-63f2-4927-a9d8-9614a75202d4";
+
+        public void ProcessFile(string filename)
+        {
+            CsvLoader.Load<RecmdAppPathsData>(filename, DataList, TaggedLines, map =>
+            {
+                map.Map(t => t.Timestamp).TypeConverter<LenientDateTimeConverter>();
+            });
+        }
+    }
+
+    public class RecmdApplicationSettingsContainerData : IFileSpecData
+    {
+        public string ValueName { get; set; }
+        public string BatchKeyPath { get; set; }
+        public string ValueType { get; set; }
+        public string BatchValueName { get; set; }
+        public string Value { get; set; }
+        public string Notes { get; set; }
+        public DateTime? UTCTimestamp { get; set; }
+
+        public int Line { get; set; }
+        public bool Tag { get; set; }
+
+        public override string ToString()
+        {
+            return $"{ValueName} {BatchKeyPath} {ValueType} {BatchValueName} {Value} {Notes} {UTCTimestamp}";
+        }
+    }
+
+    /// <summary>
+    ///     RECmd's CSV for ApplicationSettingsContainer (RegistryPlugin.ApplicationSettingsContainer.dll)
+    /// </summary>
+    public class RecmdApplicationSettingsContainer : IFileSpec
+    {
+        public RecmdApplicationSettingsContainer()
+        {
+            TaggedLines = new List<int>();
+
+            DataList = new BindingList<RecmdApplicationSettingsContainerData>();
+
+            ExpectedHeaders = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+            {
+                "ValueName,BatchKeyPath,ValueType,BatchValueName,Value,Notes,UTCTimestamp"
+            };
+        }
+
+        public string Author => "Eric Zimmerman";
+        public string FileDescription => "CSV generated from RECmd for the ApplicationSettingsContainer registry plugin";
+        public HashSet<string> ExpectedHeaders { get; }
+
+        public IBindingList DataList { get; }
+        public List<int> TaggedLines { get; set; }
+
+        public string InternalGuid => "0381eccf-d804-435f-9404-8a50cc5f161d";
+
+        public void ProcessFile(string filename)
+        {
+            CsvLoader.Load<RecmdApplicationSettingsContainerData>(filename, DataList, TaggedLines, map =>
+            {
+                map.Map(t => t.UTCTimestamp).TypeConverter<LenientDateTimeConverter>();
+            });
+        }
+    }
+
+    public class RecmdAresData : IFileSpecData
+    {
+        public string PropertyName { get; set; }
+        public string BatchKeyPath { get; set; }
+        public string PropertyValue { get; set; }
+        public string BatchValueName { get; set; }
+
+        public int Line { get; set; }
+        public bool Tag { get; set; }
+
+        public override string ToString()
+        {
+            return $"{PropertyName} {BatchKeyPath} {PropertyValue} {BatchValueName}";
+        }
+    }
+
+    /// <summary>
+    ///     RECmd's CSV for Ares P2P information (RegistryPlugin.Ares.dll)
+    /// </summary>
+    public class RecmdAres : IFileSpec
+    {
+        public RecmdAres()
+        {
+            TaggedLines = new List<int>();
+
+            DataList = new BindingList<RecmdAresData>();
+
+            ExpectedHeaders = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+            {
+                "PropertyName,BatchKeyPath,PropertyValue,BatchValueName"
+            };
+        }
+
+        public string Author => "Eric Zimmerman";
+        public string FileDescription => "CSV generated from RECmd for the Ares registry plugin";
+        public HashSet<string> ExpectedHeaders { get; }
+
+        public IBindingList DataList { get; }
+        public List<int> TaggedLines { get; set; }
+
+        public string InternalGuid => "b9bdd360-69e3-4aae-934f-9ce9f57d6eed";
+
+        public void ProcessFile(string filename)
+        {
+            CsvLoader.Load<RecmdAresData>(filename, DataList, TaggedLines);
+        }
+    }
+
+    public class RecmdBamDamData : IFileSpecData
+    {
+        public string Program { get; set; }
+        public string BatchKeyPath { get; set; }
+        public DateTime? ExecutionTime { get; set; }
+        public string BatchValueName { get; set; }
+
+        public int Line { get; set; }
+        public bool Tag { get; set; }
+
+        public override string ToString()
+        {
+            return $"{Program} {BatchKeyPath} {ExecutionTime} {BatchValueName}";
+        }
+    }
+
+    /// <summary>
+    ///     RECmd's CSV for BamDam (RegistryPlugin.BamDam.dll)
+    /// </summary>
+    public class RecmdBamDam : IFileSpec
+    {
+        public RecmdBamDam()
+        {
+            TaggedLines = new List<int>();
+
+            DataList = new BindingList<RecmdBamDamData>();
+
+            ExpectedHeaders = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+            {
+                "Program,BatchKeyPath,ExecutionTime,BatchValueName"
+            };
+        }
+
+        public string Author => "Eric Zimmerman";
+        public string FileDescription => "CSV generated from RECmd for the BamDam registry plugin";
+        public HashSet<string> ExpectedHeaders { get; }
+
+        public IBindingList DataList { get; }
+        public List<int> TaggedLines { get; set; }
+
+        public string InternalGuid => "f3d3df10-1474-4217-86ef-6673d1d283a9";
+
+        public void ProcessFile(string filename)
+        {
+            CsvLoader.Load<RecmdBamDamData>(filename, DataList, TaggedLines, map =>
+            {
+                map.Map(t => t.ExecutionTime).TypeConverter<LenientDateTimeConverter>();
+            });
+        }
+    }
+
+    public class RecmdBluetoothBthPortData : IFileSpecData
+    {
+        public string Name { get; set; }
+        public string BatchKeyPath { get; set; }
+        public string Address { get; set; }
+        public string BatchValueName { get; set; }
+        public DateTime? LastSeen { get; set; }
+
+        public int Line { get; set; }
+        public bool Tag { get; set; }
+
+        public override string ToString()
+        {
+            return $"{Name} {BatchKeyPath} {Address} {BatchValueName} {LastSeen}";
+        }
+    }
+
+    /// <summary>
+    ///     RECmd's CSV for BluetoothBthPort (RegistryPlugin.BluetoothServicesBthPort.dll)
+    /// </summary>
+    public class RecmdBluetoothBthPort : IFileSpec
+    {
+        public RecmdBluetoothBthPort()
+        {
+            TaggedLines = new List<int>();
+
+            DataList = new BindingList<RecmdBluetoothBthPortData>();
+
+            ExpectedHeaders = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+            {
+                "Name,BatchKeyPath,Address,BatchValueName,LastSeen"
+            };
+        }
+
+        public string Author => "Eric Zimmerman";
+        public string FileDescription => "CSV generated from RECmd for the BluetoothBthPort registry plugin";
+        public HashSet<string> ExpectedHeaders { get; }
+
+        public IBindingList DataList { get; }
+        public List<int> TaggedLines { get; set; }
+
+        public string InternalGuid => "4430562e-60c5-4fcd-8508-0c037e31a783";
+
+        public void ProcessFile(string filename)
+        {
+            CsvLoader.Load<RecmdBluetoothBthPortData>(filename, DataList, TaggedLines, map =>
+            {
+                map.Map(t => t.LastSeen).TypeConverter<LenientDateTimeConverter>();
+            });
+        }
+    }
+
+    public class RecmdCIDSizeMRUData : IFileSpecData
+    {
+        public string Executable { get; set; }
+        public string BatchKeyPath { get; set; }
+        public long? MRUPosition { get; set; }
+        public string BatchValueName { get; set; }
+        public DateTime? OpenedOn { get; set; }
+
+        public int Line { get; set; }
+        public bool Tag { get; set; }
+
+        public override string ToString()
+        {
+            return $"{Executable} {BatchKeyPath} {MRUPosition} {BatchValueName} {OpenedOn}";
+        }
+    }
+
+    /// <summary>
+    ///     RECmd's CSV for ComDlg32 CIDSizeMRU (RegistryPlugin.CIDSizeMRU.dll)
+    /// </summary>
+    public class RecmdCIDSizeMRU : IFileSpec
+    {
+        public RecmdCIDSizeMRU()
+        {
+            TaggedLines = new List<int>();
+
+            DataList = new BindingList<RecmdCIDSizeMRUData>();
+
+            ExpectedHeaders = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+            {
+                "Executable,BatchKeyPath,MRUPosition,BatchValueName,OpenedOn"
+            };
+        }
+
+        public string Author => "Eric Zimmerman";
+        public string FileDescription => "CSV generated from RECmd for the CIDSizeMRU registry plugin";
+        public HashSet<string> ExpectedHeaders { get; }
+
+        public IBindingList DataList { get; }
+        public List<int> TaggedLines { get; set; }
+
+        public string InternalGuid => "03fc1579-4c4b-44f9-8578-da8bace3d77d";
+
+        public void ProcessFile(string filename)
+        {
+            CsvLoader.Load<RecmdCIDSizeMRUData>(filename, DataList, TaggedLines, map =>
+            {
+                map.Map(t => t.OpenedOn).TypeConverter<LenientDateTimeConverter>();
+            });
+        }
+    }
+
+    public class RecmdDHCPNetworkHintData : IFileSpecData
+    {
+        public string NetworkHint { get; set; }
+        public string BatchKeyPath { get; set; }
+        public string DHCPAddress { get; set; }
+        public string BatchValueName { get; set; }
+        public string DHCPServer { get; set; }
+        public string DHCPDomain { get; set; }
+        public DateTime? LeaseObtained { get; set; }
+        public DateTime? LeaseExpires { get; set; }
+        public string DefaultGateway { get; set; }
+        public string Interface { get; set; }
+        public string InterfaceSubkey { get; set; }
+
+        public int Line { get; set; }
+        public bool Tag { get; set; }
+
+        public override string ToString()
+        {
+            return $"{NetworkHint} {BatchKeyPath} {DHCPAddress} {BatchValueName} {DHCPServer} {DHCPDomain} {LeaseObtained} {LeaseExpires} {DefaultGateway} {Interface} {InterfaceSubkey}";
+        }
+    }
+
+    /// <summary>
+    ///     RECmd's CSV for DHCPNetworkHints (RegistryPlugin.DHCPNetworkHint.dll)
+    /// </summary>
+    public class RecmdDHCPNetworkHint : IFileSpec
+    {
+        public RecmdDHCPNetworkHint()
+        {
+            TaggedLines = new List<int>();
+
+            DataList = new BindingList<RecmdDHCPNetworkHintData>();
+
+            ExpectedHeaders = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+            {
+                "NetworkHint,BatchKeyPath,DHCPAddress,BatchValueName,DHCPServer,DHCPDomain,LeaseObtained,LeaseExpires,DefaultGateway,Interface,InterfaceSubkey"
+            };
+        }
+
+        public string Author => "Eric Zimmerman";
+        public string FileDescription => "CSV generated from RECmd for the DHCPNetworkHint registry plugin";
+        public HashSet<string> ExpectedHeaders { get; }
+
+        public IBindingList DataList { get; }
+        public List<int> TaggedLines { get; set; }
+
+        public string InternalGuid => "d6371362-7996-4416-91b5-d59f2699bcb7";
+
+        public void ProcessFile(string filename)
+        {
+            CsvLoader.Load<RecmdDHCPNetworkHintData>(filename, DataList, TaggedLines, map =>
+            {
+                map.Map(t => t.LeaseObtained).TypeConverter<LenientDateTimeConverter>();
+                map.Map(t => t.LeaseExpires).TypeConverter<LenientDateTimeConverter>();
+            });
+        }
+    }
+
+    public class RecmdDeviceClassesData : IFileSpecData
+    {
+        public DateTime? Timestamp { get; set; }
+        public string BatchKeyPath { get; set; }
+        public string GuidFolder { get; set; }
+        public string BatchValueName { get; set; }
+        public string Type { get; set; }
+        public string Name { get; set; }
+        public string SerialNumber { get; set; }
+
+        public int Line { get; set; }
+        public bool Tag { get; set; }
+
+        public override string ToString()
+        {
+            return $"{Timestamp} {BatchKeyPath} {GuidFolder} {BatchValueName} {Type} {Name} {SerialNumber}";
+        }
+    }
+
+    /// <summary>
+    ///     RECmd's CSV for DeviceClasses (RegistryPlugin.DeviceClasses.dll)
+    /// </summary>
+    public class RecmdDeviceClasses : IFileSpec
+    {
+        public RecmdDeviceClasses()
+        {
+            TaggedLines = new List<int>();
+
+            DataList = new BindingList<RecmdDeviceClassesData>();
+
+            ExpectedHeaders = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+            {
+                "Timestamp,BatchKeyPath,GuidFolder,BatchValueName,Type,Name,SerialNumber"
+            };
+        }
+
+        public string Author => "Eric Zimmerman";
+        public string FileDescription => "CSV generated from RECmd for the DeviceClasses registry plugin";
+        public HashSet<string> ExpectedHeaders { get; }
+
+        public IBindingList DataList { get; }
+        public List<int> TaggedLines { get; set; }
+
+        public string InternalGuid => "2de7f5b6-3814-4488-9026-223ccce28892";
+
+        public void ProcessFile(string filename)
+        {
+            CsvLoader.Load<RecmdDeviceClassesData>(filename, DataList, TaggedLines, map =>
+            {
+                map.Map(t => t.Timestamp).TypeConverter<LenientDateTimeConverter>();
+            });
+        }
+    }
+
+    public class RecmdDsrmAdminLogonBehaviourData : IFileSpecData
+    {
+        public string ValueName { get; set; }
+        public string BatchKeyPath { get; set; }
+        public string ValueData { get; set; }
+        public string BatchValueName { get; set; }
+        public DateTime? LastWriteTime { get; set; }
+        public bool? PersistenceDetection { get; set; }
+
+        public int Line { get; set; }
+        public bool Tag { get; set; }
+
+        public override string ToString()
+        {
+            return $"{ValueName} {BatchKeyPath} {ValueData} {BatchValueName} {LastWriteTime} {PersistenceDetection}";
+        }
+    }
+
+    /// <summary>
+    ///     RECmd's CSV for DsrmAdminLogonBehaviour Value (RegistryPlugin.DsrmAdminLogonBehaviour.dll)
+    /// </summary>
+    public class RecmdDsrmAdminLogonBehaviour : IFileSpec
+    {
+        public RecmdDsrmAdminLogonBehaviour()
+        {
+            TaggedLines = new List<int>();
+
+            DataList = new BindingList<RecmdDsrmAdminLogonBehaviourData>();
+
+            ExpectedHeaders = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+            {
+                "ValueName,BatchKeyPath,ValueData,BatchValueName,LastWriteTime,PersistenceDetection"
+            };
+        }
+
+        public string Author => "Eric Zimmerman";
+        public string FileDescription => "CSV generated from RECmd for the DsrmAdminLogonBehaviour registry plugin";
+        public HashSet<string> ExpectedHeaders { get; }
+
+        public IBindingList DataList { get; }
+        public List<int> TaggedLines { get; set; }
+
+        public string InternalGuid => "1f2c15c4-a1a2-4a9a-b238-39eaa4acfbfd";
+
+        public void ProcessFile(string filename)
+        {
+            CsvLoader.Load<RecmdDsrmAdminLogonBehaviourData>(filename, DataList, TaggedLines, map =>
+            {
+                map.Map(t => t.LastWriteTime).TypeConverter<LenientDateTimeConverter>();
+            });
+        }
+    }
+
+    public class RecmdETWData : IFileSpecData
+    {
+        public string LastWriteTimestamp { get; set; }
+        public string BatchKeyPath { get; set; }
+        public string Guid { get; set; }
+        public string BatchValueName { get; set; }
+        public string Provider { get; set; }
+        public string Enabled { get; set; }
+        public string EnabledProperty { get; set; }
+
+        public int Line { get; set; }
+        public bool Tag { get; set; }
+
+        public override string ToString()
+        {
+            return $"{LastWriteTimestamp} {BatchKeyPath} {Guid} {BatchValueName} {Provider} {Enabled} {EnabledProperty}";
+        }
+    }
+
+    /// <summary>
+    ///     RECmd's CSV for ETW (RegistryPlugin.ETW.dll)
+    /// </summary>
+    public class RecmdETW : IFileSpec
+    {
+        public RecmdETW()
+        {
+            TaggedLines = new List<int>();
+
+            DataList = new BindingList<RecmdETWData>();
+
+            ExpectedHeaders = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+            {
+                "LastWriteTimestamp,BatchKeyPath,Guid,BatchValueName,Provider,Enabled,EnabledProperty"
+            };
+        }
+
+        public string Author => "Eric Zimmerman";
+        public string FileDescription => "CSV generated from RECmd for the ETW registry plugin";
+        public HashSet<string> ExpectedHeaders { get; }
+
+        public IBindingList DataList { get; }
+        public List<int> TaggedLines { get; set; }
+
+        public string InternalGuid => "9d39ef35-ac83-4f8c-b532-27958c493e30";
+
+        public void ProcessFile(string filename)
+        {
+            CsvLoader.Load<RecmdETWData>(filename, DataList, TaggedLines);
+        }
+    }
+
+    public class RecmdFeatureUsageData : IFileSpecData
+    {
+        public string KeyPath { get; set; }
+        public string BatchKeyPath { get; set; }
+        public string ValueName { get; set; }
+        public string BatchValueName { get; set; }
+        public string Count { get; set; }
+
+        public int Line { get; set; }
+        public bool Tag { get; set; }
+
+        public override string ToString()
+        {
+            return $"{KeyPath} {BatchKeyPath} {ValueName} {BatchValueName} {Count}";
+        }
+    }
+
+    /// <summary>
+    ///     RECmd's CSV for FeatureUsage (RegistryPlugin.FeatureUsage.dll)
+    /// </summary>
+    public class RecmdFeatureUsage : IFileSpec
+    {
+        public RecmdFeatureUsage()
+        {
+            TaggedLines = new List<int>();
+
+            DataList = new BindingList<RecmdFeatureUsageData>();
+
+            ExpectedHeaders = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+            {
+                "KeyPath,BatchKeyPath,ValueName,BatchValueName,Count"
+            };
+        }
+
+        public string Author => "Eric Zimmerman";
+        public string FileDescription => "CSV generated from RECmd for the FeatureUsage registry plugin";
+        public HashSet<string> ExpectedHeaders { get; }
+
+        public IBindingList DataList { get; }
+        public List<int> TaggedLines { get; set; }
+
+        public string InternalGuid => "3d6e23a1-f2c8-4a85-a763-d9193198822c";
+
+        public void ProcessFile(string filename)
+        {
+            CsvLoader.Load<RecmdFeatureUsageData>(filename, DataList, TaggedLines);
+        }
+    }
+
+    public class RecmdFileExtsData : IFileSpecData
+    {
+        public string Extension { get; set; }
+        public string BatchKeyPath { get; set; }
+        public string OpensWithExecutables { get; set; }
+        public string BatchValueName { get; set; }
+        public string OpensWithProgramIDs { get; set; }
+        public string UserChoice { get; set; }
+
+        public int Line { get; set; }
+        public bool Tag { get; set; }
+
+        public override string ToString()
+        {
+            return $"{Extension} {BatchKeyPath} {OpensWithExecutables} {BatchValueName} {OpensWithProgramIDs} {UserChoice}";
+        }
+    }
+
+    /// <summary>
+    ///     RECmd's CSV for File Extensions (RegistryPlugin.FileExts.dll)
+    /// </summary>
+    public class RecmdFileExts : IFileSpec
+    {
+        public RecmdFileExts()
+        {
+            TaggedLines = new List<int>();
+
+            DataList = new BindingList<RecmdFileExtsData>();
+
+            ExpectedHeaders = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+            {
+                "Extension,BatchKeyPath,OpensWithExecutables,BatchValueName,OpensWithProgramIDs,UserChoice"
+            };
+        }
+
+        public string Author => "Eric Zimmerman";
+        public string FileDescription => "CSV generated from RECmd for the FileExts registry plugin";
+        public HashSet<string> ExpectedHeaders { get; }
+
+        public IBindingList DataList { get; }
+        public List<int> TaggedLines { get; set; }
+
+        public string InternalGuid => "82e5e16d-8b28-4c83-8023-5c3d296c2c8a";
+
+        public void ProcessFile(string filename)
+        {
+            CsvLoader.Load<RecmdFileExtsData>(filename, DataList, TaggedLines);
+        }
+    }
+
+    public class RecmdFirewallRulesData : IFileSpecData
+    {
+        public string Action { get; set; }
+        public string BatchKeyPath { get; set; }
+        public string Active { get; set; }
+        public string BatchValueName { get; set; }
+        public string Dir { get; set; }
+        public string Protocol { get; set; }
+        public string LPort { get; set; }
+        public string RPort { get; set; }
+        public string Name { get; set; }
+        public string Desc { get; set; }
+        public string App { get; set; }
+
+        public int Line { get; set; }
+        public bool Tag { get; set; }
+
+        public override string ToString()
+        {
+            return $"{Action} {BatchKeyPath} {Active} {BatchValueName} {Dir} {Protocol} {LPort} {RPort} {Name} {Desc} {App}";
+        }
+    }
+
+    /// <summary>
+    ///     RECmd's CSV for FirewallRules (RegistryPlugin.FirewallRules.dll)
+    /// </summary>
+    public class RecmdFirewallRules : IFileSpec
+    {
+        public RecmdFirewallRules()
+        {
+            TaggedLines = new List<int>();
+
+            DataList = new BindingList<RecmdFirewallRulesData>();
+
+            ExpectedHeaders = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+            {
+                "Action,BatchKeyPath,Active,BatchValueName,Dir,Protocol,LPort,RPort,Name,Desc,App"
+            };
+        }
+
+        public string Author => "Eric Zimmerman";
+        public string FileDescription => "CSV generated from RECmd for the FirewallRules registry plugin";
+        public HashSet<string> ExpectedHeaders { get; }
+
+        public IBindingList DataList { get; }
+        public List<int> TaggedLines { get; set; }
+
+        public string InternalGuid => "6a54e24d-e14b-464a-b29d-4eb3ad3c56c9";
+
+        public void ProcessFile(string filename)
+        {
+            CsvLoader.Load<RecmdFirewallRulesData>(filename, DataList, TaggedLines);
+        }
+    }
+
+    public class RecmdFirstFolderData : IFileSpecData
+    {
+        public string Executable { get; set; }
+        public string BatchKeyPath { get; set; }
+        public string FolderName { get; set; }
+        public string BatchValueName { get; set; }
+        public long? MRUPosition { get; set; }
+        public DateTime? OpenedOn { get; set; }
+
+        public int Line { get; set; }
+        public bool Tag { get; set; }
+
+        public override string ToString()
+        {
+            return $"{Executable} {BatchKeyPath} {FolderName} {BatchValueName} {MRUPosition} {OpenedOn}";
+        }
+    }
+
+    /// <summary>
+    ///     RECmd's CSV for First folder (RegistryPlugin.FirstFolder.dll)
+    /// </summary>
+    public class RecmdFirstFolder : IFileSpec
+    {
+        public RecmdFirstFolder()
+        {
+            TaggedLines = new List<int>();
+
+            DataList = new BindingList<RecmdFirstFolderData>();
+
+            ExpectedHeaders = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+            {
+                "Executable,BatchKeyPath,FolderName,BatchValueName,MRUPosition,OpenedOn"
+            };
+        }
+
+        public string Author => "Eric Zimmerman";
+        public string FileDescription => "CSV generated from RECmd for the FirstFolder registry plugin";
+        public HashSet<string> ExpectedHeaders { get; }
+
+        public IBindingList DataList { get; }
+        public List<int> TaggedLines { get; set; }
+
+        public string InternalGuid => "bac57f91-5456-4e41-bd1a-1b00cdbfa6e0";
+
+        public void ProcessFile(string filename)
+        {
+            CsvLoader.Load<RecmdFirstFolderData>(filename, DataList, TaggedLines, map =>
+            {
+                map.Map(t => t.OpenedOn).TypeConverter<LenientDateTimeConverter>();
+            });
+        }
+    }
+
+    public class RecmdIconLayoutsData : IFileSpecData
+    {
+        public string Name { get; set; }
+        public string BatchKeyPath { get; set; }
+        public string BatchValueName { get; set; }
+
+        public int Line { get; set; }
+        public bool Tag { get; set; }
+
+        public override string ToString()
+        {
+            return $"{Name} {BatchKeyPath} {BatchValueName}";
+        }
+    }
+
+    /// <summary>
+    ///     RECmd's CSV for IconLayouts (RegistryPlugin.IconLayouts.dll)
+    /// </summary>
+    public class RecmdIconLayouts : IFileSpec
+    {
+        public RecmdIconLayouts()
+        {
+            TaggedLines = new List<int>();
+
+            DataList = new BindingList<RecmdIconLayoutsData>();
+
+            ExpectedHeaders = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+            {
+                "Name,BatchKeyPath,BatchValueName"
+            };
+        }
+
+        public string Author => "Eric Zimmerman";
+        public string FileDescription => "CSV generated from RECmd for the IconLayouts registry plugin";
+        public HashSet<string> ExpectedHeaders { get; }
+
+        public IBindingList DataList { get; }
+        public List<int> TaggedLines { get; set; }
+
+        public string InternalGuid => "41a951dc-4733-481b-bb77-4ef5857e313a";
+
+        public void ProcessFile(string filename)
+        {
+            CsvLoader.Load<RecmdIconLayoutsData>(filename, DataList, TaggedLines);
+        }
+    }
+
+    public class RecmdInventoryApplicationData : IFileSpecData
+    {
+        public DateTime? Timestamp { get; set; }
+        public string BatchKeyPath { get; set; }
+        public string Name { get; set; }
+        public string BatchValueName { get; set; }
+        public string Version { get; set; }
+        public string Publisher { get; set; }
+        public string Source { get; set; }
+        public string RootDirPath { get; set; }
+        public string UninstallString { get; set; }
+
+        public int Line { get; set; }
+        public bool Tag { get; set; }
+
+        public override string ToString()
+        {
+            return $"{Timestamp} {BatchKeyPath} {Name} {BatchValueName} {Version} {Publisher} {Source} {RootDirPath} {UninstallString}";
+        }
+    }
+
+    /// <summary>
+    ///     RECmd's CSV for Amcache-InventoryApplication (RegistryPlugin.Amcache-InventoryApplication.dll)
+    /// </summary>
+    public class RecmdInventoryApplication : IFileSpec
+    {
+        public RecmdInventoryApplication()
+        {
+            TaggedLines = new List<int>();
+
+            DataList = new BindingList<RecmdInventoryApplicationData>();
+
+            ExpectedHeaders = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+            {
+                "Timestamp,BatchKeyPath,Name,BatchValueName,Version,Publisher,Source,RootDirPath,UninstallString"
+            };
+        }
+
+        public string Author => "Eric Zimmerman";
+        public string FileDescription => "CSV generated from RECmd for the InventoryApplication registry plugin";
+        public HashSet<string> ExpectedHeaders { get; }
+
+        public IBindingList DataList { get; }
+        public List<int> TaggedLines { get; set; }
+
+        public string InternalGuid => "c6e8f79f-1179-432c-b0ad-92dc55a0eebf";
+
+        public void ProcessFile(string filename)
+        {
+            CsvLoader.Load<RecmdInventoryApplicationData>(filename, DataList, TaggedLines, map =>
+            {
+                map.Map(t => t.Timestamp).TypeConverter<LenientDateTimeConverter>();
+            });
+        }
+    }
+
+    public class RecmdInventoryApplicationFileData : IFileSpecData
+    {
+        public DateTime? Timestamp { get; set; }
+        public string BatchKeyPath { get; set; }
+        public string Path { get; set; }
+        public string BatchValueName { get; set; }
+        public string Name { get; set; }
+        public string ProductName { get; set; }
+        public string Publisher { get; set; }
+        public string Version { get; set; }
+        public string SHA1 { get; set; }
+
+        public int Line { get; set; }
+        public bool Tag { get; set; }
+
+        public override string ToString()
+        {
+            return $"{Timestamp} {BatchKeyPath} {Path} {BatchValueName} {Name} {ProductName} {Publisher} {Version} {SHA1}";
+        }
+    }
+
+    /// <summary>
+    ///     RECmd's CSV for Amcache-InventoryApplicationFile (RegistryPlugin.Amcache-InventoryApplicationFile.dll)
+    /// </summary>
+    public class RecmdInventoryApplicationFile : IFileSpec
+    {
+        public RecmdInventoryApplicationFile()
+        {
+            TaggedLines = new List<int>();
+
+            DataList = new BindingList<RecmdInventoryApplicationFileData>();
+
+            ExpectedHeaders = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+            {
+                "Timestamp,BatchKeyPath,Path,BatchValueName,Name,ProductName,Publisher,Version,SHA1"
+            };
+        }
+
+        public string Author => "Eric Zimmerman";
+        public string FileDescription => "CSV generated from RECmd for the InventoryApplicationFile registry plugin";
+        public HashSet<string> ExpectedHeaders { get; }
+
+        public IBindingList DataList { get; }
+        public List<int> TaggedLines { get; set; }
+
+        public string InternalGuid => "cd2bad0f-8662-42ba-8ba0-58333f5cd638";
+
+        public void ProcessFile(string filename)
+        {
+            CsvLoader.Load<RecmdInventoryApplicationFileData>(filename, DataList, TaggedLines, map =>
+            {
+                map.Map(t => t.Timestamp).TypeConverter<LenientDateTimeConverter>();
+            });
+        }
+    }
+
+    public class RecmdInventoryApplicationShortcutData : IFileSpecData
+    {
+        public DateTime? Timestamp { get; set; }
+        public string BatchKeyPath { get; set; }
+        public string Path { get; set; }
+        public string BatchValueName { get; set; }
+
+        public int Line { get; set; }
+        public bool Tag { get; set; }
+
+        public override string ToString()
+        {
+            return $"{Timestamp} {BatchKeyPath} {Path} {BatchValueName}";
+        }
+    }
+
+    /// <summary>
+    ///     RECmd's CSV for Amcache-InventoryApplicationShortcut (RegistryPlugin.Amcache-InventoryApplicationShortcut.dll)
+    /// </summary>
+    public class RecmdInventoryApplicationShortcut : IFileSpec
+    {
+        public RecmdInventoryApplicationShortcut()
+        {
+            TaggedLines = new List<int>();
+
+            DataList = new BindingList<RecmdInventoryApplicationShortcutData>();
+
+            ExpectedHeaders = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+            {
+                "Timestamp,BatchKeyPath,Path,BatchValueName"
+            };
+        }
+
+        public string Author => "Eric Zimmerman";
+        public string FileDescription => "CSV generated from RECmd for the InventoryApplicationShortcut registry plugin";
+        public HashSet<string> ExpectedHeaders { get; }
+
+        public IBindingList DataList { get; }
+        public List<int> TaggedLines { get; set; }
+
+        public string InternalGuid => "f2108427-dc33-4e73-948a-71123b58f05b";
+
+        public void ProcessFile(string filename)
+        {
+            CsvLoader.Load<RecmdInventoryApplicationShortcutData>(filename, DataList, TaggedLines, map =>
+            {
+                map.Map(t => t.Timestamp).TypeConverter<LenientDateTimeConverter>();
+            });
+        }
+    }
+
+    public class RecmdInventoryDeviceContainerData : IFileSpecData
+    {
+        public DateTime? Timestamp { get; set; }
+        public string BatchKeyPath { get; set; }
+        public string ModelName { get; set; }
+        public string BatchValueName { get; set; }
+        public string FriendlyName { get; set; }
+        public string ModelNumber { get; set; }
+        public string Manufacturer { get; set; }
+        public string PrimaryCategory { get; set; }
+        public string ModelID { get; set; }
+
+        public int Line { get; set; }
+        public bool Tag { get; set; }
+
+        public override string ToString()
+        {
+            return $"{Timestamp} {BatchKeyPath} {ModelName} {BatchValueName} {FriendlyName} {ModelNumber} {Manufacturer} {PrimaryCategory} {ModelID}";
+        }
+    }
+
+    /// <summary>
+    ///     RECmd's CSV for Amcache-InventoryDeviceContainer (RegistryPlugin.Amcache-InventoryDeviceContainer.dll)
+    /// </summary>
+    public class RecmdInventoryDeviceContainer : IFileSpec
+    {
+        public RecmdInventoryDeviceContainer()
+        {
+            TaggedLines = new List<int>();
+
+            DataList = new BindingList<RecmdInventoryDeviceContainerData>();
+
+            ExpectedHeaders = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+            {
+                "Timestamp,BatchKeyPath,ModelName,BatchValueName,FriendlyName,ModelNumber,Manufacturer,PrimaryCategory,ModelID"
+            };
+        }
+
+        public string Author => "Eric Zimmerman";
+        public string FileDescription => "CSV generated from RECmd for the InventoryDeviceContainer registry plugin";
+        public HashSet<string> ExpectedHeaders { get; }
+
+        public IBindingList DataList { get; }
+        public List<int> TaggedLines { get; set; }
+
+        public string InternalGuid => "3f7a42d2-a332-4413-81c8-4454fffb172f";
+
+        public void ProcessFile(string filename)
+        {
+            CsvLoader.Load<RecmdInventoryDeviceContainerData>(filename, DataList, TaggedLines, map =>
+            {
+                map.Map(t => t.Timestamp).TypeConverter<LenientDateTimeConverter>();
+            });
+        }
+    }
+
+    public class RecmdInventoryDevicePnpData : IFileSpecData
+    {
+        public DateTime? Timestamp { get; set; }
+        public string BatchKeyPath { get; set; }
+        public string Model { get; set; }
+        public string BatchValueName { get; set; }
+        public string Manufacturer { get; set; }
+        public string Description { get; set; }
+        public string InstallDate { get; set; }
+        public string ParentID { get; set; }
+        public string MatchingID { get; set; }
+
+        public int Line { get; set; }
+        public bool Tag { get; set; }
+
+        public override string ToString()
+        {
+            return $"{Timestamp} {BatchKeyPath} {Model} {BatchValueName} {Manufacturer} {Description} {InstallDate} {ParentID} {MatchingID}";
+        }
+    }
+
+    /// <summary>
+    ///     RECmd's CSV for Amcache-InventoryDevicePnp (RegistryPlugin.Amcache-InventoryDevicePnp.dll)
+    /// </summary>
+    public class RecmdInventoryDevicePnp : IFileSpec
+    {
+        public RecmdInventoryDevicePnp()
+        {
+            TaggedLines = new List<int>();
+
+            DataList = new BindingList<RecmdInventoryDevicePnpData>();
+
+            ExpectedHeaders = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+            {
+                "Timestamp,BatchKeyPath,Model,BatchValueName,Manufacturer,Description,InstallDate,ParentID,MatchingID"
+            };
+        }
+
+        public string Author => "Eric Zimmerman";
+        public string FileDescription => "CSV generated from RECmd for the InventoryDevicePnp registry plugin";
+        public HashSet<string> ExpectedHeaders { get; }
+
+        public IBindingList DataList { get; }
+        public List<int> TaggedLines { get; set; }
+
+        public string InternalGuid => "5311f216-9785-4df4-bf4c-af99afa576a2";
+
+        public void ProcessFile(string filename)
+        {
+            CsvLoader.Load<RecmdInventoryDevicePnpData>(filename, DataList, TaggedLines, map =>
+            {
+                map.Map(t => t.Timestamp).TypeConverter<LenientDateTimeConverter>();
+            });
+        }
+    }
+
+    public class RecmdInventoryDriverBinaryData : IFileSpecData
+    {
+        public DateTime? Timestamp { get; set; }
+        public string BatchKeyPath { get; set; }
+        public string DriverLastWriteTime { get; set; }
+        public string BatchValueName { get; set; }
+        public string DriverCompany { get; set; }
+        public string Product { get; set; }
+        public string ProductVersion { get; set; }
+        public string DriverName { get; set; }
+        public string DriverVersion { get; set; }
+        public string Path { get; set; }
+        public string SHA1 { get; set; }
+
+        public int Line { get; set; }
+        public bool Tag { get; set; }
+
+        public override string ToString()
+        {
+            return $"{Timestamp} {BatchKeyPath} {DriverLastWriteTime} {BatchValueName} {DriverCompany} {Product} {ProductVersion} {DriverName} {DriverVersion} {Path} {SHA1}";
+        }
+    }
+
+    /// <summary>
+    ///     RECmd's CSV for Amcache-InventoryDriverBinary (RegistryPlugin.Amcache-InventoryDriverBinary.dll)
+    /// </summary>
+    public class RecmdInventoryDriverBinary : IFileSpec
+    {
+        public RecmdInventoryDriverBinary()
+        {
+            TaggedLines = new List<int>();
+
+            DataList = new BindingList<RecmdInventoryDriverBinaryData>();
+
+            ExpectedHeaders = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+            {
+                "Timestamp,BatchKeyPath,DriverLastWriteTime,BatchValueName,DriverCompany,Product,ProductVersion,DriverName,DriverVersion,Path,SHA1"
+            };
+        }
+
+        public string Author => "Eric Zimmerman";
+        public string FileDescription => "CSV generated from RECmd for the InventoryDriverBinary registry plugin";
+        public HashSet<string> ExpectedHeaders { get; }
+
+        public IBindingList DataList { get; }
+        public List<int> TaggedLines { get; set; }
+
+        public string InternalGuid => "90a43ec0-42b3-4434-acc2-37f72efdfc69";
+
+        public void ProcessFile(string filename)
+        {
+            CsvLoader.Load<RecmdInventoryDriverBinaryData>(filename, DataList, TaggedLines, map =>
+            {
+                map.Map(t => t.Timestamp).TypeConverter<LenientDateTimeConverter>();
+            });
+        }
+    }
+
+    public class RecmdJumplistDataData : IFileSpecData
+    {
+        public string JumpListName { get; set; }
+        public string BatchKeyPath { get; set; }
+        public DateTime? ExecutedOn { get; set; }
+        public string BatchValueName { get; set; }
+
+        public int Line { get; set; }
+        public bool Tag { get; set; }
+
+        public override string ToString()
+        {
+            return $"{JumpListName} {BatchKeyPath} {ExecutedOn} {BatchValueName}";
+        }
+    }
+
+    /// <summary>
+    ///     RECmd's CSV for JumplistData (RegistryPlugin.JumplistData.dll)
+    /// </summary>
+    public class RecmdJumplistData : IFileSpec
+    {
+        public RecmdJumplistData()
+        {
+            TaggedLines = new List<int>();
+
+            DataList = new BindingList<RecmdJumplistDataData>();
+
+            ExpectedHeaders = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+            {
+                "JumpListName,BatchKeyPath,ExecutedOn,BatchValueName"
+            };
+        }
+
+        public string Author => "Eric Zimmerman";
+        public string FileDescription => "CSV generated from RECmd for the JumplistData registry plugin";
+        public HashSet<string> ExpectedHeaders { get; }
+
+        public IBindingList DataList { get; }
+        public List<int> TaggedLines { get; set; }
+
+        public string InternalGuid => "4f97b5db-9040-4e20-9f11-394d8aa50761";
+
+        public void ProcessFile(string filename)
+        {
+            CsvLoader.Load<RecmdJumplistDataData>(filename, DataList, TaggedLines, map =>
+            {
+                map.Map(t => t.ExecutedOn).TypeConverter<LenientDateTimeConverter>();
+            });
+        }
+    }
+
+    public class RecmdKnownNetworksData : IFileSpecData
+    {
+        public string FirstNetwork { get; set; }
+        public string BatchKeyPath { get; set; }
+        public string NetworkName { get; set; }
+        public string BatchValueName { get; set; }
+        public string NameType { get; set; }
+        public DateTime? FirstConnectLOCAL { get; set; }
+        public DateTime? LastConnectedLOCAL { get; set; }
+        public bool? Managed { get; set; }
+        public string DNSSuffix { get; set; }
+        public string GatewayMacAddress { get; set; }
+        public string ProfileGUID { get; set; }
+
+        public int Line { get; set; }
+        public bool Tag { get; set; }
+
+        public override string ToString()
+        {
+            return $"{FirstNetwork} {BatchKeyPath} {NetworkName} {BatchValueName} {NameType} {FirstConnectLOCAL} {LastConnectedLOCAL} {Managed} {DNSSuffix} {GatewayMacAddress} {ProfileGUID}";
+        }
+    }
+
+    /// <summary>
+    ///     RECmd's CSV for Known networks (RegistryPlugin.KnownNetworks.dll)
+    /// </summary>
+    public class RecmdKnownNetworks : IFileSpec
+    {
+        public RecmdKnownNetworks()
+        {
+            TaggedLines = new List<int>();
+
+            DataList = new BindingList<RecmdKnownNetworksData>();
+
+            ExpectedHeaders = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+            {
+                "FirstNetwork,BatchKeyPath,NetworkName,BatchValueName,NameType,FirstConnectLOCAL,LastConnectedLOCAL,Managed,DNSSuffix,GatewayMacAddress,ProfileGUID"
+            };
+        }
+
+        public string Author => "Eric Zimmerman";
+        public string FileDescription => "CSV generated from RECmd for the KnownNetworks registry plugin";
+        public HashSet<string> ExpectedHeaders { get; }
+
+        public IBindingList DataList { get; }
+        public List<int> TaggedLines { get; set; }
+
+        public string InternalGuid => "9077881f-7ade-401c-8283-b062a5075186";
+
+        public void ProcessFile(string filename)
+        {
+            CsvLoader.Load<RecmdKnownNetworksData>(filename, DataList, TaggedLines, map =>
+            {
+                map.Map(t => t.FirstConnectLOCAL).TypeConverter<LenientDateTimeConverter>();
+                map.Map(t => t.LastConnectedLOCAL).TypeConverter<LenientDateTimeConverter>();
+            });
+        }
+    }
+
+    public class RecmdLastVisitedMRUData : IFileSpecData
+    {
+        public string ValueName { get; set; }
+        public string BatchKeyPath { get; set; }
+        public long? MruPosition { get; set; }
+        public string BatchValueName { get; set; }
+        public string Executable { get; set; }
+        public string Directory { get; set; }
+        public DateTime? OpenedOn { get; set; }
+
+        public int Line { get; set; }
+        public bool Tag { get; set; }
+
+        public override string ToString()
+        {
+            return $"{ValueName} {BatchKeyPath} {MruPosition} {BatchValueName} {Executable} {Directory} {OpenedOn}";
+        }
+    }
+
+    /// <summary>
+    ///     RECmd's CSV for ComDlg32 LastVisitedMRU (RegistryPlugin.LastVisitedMRU.dll)
+    /// </summary>
+    public class RecmdLastVisitedMRU : IFileSpec
+    {
+        public RecmdLastVisitedMRU()
+        {
+            TaggedLines = new List<int>();
+
+            DataList = new BindingList<RecmdLastVisitedMRUData>();
+
+            ExpectedHeaders = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+            {
+                "ValueName,BatchKeyPath,MruPosition,BatchValueName,Executable,Directory,OpenedOn"
+            };
+        }
+
+        public string Author => "Eric Zimmerman";
+        public string FileDescription => "CSV generated from RECmd for the LastVisitedMRU registry plugin";
+        public HashSet<string> ExpectedHeaders { get; }
+
+        public IBindingList DataList { get; }
+        public List<int> TaggedLines { get; set; }
+
+        public string InternalGuid => "16fd846d-a315-4cfd-905a-26ddeecaf057";
+
+        public void ProcessFile(string filename)
+        {
+            CsvLoader.Load<RecmdLastVisitedMRUData>(filename, DataList, TaggedLines, map =>
+            {
+                map.Map(t => t.OpenedOn).TypeConverter<LenientDateTimeConverter>();
+            });
+        }
+    }
+
+    public class RecmdLastVisitedPidlMRUData : IFileSpecData
+    {
+        public string ValueName { get; set; }
+        public string BatchKeyPath { get; set; }
+        public long? MruPosition { get; set; }
+        public string BatchValueName { get; set; }
+        public string Executable { get; set; }
+        public string AbsolutePath { get; set; }
+        public DateTime? OpenedOn { get; set; }
+        public string Details { get; set; }
+
+        public int Line { get; set; }
+        public bool Tag { get; set; }
+
+        public override string ToString()
+        {
+            return $"{ValueName} {BatchKeyPath} {MruPosition} {BatchValueName} {Executable} {AbsolutePath} {OpenedOn} {Details}";
+        }
+    }
+
+    /// <summary>
+    ///     RECmd's CSV for ComDlg32 LastVisitedPidlMRU (RegistryPlugin.LastVisitedPidlMRU.dll)
+    /// </summary>
+    public class RecmdLastVisitedPidlMRU : IFileSpec
+    {
+        public RecmdLastVisitedPidlMRU()
+        {
+            TaggedLines = new List<int>();
+
+            DataList = new BindingList<RecmdLastVisitedPidlMRUData>();
+
+            ExpectedHeaders = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+            {
+                "ValueName,BatchKeyPath,MruPosition,BatchValueName,Executable,AbsolutePath,OpenedOn,Details"
+            };
+        }
+
+        public string Author => "Eric Zimmerman";
+        public string FileDescription => "CSV generated from RECmd for the LastVisitedPidlMRU registry plugin";
+        public HashSet<string> ExpectedHeaders { get; }
+
+        public IBindingList DataList { get; }
+        public List<int> TaggedLines { get; set; }
+
+        public string InternalGuid => "c1abc5e1-d239-4ade-ba40-24719b92c72f";
+
+        public void ProcessFile(string filename)
+        {
+            CsvLoader.Load<RecmdLastVisitedPidlMRUData>(filename, DataList, TaggedLines, map =>
+            {
+                map.Map(t => t.OpenedOn).TypeConverter<LenientDateTimeConverter>();
+            });
+        }
+    }
+
+    public class RecmdMareData : IFileSpecData
+    {
+        public string Unknown { get; set; }
+        public string BatchKeyPath { get; set; }
+        public string Path { get; set; }
+        public string BatchValueName { get; set; }
+
+        public int Line { get; set; }
+        public bool Tag { get; set; }
+
+        public override string ToString()
+        {
+            return $"{Unknown} {BatchKeyPath} {Path} {BatchValueName}";
+        }
+    }
+
+    /// <summary>
+    ///     RECmd's CSV for Amcache-Mare (RegistryPlugin.Amcache-Mare.dll)
+    /// </summary>
+    public class RecmdMare : IFileSpec
+    {
+        public RecmdMare()
+        {
+            TaggedLines = new List<int>();
+
+            DataList = new BindingList<RecmdMareData>();
+
+            ExpectedHeaders = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+            {
+                "Unknown,BatchKeyPath,Path,BatchValueName"
+            };
+        }
+
+        public string Author => "Eric Zimmerman";
+        public string FileDescription => "CSV generated from RECmd for the Mare registry plugin";
+        public HashSet<string> ExpectedHeaders { get; }
+
+        public IBindingList DataList { get; }
+        public List<int> TaggedLines { get; set; }
+
+        public string InternalGuid => "82b07beb-cdc4-43f1-9a69-ed72883982c3";
+
+        public void ProcessFile(string filename)
+        {
+            CsvLoader.Load<RecmdMareData>(filename, DataList, TaggedLines);
+        }
+    }
+
+    public class RecmdMountedDevicesData : IFileSpecData
+    {
+        public string DeviceName { get; set; }
+        public string BatchKeyPath { get; set; }
+        public string DeviceData { get; set; }
+        public string BatchValueName { get; set; }
+
+        public int Line { get; set; }
+        public bool Tag { get; set; }
+
+        public override string ToString()
+        {
+            return $"{DeviceName} {BatchKeyPath} {DeviceData} {BatchValueName}";
+        }
+    }
+
+    /// <summary>
+    ///     RECmd's CSV for MountedDevices (RegistryPlugin.MountedDevices.dll)
+    /// </summary>
+    public class RecmdMountedDevices : IFileSpec
+    {
+        public RecmdMountedDevices()
+        {
+            TaggedLines = new List<int>();
+
+            DataList = new BindingList<RecmdMountedDevicesData>();
+
+            ExpectedHeaders = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+            {
+                "DeviceName,BatchKeyPath,DeviceData,BatchValueName"
+            };
+        }
+
+        public string Author => "Eric Zimmerman";
+        public string FileDescription => "CSV generated from RECmd for the MountedDevices registry plugin";
+        public HashSet<string> ExpectedHeaders { get; }
+
+        public IBindingList DataList { get; }
+        public List<int> TaggedLines { get; set; }
+
+        public string InternalGuid => "89a8b2f1-7d18-47eb-b06a-069848ca916e";
+
+        public void ProcessFile(string filename)
+        {
+            CsvLoader.Load<RecmdMountedDevicesData>(filename, DataList, TaggedLines);
+        }
+    }
+
+    public class RecmdNetworkAdaptersData : IFileSpecData
+    {
+        public DateTime? Timestamp { get; set; }
+        public string BatchKeyPath { get; set; }
+        public string DriverDesc { get; set; }
+        public string BatchValueName { get; set; }
+        public string DriverDate { get; set; }
+        public string DriverVersion { get; set; }
+        public string ProviderName { get; set; }
+        public string DeviceInstanceid { get; set; }
+
+        public int Line { get; set; }
+        public bool Tag { get; set; }
+
+        public override string ToString()
+        {
+            return $"{Timestamp} {BatchKeyPath} {DriverDesc} {BatchValueName} {DriverDate} {DriverVersion} {ProviderName} {DeviceInstanceid}";
+        }
+    }
+
+    /// <summary>
+    ///     RECmd's CSV for NetworkAdapters (RegistryPlugin.NetworkAdapters.dll)
+    /// </summary>
+    public class RecmdNetworkAdapters : IFileSpec
+    {
+        public RecmdNetworkAdapters()
+        {
+            TaggedLines = new List<int>();
+
+            DataList = new BindingList<RecmdNetworkAdaptersData>();
+
+            ExpectedHeaders = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+            {
+                "Timestamp,BatchKeyPath,DriverDesc,BatchValueName,DriverDate,DriverVersion,ProviderName,DeviceInstanceid"
+            };
+        }
+
+        public string Author => "Eric Zimmerman";
+        public string FileDescription => "CSV generated from RECmd for the NetworkAdapters registry plugin";
+        public HashSet<string> ExpectedHeaders { get; }
+
+        public IBindingList DataList { get; }
+        public List<int> TaggedLines { get; set; }
+
+        public string InternalGuid => "47d49dab-e410-4b03-8852-19d944e7f632";
+
+        public void ProcessFile(string filename)
+        {
+            CsvLoader.Load<RecmdNetworkAdaptersData>(filename, DataList, TaggedLines, map =>
+            {
+                map.Map(t => t.Timestamp).TypeConverter<LenientDateTimeConverter>();
+            });
+        }
+    }
+
+    public class RecmdNetworkSettingsData : IFileSpecData
+    {
+        public string IPAddress { get; set; }
+        public string BatchKeyPath { get; set; }
+        public string SubnetMask { get; set; }
+        public string BatchValueName { get; set; }
+        public string DHCPSubnetMask { get; set; }
+        public string DHCPServer { get; set; }
+        public string DHCPNameServer { get; set; }
+        public string DHCPIPAddress { get; set; }
+        public string DHCPDefaultGateway { get; set; }
+        public DateTime? LeaseObtainedTime { get; set; }
+        public DateTime? LeaseTerminatesTime { get; set; }
+        public bool? EnabledDHCP { get; set; }
+
+        public int Line { get; set; }
+        public bool Tag { get; set; }
+
+        public override string ToString()
+        {
+            return $"{IPAddress} {BatchKeyPath} {SubnetMask} {BatchValueName} {DHCPSubnetMask} {DHCPServer} {DHCPNameServer} {DHCPIPAddress} {DHCPDefaultGateway} {LeaseObtainedTime} {LeaseTerminatesTime} {EnabledDHCP}";
+        }
+    }
+
+    /// <summary>
+    ///     RECmd's CSV for NetworkSettings (RegistryPlugin.NetworkSettings.dll)
+    /// </summary>
+    public class RecmdNetworkSettings : IFileSpec
+    {
+        public RecmdNetworkSettings()
+        {
+            TaggedLines = new List<int>();
+
+            DataList = new BindingList<RecmdNetworkSettingsData>();
+
+            ExpectedHeaders = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+            {
+                "IPAddress,BatchKeyPath,SubnetMask,BatchValueName,DHCPSubnetMask,DHCPServer,DHCPNameServer,DHCPIPAddress,DHCPDefaultGateway,LeaseObtainedTime,LeaseTerminatesTime,EnabledDHCP"
+            };
+        }
+
+        public string Author => "Eric Zimmerman";
+        public string FileDescription => "CSV generated from RECmd for the NetworkSettings registry plugin";
+        public HashSet<string> ExpectedHeaders { get; }
+
+        public IBindingList DataList { get; }
+        public List<int> TaggedLines { get; set; }
+
+        public string InternalGuid => "84a73f46-4fc3-44d3-a04b-de63d5a220ce";
+
+        public void ProcessFile(string filename)
+        {
+            CsvLoader.Load<RecmdNetworkSettingsData>(filename, DataList, TaggedLines, map =>
+            {
+                map.Map(t => t.LeaseObtainedTime).TypeConverter<LenientDateTimeConverter>();
+                map.Map(t => t.LeaseTerminatesTime).TypeConverter<LenientDateTimeConverter>();
+            });
+        }
+    }
+
+    public class RecmdNetworkSetup2Data : IFileSpecData
+    {
+        public string ProtocolList { get; set; }
+        public string BatchKeyPath { get; set; }
+        public string Alias { get; set; }
+        public string BatchValueName { get; set; }
+        public string Description { get; set; }
+        public string Type { get; set; }
+        public string PermanentAddress { get; set; }
+        public string CurrentAddress { get; set; }
+
+        public int Line { get; set; }
+        public bool Tag { get; set; }
+
+        public override string ToString()
+        {
+            return $"{ProtocolList} {BatchKeyPath} {Alias} {BatchValueName} {Description} {Type} {PermanentAddress} {CurrentAddress}";
+        }
+    }
+
+    /// <summary>
+    ///     RECmd's CSV for NetworkSetup2 (RegistryPlugin.NetworkSetup2.dll)
+    /// </summary>
+    public class RecmdNetworkSetup2 : IFileSpec
+    {
+        public RecmdNetworkSetup2()
+        {
+            TaggedLines = new List<int>();
+
+            DataList = new BindingList<RecmdNetworkSetup2Data>();
+
+            ExpectedHeaders = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+            {
+                "ProtocolList,BatchKeyPath,Alias,BatchValueName,Description,Type,PermanentAddress,CurrentAddress"
+            };
+        }
+
+        public string Author => "Eric Zimmerman";
+        public string FileDescription => "CSV generated from RECmd for the NetworkSetup2 registry plugin";
+        public HashSet<string> ExpectedHeaders { get; }
+
+        public IBindingList DataList { get; }
+        public List<int> TaggedLines { get; set; }
+
+        public string InternalGuid => "c8226f48-fbc9-4d98-b8c8-6aaa7633f9e9";
+
+        public void ProcessFile(string filename)
+        {
+            CsvLoader.Load<RecmdNetworkSetup2Data>(filename, DataList, TaggedLines);
+        }
+    }
+
+    public class RecmdOfficeMRUData : IFileSpecData
+    {
+        public string ValueName { get; set; }
+        public string BatchKeyPath { get; set; }
+        public DateTime? LastOpened { get; set; }
+        public string BatchValueName { get; set; }
+        public DateTime? LastClosed { get; set; }
+        public string FileName { get; set; }
+
+        public int Line { get; set; }
+        public bool Tag { get; set; }
+
+        public override string ToString()
+        {
+            return $"{ValueName} {BatchKeyPath} {LastOpened} {BatchValueName} {LastClosed} {FileName}";
+        }
+    }
+
+    /// <summary>
+    ///     RECmd's CSV for Office MRU (RegistryPlugin.OfficeMRU.dll)
+    /// </summary>
+    public class RecmdOfficeMRU : IFileSpec
+    {
+        public RecmdOfficeMRU()
+        {
+            TaggedLines = new List<int>();
+
+            DataList = new BindingList<RecmdOfficeMRUData>();
+
+            ExpectedHeaders = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+            {
+                "ValueName,BatchKeyPath,LastOpened,BatchValueName,LastClosed,FileName"
+            };
+        }
+
+        public string Author => "Eric Zimmerman";
+        public string FileDescription => "CSV generated from RECmd for the OfficeMRU registry plugin";
+        public HashSet<string> ExpectedHeaders { get; }
+
+        public IBindingList DataList { get; }
+        public List<int> TaggedLines { get; set; }
+
+        public string InternalGuid => "7a9535ba-78de-4a80-9620-1195bcbfae2e";
+
+        public void ProcessFile(string filename)
+        {
+            CsvLoader.Load<RecmdOfficeMRUData>(filename, DataList, TaggedLines, map =>
+            {
+                map.Map(t => t.LastOpened).TypeConverter<LenientDateTimeConverter>();
+                map.Map(t => t.LastClosed).TypeConverter<LenientDateTimeConverter>();
+            });
+        }
+    }
+
+    public class RecmdOpenSaveMRUData : IFileSpecData
+    {
+        public string Extension { get; set; }
+        public string BatchKeyPath { get; set; }
+        public string ValueName { get; set; }
+        public string BatchValueName { get; set; }
+        public long? MruPosition { get; set; }
+        public string Filename { get; set; }
+        public DateTime? OpenedOn { get; set; }
+
+        public int Line { get; set; }
+        public bool Tag { get; set; }
+
+        public override string ToString()
+        {
+            return $"{Extension} {BatchKeyPath} {ValueName} {BatchValueName} {MruPosition} {Filename} {OpenedOn}";
+        }
+    }
+
+    /// <summary>
+    ///     RECmd's CSV for ComDlg32 OpenSaveMRU (RegistryPlugin.OpenSaveMRU.dll)
+    /// </summary>
+    public class RecmdOpenSaveMRU : IFileSpec
+    {
+        public RecmdOpenSaveMRU()
+        {
+            TaggedLines = new List<int>();
+
+            DataList = new BindingList<RecmdOpenSaveMRUData>();
+
+            ExpectedHeaders = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+            {
+                "Extension,BatchKeyPath,ValueName,BatchValueName,MruPosition,Filename,OpenedOn"
+            };
+        }
+
+        public string Author => "Eric Zimmerman";
+        public string FileDescription => "CSV generated from RECmd for the OpenSaveMRU registry plugin";
+        public HashSet<string> ExpectedHeaders { get; }
+
+        public IBindingList DataList { get; }
+        public List<int> TaggedLines { get; set; }
+
+        public string InternalGuid => "ec401471-b016-45d3-91f5-a02887c67656";
+
+        public void ProcessFile(string filename)
+        {
+            CsvLoader.Load<RecmdOpenSaveMRUData>(filename, DataList, TaggedLines, map =>
+            {
+                map.Map(t => t.OpenedOn).TypeConverter<LenientDateTimeConverter>();
+            });
+        }
+    }
+
+    public class RecmdOpenSavePidlMRUData : IFileSpecData
+    {
+        public string Extension { get; set; }
+        public string BatchKeyPath { get; set; }
+        public string ValueName { get; set; }
+        public string BatchValueName { get; set; }
+        public long? MruPosition { get; set; }
+        public string AbsolutePath { get; set; }
+        public DateTime? OpenedOn { get; set; }
+        public string Details { get; set; }
+
+        public int Line { get; set; }
+        public bool Tag { get; set; }
+
+        public override string ToString()
+        {
+            return $"{Extension} {BatchKeyPath} {ValueName} {BatchValueName} {MruPosition} {AbsolutePath} {OpenedOn} {Details}";
+        }
+    }
+
+    /// <summary>
+    ///     RECmd's CSV for ComDlg32 OpenSavePidlMRU (RegistryPlugin.OpenSavePidlMRU.dll)
+    /// </summary>
+    public class RecmdOpenSavePidlMRU : IFileSpec
+    {
+        public RecmdOpenSavePidlMRU()
+        {
+            TaggedLines = new List<int>();
+
+            DataList = new BindingList<RecmdOpenSavePidlMRUData>();
+
+            ExpectedHeaders = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+            {
+                "Extension,BatchKeyPath,ValueName,BatchValueName,MruPosition,AbsolutePath,OpenedOn,Details"
+            };
+        }
+
+        public string Author => "Eric Zimmerman";
+        public string FileDescription => "CSV generated from RECmd for the OpenSavePidlMRU registry plugin";
+        public HashSet<string> ExpectedHeaders { get; }
+
+        public IBindingList DataList { get; }
+        public List<int> TaggedLines { get; set; }
+
+        public string InternalGuid => "466f2618-46c5-42ab-8cfa-73a17eb7d770";
+
+        public void ProcessFile(string filename)
+        {
+            CsvLoader.Load<RecmdOpenSavePidlMRUData>(filename, DataList, TaggedLines, map =>
+            {
+                map.Map(t => t.OpenedOn).TypeConverter<LenientDateTimeConverter>();
+            });
+        }
+    }
+
+    public class RecmdProductsData : IFileSpecData
+    {
+        public DateTime? Timestamp { get; set; }
+        public string BatchKeyPath { get; set; }
+        public string DisplayName { get; set; }
+        public string BatchValueName { get; set; }
+        public string PackageName { get; set; }
+        public string InstallDate { get; set; }
+        public string Publisher { get; set; }
+        public string Language { get; set; }
+        public string InstallLocation { get; set; }
+        public string InstallSource { get; set; }
+        public string Comments { get; set; }
+
+        public int Line { get; set; }
+        public bool Tag { get; set; }
+
+        public override string ToString()
+        {
+            return $"{Timestamp} {BatchKeyPath} {DisplayName} {BatchValueName} {PackageName} {InstallDate} {Publisher} {Language} {InstallLocation} {InstallSource} {Comments}";
+        }
+    }
+
+    /// <summary>
+    ///     RECmd's CSV for Products (RegistryPlugin.Products.dll)
+    /// </summary>
+    public class RecmdProducts : IFileSpec
+    {
+        public RecmdProducts()
+        {
+            TaggedLines = new List<int>();
+
+            DataList = new BindingList<RecmdProductsData>();
+
+            ExpectedHeaders = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+            {
+                "Timestamp,BatchKeyPath,DisplayName,BatchValueName,PackageName,InstallDate,Publisher,Language,InstallLocation,InstallSource,Comments"
+            };
+        }
+
+        public string Author => "Eric Zimmerman";
+        public string FileDescription => "CSV generated from RECmd for the Products registry plugin";
+        public HashSet<string> ExpectedHeaders { get; }
+
+        public IBindingList DataList { get; }
+        public List<int> TaggedLines { get; set; }
+
+        public string InternalGuid => "c9f320c3-c75e-4407-be0a-1bcf3b0e72e5";
+
+        public void ProcessFile(string filename)
+        {
+            CsvLoader.Load<RecmdProductsData>(filename, DataList, TaggedLines, map =>
+            {
+                map.Map(t => t.Timestamp).TypeConverter<LenientDateTimeConverter>();
+            });
+        }
+    }
+
+    public class RecmdProfileListData : IFileSpecData
+    {
+        public DateTime? Timestamp { get; set; }
+        public string BatchKeyPath { get; set; }
+        public string KeyName { get; set; }
+        public string BatchValueName { get; set; }
+        public string ProfileImagePath { get; set; }
+        public DateTime? LastLogonTime { get; set; }
+        public DateTime? LastLogoffTime { get; set; }
+
+        public int Line { get; set; }
+        public bool Tag { get; set; }
+
+        public override string ToString()
+        {
+            return $"{Timestamp} {BatchKeyPath} {KeyName} {BatchValueName} {ProfileImagePath} {LastLogonTime} {LastLogoffTime}";
+        }
+    }
+
+    /// <summary>
+    ///     RECmd's CSV for ProfileList (RegistryPlugin.ProfileList.dll)
+    /// </summary>
+    public class RecmdProfileList : IFileSpec
+    {
+        public RecmdProfileList()
+        {
+            TaggedLines = new List<int>();
+
+            DataList = new BindingList<RecmdProfileListData>();
+
+            ExpectedHeaders = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+            {
+                "Timestamp,BatchKeyPath,KeyName,BatchValueName,ProfileImagePath,LastLogonTime,LastLogoffTime"
+            };
+        }
+
+        public string Author => "Eric Zimmerman";
+        public string FileDescription => "CSV generated from RECmd for the ProfileList registry plugin";
+        public HashSet<string> ExpectedHeaders { get; }
+
+        public IBindingList DataList { get; }
+        public List<int> TaggedLines { get; set; }
+
+        public string InternalGuid => "2703272d-4d3d-4ece-ba41-e86cc1b2aa73";
+
+        public void ProcessFile(string filename)
+        {
+            CsvLoader.Load<RecmdProfileListData>(filename, DataList, TaggedLines, map =>
+            {
+                map.Map(t => t.Timestamp).TypeConverter<LenientDateTimeConverter>();
+                map.Map(t => t.LastLogonTime).TypeConverter<LenientDateTimeConverter>();
+                map.Map(t => t.LastLogoffTime).TypeConverter<LenientDateTimeConverter>();
+            });
+        }
+    }
+
+    public class RecmdRADARData : IFileSpecData
+    {
+        public string KeyName { get; set; }
+        public string BatchKeyPath { get; set; }
+        public string Filename { get; set; }
+        public string BatchValueName { get; set; }
+        public DateTime? LastDetectionTime { get; set; }
+
+        public int Line { get; set; }
+        public bool Tag { get; set; }
+
+        public override string ToString()
+        {
+            return $"{KeyName} {BatchKeyPath} {Filename} {BatchValueName} {LastDetectionTime}";
+        }
+    }
+
+    /// <summary>
+    ///     RECmd's CSV for RADAR (RegistryPlugin.RADAR.dll)
+    /// </summary>
+    public class RecmdRADAR : IFileSpec
+    {
+        public RecmdRADAR()
+        {
+            TaggedLines = new List<int>();
+
+            DataList = new BindingList<RecmdRADARData>();
+
+            ExpectedHeaders = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+            {
+                "KeyName,BatchKeyPath,Filename,BatchValueName,LastDetectionTime"
+            };
+        }
+
+        public string Author => "Eric Zimmerman";
+        public string FileDescription => "CSV generated from RECmd for the RADAR registry plugin";
+        public HashSet<string> ExpectedHeaders { get; }
+
+        public IBindingList DataList { get; }
+        public List<int> TaggedLines { get; set; }
+
+        public string InternalGuid => "510d303e-16f8-4661-a37f-c4abfbe6a895";
+
+        public void ProcessFile(string filename)
+        {
+            CsvLoader.Load<RecmdRADARData>(filename, DataList, TaggedLines, map =>
+            {
+                map.Map(t => t.LastDetectionTime).TypeConverter<LenientDateTimeConverter>();
+            });
+        }
+    }
+
+    public class RecmdRecentAppsData : IFileSpecData
+    {
+        public string KeyName { get; set; }
+        public string BatchKeyPath { get; set; }
+        public string AppId { get; set; }
+        public string BatchValueName { get; set; }
+        public string AppPath { get; set; }
+        public DateTime? LastAccessed { get; set; }
+        public long? LaunchCount { get; set; }
+        public string RecentDocs { get; set; }
+
+        public int Line { get; set; }
+        public bool Tag { get; set; }
+
+        public override string ToString()
+        {
+            return $"{KeyName} {BatchKeyPath} {AppId} {BatchValueName} {AppPath} {LastAccessed} {LaunchCount} {RecentDocs}";
+        }
+    }
+
+    /// <summary>
+    ///     RECmd's CSV for RecentApps (RegistryPlugin.RecentApps.dll)
+    /// </summary>
+    public class RecmdRecentApps : IFileSpec
+    {
+        public RecmdRecentApps()
+        {
+            TaggedLines = new List<int>();
+
+            DataList = new BindingList<RecmdRecentAppsData>();
+
+            ExpectedHeaders = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+            {
+                "KeyName,BatchKeyPath,AppId,BatchValueName,AppPath,LastAccessed,LaunchCount,RecentDocs"
+            };
+        }
+
+        public string Author => "Eric Zimmerman";
+        public string FileDescription => "CSV generated from RECmd for the RecentApps registry plugin";
+        public HashSet<string> ExpectedHeaders { get; }
+
+        public IBindingList DataList { get; }
+        public List<int> TaggedLines { get; set; }
+
+        public string InternalGuid => "a413a3a2-9d1f-48d5-922c-f59fd226cc72";
+
+        public void ProcessFile(string filename)
+        {
+            CsvLoader.Load<RecmdRecentAppsData>(filename, DataList, TaggedLines, map =>
+            {
+                map.Map(t => t.LastAccessed).TypeConverter<LenientDateTimeConverter>();
+            });
+        }
+    }
+
+    public class RecmdRecentDocsData : IFileSpecData
+    {
+        public string Extension { get; set; }
+        public string BatchKeyPath { get; set; }
+        public string ValueName { get; set; }
+        public string BatchValueName { get; set; }
+        public string TargetName { get; set; }
+        public string LnkName { get; set; }
+        public long? MruPosition { get; set; }
+        public DateTime? OpenedOn { get; set; }
+        public DateTime? ExtensionLastOpened { get; set; }
+
+        public int Line { get; set; }
+        public bool Tag { get; set; }
+
+        public override string ToString()
+        {
+            return $"{Extension} {BatchKeyPath} {ValueName} {BatchValueName} {TargetName} {LnkName} {MruPosition} {OpenedOn} {ExtensionLastOpened}";
+        }
+    }
+
+    /// <summary>
+    ///     RECmd's CSV for Recent documents (RegistryPlugin.RecentDocs.dll)
+    /// </summary>
+    public class RecmdRecentDocs : IFileSpec
+    {
+        public RecmdRecentDocs()
+        {
+            TaggedLines = new List<int>();
+
+            DataList = new BindingList<RecmdRecentDocsData>();
+
+            ExpectedHeaders = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+            {
+                "Extension,BatchKeyPath,ValueName,BatchValueName,TargetName,LnkName,MruPosition,OpenedOn,ExtensionLastOpened"
+            };
+        }
+
+        public string Author => "Eric Zimmerman";
+        public string FileDescription => "CSV generated from RECmd for the RecentDocs registry plugin";
+        public HashSet<string> ExpectedHeaders { get; }
+
+        public IBindingList DataList { get; }
+        public List<int> TaggedLines { get; set; }
+
+        public string InternalGuid => "5239f79b-d06e-4087-a8dc-7e76db469d55";
+
+        public void ProcessFile(string filename)
+        {
+            CsvLoader.Load<RecmdRecentDocsData>(filename, DataList, TaggedLines, map =>
+            {
+                map.Map(t => t.OpenedOn).TypeConverter<LenientDateTimeConverter>();
+                map.Map(t => t.ExtensionLastOpened).TypeConverter<LenientDateTimeConverter>();
+            });
+        }
+    }
+
+    public class RecmdRunMRUData : IFileSpecData
+    {
+        public string ValueName { get; set; }
+        public string BatchKeyPath { get; set; }
+        public long? MruPosition { get; set; }
+        public string BatchValueName { get; set; }
+        public string Executable { get; set; }
+        public DateTime? OpenedOn { get; set; }
+
+        public int Line { get; set; }
+        public bool Tag { get; set; }
+
+        public override string ToString()
+        {
+            return $"{ValueName} {BatchKeyPath} {MruPosition} {BatchValueName} {Executable} {OpenedOn}";
+        }
+    }
+
+    /// <summary>
+    ///     RECmd's CSV for RunMRU (RegistryPlugin.RunMRU.dll)
+    /// </summary>
+    public class RecmdRunMRU : IFileSpec
+    {
+        public RecmdRunMRU()
+        {
+            TaggedLines = new List<int>();
+
+            DataList = new BindingList<RecmdRunMRUData>();
+
+            ExpectedHeaders = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+            {
+                "ValueName,BatchKeyPath,MruPosition,BatchValueName,Executable,OpenedOn"
+            };
+        }
+
+        public string Author => "Eric Zimmerman";
+        public string FileDescription => "CSV generated from RECmd for the RunMRU registry plugin";
+        public HashSet<string> ExpectedHeaders { get; }
+
+        public IBindingList DataList { get; }
+        public List<int> TaggedLines { get; set; }
+
+        public string InternalGuid => "44e44576-7473-4f81-9141-c0a9e436d927";
+
+        public void ProcessFile(string filename)
+        {
+            CsvLoader.Load<RecmdRunMRUData>(filename, DataList, TaggedLines, map =>
+            {
+                map.Map(t => t.OpenedOn).TypeConverter<LenientDateTimeConverter>();
+            });
+        }
+    }
+
+    public class RecmdSAMBuiltinData : IFileSpecData
+    {
+        public string GroupName { get; set; }
+        public string BatchKeyPath { get; set; }
+        public string Comment { get; set; }
+        public string BatchValueName { get; set; }
+        public string Users { get; set; }
+
+        public int Line { get; set; }
+        public bool Tag { get; set; }
+
+        public override string ToString()
+        {
+            return $"{GroupName} {BatchKeyPath} {Comment} {BatchValueName} {Users}";
+        }
+    }
+
+    /// <summary>
+    ///     RECmd's CSV for SAMBuiltin (RegistryPlugin.SAMBuiltin.dll)
+    /// </summary>
+    public class RecmdSAMBuiltin : IFileSpec
+    {
+        public RecmdSAMBuiltin()
+        {
+            TaggedLines = new List<int>();
+
+            DataList = new BindingList<RecmdSAMBuiltinData>();
+
+            ExpectedHeaders = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+            {
+                "GroupName,BatchKeyPath,Comment,BatchValueName,Users"
+            };
+        }
+
+        public string Author => "Eric Zimmerman";
+        public string FileDescription => "CSV generated from RECmd for the SAMBuiltin registry plugin";
+        public HashSet<string> ExpectedHeaders { get; }
+
+        public IBindingList DataList { get; }
+        public List<int> TaggedLines { get; set; }
+
+        public string InternalGuid => "a857522e-b57f-4f01-85d0-223104fae5cf";
+
+        public void ProcessFile(string filename)
+        {
+            CsvLoader.Load<RecmdSAMBuiltinData>(filename, DataList, TaggedLines);
+        }
+    }
+
+    public class RecmdSCSIData : IFileSpecData
+    {
+        public DateTime? Timestamp { get; set; }
+        public string BatchKeyPath { get; set; }
+        public string Manufacturer { get; set; }
+        public string BatchValueName { get; set; }
+        public string Title { get; set; }
+        public string SerialNumber { get; set; }
+        public string DeviceName { get; set; }
+        public string DiskId { get; set; }
+        public DateTime? InitialTimestamp { get; set; }
+        public DateTime? Installed { get; set; }
+        public DateTime? FirstInstalled { get; set; }
+        public DateTime? LastConnected { get; set; }
+        public DateTime? LastRemoved { get; set; }
+
+        public int Line { get; set; }
+        public bool Tag { get; set; }
+
+        public override string ToString()
+        {
+            return $"{Timestamp} {BatchKeyPath} {Manufacturer} {BatchValueName} {Title} {SerialNumber} {DeviceName} {DiskId} {InitialTimestamp} {Installed} {FirstInstalled} {LastConnected} {LastRemoved}";
+        }
+    }
+
+    /// <summary>
+    ///     RECmd's CSV for SCSI (RegistryPlugin.SCSI.dll)
+    /// </summary>
+    public class RecmdSCSI : IFileSpec
+    {
+        public RecmdSCSI()
+        {
+            TaggedLines = new List<int>();
+
+            DataList = new BindingList<RecmdSCSIData>();
+
+            ExpectedHeaders = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+            {
+                "Timestamp,BatchKeyPath,Manufacturer,BatchValueName,Title,SerialNumber,DeviceName,DiskId,InitialTimestamp,Installed,FirstInstalled,LastConnected,LastRemoved"
+            };
+        }
+
+        public string Author => "Eric Zimmerman";
+        public string FileDescription => "CSV generated from RECmd for the SCSI registry plugin";
+        public HashSet<string> ExpectedHeaders { get; }
+
+        public IBindingList DataList { get; }
+        public List<int> TaggedLines { get; set; }
+
+        public string InternalGuid => "346f05e5-3c05-4d41-a885-d6da6a21af4c";
+
+        public void ProcessFile(string filename)
+        {
+            CsvLoader.Load<RecmdSCSIData>(filename, DataList, TaggedLines, map =>
+            {
+                map.Map(t => t.Timestamp).TypeConverter<LenientDateTimeConverter>();
+                map.Map(t => t.InitialTimestamp).TypeConverter<LenientDateTimeConverter>();
+                map.Map(t => t.Installed).TypeConverter<LenientDateTimeConverter>();
+                map.Map(t => t.FirstInstalled).TypeConverter<LenientDateTimeConverter>();
+                map.Map(t => t.LastConnected).TypeConverter<LenientDateTimeConverter>();
+                map.Map(t => t.LastRemoved).TypeConverter<LenientDateTimeConverter>();
+            });
+        }
+    }
+
+    public class RecmdSWDData : IFileSpecData
+    {
+        public string Type { get; set; }
+        public string BatchKeyPath { get; set; }
+        public string KeyName { get; set; }
+        public string BatchValueName { get; set; }
+        public string Service { get; set; }
+        public string DeviceDesc { get; set; }
+        public string FriendlyName { get; set; }
+        public DateTime? Installed { get; set; }
+        public DateTime? FirstInstalled { get; set; }
+        public DateTime? LastConnected { get; set; }
+        public DateTime? LastRemoved { get; set; }
+
+        public int Line { get; set; }
+        public bool Tag { get; set; }
+
+        public override string ToString()
+        {
+            return $"{Type} {BatchKeyPath} {KeyName} {BatchValueName} {Service} {DeviceDesc} {FriendlyName} {Installed} {FirstInstalled} {LastConnected} {LastRemoved}";
+        }
+    }
+
+    /// <summary>
+    ///     RECmd's CSV for SWD (RegistryPlugin.SWD.dll)
+    /// </summary>
+    public class RecmdSWD : IFileSpec
+    {
+        public RecmdSWD()
+        {
+            TaggedLines = new List<int>();
+
+            DataList = new BindingList<RecmdSWDData>();
+
+            ExpectedHeaders = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+            {
+                "Type,BatchKeyPath,KeyName,BatchValueName,Service,DeviceDesc,FriendlyName,Installed,FirstInstalled,LastConnected,LastRemoved"
+            };
+        }
+
+        public string Author => "Eric Zimmerman";
+        public string FileDescription => "CSV generated from RECmd for the SWD registry plugin";
+        public HashSet<string> ExpectedHeaders { get; }
+
+        public IBindingList DataList { get; }
+        public List<int> TaggedLines { get; set; }
+
+        public string InternalGuid => "62bf6bb0-f8d0-4501-92e2-435f727be135";
+
+        public void ProcessFile(string filename)
+        {
+            CsvLoader.Load<RecmdSWDData>(filename, DataList, TaggedLines, map =>
+            {
+                map.Map(t => t.Installed).TypeConverter<LenientDateTimeConverter>();
+                map.Map(t => t.FirstInstalled).TypeConverter<LenientDateTimeConverter>();
+                map.Map(t => t.LastConnected).TypeConverter<LenientDateTimeConverter>();
+                map.Map(t => t.LastRemoved).TypeConverter<LenientDateTimeConverter>();
+            });
+        }
+    }
+
+    public class RecmdServicesData : IFileSpecData
+    {
+        public string Name { get; set; }
+        public string BatchKeyPath { get; set; }
+        public string Description { get; set; }
+        public string BatchValueName { get; set; }
+        public string DisplayName { get; set; }
+        public string StartMode { get; set; }
+        public string ServiceType { get; set; }
+        public DateTime? NameKeyLastWrite { get; set; }
+        public DateTime? ParametersKeyLastWrite { get; set; }
+        public string Group { get; set; }
+        public string ImagePath { get; set; }
+        public string ServiceDLL { get; set; }
+        public string RequiredPrivileges { get; set; }
+
+        public int Line { get; set; }
+        public bool Tag { get; set; }
+
+        public override string ToString()
+        {
+            return $"{Name} {BatchKeyPath} {Description} {BatchValueName} {DisplayName} {StartMode} {ServiceType} {NameKeyLastWrite} {ParametersKeyLastWrite} {Group} {ImagePath} {ServiceDLL} {RequiredPrivileges}";
+        }
+    }
+
+    /// <summary>
+    ///     RECmd's CSV for Services (RegistryPlugin.Services.dll)
+    /// </summary>
+    public class RecmdServices : IFileSpec
+    {
+        public RecmdServices()
+        {
+            TaggedLines = new List<int>();
+
+            DataList = new BindingList<RecmdServicesData>();
+
+            ExpectedHeaders = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+            {
+                "Name,BatchKeyPath,Description,BatchValueName,DisplayName,StartMode,ServiceType,NameKeyLastWrite,ParametersKeyLastWrite,Group,ImagePath,ServiceDLL,RequiredPrivileges"
+            };
+        }
+
+        public string Author => "Eric Zimmerman";
+        public string FileDescription => "CSV generated from RECmd for the Services registry plugin";
+        public HashSet<string> ExpectedHeaders { get; }
+
+        public IBindingList DataList { get; }
+        public List<int> TaggedLines { get; set; }
+
+        public string InternalGuid => "0d2578d5-8d1c-41ab-995b-a71ca61a75a4";
+
+        public void ProcessFile(string filename)
+        {
+            CsvLoader.Load<RecmdServicesData>(filename, DataList, TaggedLines, map =>
+            {
+                map.Map(t => t.NameKeyLastWrite).TypeConverter<LenientDateTimeConverter>();
+                map.Map(t => t.ParametersKeyLastWrite).TypeConverter<LenientDateTimeConverter>();
+            });
+        }
+    }
+
+    public class RecmdSevenZipData : IFileSpecData
+    {
+        public string ArchiveName { get; set; }
+        public string BatchKeyPath { get; set; }
+        public string BatchValueName { get; set; }
+
+        public int Line { get; set; }
+        public bool Tag { get; set; }
+
+        public override string ToString()
+        {
+            return $"{ArchiveName} {BatchKeyPath} {BatchValueName}";
+        }
+    }
+
+    /// <summary>
+    ///     RECmd's CSV for 7-Zip archive history (RegistryPlugin.7-ZipHistory.dll)
+    /// </summary>
+    public class RecmdSevenZip : IFileSpec
+    {
+        public RecmdSevenZip()
+        {
+            TaggedLines = new List<int>();
+
+            DataList = new BindingList<RecmdSevenZipData>();
+
+            ExpectedHeaders = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+            {
+                "ArchiveName,BatchKeyPath,BatchValueName"
+            };
+        }
+
+        public string Author => "Eric Zimmerman";
+        public string FileDescription => "CSV generated from RECmd for the SevenZip registry plugin";
+        public HashSet<string> ExpectedHeaders { get; }
+
+        public IBindingList DataList { get; }
+        public List<int> TaggedLines { get; set; }
+
+        public string InternalGuid => "cd4603d6-3fe1-48f1-87ff-2139f1c99e13";
+
+        public void ProcessFile(string filename)
+        {
+            CsvLoader.Load<RecmdSevenZipData>(filename, DataList, TaggedLines);
+        }
+    }
+
+    public class RecmdSevenZipCopyHistoryData : IFileSpecData
+    {
+        public string CopyPath { get; set; }
+        public string BatchKeyPath { get; set; }
+        public string BatchValueName { get; set; }
+
+        public int Line { get; set; }
+        public bool Tag { get; set; }
+
+        public override string ToString()
+        {
+            return $"{CopyPath} {BatchKeyPath} {BatchValueName}";
+        }
+    }
+
+    /// <summary>
+    ///     RECmd's CSV for 7-Zip copy history (RegistryPlugin.7-ZipCopyHistory.dll)
+    /// </summary>
+    public class RecmdSevenZipCopyHistory : IFileSpec
+    {
+        public RecmdSevenZipCopyHistory()
+        {
+            TaggedLines = new List<int>();
+
+            DataList = new BindingList<RecmdSevenZipCopyHistoryData>();
+
+            ExpectedHeaders = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+            {
+                "CopyPath,BatchKeyPath,BatchValueName"
+            };
+        }
+
+        public string Author => "Eric Zimmerman";
+        public string FileDescription => "CSV generated from RECmd for the SevenZipCopyHistory registry plugin";
+        public HashSet<string> ExpectedHeaders { get; }
+
+        public IBindingList DataList { get; }
+        public List<int> TaggedLines { get; set; }
+
+        public string InternalGuid => "791d183c-b523-47af-b65f-66601c6726eb";
+
+        public void ProcessFile(string filename)
+        {
+            CsvLoader.Load<RecmdSevenZipCopyHistoryData>(filename, DataList, TaggedLines);
+        }
+    }
+
+    public class RecmdSevenZipFolderHistoryData : IFileSpecData
+    {
+        public string FolderPath { get; set; }
+        public string BatchKeyPath { get; set; }
+        public string BatchValueName { get; set; }
+
+        public int Line { get; set; }
+        public bool Tag { get; set; }
+
+        public override string ToString()
+        {
+            return $"{FolderPath} {BatchKeyPath} {BatchValueName}";
+        }
+    }
+
+    /// <summary>
+    ///     RECmd's CSV for 7-Zip folder history (RegistryPlugin.7-ZipFolderHistory.dll)
+    /// </summary>
+    public class RecmdSevenZipFolderHistory : IFileSpec
+    {
+        public RecmdSevenZipFolderHistory()
+        {
+            TaggedLines = new List<int>();
+
+            DataList = new BindingList<RecmdSevenZipFolderHistoryData>();
+
+            ExpectedHeaders = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+            {
+                "FolderPath,BatchKeyPath,BatchValueName"
+            };
+        }
+
+        public string Author => "Eric Zimmerman";
+        public string FileDescription => "CSV generated from RECmd for the SevenZipFolderHistory registry plugin";
+        public HashSet<string> ExpectedHeaders { get; }
+
+        public IBindingList DataList { get; }
+        public List<int> TaggedLines { get; set; }
+
+        public string InternalGuid => "ba9ee8db-789f-433d-8015-ddcaee9dcf67";
+
+        public void ProcessFile(string filename)
+        {
+            CsvLoader.Load<RecmdSevenZipFolderHistoryData>(filename, DataList, TaggedLines);
+        }
+    }
+
+    public class RecmdSevenZipPathHistoryData : IFileSpecData
+    {
+        public string ExtractionPath { get; set; }
+        public string BatchKeyPath { get; set; }
+        public string BatchValueName { get; set; }
+
+        public int Line { get; set; }
+        public bool Tag { get; set; }
+
+        public override string ToString()
+        {
+            return $"{ExtractionPath} {BatchKeyPath} {BatchValueName}";
+        }
+    }
+
+    /// <summary>
+    ///     RECmd's CSV for 7-Zip extraction path history (RegistryPlugin.7-ZipPathHistory.dll)
+    /// </summary>
+    public class RecmdSevenZipPathHistory : IFileSpec
+    {
+        public RecmdSevenZipPathHistory()
+        {
+            TaggedLines = new List<int>();
+
+            DataList = new BindingList<RecmdSevenZipPathHistoryData>();
+
+            ExpectedHeaders = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+            {
+                "ExtractionPath,BatchKeyPath,BatchValueName"
+            };
+        }
+
+        public string Author => "Eric Zimmerman";
+        public string FileDescription => "CSV generated from RECmd for the SevenZipPathHistory registry plugin";
+        public HashSet<string> ExpectedHeaders { get; }
+
+        public IBindingList DataList { get; }
+        public List<int> TaggedLines { get; set; }
+
+        public string InternalGuid => "d20f3a3b-272a-4e9a-a931-0ade3801cbec";
+
+        public void ProcessFile(string filename)
+        {
+            CsvLoader.Load<RecmdSevenZipPathHistoryData>(filename, DataList, TaggedLines);
+        }
+    }
+
+    public class RecmdSyscacheObjectTableData : IFileSpecData
+    {
+        public string KeyPath { get; set; }
+        public string BatchKeyPath { get; set; }
+        public long? ObjectId { get; set; }
+        public string BatchValueName { get; set; }
+        public long? ObjectLru { get; set; }
+        public long? Usn { get; set; }
+        public long? UsnJournalId { get; set; }
+        public long? MftEntryNumber { get; set; }
+        public long? MftSequenceNumber { get; set; }
+        public string Sha1 { get; set; }
+        public string AeProgramId { get; set; }
+        public DateTime? LastWriteTime { get; set; }
+
+        public int Line { get; set; }
+        public bool Tag { get; set; }
+
+        public override string ToString()
+        {
+            return $"{KeyPath} {BatchKeyPath} {ObjectId} {BatchValueName} {ObjectLru} {Usn} {UsnJournalId} {MftEntryNumber} {MftSequenceNumber} {Sha1} {AeProgramId} {LastWriteTime}";
+        }
+    }
+
+    /// <summary>
+    ///     RECmd's CSV for Syscache.hve ObjectTable (RegistryPlugin.SyscacheObjectTable.dll)
+    /// </summary>
+    public class RecmdSyscacheObjectTable : IFileSpec
+    {
+        public RecmdSyscacheObjectTable()
+        {
+            TaggedLines = new List<int>();
+
+            DataList = new BindingList<RecmdSyscacheObjectTableData>();
+
+            ExpectedHeaders = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+            {
+                "KeyPath,BatchKeyPath,ObjectId,BatchValueName,ObjectLru,Usn,UsnJournalId,MftEntryNumber,MftSequenceNumber,Sha1,AeProgramId,LastWriteTime"
+            };
+        }
+
+        public string Author => "Eric Zimmerman";
+        public string FileDescription => "CSV generated from RECmd for the SyscacheObjectTable registry plugin";
+        public HashSet<string> ExpectedHeaders { get; }
+
+        public IBindingList DataList { get; }
+        public List<int> TaggedLines { get; set; }
+
+        public string InternalGuid => "f5e0c6e1-ec30-4cbf-b160-3331bc69f70d";
+
+        public void ProcessFile(string filename)
+        {
+            CsvLoader.Load<RecmdSyscacheObjectTableData>(filename, DataList, TaggedLines, map =>
+            {
+                map.Map(t => t.LastWriteTime).TypeConverter<LenientDateTimeConverter>();
+            });
+        }
+    }
+
+    public class RecmdTaskCacheData : IFileSpecData
+    {
+        public long? Version { get; set; }
+        public string BatchKeyPath { get; set; }
+        public string KeyName { get; set; }
+        public string BatchValueName { get; set; }
+        public string Path { get; set; }
+        public DateTime? CreatedOn { get; set; }
+        public DateTime? LastStart { get; set; }
+        public DateTime? LastStop { get; set; }
+        public long? TaskState { get; set; }
+        public long? LastActionResult { get; set; }
+        public string Source { get; set; }
+        public string Description { get; set; }
+        public string Command { get; set; }
+        public string Arguments { get; set; }
+        public string SecurityDescriptor { get; set; }
+        public string Author { get; set; }
+
+        public int Line { get; set; }
+        public bool Tag { get; set; }
+
+        public override string ToString()
+        {
+            return $"{Version} {BatchKeyPath} {KeyName} {BatchValueName} {Path} {CreatedOn} {LastStart} {LastStop} {TaskState} {LastActionResult} {Source} {Description} {Command} {Arguments} {SecurityDescriptor} {Author}";
+        }
+    }
+
+    /// <summary>
+    ///     RECmd's CSV for TaskCache (RegistryPlugin.TaskCache.dll)
+    /// </summary>
+    public class RecmdTaskCache : IFileSpec
+    {
+        public RecmdTaskCache()
+        {
+            TaggedLines = new List<int>();
+
+            DataList = new BindingList<RecmdTaskCacheData>();
+
+            ExpectedHeaders = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+            {
+                "Version,BatchKeyPath,KeyName,BatchValueName,Path,CreatedOn,LastStart,LastStop,TaskState,LastActionResult,Source,Description,Command,Arguments,SecurityDescriptor,Author"
+            };
+        }
+
+        public string Author => "Eric Zimmerman";
+        public string FileDescription => "CSV generated from RECmd for the TaskCache registry plugin";
+        public HashSet<string> ExpectedHeaders { get; }
+
+        public IBindingList DataList { get; }
+        public List<int> TaggedLines { get; set; }
+
+        public string InternalGuid => "c9ee7add-7c71-4f4d-be14-0005e300596c";
+
+        public void ProcessFile(string filename)
+        {
+            CsvLoader.Load<RecmdTaskCacheData>(filename, DataList, TaggedLines, map =>
+            {
+                map.Map(t => t.CreatedOn).TypeConverter<LenientDateTimeConverter>();
+                map.Map(t => t.LastStart).TypeConverter<LenientDateTimeConverter>();
+                map.Map(t => t.LastStop).TypeConverter<LenientDateTimeConverter>();
+            });
+        }
+    }
+
+    public class RecmdTaskFlowShellActivitiesData : IFileSpecData
+    {
+        public long? Position { get; set; }
+        public string BatchKeyPath { get; set; }
+        public string FullPath { get; set; }
+        public string BatchValueName { get; set; }
+        public string ExeName { get; set; }
+        public string WindowTitle { get; set; }
+        public string Other { get; set; }
+
+        public int Line { get; set; }
+        public bool Tag { get; set; }
+
+        public override string ToString()
+        {
+            return $"{Position} {BatchKeyPath} {FullPath} {BatchValueName} {ExeName} {WindowTitle} {Other}";
+        }
+    }
+
+    /// <summary>
+    ///     RECmd's CSV for Taskflow Shell Activities (RegistryPlugin.TaskFlowShellActivities.dll)
+    /// </summary>
+    public class RecmdTaskFlowShellActivities : IFileSpec
+    {
+        public RecmdTaskFlowShellActivities()
+        {
+            TaggedLines = new List<int>();
+
+            DataList = new BindingList<RecmdTaskFlowShellActivitiesData>();
+
+            ExpectedHeaders = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+            {
+                "Position,BatchKeyPath,FullPath,BatchValueName,ExeName,WindowTitle,Other"
+            };
+        }
+
+        public string Author => "Eric Zimmerman";
+        public string FileDescription => "CSV generated from RECmd for the TaskFlowShellActivities registry plugin";
+        public HashSet<string> ExpectedHeaders { get; }
+
+        public IBindingList DataList { get; }
+        public List<int> TaggedLines { get; set; }
+
+        public string InternalGuid => "f22f39a2-c99f-4352-acea-346e005533a3";
+
+        public void ProcessFile(string filename)
+        {
+            CsvLoader.Load<RecmdTaskFlowShellActivitiesData>(filename, DataList, TaggedLines);
+        }
+    }
+
+    public class RecmdTaskbandData : IFileSpecData
+    {
+        public string LnkName { get; set; }
+        public string BatchKeyPath { get; set; }
+        public string Executable { get; set; }
+        public string BatchValueName { get; set; }
+        public string PinType { get; set; }
+
+        public int Line { get; set; }
+        public bool Tag { get; set; }
+
+        public override string ToString()
+        {
+            return $"{LnkName} {BatchKeyPath} {Executable} {BatchValueName} {PinType}";
+        }
+    }
+
+    /// <summary>
+    ///     RECmd's CSV for Taskband (RegistryPlugin.Taskband.dll)
+    /// </summary>
+    public class RecmdTaskband : IFileSpec
+    {
+        public RecmdTaskband()
+        {
+            TaggedLines = new List<int>();
+
+            DataList = new BindingList<RecmdTaskbandData>();
+
+            ExpectedHeaders = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+            {
+                "LnkName,BatchKeyPath,Executable,BatchValueName,PinType"
+            };
+        }
+
+        public string Author => "Eric Zimmerman";
+        public string FileDescription => "CSV generated from RECmd for the Taskband registry plugin";
+        public HashSet<string> ExpectedHeaders { get; }
+
+        public IBindingList DataList { get; }
+        public List<int> TaggedLines { get; set; }
+
+        public string InternalGuid => "66347204-960c-4c57-b964-bd9ce64b67a6";
+
+        public void ProcessFile(string filename)
+        {
+            CsvLoader.Load<RecmdTaskbandData>(filename, DataList, TaggedLines);
+        }
+    }
+
+    public class RecmdTerminalServerClientData : IFileSpecData
+    {
+        public string HostName { get; set; }
+        public string BatchKeyPath { get; set; }
+        public string Username { get; set; }
+        public string BatchValueName { get; set; }
+        public long? MRUPosition { get; set; }
+        public DateTime? LastModified { get; set; }
+
+        public int Line { get; set; }
+        public bool Tag { get; set; }
+
+        public override string ToString()
+        {
+            return $"{HostName} {BatchKeyPath} {Username} {BatchValueName} {MRUPosition} {LastModified}";
+        }
+    }
+
+    /// <summary>
+    ///     RECmd's CSV for TerminalServerClient (RegistryPlugin.TerminalServerClient.dll)
+    /// </summary>
+    public class RecmdTerminalServerClient : IFileSpec
+    {
+        public RecmdTerminalServerClient()
+        {
+            TaggedLines = new List<int>();
+
+            DataList = new BindingList<RecmdTerminalServerClientData>();
+
+            ExpectedHeaders = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+            {
+                "HostName,BatchKeyPath,Username,BatchValueName,MRUPosition,LastModified"
+            };
+        }
+
+        public string Author => "Eric Zimmerman";
+        public string FileDescription => "CSV generated from RECmd for the TerminalServerClient registry plugin";
+        public HashSet<string> ExpectedHeaders { get; }
+
+        public IBindingList DataList { get; }
+        public List<int> TaggedLines { get; set; }
+
+        public string InternalGuid => "c7c4cfec-71b5-44aa-947a-5c2eb87a7384";
+
+        public void ProcessFile(string filename)
+        {
+            CsvLoader.Load<RecmdTerminalServerClientData>(filename, DataList, TaggedLines, map =>
+            {
+                map.Map(t => t.LastModified).TypeConverter<LenientDateTimeConverter>();
+            });
+        }
+    }
+
+    public class RecmdTimeZoneInfoData : IFileSpecData
+    {
+        public string ValueName { get; set; }
+        public string BatchKeyPath { get; set; }
+        public string ValueData { get; set; }
+        public string BatchValueName { get; set; }
+        public string ValueDataRaw { get; set; }
+
+        public int Line { get; set; }
+        public bool Tag { get; set; }
+
+        public override string ToString()
+        {
+            return $"{ValueName} {BatchKeyPath} {ValueData} {BatchValueName} {ValueDataRaw}";
+        }
+    }
+
+    /// <summary>
+    ///     RECmd's CSV for TimeZoneInformation (RegistryPlugin.TimeZoneInformation.dll)
+    /// </summary>
+    public class RecmdTimeZoneInfo : IFileSpec
+    {
+        public RecmdTimeZoneInfo()
+        {
+            TaggedLines = new List<int>();
+
+            DataList = new BindingList<RecmdTimeZoneInfoData>();
+
+            ExpectedHeaders = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+            {
+                "ValueName,BatchKeyPath,ValueData,BatchValueName,ValueDataRaw"
+            };
+        }
+
+        public string Author => "Eric Zimmerman";
+        public string FileDescription => "CSV generated from RECmd for the TimeZoneInfo registry plugin";
+        public HashSet<string> ExpectedHeaders { get; }
+
+        public IBindingList DataList { get; }
+        public List<int> TaggedLines { get; set; }
+
+        public string InternalGuid => "29ff1f1b-938d-44f8-b626-9a87fe290fc2";
+
+        public void ProcessFile(string filename)
+        {
+            CsvLoader.Load<RecmdTimeZoneInfoData>(filename, DataList, TaggedLines);
+        }
+    }
+
+    public class RecmdTrustedDocumentsData : IFileSpecData
+    {
+        public string EventType { get; set; }
+        public string BatchKeyPath { get; set; }
+        public DateTime? Timestamp { get; set; }
+        public string BatchValueName { get; set; }
+        public string FileName { get; set; }
+        public string Username { get; set; }
+
+        public int Line { get; set; }
+        public bool Tag { get; set; }
+
+        public override string ToString()
+        {
+            return $"{EventType} {BatchKeyPath} {Timestamp} {BatchValueName} {FileName} {Username}";
+        }
+    }
+
+    /// <summary>
+    ///     RECmd's CSV for TrustedDocuments (RegistryPlugin.TrustedDocuments.dll)
+    /// </summary>
+    public class RecmdTrustedDocuments : IFileSpec
+    {
+        public RecmdTrustedDocuments()
+        {
+            TaggedLines = new List<int>();
+
+            DataList = new BindingList<RecmdTrustedDocumentsData>();
+
+            ExpectedHeaders = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+            {
+                "EventType,BatchKeyPath,Timestamp,BatchValueName,FileName,Username"
+            };
+        }
+
+        public string Author => "Eric Zimmerman";
+        public string FileDescription => "CSV generated from RECmd for the TrustedDocuments registry plugin";
+        public HashSet<string> ExpectedHeaders { get; }
+
+        public IBindingList DataList { get; }
+        public List<int> TaggedLines { get; set; }
+
+        public string InternalGuid => "8803c9e1-4bc3-480b-a432-28bf23968bbc";
+
+        public void ProcessFile(string filename)
+        {
+            CsvLoader.Load<RecmdTrustedDocumentsData>(filename, DataList, TaggedLines, map =>
+            {
+                map.Map(t => t.Timestamp).TypeConverter<LenientDateTimeConverter>();
+            });
+        }
+    }
+
+    public class RecmdTypedURLsData : IFileSpecData
+    {
+        public DateTime? Timestamp { get; set; }
+        public string BatchKeyPath { get; set; }
+        public string Url { get; set; }
+        public string BatchValueName { get; set; }
+        public string Slack { get; set; }
+
+        public int Line { get; set; }
+        public bool Tag { get; set; }
+
+        public override string ToString()
+        {
+            return $"{Timestamp} {BatchKeyPath} {Url} {BatchValueName} {Slack}";
+        }
+    }
+
+    /// <summary>
+    ///     RECmd's CSV for TypedURLs (RegistryPlugin.TypedURLs.dll)
+    /// </summary>
+    public class RecmdTypedURLs : IFileSpec
+    {
+        public RecmdTypedURLs()
+        {
+            TaggedLines = new List<int>();
+
+            DataList = new BindingList<RecmdTypedURLsData>();
+
+            ExpectedHeaders = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+            {
+                "Timestamp,BatchKeyPath,Url,BatchValueName,Slack"
+            };
+        }
+
+        public string Author => "Eric Zimmerman";
+        public string FileDescription => "CSV generated from RECmd for the TypedURLs registry plugin";
+        public HashSet<string> ExpectedHeaders { get; }
+
+        public IBindingList DataList { get; }
+        public List<int> TaggedLines { get; set; }
+
+        public string InternalGuid => "d553da21-e182-4817-b102-87021cc8ac25";
+
+        public void ProcessFile(string filename)
+        {
+            CsvLoader.Load<RecmdTypedURLsData>(filename, DataList, TaggedLines, map =>
+            {
+                map.Map(t => t.Timestamp).TypeConverter<LenientDateTimeConverter>();
+            });
+        }
+    }
+
+    public class RecmdUSBData : IFileSpecData
+    {
+        public string KeyName { get; set; }
+        public string BatchKeyPath { get; set; }
+        public string SerialNumber { get; set; }
+        public string BatchValueName { get; set; }
+        public string ParentidPrefix { get; set; }
+        public string Service { get; set; }
+        public string DeviceDesc { get; set; }
+        public string FriendlyName { get; set; }
+        public string DeviceName { get; set; }
+        public string LocationInformation { get; set; }
+        public DateTime? Installed { get; set; }
+        public DateTime? FirstInstalled { get; set; }
+        public DateTime? LastConnected { get; set; }
+        public DateTime? LastRemoved { get; set; }
+
+        public int Line { get; set; }
+        public bool Tag { get; set; }
+
+        public override string ToString()
+        {
+            return $"{KeyName} {BatchKeyPath} {SerialNumber} {BatchValueName} {ParentidPrefix} {Service} {DeviceDesc} {FriendlyName} {DeviceName} {LocationInformation} {Installed} {FirstInstalled} {LastConnected} {LastRemoved}";
+        }
+    }
+
+    /// <summary>
+    ///     RECmd's CSV for USB (RegistryPlugin.USB.dll)
+    /// </summary>
+    public class RecmdUSB : IFileSpec
+    {
+        public RecmdUSB()
+        {
+            TaggedLines = new List<int>();
+
+            DataList = new BindingList<RecmdUSBData>();
+
+            ExpectedHeaders = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+            {
+                "KeyName,BatchKeyPath,SerialNumber,BatchValueName,ParentidPrefix,Service,DeviceDesc,FriendlyName,DeviceName,LocationInformation,Installed,FirstInstalled,LastConnected,LastRemoved"
+            };
+        }
+
+        public string Author => "Eric Zimmerman";
+        public string FileDescription => "CSV generated from RECmd for the USB registry plugin";
+        public HashSet<string> ExpectedHeaders { get; }
+
+        public IBindingList DataList { get; }
+        public List<int> TaggedLines { get; set; }
+
+        public string InternalGuid => "e0d8b778-c9ac-4bd9-9f08-0afb358aa660";
+
+        public void ProcessFile(string filename)
+        {
+            CsvLoader.Load<RecmdUSBData>(filename, DataList, TaggedLines, map =>
+            {
+                map.Map(t => t.Installed).TypeConverter<LenientDateTimeConverter>();
+                map.Map(t => t.FirstInstalled).TypeConverter<LenientDateTimeConverter>();
+                map.Map(t => t.LastConnected).TypeConverter<LenientDateTimeConverter>();
+                map.Map(t => t.LastRemoved).TypeConverter<LenientDateTimeConverter>();
+            });
+        }
+    }
+
+    public class RecmdUSBSTORData : IFileSpecData
+    {
+        public DateTime? Timestamp { get; set; }
+        public string BatchKeyPath { get; set; }
+        public string Manufacturer { get; set; }
+        public string BatchValueName { get; set; }
+        public string Title { get; set; }
+        public string Version { get; set; }
+        public string SerialNumber { get; set; }
+        public string DeviceName { get; set; }
+        public string DiskId { get; set; }
+        public DateTime? Installed { get; set; }
+        public DateTime? FirstInstalled { get; set; }
+        public DateTime? LastConnected { get; set; }
+        public DateTime? LastRemoved { get; set; }
+
+        public int Line { get; set; }
+        public bool Tag { get; set; }
+
+        public override string ToString()
+        {
+            return $"{Timestamp} {BatchKeyPath} {Manufacturer} {BatchValueName} {Title} {Version} {SerialNumber} {DeviceName} {DiskId} {Installed} {FirstInstalled} {LastConnected} {LastRemoved}";
+        }
+    }
+
+    /// <summary>
+    ///     RECmd's CSV for USBSTOR (RegistryPlugin.USBSTOR.dll)
+    /// </summary>
+    public class RecmdUSBSTOR : IFileSpec
+    {
+        public RecmdUSBSTOR()
+        {
+            TaggedLines = new List<int>();
+
+            DataList = new BindingList<RecmdUSBSTORData>();
+
+            ExpectedHeaders = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+            {
+                "Timestamp,BatchKeyPath,Manufacturer,BatchValueName,Title,Version,SerialNumber,DeviceName,DiskId,Installed,FirstInstalled,LastConnected,LastRemoved"
+            };
+        }
+
+        public string Author => "Eric Zimmerman";
+        public string FileDescription => "CSV generated from RECmd for the USBSTOR registry plugin";
+        public HashSet<string> ExpectedHeaders { get; }
+
+        public IBindingList DataList { get; }
+        public List<int> TaggedLines { get; set; }
+
+        public string InternalGuid => "32f83eb0-a49b-476b-8b9a-6cb1afb941a5";
+
+        public void ProcessFile(string filename)
+        {
+            CsvLoader.Load<RecmdUSBSTORData>(filename, DataList, TaggedLines, map =>
+            {
+                map.Map(t => t.Timestamp).TypeConverter<LenientDateTimeConverter>();
+                map.Map(t => t.Installed).TypeConverter<LenientDateTimeConverter>();
+                map.Map(t => t.FirstInstalled).TypeConverter<LenientDateTimeConverter>();
+                map.Map(t => t.LastConnected).TypeConverter<LenientDateTimeConverter>();
+                map.Map(t => t.LastRemoved).TypeConverter<LenientDateTimeConverter>();
+            });
+        }
+    }
+
+    public class RecmdUnInstallData : IFileSpecData
+    {
+        public DateTime? Timestamp { get; set; }
+        public string BatchKeyPath { get; set; }
+        public string KeyName { get; set; }
+        public string BatchValueName { get; set; }
+        public string DisplayName { get; set; }
+        public string DisplayVersion { get; set; }
+        public string Publisher { get; set; }
+        public string InstallDate { get; set; }
+        public string InstallSource { get; set; }
+        public string InstallLocation { get; set; }
+        public string UninstallString { get; set; }
+
+        public int Line { get; set; }
+        public bool Tag { get; set; }
+
+        public override string ToString()
+        {
+            return $"{Timestamp} {BatchKeyPath} {KeyName} {BatchValueName} {DisplayName} {DisplayVersion} {Publisher} {InstallDate} {InstallSource} {InstallLocation} {UninstallString}";
+        }
+    }
+
+    /// <summary>
+    ///     RECmd's CSV for Uninstall (RegistryPlugin.Uninstall.dll)
+    /// </summary>
+    public class RecmdUnInstall : IFileSpec
+    {
+        public RecmdUnInstall()
+        {
+            TaggedLines = new List<int>();
+
+            DataList = new BindingList<RecmdUnInstallData>();
+
+            ExpectedHeaders = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+            {
+                "Timestamp,BatchKeyPath,KeyName,BatchValueName,DisplayName,DisplayVersion,Publisher,InstallDate,InstallSource,InstallLocation,UninstallString"
+            };
+        }
+
+        public string Author => "Eric Zimmerman";
+        public string FileDescription => "CSV generated from RECmd for the UnInstall registry plugin";
+        public HashSet<string> ExpectedHeaders { get; }
+
+        public IBindingList DataList { get; }
+        public List<int> TaggedLines { get; set; }
+
+        public string InternalGuid => "23c98e51-2431-429b-ae92-377435ddc912";
+
+        public void ProcessFile(string filename)
+        {
+            CsvLoader.Load<RecmdUnInstallData>(filename, DataList, TaggedLines, map =>
+            {
+                map.Map(t => t.Timestamp).TypeConverter<LenientDateTimeConverter>();
+            });
+        }
+    }
+
+    public class RecmdUserAccountsData : IFileSpecData
+    {
+        public bool? ValidUserId { get; set; }
+        public string BatchKeyPath { get; set; }
+        public string BatchValueName { get; set; }
+        public long? UserId { get; set; }
+        public long? InvalidLoginCount { get; set; }
+        public long? TotalLoginCount { get; set; }
+        public DateTime? CreatedOn { get; set; }
+        public DateTime? LastLoginTime { get; set; }
+        public DateTime? LastPasswordChange { get; set; }
+        public DateTime? LastIncorrectPassword { get; set; }
+        public DateTime? ExpiresOn { get; set; }
+        public string UserName { get; set; }
+        public string FullName { get; set; }
+        public string PasswordHint { get; set; }
+        public string Groups { get; set; }
+        public string Comment { get; set; }
+        public string UserComment { get; set; }
+        public string HomeDirectory { get; set; }
+        public string InternetUserName { get; set; }
+        public string ResetData { get; set; }
+        public bool? AccountDisabled { get; set; }
+        public bool? HomeDirectoryRequired { get; set; }
+        public bool? PasswordNotRequired { get; set; }
+        public bool? TempDuplicateAccount { get; set; }
+        public bool? NormalUserAccount { get; set; }
+        public bool? MnsLogonAccount { get; set; }
+        public bool? InterdomainTrustAccount { get; set; }
+        public bool? WorkstationTrustAccount { get; set; }
+        public bool? ServerTrustAccount { get; set; }
+        public bool? PasswordDoesNotExpire { get; set; }
+        public bool? AutoLocked { get; set; }
+
+        public int Line { get; set; }
+        public bool Tag { get; set; }
+
+        public override string ToString()
+        {
+            return $"{ValidUserId} {BatchKeyPath} {BatchValueName} {UserId} {InvalidLoginCount} {TotalLoginCount} {CreatedOn} {LastLoginTime} {LastPasswordChange} {LastIncorrectPassword} {ExpiresOn} {UserName} {FullName} {PasswordHint} {Groups} {Comment} {UserComment} {HomeDirectory} {InternetUserName} {ResetData} {AccountDisabled} {HomeDirectoryRequired} {PasswordNotRequired} {TempDuplicateAccount} {NormalUserAccount} {MnsLogonAccount} {InterdomainTrustAccount} {WorkstationTrustAccount} {ServerTrustAccount} {PasswordDoesNotExpire} {AutoLocked}";
+        }
+    }
+
+    /// <summary>
+    ///     RECmd's CSV for User accounts (RegistryPlugin.SAM.dll)
+    /// </summary>
+    public class RecmdUserAccounts : IFileSpec
+    {
+        public RecmdUserAccounts()
+        {
+            TaggedLines = new List<int>();
+
+            DataList = new BindingList<RecmdUserAccountsData>();
+
+            ExpectedHeaders = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+            {
+                "ValidUserId,BatchKeyPath,BatchValueName,UserId,InvalidLoginCount,TotalLoginCount,CreatedOn,LastLoginTime,LastPasswordChange,LastIncorrectPassword,ExpiresOn,UserName,FullName,PasswordHint,Groups,Comment,UserComment,HomeDirectory,InternetUserName,ResetData,AccountDisabled,HomeDirectoryRequired,PasswordNotRequired,TempDuplicateAccount,NormalUserAccount,MnsLogonAccount,InterdomainTrustAccount,WorkstationTrustAccount,ServerTrustAccount,PasswordDoesNotExpire,AutoLocked"
+            };
+        }
+
+        public string Author => "Eric Zimmerman";
+        public string FileDescription => "CSV generated from RECmd for the UserAccounts registry plugin";
+        public HashSet<string> ExpectedHeaders { get; }
+
+        public IBindingList DataList { get; }
+        public List<int> TaggedLines { get; set; }
+
+        public string InternalGuid => "d127b1cd-2870-44ce-ac95-df3d4a30dea6";
+
+        public void ProcessFile(string filename)
+        {
+            CsvLoader.Load<RecmdUserAccountsData>(filename, DataList, TaggedLines, map =>
+            {
+                map.Map(t => t.CreatedOn).TypeConverter<LenientDateTimeConverter>();
+                map.Map(t => t.LastLoginTime).TypeConverter<LenientDateTimeConverter>();
+                map.Map(t => t.LastPasswordChange).TypeConverter<LenientDateTimeConverter>();
+                map.Map(t => t.LastIncorrectPassword).TypeConverter<LenientDateTimeConverter>();
+                map.Map(t => t.ExpiresOn).TypeConverter<LenientDateTimeConverter>();
+            });
+        }
+    }
+
+    public class RecmdUserAssistData : IFileSpecData
+    {
+        public string BatchKeyPath { get; set; }
+        public string BatchValueName { get; set; }
+        public string ProgramName { get; set; }
+        public long? RunCounter { get; set; }
+        public long? FocusCount { get; set; }
+        public string FocusTime { get; set; }
+        public DateTime? LastExecuted { get; set; }
+
+        public int Line { get; set; }
+        public bool Tag { get; set; }
+
+        public override string ToString()
+        {
+            return $"{BatchKeyPath} {BatchValueName} {ProgramName} {RunCounter} {FocusCount} {FocusTime} {LastExecuted}";
+        }
+    }
+
+    /// <summary>
+    ///     RECmd's CSV for UserAssist (RegistryPlugin.UserAssist.dll)
+    /// </summary>
+    public class RecmdUserAssist : IFileSpec
+    {
+        public RecmdUserAssist()
+        {
+            TaggedLines = new List<int>();
+
+            DataList = new BindingList<RecmdUserAssistData>();
+
+            ExpectedHeaders = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+            {
+                "BatchKeyPath,BatchValueName,ProgramName,RunCounter,FocusCount,FocusTime,LastExecuted"
+            };
+        }
+
+        public string Author => "Eric Zimmerman";
+        public string FileDescription => "CSV generated from RECmd for the UserAssist registry plugin";
+        public HashSet<string> ExpectedHeaders { get; }
+
+        public IBindingList DataList { get; }
+        public List<int> TaggedLines { get; set; }
+
+        public string InternalGuid => "214a8d2a-defc-4866-a575-a046a0ef1312";
+
+        public void ProcessFile(string filename)
+        {
+            CsvLoader.Load<RecmdUserAssistData>(filename, DataList, TaggedLines, map =>
+            {
+                map.Map(t => t.LastExecuted).TypeConverter<LenientDateTimeConverter>();
+            });
+        }
+    }
+
+    public class RecmdVolumeInfoCacheData : IFileSpecData
+    {
+        public DateTime? Timestamp { get; set; }
+        public string BatchKeyPath { get; set; }
+        public string DriveName { get; set; }
+        public string BatchValueName { get; set; }
+        public string VolumeLabel { get; set; }
+        public string DriveType { get; set; }
+
+        public int Line { get; set; }
+        public bool Tag { get; set; }
+
+        public override string ToString()
+        {
+            return $"{Timestamp} {BatchKeyPath} {DriveName} {BatchValueName} {VolumeLabel} {DriveType}";
+        }
+    }
+
+    /// <summary>
+    ///     RECmd's CSV for VolumeInfoCache (RegistryPlugin.VolumeInfoCache.dll)
+    /// </summary>
+    public class RecmdVolumeInfoCache : IFileSpec
+    {
+        public RecmdVolumeInfoCache()
+        {
+            TaggedLines = new List<int>();
+
+            DataList = new BindingList<RecmdVolumeInfoCacheData>();
+
+            ExpectedHeaders = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+            {
+                "Timestamp,BatchKeyPath,DriveName,BatchValueName,VolumeLabel,DriveType"
+            };
+        }
+
+        public string Author => "Eric Zimmerman";
+        public string FileDescription => "CSV generated from RECmd for the VolumeInfoCache registry plugin";
+        public HashSet<string> ExpectedHeaders { get; }
+
+        public IBindingList DataList { get; }
+        public List<int> TaggedLines { get; set; }
+
+        public string InternalGuid => "089239e2-7864-4d30-ac1f-36c8ca2944d7";
+
+        public void ProcessFile(string filename)
+        {
+            CsvLoader.Load<RecmdVolumeInfoCacheData>(filename, DataList, TaggedLines, map =>
+            {
+                map.Map(t => t.Timestamp).TypeConverter<LenientDateTimeConverter>();
+            });
+        }
+    }
+
+    public class RecmdWindowsAppData : IFileSpecData
+    {
+        public string KeyName { get; set; }
+        public string BatchKeyPath { get; set; }
+        public string DisplayName { get; set; }
+        public string BatchValueName { get; set; }
+        public DateTime? InstallTime { get; set; }
+        public string PackageRootFolder { get; set; }
+
+        public int Line { get; set; }
+        public bool Tag { get; set; }
+
+        public override string ToString()
+        {
+            return $"{KeyName} {BatchKeyPath} {DisplayName} {BatchValueName} {InstallTime} {PackageRootFolder}";
+        }
+    }
+
+    /// <summary>
+    ///     RECmd's CSV for Windows App (RegistryPlugin.WindowsApp.dll)
+    /// </summary>
+    public class RecmdWindowsApp : IFileSpec
+    {
+        public RecmdWindowsApp()
+        {
+            TaggedLines = new List<int>();
+
+            DataList = new BindingList<RecmdWindowsAppData>();
+
+            ExpectedHeaders = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+            {
+                "KeyName,BatchKeyPath,DisplayName,BatchValueName,InstallTime,PackageRootFolder"
+            };
+        }
+
+        public string Author => "Eric Zimmerman";
+        public string FileDescription => "CSV generated from RECmd for the WindowsApp registry plugin";
+        public HashSet<string> ExpectedHeaders { get; }
+
+        public IBindingList DataList { get; }
+        public List<int> TaggedLines { get; set; }
+
+        public string InternalGuid => "e6c25f21-5724-4877-97b3-e1a51e7919f2";
+
+        public void ProcessFile(string filename)
+        {
+            CsvLoader.Load<RecmdWindowsAppData>(filename, DataList, TaggedLines, map =>
+            {
+                map.Map(t => t.InstallTime).TypeConverter<LenientDateTimeConverter>();
+            });
+        }
+    }
+
+    public class RecmdWindowsPortableDevicesData : IFileSpecData
+    {
+        public DateTime? Timestamp { get; set; }
+        public string BatchKeyPath { get; set; }
+        public string Device { get; set; }
+        public string BatchValueName { get; set; }
+        public string SerialNumber { get; set; }
+        public string Guid { get; set; }
+        public string FriendlyName { get; set; }
+
+        public int Line { get; set; }
+        public bool Tag { get; set; }
+
+        public override string ToString()
+        {
+            return $"{Timestamp} {BatchKeyPath} {Device} {BatchValueName} {SerialNumber} {Guid} {FriendlyName}";
+        }
+    }
+
+    /// <summary>
+    ///     RECmd's CSV for Windows Portable Devices (RegistryPlugin.WindowsPortableDevices.dll)
+    /// </summary>
+    public class RecmdWindowsPortableDevices : IFileSpec
+    {
+        public RecmdWindowsPortableDevices()
+        {
+            TaggedLines = new List<int>();
+
+            DataList = new BindingList<RecmdWindowsPortableDevicesData>();
+
+            ExpectedHeaders = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+            {
+                "Timestamp,BatchKeyPath,Device,BatchValueName,SerialNumber,Guid,FriendlyName"
+            };
+        }
+
+        public string Author => "Eric Zimmerman";
+        public string FileDescription => "CSV generated from RECmd for the WindowsPortableDevices registry plugin";
+        public HashSet<string> ExpectedHeaders { get; }
+
+        public IBindingList DataList { get; }
+        public List<int> TaggedLines { get; set; }
+
+        public string InternalGuid => "0f53345a-bfc9-4e93-ae97-0d0e90218fa2";
+
+        public void ProcessFile(string filename)
+        {
+            CsvLoader.Load<RecmdWindowsPortableDevicesData>(filename, DataList, TaggedLines, map =>
+            {
+                map.Map(t => t.Timestamp).TypeConverter<LenientDateTimeConverter>();
+            });
+        }
+    }
+
+    public class RecmdWordWheelQueryData : IFileSpecData
+    {
+        public string SearchTerm { get; set; }
+        public string BatchKeyPath { get; set; }
+        public long? MruPosition { get; set; }
+        public string BatchValueName { get; set; }
+        public string KeyName { get; set; }
+        public DateTime? LastWriteTimestamp { get; set; }
+
+        public int Line { get; set; }
+        public bool Tag { get; set; }
+
+        public override string ToString()
+        {
+            return $"{SearchTerm} {BatchKeyPath} {MruPosition} {BatchValueName} {KeyName} {LastWriteTimestamp}";
+        }
+    }
+
+    /// <summary>
+    ///     RECmd's CSV for WordWheelQuery (RegistryPlugin.WordWheelQuery.dll)
+    /// </summary>
+    public class RecmdWordWheelQuery : IFileSpec
+    {
+        public RecmdWordWheelQuery()
+        {
+            TaggedLines = new List<int>();
+
+            DataList = new BindingList<RecmdWordWheelQueryData>();
+
+            ExpectedHeaders = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+            {
+                "SearchTerm,BatchKeyPath,MruPosition,BatchValueName,KeyName,LastWriteTimestamp"
+            };
+        }
+
+        public string Author => "Eric Zimmerman";
+        public string FileDescription => "CSV generated from RECmd for the WordWheelQuery registry plugin";
+        public HashSet<string> ExpectedHeaders { get; }
+
+        public IBindingList DataList { get; }
+        public List<int> TaggedLines { get; set; }
+
+        public string InternalGuid => "3ae35795-fb94-4cb9-972a-d7ded47a3297";
+
+        public void ProcessFile(string filename)
+        {
+            CsvLoader.Load<RecmdWordWheelQueryData>(filename, DataList, TaggedLines, map =>
+            {
+                map.Map(t => t.LastWriteTimestamp).TypeConverter<LenientDateTimeConverter>();
+            });
+        }
+    }
 }

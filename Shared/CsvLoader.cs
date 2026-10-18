@@ -12,6 +12,32 @@ using Serilog.Events;
 namespace TLEFilePlugins.Shared
 {
     /// <summary>
+    ///     A time written with ToString() (RECmd's plugin CSVs: the culture of the machine that ran it): the invariant
+    ///     culture, then the current one; with an offset, the time as written. Empty or unreadable is null (one bad value
+    ///     failed the file)
+    /// </summary>
+    internal class LenientDateTimeConverter : CsvHelper.TypeConversion.DefaultTypeConverter
+    {
+        public override object ConvertFromString(string text, IReaderRow row, MemberMapData memberMapData)
+        {
+            if (string.IsNullOrWhiteSpace(text))
+            {
+                return null;
+            }
+
+            foreach (var culture in new[] {CultureInfo.InvariantCulture, CultureInfo.CurrentCulture})
+            {
+                if (DateTimeOffset.TryParse(text, culture, DateTimeStyles.AllowWhiteSpaces, out var dto))
+                {
+                    return dto.DateTime;
+                }
+            }
+
+            return null;
+        }
+    }
+
+    /// <summary>
     ///     Loads a CSV with a header row into a plugin's DataList (the code every CSV plugin repeated). Compiled into
     ///     each plugin assembly (a linked file), so Timeline Explorer needs nothing new
     /// </summary>
