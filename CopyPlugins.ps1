@@ -5,7 +5,8 @@
 .DESCRIPTION
     Copies each plugin project's own TLEFile*.dll from bin\Release\netstandard2.0 to -Out (Timeline Explorer's Plugins
     folder). Timeline Explorer already has ITLEFileSpec, CsvHelper, Serilog and the other dependencies. With -Layouts,
-    also copies Layouts\Default\*.layout to <Layouts>\Default (Timeline Explorer's Layouts folder).
+    also copies Layouts\Default\*.layout to <Layouts>\Default (Timeline Explorer's Layouts folder) and Layouts\!!README.txt
+    to <Layouts>.
 
 .PARAMETER Out
     The folder to copy the plugins to. It is created when it doesn't exist.
@@ -63,4 +64,6 @@ if ($Layouts) {
     $files = Get-ChildItem (Join-Path $PSScriptRoot 'Layouts/Default') -Filter *.layout
     $files | Copy-Item -Destination $default -Force
     Write-Host "Copied $(@($files).Count) layouts to $((Resolve-Path $default).Path)"
+    # what the Default folder is, for users (next to it, as in the release)
+    Copy-Item -LiteralPath (Join-Path $PSScriptRoot 'Layouts/!!README.txt') -Destination $Layouts -Force
 }
