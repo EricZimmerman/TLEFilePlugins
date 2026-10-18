@@ -8,6 +8,7 @@ using CsvHelper;
 using CsvHelper.Configuration;
 using CsvHelper.TypeConversion;
 using ITLEFileSpec;
+using TLEFilePlugins.Shared;
 using Serilog;
 
 namespace TLEFileMicrosoft
@@ -72,6 +73,9 @@ namespace TLEFileMicrosoft
 
         public void ProcessFile(string filename)
         {
+            //(TaggedLines.Contains was a list scan for every row)
+            var tagged = new HashSet<int>(TaggedLines);
+
             DataList.Clear();
 
             using var fileReader = new StreamReader(filename, CodePagesEncodingProvider.Instance.GetEncoding(1252));
@@ -114,7 +118,7 @@ namespace TLEFileMicrosoft
                 Log.Debug("Line # {Line}, Record: {RawRecord}",ln,csv.Context.Parser.RawRecord);
 
                 sc.Line = ln;
-                sc.Tag = TaggedLines.Contains(ln);
+                sc.Tag = tagged.Contains(ln);
                 DataList.Add(sc);
                 ln += 1;
             }
@@ -186,6 +190,9 @@ namespace TLEFileMicrosoft
 
         public void ProcessFile(string filename)
         {
+            //(TaggedLines.Contains was a list scan for every row)
+            var tagged = new HashSet<int>(TaggedLines);
+
             DataList.Clear();
 
             using var fileReader = new StreamReader(filename, CodePagesEncodingProvider.Instance.GetEncoding(1252));
@@ -234,7 +241,7 @@ namespace TLEFileMicrosoft
                 Log.Debug("Line # {Line}, Record: {RawRecord}",ln,csv.Context.Parser.RawRecord);
 
                 sc.Line = ln;
-                sc.Tag = TaggedLines.Contains(ln);
+                sc.Tag = tagged.Contains(ln);
                 DataList.Add(sc);
                 ln += 1;
             }
@@ -301,6 +308,9 @@ namespace TLEFileMicrosoft
 
         public void ProcessFile(string filename)
         {
+            //(TaggedLines.Contains was a list scan for every row)
+            var tagged = new HashSet<int>(TaggedLines);
+
             DataList.Clear();
 
             using var fileReader = File.OpenText(filename);
@@ -337,7 +347,7 @@ namespace TLEFileMicrosoft
                 Log.Debug("Line # {Line}, Record: {RawRecord}",ln,csv.Context.Parser.RawRecord);
 
                 autorunsEntry.Line = ln;
-                autorunsEntry.Tag = TaggedLines.Contains(ln);
+                autorunsEntry.Tag = tagged.Contains(ln);
                 DataList.Add(autorunsEntry);
                 ln += 1;
             }
@@ -427,59 +437,18 @@ namespace TLEFileMicrosoft
 
         public void ProcessFile(string filename)
         {
-            DataList.Clear();
-
-            using var fileReader = File.OpenText(filename);
-            var csv = new CsvReader(fileReader, CultureInfo.InvariantCulture);
-                
-
-
-            var foo = csv.Context.AutoMap<MsftMftData>();
-
-            var o = new TypeConverterOptions
+            //tab separated (with the default comma, no file ever loaded)
+            CsvLoader.Load<MsftMftData>(filename, DataList, TaggedLines, map =>
             {
-                DateTimeStyle = DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal
-            };
-
-            csv.Context.TypeConverterOptionsCache.AddOptions<MsftMftData>(o);
-
-            foo.Map(t => t.Line).Ignore();
-            foo.Map(t => t.Tag).Ignore();
-
-            foo.Map(m => m.CreationTime0x10).Convert(row =>
-                DateTime.Parse(row.Row.GetField<string>("CreationTime0x10").Replace("Z", "")));
-            foo.Map(m => m.CreationTime0x30).Convert(row =>
-                DateTime.Parse(row.Row.GetField<string>("CreationTime0x30").Replace("Z", "")));
-            foo.Map(m => m.LastModificationTime0x10).Convert(row =>
-                DateTime.Parse(row.Row.GetField<string>("LastModificationTime0x10").Replace("Z", "")));
-            foo.Map(m => m.LastModificationTime0x30).Convert(row =>
-                DateTime.Parse(row.Row.GetField<string>("LastModificationTime0x30").Replace("Z", "")));
-            foo.Map(m => m.LastChangeTime0x10).Convert(row =>
-                DateTime.Parse(row.Row.GetField<string>("LastChangeTime0x10").Replace("Z", "")));
-            foo.Map(m => m.LastChangeTime0x30).Convert(row =>
-                DateTime.Parse(row.Row.GetField<string>("LastChangeTime0x30").Replace("Z", "")));
-            foo.Map(m => m.LastAccessTime0x10).Convert(row =>
-                DateTime.Parse(row.Row.GetField<string>("LastAccessTime0x10").Replace("Z", "")));
-            foo.Map(m => m.LastAccessTime0x30).Convert(row =>
-                DateTime.Parse(row.Row.GetField<string>("LastAccessTime0x30").Replace("Z", "")));
-
-
-            csv.Context.RegisterClassMap(foo);
-
-                
-
-            var records = csv.GetRecords<MsftMftData>();
-
-            var ln = 1;
-            foreach (var record in records)
-            {
-                Log.Debug("Line # {Line}, Record: {RawRecord}",ln,csv.Context.Parser.RawRecord);
-                record.Line = ln;
-                record.Tag = TaggedLines.Contains(ln);
-                DataList.Add(record);
-
-                ln += 1;
-            }
+                map.Map(m => m.CreationTime0x10).Convert(row => CsvLoader.ParseTime(row.Row.GetField<string>("CreationTime0x10")?.Replace("Z", "")));
+                map.Map(m => m.CreationTime0x30).Convert(row => CsvLoader.ParseTime(row.Row.GetField<string>("CreationTime0x30")?.Replace("Z", "")));
+                map.Map(m => m.LastModificationTime0x10).Convert(row => CsvLoader.ParseTime(row.Row.GetField<string>("LastModificationTime0x10")?.Replace("Z", "")));
+                map.Map(m => m.LastModificationTime0x30).Convert(row => CsvLoader.ParseTime(row.Row.GetField<string>("LastModificationTime0x30")?.Replace("Z", "")));
+                map.Map(m => m.LastChangeTime0x10).Convert(row => CsvLoader.ParseTime(row.Row.GetField<string>("LastChangeTime0x10")?.Replace("Z", "")));
+                map.Map(m => m.LastChangeTime0x30).Convert(row => CsvLoader.ParseTime(row.Row.GetField<string>("LastChangeTime0x30")?.Replace("Z", "")));
+                map.Map(m => m.LastAccessTime0x10).Convert(row => CsvLoader.ParseTime(row.Row.GetField<string>("LastAccessTime0x10")?.Replace("Z", "")));
+                map.Map(m => m.LastAccessTime0x30).Convert(row => CsvLoader.ParseTime(row.Row.GetField<string>("LastAccessTime0x30")?.Replace("Z", "")));
+            }, configure: config => { config.Delimiter = "\t"; });
         }
     }
 }

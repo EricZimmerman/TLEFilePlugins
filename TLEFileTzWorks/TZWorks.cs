@@ -84,6 +84,9 @@ namespace TLEFileTzWorks
 
         public void ProcessFile(string filename)
         {
+            //(TaggedLines.Contains was a list scan for every row)
+            var tagged = new HashSet<int>(TaggedLines);
+
             DataList.Clear();
 
             using var fileReader = File.OpenText(filename);
@@ -156,7 +159,7 @@ namespace TLEFileTzWorks
                 var symbolFile = csv.GetField(29);
 
                 var pe = new PeScanOutData {Line = ln11};
-                pe.Tag = TaggedLines.Contains(ln11);
+                pe.Tag = tagged.Contains(ln11);
                 if (compiled.Length > 0)
                 {
                     pe.CompiledTime = DateTime.Parse($"{compiled} {compTime}", CultureInfo.InvariantCulture,
@@ -275,6 +278,9 @@ namespace TLEFileTzWorks
 
         public void ProcessFile(string filename)
         {
+            //(TaggedLines.Contains was a list scan for every row)
+            var tagged = new HashSet<int>(TaggedLines);
+
             DataList.Clear();
 
             int rawFlag;
@@ -334,7 +340,7 @@ namespace TLEFileTzWorks
                     Line = ln11
                 };
 
-                wi.Tag = TaggedLines.Contains(ln11);
+                wi.Tag = tagged.Contains(ln11);
 
                 if (created.IsNullOrEmpty() == false)
                 {

@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <AssemblyTitle>TLEFileMisc</AssemblyTitle>
@@ -12,5 +12,9 @@
   </ItemGroup>
   <ItemGroup>
 
+  </ItemGroup>
+  <ItemGroup>
+    <!-- CsvLoader: compiled into each plugin assembly -->
+    <Compile Include="..\Shared\CsvLoader.cs" Link="Shared\CsvLoader.cs" />
   </ItemGroup>
 </Project>

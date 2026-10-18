@@ -7,6 +7,7 @@ using CsvHelper;
 using CsvHelper.Configuration;
 using CsvHelper.TypeConversion;
 using ITLEFileSpec;
+using TLEFilePlugins.Shared;
 using Serilog;
 
 namespace TLEFileEZTools
@@ -73,41 +74,7 @@ namespace TLEFileEZTools
 
         public void ProcessFile(string filename)
         {
-            DataList.Clear();
-
-            using var fileReader = File.OpenText(filename);
-            var csv = new CsvReader(fileReader, CultureInfo.InvariantCulture);
-                
-
-            var o = new TypeConverterOptions
-            {
-                DateTimeStyle = DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal
-            };
-            csv.Context.TypeConverterOptionsCache.AddOptions<BootData>(o);
-
-            var foo = csv.Context.AutoMap<BootData>();
-
-            foo.Map(t => t.Line).Ignore();
-            foo.Map(t => t.Tag).Ignore();
-
-            csv.Context.RegisterClassMap(foo);
-
-            var records = csv.GetRecords<BootData>();
-
-                
-
-            var ln = 1;
-            foreach (var record in records)
-            {
-                //In TLE, there is an option to enable Debug messages which lets more context be seen when errors happen. Keep this call here so the last known good line of data is obvious in TLE messages
-                Log.Debug("Line # {Line}, Record: {RawRecord}",ln,csv.Context.Parser.RawRecord);
-
-                record.Line = ln;
-                record.Tag = TaggedLines.Contains(ln);
-                DataList.Add(record);
-
-                ln += 1;
-            }
+            CsvLoader.Load<BootData>(filename, DataList, TaggedLines);
         }
 
         public string InternalGuid => "40dd7405-16cf-4612-a480-9b150d0a9952";
@@ -131,13 +98,16 @@ namespace TLEFileEZTools
         public ulong FileOffset { get; set; }
         public string SourceFile { get; set; }
 
+        //added in the 2026.10 versions of the tool
+        public bool? FromMirror { get; set; }
+
         public int Line { get; set; }
         public bool Tag { get; set; }
 
         public override string ToString()
         {
             return
-                $"{Hash} {Id} {Offset} {OwnerSid} {GroupSid} {Control} {SaclAceCount} {UniqueSaclAceTypes} {DaclAceCount} {UniqueDaclAceTypes} {FileOffset} {SourceFile}";
+                $"{Hash} {Id} {Offset} {OwnerSid} {GroupSid} {Control} {SaclAceCount} {UniqueSaclAceTypes} {DaclAceCount} {UniqueDaclAceTypes} {FileOffset} {SourceFile} {FromMirror}";
         }
     }
 
@@ -151,7 +121,8 @@ namespace TLEFileEZTools
 
             ExpectedHeaders = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
             {
-                "Hash,Id,Offset,OwnerSid,GroupSid,Control,SaclAceCount,UniqueSaclAceTypes,DaclAceCount,UniqueDaclAceTypes,FileOffset,SourceFile"
+                "Hash,Id,Offset,OwnerSid,GroupSid,Control,SaclAceCount,UniqueSaclAceTypes,DaclAceCount,UniqueDaclAceTypes,FileOffset,SourceFile",
+                "Hash,Id,Offset,OwnerSid,GroupSid,Control,SaclAceCount,UniqueSaclAceTypes,DaclAceCount,UniqueDaclAceTypes,FileOffset,SourceFile,FromMirror"
             };
         }
 
@@ -166,39 +137,7 @@ namespace TLEFileEZTools
 
         public void ProcessFile(string filename)
         {
-            DataList.Clear();
-            using var fileReader = File.OpenText(filename);
-            var csv = new CsvReader(fileReader, CultureInfo.InvariantCulture);
-                
-
-            var o = new TypeConverterOptions
-            {
-                DateTimeStyle = DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal
-            };
-            csv.Context.TypeConverterOptionsCache.AddOptions<SdsData>(o);
-
-            var foo = csv.Context.AutoMap<SdsData>();
-
-            foo.Map(t => t.Line).Ignore();
-            foo.Map(t => t.Tag).Ignore();
-
-            csv.Context.RegisterClassMap(foo);
-
-            var records = csv.GetRecords<SdsData>();
-
-                
-
-
-            var ln = 1;
-            foreach (var record in records)
-            {
-                Log.Debug("Line # {Line}, Record: {RawRecord}",ln,csv.Context.Parser.RawRecord);
-                record.Line = ln;
-                record.Tag = TaggedLines.Contains(ln);
-                DataList.Add(record);
-
-                ln += 1;
-            }
+            CsvLoader.Load<SdsData>(filename, DataList, TaggedLines);
         }
     }
 
@@ -256,43 +195,7 @@ namespace TLEFileEZTools
 
         public void ProcessFile(string filename)
         {
-            DataList.Clear();
-
-            using var fileReader = File.OpenText(filename);
-            var csv = new CsvReader(fileReader, CultureInfo.InvariantCulture);
-                
-
-            var o = new TypeConverterOptions
-            {
-                DateTimeStyle = DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal
-            };
-            csv.Context.TypeConverterOptionsCache.AddOptions<JData>(o);
-
-            var foo = csv.Context.AutoMap<JData>();
-
-            foo.Map(m => m.UpdateTimestamp).TypeConverterOption
-                .DateTimeStyles(DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal);
-
-            foo.Map(t => t.Line).Ignore();
-            foo.Map(t => t.Tag).Ignore();
-
-            csv.Context.RegisterClassMap(foo);
-
-            var records = csv.GetRecords<JData>();
-
-                
-
-
-            var ln = 1;
-            foreach (var record in records)
-            {
-                Log.Debug("Line # {Line}, Record: {RawRecord}",ln,csv.Context.Parser.RawRecord);
-                record.Line = ln;
-                record.Tag = TaggedLines.Contains(ln);
-                DataList.Add(record);
-
-                ln += 1;
-            }
+            CsvLoader.Load<JData>(filename, DataList, TaggedLines, map => map.Map(m => m.UpdateTimestamp).TypeConverterOption.DateTimeStyles(DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal));
         }
     }
 
@@ -348,6 +251,9 @@ namespace TLEFileEZTools
         public string ResidentDataHex { get; set; }
         public string ResidentDataASCII { get; set; }
 
+        //added in the 2026.10 versions of the tool
+        public string ParseErrors { get; set; }
+
         public int Line { get; set; }
 
         public bool Tag { get; set; }
@@ -356,7 +262,7 @@ namespace TLEFileEZTools
         {
             return
                 $"{EntryNumber} {SequenceNumber} {ParentEntryNumber} {ParentSequenceNumber} {InUse} {ParentPath} {FileName} {Extension} {IsDirectory} {HasAds} {IsAds} {FileSize} {Created0x10} {Created0x30} {LastModified0x10} {LastModified0x30} {LastRecordChange0x10} {LastRecordChange0x30} {LastAccess0x10} {LastAccess0x30} {UpdateSequenceNumber} {LogfileSequenceNumber} {SecurityId} {ZoneIdContents} {SiFlags} {ObjectIdFileDroid} {ReparseTarget}" +
-                $" {ReferenceCount} {NameType} {LoggedUtilStream} {Timestomped} {uSecZeros} {Copied} {SourceFile} {ResidentDataBase64} {ResidentDataHex} {ResidentDataASCII}";
+                $" {ReferenceCount} {NameType} {LoggedUtilStream} {Timestomped} {uSecZeros} {Copied} {SourceFile} {ResidentDataBase64} {ResidentDataHex} {ResidentDataASCII} {ParseErrors}";
         }
     }
 
@@ -370,7 +276,8 @@ namespace TLEFileEZTools
 
             ExpectedHeaders = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
             {
-                "entrynumber,sequencenumber,inuse,parententrynumber,parentsequencenumber,parentpath,filename,extension,filesize,referencecount,reparsetarget,isdirectory,hasads,isads,si<fn,useczeros,copied,siflags,nametype,created0x10,created0x30,lastmodified0x10,lastmodified0x30,lastrecordchange0x10,lastrecordchange0x30,lastaccess0x10,lastaccess0x30,updatesequencenumber,logfilesequencenumber,securityid,objectidfiledroid,loggedutilstream,zoneidcontents,sourcefile,residentdatabase64,residentdatahex,residentdataascii"
+                "entrynumber,sequencenumber,inuse,parententrynumber,parentsequencenumber,parentpath,filename,extension,filesize,referencecount,reparsetarget,isdirectory,hasads,isads,si<fn,useczeros,copied,siflags,nametype,created0x10,created0x30,lastmodified0x10,lastmodified0x30,lastrecordchange0x10,lastrecordchange0x30,lastaccess0x10,lastaccess0x30,updatesequencenumber,logfilesequencenumber,securityid,objectidfiledroid,loggedutilstream,zoneidcontents,sourcefile,residentdatabase64,residentdatahex,residentdataascii",
+                "EntryNumber,SequenceNumber,InUse,ParentEntryNumber,ParentSequenceNumber,ParentPath,FileName,Extension,FileSize,ReferenceCount,ReparseTarget,IsDirectory,HasAds,IsAds,SI<FN,uSecZeros,Copied,SiFlags,NameType,Created0x10,Created0x30,LastModified0x10,LastModified0x30,LastRecordChange0x10,LastRecordChange0x30,LastAccess0x10,LastAccess0x30,UpdateSequenceNumber,LogfileSequenceNumber,SecurityId,ObjectIdFileDroid,LoggedUtilStream,ZoneIdContents,SourceFile,ResidentDataBase64,ResidentDataHex,ResidentDataASCII,ParseErrors"
             };
         }
 
@@ -385,58 +292,18 @@ namespace TLEFileEZTools
 
         public void ProcessFile(string filename)
         {
-            DataList.Clear();
-
-            using var fileReader = File.OpenText(filename);
-            var csv = new CsvReader(fileReader, CultureInfo.InvariantCulture);
-
-            var foo = csv.Context.AutoMap<MFTSourceFileResidentData>();
-
-            var o = new TypeConverterOptions
+            CsvLoader.Load<MFTSourceFileResidentData>(filename, DataList, TaggedLines, map =>
             {
-                DateTimeStyle = DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal,
-                NullValues = { "=\"\"" }
-            };
-            csv.Context.TypeConverterOptionsCache.AddOptions<MFTSourceFileResidentData>(o);
-
-            foo.Map(t => t.Timestomped).Name("SI<FN");
-            foo.Map(m => m.Created0x10).TypeConverterOption
-                .DateTimeStyles(DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal);
-            foo.Map(m => m.Created0x30).TypeConverterOption
-                .DateTimeStyles(DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal);
-            foo.Map(m => m.LastModified0x10).TypeConverterOption
-                .DateTimeStyles(DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal);
-            foo.Map(m => m.LastModified0x30).TypeConverterOption
-                .DateTimeStyles(DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal);
-            foo.Map(m => m.LastRecordChange0x10).TypeConverterOption
-                .DateTimeStyles(DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal);
-            foo.Map(m => m.LastRecordChange0x30).TypeConverterOption
-                .DateTimeStyles(DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal);
-            foo.Map(m => m.LastAccess0x10).TypeConverterOption
-                .DateTimeStyles(DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal);
-            foo.Map(m => m.LastAccess0x30).TypeConverterOption
-                .DateTimeStyles(DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal);
-
-            foo.Map(t => t.Line).Ignore();
-            foo.Map(t => t.Tag).Ignore();
-
-            csv.Context.RegisterClassMap(foo);
-
-            var records = csv.GetRecords<MFTSourceFileResidentData>();
-
-
-
-
-            var ln = 1;
-            foreach (var record in records)
-            {
-                Log.Debug("Line # {Line}, Record: {RawRecord}", ln, csv.Context.Parser.RawRecord);
-                record.Line = ln;
-                record.Tag = TaggedLines.Contains(ln);
-                DataList.Add(record);
-
-                ln += 1;
-            }
+                map.Map(t => t.Timestomped).Name("SI<FN");
+                map.Map(m => m.Created0x10).TypeConverterOption.DateTimeStyles(DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal);
+                map.Map(m => m.Created0x30).TypeConverterOption.DateTimeStyles(DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal);
+                map.Map(m => m.LastModified0x10).TypeConverterOption.DateTimeStyles(DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal);
+                map.Map(m => m.LastModified0x30).TypeConverterOption.DateTimeStyles(DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal);
+                map.Map(m => m.LastRecordChange0x10).TypeConverterOption.DateTimeStyles(DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal);
+                map.Map(m => m.LastRecordChange0x30).TypeConverterOption.DateTimeStyles(DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal);
+                map.Map(m => m.LastAccess0x10).TypeConverterOption.DateTimeStyles(DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal);
+                map.Map(m => m.LastAccess0x30).TypeConverterOption.DateTimeStyles(DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal);
+            });
         }
     }
 
@@ -526,58 +393,18 @@ namespace TLEFileEZTools
 
         public void ProcessFile(string filename)
         {
-            DataList.Clear();
-
-            using var fileReader = File.OpenText(filename);
-            var csv = new CsvReader(fileReader, CultureInfo.InvariantCulture);
-
-            var foo = csv.Context.AutoMap<MFTSourceFileData>();
-
-            var o = new TypeConverterOptions
+            CsvLoader.Load<MFTSourceFileData>(filename, DataList, TaggedLines, map =>
             {
-                DateTimeStyle = DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal,
-                NullValues = {"=\"\""}
-            };
-            csv.Context.TypeConverterOptionsCache.AddOptions<MFTSourceFileData>(o);
-
-            foo.Map(t => t.Timestomped).Name("SI<FN");
-            foo.Map(m => m.Created0x10).TypeConverterOption
-                .DateTimeStyles(DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal);
-            foo.Map(m => m.Created0x30).TypeConverterOption
-                .DateTimeStyles(DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal);
-            foo.Map(m => m.LastModified0x10).TypeConverterOption
-                .DateTimeStyles(DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal);
-            foo.Map(m => m.LastModified0x30).TypeConverterOption
-                .DateTimeStyles(DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal);
-            foo.Map(m => m.LastRecordChange0x10).TypeConverterOption
-                .DateTimeStyles(DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal);
-            foo.Map(m => m.LastRecordChange0x30).TypeConverterOption
-                .DateTimeStyles(DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal);
-            foo.Map(m => m.LastAccess0x10).TypeConverterOption
-                .DateTimeStyles(DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal);
-            foo.Map(m => m.LastAccess0x30).TypeConverterOption
-                .DateTimeStyles(DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal);
-
-            foo.Map(t => t.Line).Ignore();
-            foo.Map(t => t.Tag).Ignore();
-
-            csv.Context.RegisterClassMap(foo);
-
-            var records = csv.GetRecords<MFTSourceFileData>();
-
-            
-
-
-            var ln = 1;
-            foreach (var record in records)
-            {
-                Log.Debug("Line # {Line}, Record: {RawRecord}",ln,csv.Context.Parser.RawRecord);
-                record.Line = ln;
-                record.Tag = TaggedLines.Contains(ln);
-                DataList.Add(record);
-
-                ln += 1;
-            }
+                map.Map(t => t.Timestomped).Name("SI<FN");
+                map.Map(m => m.Created0x10).TypeConverterOption.DateTimeStyles(DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal);
+                map.Map(m => m.Created0x30).TypeConverterOption.DateTimeStyles(DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal);
+                map.Map(m => m.LastModified0x10).TypeConverterOption.DateTimeStyles(DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal);
+                map.Map(m => m.LastModified0x30).TypeConverterOption.DateTimeStyles(DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal);
+                map.Map(m => m.LastRecordChange0x10).TypeConverterOption.DateTimeStyles(DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal);
+                map.Map(m => m.LastRecordChange0x30).TypeConverterOption.DateTimeStyles(DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal);
+                map.Map(m => m.LastAccess0x10).TypeConverterOption.DateTimeStyles(DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal);
+                map.Map(m => m.LastAccess0x30).TypeConverterOption.DateTimeStyles(DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal);
+            });
         }
     }
   
@@ -667,57 +494,18 @@ namespace TLEFileEZTools
 
         public void ProcessFile(string filename)
         {
-            DataList.Clear();
-
-            using var fileReader = File.OpenText(filename);
-            var csv = new CsvReader(fileReader, CultureInfo.InvariantCulture);
-
-            var foo = csv.Context.AutoMap<MFTData>();
-
-            var o = new TypeConverterOptions
+            CsvLoader.Load<MFTData>(filename, DataList, TaggedLines, map =>
             {
-                DateTimeStyle = DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal,
-                NullValues = {"=\"\""}
-            };
-            csv.Context.TypeConverterOptionsCache.AddOptions<MFTData>(o);
-
-            foo.Map(t => t.Line).Ignore();
-            foo.Map(t => t.Tag).Ignore();
-            foo.Map(t => t.Timestomped).Name("SI<FN");
-            foo.Map(m => m.Created0x10).TypeConverterOption
-                .DateTimeStyles(DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal);
-            foo.Map(m => m.Created0x30).TypeConverterOption
-                .DateTimeStyles(DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal);
-            foo.Map(m => m.LastModified0x10).TypeConverterOption
-                .DateTimeStyles(DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal);
-            foo.Map(m => m.LastModified0x30).TypeConverterOption
-                .DateTimeStyles(DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal);
-            foo.Map(m => m.LastRecordChange0x10).TypeConverterOption
-                .DateTimeStyles(DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal);
-            foo.Map(m => m.LastRecordChange0x30).TypeConverterOption
-                .DateTimeStyles(DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal);
-            foo.Map(m => m.LastAccess0x10).TypeConverterOption
-                .DateTimeStyles(DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal);
-            foo.Map(m => m.LastAccess0x30).TypeConverterOption
-                .DateTimeStyles(DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal);
-
-            csv.Context.RegisterClassMap(foo);
-
-            var records = csv.GetRecords<MFTData>();
-
-            
-
-
-            var ln = 1;
-            foreach (var record in records)
-            {
-                Log.Debug("Line # {Line}, Record: {RawRecord}",ln,csv.Context.Parser.RawRecord);
-                record.Line = ln;
-                record.Tag = TaggedLines.Contains(ln);
-                DataList.Add(record);
-
-                ln += 1;
-            }
+                map.Map(t => t.Timestomped).Name("SI<FN");
+                map.Map(m => m.Created0x10).TypeConverterOption.DateTimeStyles(DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal);
+                map.Map(m => m.Created0x30).TypeConverterOption.DateTimeStyles(DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal);
+                map.Map(m => m.LastModified0x10).TypeConverterOption.DateTimeStyles(DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal);
+                map.Map(m => m.LastModified0x30).TypeConverterOption.DateTimeStyles(DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal);
+                map.Map(m => m.LastRecordChange0x10).TypeConverterOption.DateTimeStyles(DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal);
+                map.Map(m => m.LastRecordChange0x30).TypeConverterOption.DateTimeStyles(DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal);
+                map.Map(m => m.LastAccess0x10).TypeConverterOption.DateTimeStyles(DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal);
+                map.Map(m => m.LastAccess0x30).TypeConverterOption.DateTimeStyles(DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal);
+            });
         }
     }
 
@@ -784,48 +572,15 @@ namespace TLEFileEZTools
 
         public void ProcessFile(string filename)
         {
-            DataList.Clear();
-
-            using var fileReader = File.OpenText(filename);
-            var csv = new CsvReader(fileReader, CultureInfo.InvariantCulture);
-                
-            var o = new TypeConverterOptions
+            CsvLoader.Load<SbeCmdData>(filename, DataList, TaggedLines, map =>
             {
-                DateTimeStyle = DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal
-            };
-            csv.Context.TypeConverterOptionsCache.AddOptions<SbeCmdData>(o);
-                
-            var foo = csv.Context.AutoMap<SbeCmdData>();
-
-            foo.Map(t => t.Line).Ignore();
-            foo.Map(t => t.Tag).Ignore();
-            foo.Map(m => m.AccessedOn).TypeConverterOption
-                .DateTimeStyles(DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal);
-            foo.Map(m => m.CreatedOn).TypeConverterOption
-                .DateTimeStyles(DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal);
-            foo.Map(m => m.ModifiedOn).TypeConverterOption
-                .DateTimeStyles(DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal);
-            foo.Map(m => m.FirstInteracted).TypeConverterOption
-                .DateTimeStyles(DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal);
-            foo.Map(m => m.LastInteracted).TypeConverterOption
-                .DateTimeStyles(DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal);
-            foo.Map(m => m.LastWriteTime).TypeConverterOption
-                .DateTimeStyles(DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal);
-            
-            csv.Context.RegisterClassMap(foo);
-
-            var records = csv.GetRecords<SbeCmdData>();
-            
-            var ln = 1;
-            foreach (var record in records)
-            {
-                Log.Debug("Line # {Line}, Record: {RawRecord}",ln,csv.Context.Parser.RawRecord);
-                record.Line = ln;
-                record.Tag = TaggedLines.Contains(ln);
-                DataList.Add(record);
-
-                ln += 1;
-            }
+                map.Map(m => m.AccessedOn).TypeConverterOption.DateTimeStyles(DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal);
+                map.Map(m => m.CreatedOn).TypeConverterOption.DateTimeStyles(DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal);
+                map.Map(m => m.ModifiedOn).TypeConverterOption.DateTimeStyles(DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal);
+                map.Map(m => m.FirstInteracted).TypeConverterOption.DateTimeStyles(DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal);
+                map.Map(m => m.LastInteracted).TypeConverterOption.DateTimeStyles(DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal);
+                map.Map(m => m.LastWriteTime).TypeConverterOption.DateTimeStyles(DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal);
+            });
         }
     }
 
@@ -837,13 +592,16 @@ namespace TLEFileEZTools
         public long FileSize { get; set; }
         public DateTime DeletedOn { get; set; }
 
+        //added in the 2026.10 versions of the tool
+        public bool? Removed { get; set; }
+
         public int Line { get; set; }
 
         public bool Tag { get; set; }
 
         public override string ToString()
         {
-            return $"{SourceName} {FileType} {FileName} {FileSize} {DeletedOn}";
+            return $"{SourceName} {FileType} {FileName} {FileSize} {DeletedOn} {Removed}";
         }
     }
 
@@ -859,7 +617,8 @@ namespace TLEFileEZTools
 
             ExpectedHeaders = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
             {
-                "SourceName,FileType,FileName,FileSize,DeletedOn"
+                "SourceName,FileType,FileName,FileSize,DeletedOn",
+                "SourceName,FileType,FileName,FileSize,DeletedOn,Removed"
             };
         }
 
@@ -874,40 +633,7 @@ namespace TLEFileEZTools
 
         public void ProcessFile(string filename)
         {
-            DataList.Clear();
-
-            using var fileReader = File.OpenText(filename);
-            var csv = new CsvReader(fileReader, CultureInfo.InvariantCulture);
-                
-
-            var o = new TypeConverterOptions
-            {
-                DateTimeStyle = DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal
-            };
-            csv.Context.TypeConverterOptionsCache.AddOptions<RbCmdData>(o);
-
-            var foo = csv.Context.AutoMap<RbCmdData>();
-
-            foo.Map(m => m.DeletedOn).TypeConverterOption
-                .DateTimeStyles(DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal);
-
-            foo.Map(t => t.Line).Ignore();
-            foo.Map(t => t.Tag).Ignore();
-
-            csv.Context.RegisterClassMap(foo);
-
-            var records = csv.GetRecords<RbCmdData>();
-                
-            var ln = 1;
-            foreach (var record in records)
-            {
-                Log.Debug("Line # {Line}, Record: {RawRecord}",ln,csv.Context.Parser.RawRecord);
-                record.Line = ln;
-                record.Tag = TaggedLines.Contains(ln);
-                DataList.Add(record);
-
-                ln += 1;
-            }
+            CsvLoader.Load<RbCmdData>(filename, DataList, TaggedLines, map => map.Map(m => m.DeletedOn).TypeConverterOption.DateTimeStyles(DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal));
         }
     }
 
@@ -951,6 +677,10 @@ namespace TLEFileEZTools
         public bool ParsingError { get; set; }
 
         //Note	SourceFilename	SourceCreated	SourceModified	SourceAccessed	ExecutableName	Hash	Size	Version	RunCount	LastRun	PreviousRun0	PreviousRun1	PreviousRun2	PreviousRun3	PreviousRun4	PreviousRun5	PreviousRun6	Volume0Name	Volume0Serial	Volume0Created	Volume1Name	Volume1Serial	Volume1Created	Directories	FilesLoaded
+        //added in the 2026.10 versions of the tool
+        public string FullPath { get; set; }
+        public bool? PathValidated { get; set; }
+
         public int Line { get; set; }
 
         public bool Tag { get; set; }
@@ -958,7 +688,7 @@ namespace TLEFileEZTools
         public override string ToString()
         {
             return
-                $"{Note} {SourceFilename} {SourceCreated} {SourceModified} {SourceAccessed} {ExecutableName} {Hash} {Size} {Version} {RunCount} {LastRun} {PreviousRun0} {PreviousRun1} {PreviousRun2} {PreviousRun2} {PreviousRun3} {PreviousRun4} {PreviousRun5} {PreviousRun6} {Volume0Name} {Volume0Serial} {Volume0Created} {Volume1Name} {Volume1Serial} {Volume1Created} {Directories} {FilesLoaded} {ParsingError}";
+                $"{Note} {SourceFilename} {SourceCreated} {SourceModified} {SourceAccessed} {ExecutableName} {Hash} {Size} {Version} {RunCount} {LastRun} {PreviousRun0} {PreviousRun1} {PreviousRun2} {PreviousRun2} {PreviousRun3} {PreviousRun4} {PreviousRun5} {PreviousRun6} {Volume0Name} {Volume0Serial} {Volume0Created} {Volume1Name} {Volume1Serial} {Volume1Created} {Directories} {FilesLoaded} {ParsingError} {FullPath} {PathValidated}";
         }
     }
 
@@ -974,7 +704,8 @@ namespace TLEFileEZTools
 
             ExpectedHeaders = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
             {
-                "Note,SourceFilename,SourceCreated,SourceModified,SourceAccessed,ExecutableName,Hash,Size,Version,RunCount,LastRun,PreviousRun0,PreviousRun1,PreviousRun2,PreviousRun3,PreviousRun4,PreviousRun5,PreviousRun6,Volume0Name,Volume0Serial,Volume0Created,Volume1Name,Volume1Serial,Volume1Created,Directories,FilesLoaded,ParsingError"
+                "Note,SourceFilename,SourceCreated,SourceModified,SourceAccessed,ExecutableName,Hash,Size,Version,RunCount,LastRun,PreviousRun0,PreviousRun1,PreviousRun2,PreviousRun3,PreviousRun4,PreviousRun5,PreviousRun6,Volume0Name,Volume0Serial,Volume0Created,Volume1Name,Volume1Serial,Volume1Created,Directories,FilesLoaded,ParsingError",
+                "Note,SourceFilename,SourceCreated,SourceModified,SourceAccessed,ExecutableName,FullPath,PathValidated,Hash,Size,Version,RunCount,LastRun,PreviousRun0,PreviousRun1,PreviousRun2,PreviousRun3,PreviousRun4,PreviousRun5,PreviousRun6,Volume0Name,Volume0Serial,Volume0Created,Volume1Name,Volume1Serial,Volume1Created,Directories,FilesLoaded,ParsingError"
             };
         }
 
@@ -989,37 +720,7 @@ namespace TLEFileEZTools
 
         public void ProcessFile(string filename)
         {
-            DataList.Clear();
-
-            using var fileReader = File.OpenText(filename);
-            var csv = new CsvReader(fileReader, CultureInfo.InvariantCulture);
-                
-
-            var o = new TypeConverterOptions
-            {
-                DateTimeStyle = DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal
-            };
-            csv.Context.TypeConverterOptionsCache.AddOptions<PeCmdData>(o);
-
-            var foo = csv.Context.AutoMap<PeCmdData>();
-
-            foo.Map(t => t.Line).Ignore();
-            foo.Map(t => t.Tag).Ignore();
-
-            csv.Context.RegisterClassMap(foo);
-
-            var records = csv.GetRecords<PeCmdData>();
-                
-            var ln = 1;
-            foreach (var record in records)
-            {
-                Log.Debug("Line # {Line}, Record: {RawRecord}",ln,csv.Context.Parser.RawRecord);
-                record.Line = ln;
-                record.Tag = TaggedLines.Contains(ln);
-                DataList.Add(record);
-
-                ln += 1;
-            }
+            CsvLoader.Load<PeCmdData>(filename, DataList, TaggedLines);
         }
     }
 
@@ -1028,12 +729,16 @@ namespace TLEFileEZTools
     {
         public DateTime RunTime { get; set; }
         public string ExecutableName { get; set; }
+        //added in the 2026.10 versions of the tool
+        public string SourceFilename { get; set; }
+        public bool? PathValidated { get; set; }
+
         public int Line { get; set; }
         public bool Tag { get; set; }
 
         public override string ToString()
         {
-            return $"{RunTime} {ExecutableName}";
+            return $"{RunTime} {ExecutableName} {SourceFilename} {PathValidated}";
         }
     }
 
@@ -1049,7 +754,8 @@ namespace TLEFileEZTools
 
             ExpectedHeaders = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
             {
-                "RunTime,ExecutableName"
+                "RunTime,ExecutableName",
+                "RunTime,ExecutableName,SourceFilename,PathValidated"
             };
         }
 
@@ -1064,37 +770,7 @@ namespace TLEFileEZTools
 
         public void ProcessFile(string filename)
         {
-            DataList.Clear();
-
-            using var fileReader = File.OpenText(filename);
-            var csv = new CsvReader(fileReader, CultureInfo.InvariantCulture);
-                
-
-            var o = new TypeConverterOptions
-            {
-                DateTimeStyle = DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal
-            };
-            csv.Context.TypeConverterOptionsCache.AddOptions<PECmdTimelineData>(o);
-
-            var foo = csv.Context.AutoMap<PECmdTimelineData>();
-
-            foo.Map(t => t.Line).Ignore();
-            foo.Map(t => t.Tag).Ignore();
-
-            csv.Context.RegisterClassMap(foo);
-
-            var records = csv.GetRecords<PECmdTimelineData>();
-                
-            var ln = 1;
-            foreach (var record in records)
-            {
-                Log.Debug("Line # {Line}, Record: {RawRecord}",ln,csv.Context.Parser.RawRecord);
-                record.Line = ln;
-                record.Tag = TaggedLines.Contains(ln);
-                DataList.Add(record);
-
-                ln += 1;
-            }
+            CsvLoader.Load<PECmdTimelineData>(filename, DataList, TaggedLines);
         }
     }
 
@@ -1129,13 +805,24 @@ namespace TLEFileEZTools
 
         public DateTime? TrackerCreatedOn { get; set; }
         public string ExtraBlocksPresent { get; set; }
+        //added in the 2026.10 versions of the tool
+        public string Name { get; set; }
+        public string IconLocation { get; set; }
+        public string ShowWindow { get; set; }
+        public string EnvironmentVariables { get; set; }
+        public string VolumeDroid { get; set; }
+        public string FileDroid { get; set; }
+        public string VolumeDroidBirth { get; set; }
+        public string FileDroidBirth { get; set; }
+        public string Anomalies { get; set; }
+
         public int Line { get; set; }
         public bool Tag { get; set; }
 
         public override string ToString()
         {
             return
-                $"{SourceFile} {SourceCreated} {SourceModified} {SourceAccessed} {TargetCreated} {TargetModified} {TargetAccessed} {FileSize} {RelativePath} {WorkingDirectory} {FileAttributes} {HeaderFlags} {DriveType} {VolumeSerialNumber} {VolumeLabel} {LocalPath} {NetworkPath} {CommonPath} {Arguments} {TargetIDAbsolutePath} {TargetMFTEntryNumber} {TargetMFTSequenceNumber} {MachineID} {MachineMACAddress} {MACVendor} {TrackerCreatedOn} {ExtraBlocksPresent}";
+                $"{SourceFile} {SourceCreated} {SourceModified} {SourceAccessed} {TargetCreated} {TargetModified} {TargetAccessed} {FileSize} {RelativePath} {WorkingDirectory} {FileAttributes} {HeaderFlags} {DriveType} {VolumeSerialNumber} {VolumeLabel} {LocalPath} {NetworkPath} {CommonPath} {Arguments} {TargetIDAbsolutePath} {TargetMFTEntryNumber} {TargetMFTSequenceNumber} {MachineID} {MachineMACAddress} {MACVendor} {TrackerCreatedOn} {ExtraBlocksPresent} {Name} {IconLocation} {ShowWindow} {EnvironmentVariables} {VolumeDroid} {FileDroid} {VolumeDroidBirth} {FileDroidBirth} {Anomalies}";
         }
     }
 
@@ -1151,7 +838,8 @@ namespace TLEFileEZTools
 
             ExpectedHeaders = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
             {
-                "SourceFile,SourceCreated,SourceModified,SourceAccessed,TargetCreated,TargetModified,TargetAccessed,FileSize,RelativePath,WorkingDirectory,FileAttributes,HeaderFlags,DriveType,VolumeSerialNumber,VolumeLabel,LocalPath,NetworkPath,CommonPath,Arguments,TargetIDAbsolutePath,TargetMFTEntryNumber,TargetMFTSequenceNumber,MachineID,MachineMACAddress,MACVendor,TrackerCreatedOn,ExtraBlocksPresent"
+                "SourceFile,SourceCreated,SourceModified,SourceAccessed,TargetCreated,TargetModified,TargetAccessed,FileSize,RelativePath,WorkingDirectory,FileAttributes,HeaderFlags,DriveType,VolumeSerialNumber,VolumeLabel,LocalPath,NetworkPath,CommonPath,Arguments,TargetIDAbsolutePath,TargetMFTEntryNumber,TargetMFTSequenceNumber,MachineID,MachineMACAddress,MACVendor,TrackerCreatedOn,ExtraBlocksPresent",
+                "SourceFile,SourceCreated,SourceModified,SourceAccessed,TargetCreated,TargetModified,TargetAccessed,FileSize,RelativePath,WorkingDirectory,FileAttributes,HeaderFlags,DriveType,VolumeSerialNumber,VolumeLabel,LocalPath,NetworkPath,CommonPath,Arguments,TargetIDAbsolutePath,TargetMFTEntryNumber,TargetMFTSequenceNumber,MachineID,MachineMACAddress,MACVendor,TrackerCreatedOn,ExtraBlocksPresent,Name,IconLocation,ShowWindow,EnvironmentVariables,VolumeDroid,FileDroid,VolumeDroidBirth,FileDroidBirth,Anomalies"
             };
         }
 
@@ -1166,38 +854,7 @@ namespace TLEFileEZTools
 
         public void ProcessFile(string filename)
         {
-            DataList.Clear();
-
-            using var fileReader = File.OpenText(filename);
-            var csv = new CsvReader(fileReader, CultureInfo.InvariantCulture);
-                
-
-
-            var o = new TypeConverterOptions
-            {
-                DateTimeStyle = DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal
-            };
-            csv.Context.TypeConverterOptionsCache.AddOptions<LECmdData>(o);
-                
-            var foo = csv.Context.AutoMap<LECmdData>();
-
-            foo.Map(t => t.Line).Ignore();
-            foo.Map(t => t.Tag).Ignore();
-
-            csv.Context.RegisterClassMap(foo);
-
-            var records = csv.GetRecords<LECmdData>();
-                
-            var ln = 1;
-            foreach (var record in records)
-            {
-                Log.Debug("Line # {Line}, Record: {RawRecord}",ln,csv.Context.Parser.RawRecord);
-                record.Line = ln;
-                record.Tag = TaggedLines.Contains(ln);
-                DataList.Add(record);
-
-                ln += 1;
-            }
+            CsvLoader.Load<LECmdData>(filename, DataList, TaggedLines);
         }
     }
 
@@ -1253,6 +910,9 @@ namespace TLEFileEZTools
         public DateTime? TrackerCreatedOn { get; set; }
         public string ExtraBlocksPresent { get; set; }
         public string Notes { get; set; }
+        //added in the 2026.10 versions of the tool
+        public string User { get; set; }
+
         public int Line { get; set; }
         public bool Tag { get; set; }
 
@@ -1260,7 +920,7 @@ namespace TLEFileEZTools
         {
             return
                 $"{SourceFile} {SourceCreated} {SourceModified} {SourceAccessed} {AppId} {AppIdDescription} {HasSps} {DestListVersion} {LastUsedEntryNumber} {MRU} {EntryNumber} {CreationTime} {LastModified} {Hostname} {MacAddress} {Path} {InteractionCount} {PinStatus} {FileBirthDroid} {FileDroid} {VolumeBirthDroid} {VolumeDroid} {TargetCreated} {TargetModified} {TargetAccessed} {FileSize} {RelativePath} {WorkingDirectory} {FileAttributes} {HeaderFlags} {DriveType} {VolumeSerialNumber}" +
-                $" {VolumeLabel} {LocalPath} {CommonPath} {Arguments} {TargetIDAbsolutePath} {TargetMFTEntryNumber} {TargetMFTSequenceNumber} {MachineID} {MachineMACAddress} {TrackerCreatedOn} {ExtraBlocksPresent} {Notes}";
+                $" {VolumeLabel} {LocalPath} {CommonPath} {Arguments} {TargetIDAbsolutePath} {TargetMFTEntryNumber} {TargetMFTSequenceNumber} {MachineID} {MachineMACAddress} {TrackerCreatedOn} {ExtraBlocksPresent} {Notes} {User}";
         }
     }
 
@@ -1276,7 +936,8 @@ namespace TLEFileEZTools
 
             ExpectedHeaders = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
             {
-                "SourceFile,SourceCreated,SourceModified,SourceAccessed,AppId,AppIdDescription,HasSps,DestListVersion,LastUsedEntryNumber,MRU,EntryNumber,CreationTime,LastModified,Hostname,MacAddress,Path,InteractionCount,PinStatus,FileBirthDroid,FileDroid,VolumeBirthDroid,VolumeDroid,TargetCreated,TargetModified,TargetAccessed,FileSize,RelativePath,WorkingDirectory,FileAttributes,HeaderFlags,DriveType,VolumeSerialNumber,VolumeLabel,LocalPath,CommonPath,TargetIDAbsolutePath,TargetMFTEntryNumber,TargetMFTSequenceNumber,MachineID,MachineMACAddress,TrackerCreatedOn,ExtraBlocksPresent,Arguments,Notes"
+                "SourceFile,SourceCreated,SourceModified,SourceAccessed,AppId,AppIdDescription,HasSps,DestListVersion,LastUsedEntryNumber,MRU,EntryNumber,CreationTime,LastModified,Hostname,MacAddress,Path,InteractionCount,PinStatus,FileBirthDroid,FileDroid,VolumeBirthDroid,VolumeDroid,TargetCreated,TargetModified,TargetAccessed,FileSize,RelativePath,WorkingDirectory,FileAttributes,HeaderFlags,DriveType,VolumeSerialNumber,VolumeLabel,LocalPath,CommonPath,TargetIDAbsolutePath,TargetMFTEntryNumber,TargetMFTSequenceNumber,MachineID,MachineMACAddress,TrackerCreatedOn,ExtraBlocksPresent,Arguments,Notes",
+                "User,SourceFile,SourceCreated,SourceModified,SourceAccessed,AppId,AppIdDescription,HasSps,DestListVersion,LastUsedEntryNumber,MRU,EntryNumber,CreationTime,LastModified,Hostname,MacAddress,Path,InteractionCount,PinStatus,FileBirthDroid,FileDroid,VolumeBirthDroid,VolumeDroid,TargetCreated,TargetModified,TargetAccessed,FileSize,RelativePath,WorkingDirectory,FileAttributes,HeaderFlags,DriveType,VolumeSerialNumber,VolumeLabel,LocalPath,CommonPath,TargetIDAbsolutePath,TargetMFTEntryNumber,TargetMFTSequenceNumber,MachineID,MachineMACAddress,TrackerCreatedOn,ExtraBlocksPresent,Arguments,Notes"
             };
         }
 
@@ -1291,42 +952,13 @@ namespace TLEFileEZTools
 
         public void ProcessFile(string filename)
         {
-            DataList.Clear();
-
-            using var fileReader = File.OpenText(filename);
-            var csv = new CsvReader(fileReader, CultureInfo.InvariantCulture);
-                
-            var o = new TypeConverterOptions
+            CsvLoader.Load<JleCmdAutoData>(filename, DataList, TaggedLines, fixup: record =>
             {
-                DateTimeStyle = DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal
-            };
-            csv.Context.TypeConverterOptionsCache.AddOptions<JleCmdAutoData>(o);
-
-            var foo = csv.Context.AutoMap<JleCmdAutoData>();
-
-            foo.Map(t => t.Line).Ignore();
-            foo.Map(t => t.Tag).Ignore();
-
-            csv.Context.RegisterClassMap(foo);
-
-            var records = csv.GetRecords<JleCmdAutoData>();
-                
-            var ln = 1;
-            foreach (var record in records)
-            {
-                Log.Debug("Line # {Line}, Record: {RawRecord}",ln,csv.Context.Parser.RawRecord);
-
-                if (record.FileAttributes.Equals("0"))
+                if (record.FileAttributes == "0")
                 {
                     record.FileAttributes = string.Empty;
                 }
-
-                record.Line = ln;
-                record.Tag = TaggedLines.Contains(ln);
-                DataList.Add(record);
-
-                ln += 1;
-            }
+            });
         }
     }
 
@@ -1364,13 +996,16 @@ namespace TLEFileEZTools
 
         public DateTime? TrackerCreatedOn { get; set; }
         public string ExtraBlocksPresent { get; set; }
+        //added in the 2026.10 versions of the tool
+        public string User { get; set; }
+
         public int Line { get; set; }
         public bool Tag { get; set; }
 
         public override string ToString()
         {
             return
-                $"{SourceFile} {SourceCreated} {SourceModified} {SourceAccessed} {AppId} {AppIdDescription} {EntryName} {TargetCreated} {TargetModified} {TargetAccessed} {FileSize} {RelativePath} {WorkingDirectory} {FileAttributes} {HeaderFlags} {DriveType} {VolumeSerialNumber} {VolumeLabel} {LocalPath} {CommonPath} {Arguments} {TargetIDAbsolutePath} {TargetMFTEntryNumber} {TargetMFTSequenceNumber} {MachineID} {MachineMACAddress} {TrackerCreatedOn} {ExtraBlocksPresent}";
+                $"{SourceFile} {SourceCreated} {SourceModified} {SourceAccessed} {AppId} {AppIdDescription} {EntryName} {TargetCreated} {TargetModified} {TargetAccessed} {FileSize} {RelativePath} {WorkingDirectory} {FileAttributes} {HeaderFlags} {DriveType} {VolumeSerialNumber} {VolumeLabel} {LocalPath} {CommonPath} {Arguments} {TargetIDAbsolutePath} {TargetMFTEntryNumber} {TargetMFTSequenceNumber} {MachineID} {MachineMACAddress} {TrackerCreatedOn} {ExtraBlocksPresent} {User}";
         }
     }
 
@@ -1386,7 +1021,8 @@ namespace TLEFileEZTools
 
             ExpectedHeaders = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
             {
-                "SourceFile,SourceCreated,SourceModified,SourceAccessed,AppId,AppIdDescription,EntryName,TargetCreated,TargetModified,TargetAccessed,FileSize,RelativePath,WorkingDirectory,FileAttributes,HeaderFlags,DriveType,VolumeSerialNumber,VolumeLabel,LocalPath,CommonPath,TargetIDAbsolutePath,TargetMFTEntryNumber,TargetMFTSequenceNumber,MachineID,MachineMACAddress,TrackerCreatedOn,ExtraBlocksPresent,Arguments"
+                "SourceFile,SourceCreated,SourceModified,SourceAccessed,AppId,AppIdDescription,EntryName,TargetCreated,TargetModified,TargetAccessed,FileSize,RelativePath,WorkingDirectory,FileAttributes,HeaderFlags,DriveType,VolumeSerialNumber,VolumeLabel,LocalPath,CommonPath,TargetIDAbsolutePath,TargetMFTEntryNumber,TargetMFTSequenceNumber,MachineID,MachineMACAddress,TrackerCreatedOn,ExtraBlocksPresent,Arguments",
+                "User,SourceFile,SourceCreated,SourceModified,SourceAccessed,AppId,AppIdDescription,EntryName,TargetCreated,TargetModified,TargetAccessed,FileSize,RelativePath,WorkingDirectory,FileAttributes,HeaderFlags,DriveType,VolumeSerialNumber,VolumeLabel,LocalPath,CommonPath,TargetIDAbsolutePath,TargetMFTEntryNumber,TargetMFTSequenceNumber,MachineID,MachineMACAddress,TrackerCreatedOn,ExtraBlocksPresent,Arguments"
             };
         }
 
@@ -1401,38 +1037,7 @@ namespace TLEFileEZTools
 
         public void ProcessFile(string filename)
         {
-            DataList.Clear();
-
-            using var fileReader = File.OpenText(filename);
-            var csv = new CsvReader(fileReader, CultureInfo.InvariantCulture);
-                
-
-
-            var o = new TypeConverterOptions
-            {
-                DateTimeStyle = DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal
-            };
-            csv.Context.TypeConverterOptionsCache.AddOptions<JleCmdCustomData>(o);
-                
-            var foo = csv.Context.AutoMap<JleCmdCustomData>();
-
-            foo.Map(t => t.Line).Ignore();
-            foo.Map(t => t.Tag).Ignore();
-
-            csv.Context.RegisterClassMap(foo);
-
-            var records = csv.GetRecords<JleCmdCustomData>();
-                
-            var ln = 1;
-            foreach (var record in records)
-            {
-                Log.Debug("Line # {Line}, Record: {RawRecord}",ln,csv.Context.Parser.RawRecord);
-                record.Line = ln;
-                record.Tag = TaggedLines.Contains(ln);
-                DataList.Add(record);
-
-                ln += 1;
-            }
+            CsvLoader.Load<JleCmdCustomData>(filename, DataList, TaggedLines);
         }
     }
 
@@ -1464,13 +1069,16 @@ namespace TLEFileEZTools
         public string Keywords { get; set; }
         public bool HiddenRecord { get; set; }
 
+        //added in the 2026.10 versions of the tool
+        public string RenderingInfo { get; set; }
+
         public int Line { get; set; }
         public bool Tag { get; set; }
 
         public override string ToString()
         {
             return
-                $"{RecordNumber} {EventRecordId} {TimeCreated} {EventId} {Level} {Provider} {Channel} {ProcessId} {ThreadId} {Computer} {UserId} {MapDescription} {UserName} {RemoteHost} {PayloadData1} {PayloadData2} {PayloadData3} {PayloadData4} {PayloadData5} {PayloadData6} {ExecutableInfo} {SourceFile} {Keywords} {HiddenRecord} {Payload}";
+                $"{RecordNumber} {EventRecordId} {TimeCreated} {EventId} {Level} {Provider} {Channel} {ProcessId} {ThreadId} {Computer} {UserId} {MapDescription} {UserName} {RemoteHost} {PayloadData1} {PayloadData2} {PayloadData3} {PayloadData4} {PayloadData5} {PayloadData6} {ExecutableInfo} {SourceFile} {Keywords} {HiddenRecord} {Payload} {RenderingInfo}";
         }
     }
 
@@ -1486,7 +1094,8 @@ namespace TLEFileEZTools
 
             ExpectedHeaders = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
             {
-                "RecordNumber,EventRecordId,TimeCreated,EventId,Level,Provider,Channel,ProcessId,ThreadId,Computer,ChunkNumber,UserId,MapDescription,UserName,RemoteHost,PayloadData1,PayloadData2,PayloadData3,PayloadData4,PayloadData5,PayloadData6,ExecutableInfo,HiddenRecord,SourceFile,Keywords,ExtraDataOffset,Payload"
+                "RecordNumber,EventRecordId,TimeCreated,EventId,Level,Provider,Channel,ProcessId,ThreadId,Computer,ChunkNumber,UserId,MapDescription,UserName,RemoteHost,PayloadData1,PayloadData2,PayloadData3,PayloadData4,PayloadData5,PayloadData6,ExecutableInfo,HiddenRecord,SourceFile,Keywords,ExtraDataOffset,Payload",
+                "RecordNumber,EventRecordId,TimeCreated,EventId,Level,Provider,Channel,ProcessId,ThreadId,Computer,ChunkNumber,UserId,MapDescription,UserName,RemoteHost,PayloadData1,PayloadData2,PayloadData3,PayloadData4,PayloadData5,PayloadData6,ExecutableInfo,HiddenRecord,SourceFile,Keywords,ExtraDataOffset,Payload,RenderingInfo"
             };
         }
 
@@ -1501,43 +1110,7 @@ namespace TLEFileEZTools
 
         public void ProcessFile(string filename)
         {
-            DataList.Clear();
-
-            using var fileReader = File.OpenText(filename);
-            var opt = new CsvConfiguration(CultureInfo.InvariantCulture)
-            {
-                ShouldUseConstructorParameters = _ => false
-            };
-
-            var csv = new CsvReader(fileReader, opt);
-                
-
-            var o = new TypeConverterOptions
-            {
-                DateTimeStyle = DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal
-            };
-            csv.Context.TypeConverterOptionsCache.AddOptions<EvtxECmdData>(o);
-
-            var foo = csv.Context.AutoMap<EvtxECmdData>();
-
-            foo.Map(t => t.Line).Ignore();
-            foo.Map(t => t.Tag).Ignore();
-            //  foo.Map(t => t.Payload).Optional();
-
-            csv.Context.RegisterClassMap(foo);
-
-            var records = csv.GetRecords<EvtxECmdData>();
-                
-            var ln = 1;
-            foreach (var record in records)
-            {
-                Log.Debug("Line # {Line}, Record: {RawRecord}",ln,csv.Context.Parser.RawRecord);
-                record.Line = ln;
-                record.Tag = TaggedLines.Contains(ln);
-                DataList.Add(record);
-
-                ln += 1;
-            }
+            CsvLoader.Load<EvtxECmdData>(filename, DataList, TaggedLines, configure: config => { config.ShouldUseConstructorParameters = _ => false; });
         }
     }
 
@@ -1601,37 +1174,7 @@ namespace TLEFileEZTools
 
         public void ProcessFile(string filename)
         {
-            DataList.Clear();
-
-            using var fileReader = File.OpenText(filename);
-            var csv = new CsvReader(fileReader, CultureInfo.InvariantCulture);
-                
-
-            var o = new TypeConverterOptions
-            {
-                DateTimeStyle = DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal
-            };
-            csv.Context.TypeConverterOptionsCache.AddOptions<RecmdBatchData>(o);
-
-            var foo = csv.Context.AutoMap<RecmdBatchData>();
-
-            foo.Map(t => t.Line).Ignore();
-            foo.Map(t => t.Tag).Ignore();
-
-            csv.Context.RegisterClassMap(foo);
-
-            var records = csv.GetRecords<RecmdBatchData>();
-                
-            var ln = 1;
-            foreach (var record in records)
-            {
-                Log.Debug("Line # {Line}, Record: {RawRecord}",ln,csv.Context.Parser.RawRecord);
-                record.Line = ln;
-                record.Tag = TaggedLines.Contains(ln);
-                DataList.Add(record);
-
-                ln += 1;
-            }
+            CsvLoader.Load<RecmdBatchData>(filename, DataList, TaggedLines);
         }
     }
 
@@ -1651,6 +1194,9 @@ namespace TLEFileEZTools
 
 
         //ControlSet	CacheEntryPosition	Path	LastModifiedTimeUTC	Executed
+        //added in the 2026.10 versions of the tool
+        public bool? FromSlack { get; set; }
+
         public int Line { get; set; }
 
         public bool Tag { get; set; }
@@ -1658,7 +1204,7 @@ namespace TLEFileEZTools
         public override string ToString()
         {
             return
-                $"{ControlSet} {CacheEntryPosition} {Path} {LastModifiedTimeUTC} {Executed} {Duplicate} {SourceFile}";
+                $"{ControlSet} {CacheEntryPosition} {Path} {LastModifiedTimeUTC} {Executed} {Duplicate} {SourceFile} {FromSlack}";
         }
     }
 
@@ -1674,7 +1220,8 @@ namespace TLEFileEZTools
 
             ExpectedHeaders = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
             {
-                "ControlSet,CacheEntryPosition,Path,LastModifiedTimeUTC,Executed,Duplicate,SourceFile"
+                "ControlSet,CacheEntryPosition,Path,LastModifiedTimeUTC,Executed,Duplicate,SourceFile",
+                "ControlSet,CacheEntryPosition,Path,LastModifiedTimeUTC,Executed,Duplicate,SourceFile,FromSlack"
             };
         }
 
@@ -1689,38 +1236,7 @@ namespace TLEFileEZTools
 
         public void ProcessFile(string filename)
         {
-            DataList.Clear();
-
-            using var fileReader = File.OpenText(filename);
-            var csv = new CsvReader(fileReader, CultureInfo.InvariantCulture);
-                
-
-
-            var o = new TypeConverterOptions
-            {
-                DateTimeStyle = DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal
-            };
-            csv.Context.TypeConverterOptionsCache.AddOptions<AppCompatCacheData>(o);
-
-            var foo = csv.Context.AutoMap<AppCompatCacheData>();
-
-            foo.Map(t => t.Line).Ignore();
-            foo.Map(t => t.Tag).Ignore();
-
-            csv.Context.RegisterClassMap(foo);
-
-            var records = csv.GetRecords<AppCompatCacheData>();
-                
-            var ln = 1;
-            foreach (var record in records)
-            {
-                Log.Debug("Line # {Line}, Record: {RawRecord}",ln,csv.Context.Parser.RawRecord);
-                record.Line = ln;
-                record.Tag = TaggedLines.Contains(ln);
-                DataList.Add(record);
-
-                ln += 1;
-            }
+            CsvLoader.Load<AppCompatCacheData>(filename, DataList, TaggedLines);
         }
     }
 
@@ -1769,39 +1285,7 @@ namespace TLEFileEZTools
 
         public void ProcessFile(string filename)
         {
-            DataList.Clear();
-
-            using var fileReader = File.OpenText(filename);
-            var csv = new CsvReader(fileReader, CultureInfo.InvariantCulture);
-                
-            var foo = csv.Context.AutoMap<ActivityPackageData>();
-
-            var o = new TypeConverterOptions
-            {
-                DateTimeStyle = DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal
-            };
-            csv.Context.TypeConverterOptionsCache.AddOptions<ActivityPackageData>(o);
-
-            foo.Map(t => t.Line).Ignore();
-            foo.Map(t => t.Tag).Ignore();
-
-            foo.Map(m => m.Expires).TypeConverterOption
-                .DateTimeStyles(DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal);
-
-            csv.Context.RegisterClassMap(foo);
-
-            var records = csv.GetRecords<ActivityPackageData>();
-                
-            var ln = 1;
-            foreach (var record in records)
-            {
-                Log.Debug("Line # {Line}, Record: {RawRecord}",ln,csv.Context.Parser.RawRecord);
-                record.Line = ln;
-                record.Tag = TaggedLines.Contains(ln);
-                DataList.Add(record);
-
-                ln += 1;
-            }
+            CsvLoader.Load<ActivityPackageData>(filename, DataList, TaggedLines, map => map.Map(m => m.Expires).TypeConverterOption.DateTimeStyles(DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal));
         }
     }
 
@@ -1839,13 +1323,17 @@ namespace TLEFileEZTools
         public string DevicePlatform { get; set; }
         public string TimeZone { get; set; }
 
+        //added in the 2026.10 versions of the tool
+        public string AppActivityId { get; set; }
+        public string ClipboardText { get; set; }
+
         public int Line { get; set; }
         public bool Tag { get; set; }
 
         public override string ToString()
         {
             return
-                $"{Id} {Executable} {DisplayText} {Payload} {ClipboardPayload} {ContentInfo} {LastModifiedTime} {ExpirationTime} {CreatedInCloud} {StartTime} {EndTime} {Duration} {LastModifiedOnClient} {OriginalLastModifiedOnClient} {ActivityType} {ActivityTypeOrg} {IsLocalOnly} {ETag} {PackageIdHash} {PlatformDeviceId} {DevicePlatform} {TimeZone}";
+                $"{Id} {Executable} {DisplayText} {Payload} {ClipboardPayload} {ContentInfo} {LastModifiedTime} {ExpirationTime} {CreatedInCloud} {StartTime} {EndTime} {Duration} {LastModifiedOnClient} {OriginalLastModifiedOnClient} {ActivityType} {ActivityTypeOrg} {IsLocalOnly} {ETag} {PackageIdHash} {PlatformDeviceId} {DevicePlatform} {TimeZone} {AppActivityId} {ClipboardText}";
         }
     }
 
@@ -1861,7 +1349,8 @@ namespace TLEFileEZTools
 
             ExpectedHeaders = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
             {
-                "Id,ActivityTypeOrg,ActivityType,Executable,DisplayText,ContentInfo,Payload,ClipboardPayload,StartTime,EndTime,Duration,LastModifiedTime,LastModifiedOnClient,OriginalLastModifiedOnClient,ExpirationTime,CreatedInCloud,IsLocalOnly,ETag,PackageIdHash,PlatformDeviceId,DevicePlatform,TimeZone"
+                "Id,ActivityTypeOrg,ActivityType,Executable,DisplayText,ContentInfo,Payload,ClipboardPayload,StartTime,EndTime,Duration,LastModifiedTime,LastModifiedOnClient,OriginalLastModifiedOnClient,ExpirationTime,CreatedInCloud,IsLocalOnly,ETag,PackageIdHash,PlatformDeviceId,DevicePlatform,TimeZone",
+                "Id,ActivityTypeOrg,ActivityType,Executable,DisplayText,ContentInfo,Payload,ClipboardPayload,StartTime,EndTime,Duration,LastModifiedTime,LastModifiedOnClient,OriginalLastModifiedOnClient,ExpirationTime,CreatedInCloud,IsLocalOnly,ETag,PackageIdHash,PlatformDeviceId,DevicePlatform,TimeZone,AppActivityId,ClipboardText"
             };
         }
 
@@ -1876,58 +1365,16 @@ namespace TLEFileEZTools
 
         public void ProcessFile(string filename)
         {
-            DataList.Clear();
-
-            using var fileReader = File.OpenText(filename);
-            var csv = new CsvReader(fileReader, CultureInfo.InvariantCulture);
-                
-
-            var foo = csv.Context.AutoMap<ActivityData>();
-
-            var o = new TypeConverterOptions
+            CsvLoader.Load<ActivityData>(filename, DataList, TaggedLines, map =>
             {
-                DateTimeStyle = DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal
-            };
-            csv.Context.TypeConverterOptionsCache.AddOptions<ActivityData>(o);
-
-            foo.Map(t => t.Line).Ignore();
-            foo.Map(t => t.Tag).Ignore();
-
-            foo.Map(m => m.CreatedInCloud).TypeConverterOption
-                .DateTimeStyles(DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal);
-
-            foo.Map(m => m.EndTime).TypeConverterOption
-                .DateTimeStyles(DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal);
-
-            foo.Map(m => m.ExpirationTime).TypeConverterOption
-                .DateTimeStyles(DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal);
-
-            foo.Map(m => m.LastModifiedOnClient).TypeConverterOption
-                .DateTimeStyles(DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal);
-
-            foo.Map(m => m.LastModifiedTime).TypeConverterOption
-                .DateTimeStyles(DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal);
-
-            foo.Map(m => m.OriginalLastModifiedOnClient).TypeConverterOption
-                .DateTimeStyles(DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal);
-
-            foo.Map(m => m.StartTime).TypeConverterOption
-                .DateTimeStyles(DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal);
-
-            csv.Context.RegisterClassMap(foo);
-
-            var records = csv.GetRecords<ActivityData>();
-                
-            var ln = 1;
-            foreach (var record in records)
-            {
-                Log.Debug("Line # {Line}, Record: {RawRecord}",ln,csv.Context.Parser.RawRecord);
-                record.Line = ln;
-                record.Tag = TaggedLines.Contains(ln);
-                DataList.Add(record);
-
-                ln += 1;
-            }
+                map.Map(m => m.CreatedInCloud).TypeConverterOption.DateTimeStyles(DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal);
+                map.Map(m => m.EndTime).TypeConverterOption.DateTimeStyles(DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal);
+                map.Map(m => m.ExpirationTime).TypeConverterOption.DateTimeStyles(DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal);
+                map.Map(m => m.LastModifiedOnClient).TypeConverterOption.DateTimeStyles(DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal);
+                map.Map(m => m.LastModifiedTime).TypeConverterOption.DateTimeStyles(DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal);
+                map.Map(m => m.OriginalLastModifiedOnClient).TypeConverterOption.DateTimeStyles(DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal);
+                map.Map(m => m.StartTime).TypeConverterOption.DateTimeStyles(DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal);
+            });
         }
     }
 
@@ -1970,13 +1417,17 @@ namespace TLEFileEZTools
 
         public string PlatformDeviceId { get; set; }
 
+        //added in the 2026.10 versions of the tool
+        public string AppActivityId { get; set; }
+        public string ClipboardText { get; set; }
+
         public int Line { get; set; }
         public bool Tag { get; set; }
 
         public override string ToString()
         {
             return
-                $"{OperationOrder} {OperationType} {AppId} {Executable} {Description} {StartTime} {DisplayText} {ClipboardPayload} {ContentInfo} {DevicePlatform} {TimeZone} {ActivityTypeOrg} {ActivityType} {Duration} {LastModifiedTime} {ExpirationTime} {Payload} {CreatedTime} {EndTime} {LastModifiedTimeOnClient} {OperationExpirationTime} {PlatformDeviceId}";
+                $"{OperationOrder} {OperationType} {AppId} {Executable} {Description} {StartTime} {DisplayText} {ClipboardPayload} {ContentInfo} {DevicePlatform} {TimeZone} {ActivityTypeOrg} {ActivityType} {Duration} {LastModifiedTime} {ExpirationTime} {Payload} {CreatedTime} {EndTime} {LastModifiedTimeOnClient} {OperationExpirationTime} {PlatformDeviceId} {AppActivityId} {ClipboardText}";
         }
     }
 
@@ -1992,7 +1443,8 @@ namespace TLEFileEZTools
 
             ExpectedHeaders = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
             {
-                "Id,ActivityTypeOrg,ActivityType,Executable,DisplayText,ContentInfo,Payload,ClipboardPayload,StartTime,EndTime,Duration,LastModifiedTime,LastModifiedTimeOnClient,CreatedTime,ExpirationTime,OperationExpirationTime,OperationOrder,AppId,OperationType,Description,PlatformDeviceId,DevicePlatform,TimeZone"
+                "Id,ActivityTypeOrg,ActivityType,Executable,DisplayText,ContentInfo,Payload,ClipboardPayload,StartTime,EndTime,Duration,LastModifiedTime,LastModifiedTimeOnClient,CreatedTime,ExpirationTime,OperationExpirationTime,OperationOrder,AppId,OperationType,Description,PlatformDeviceId,DevicePlatform,TimeZone",
+                "Id,ActivityTypeOrg,ActivityType,Executable,DisplayText,ContentInfo,Payload,ClipboardPayload,StartTime,EndTime,Duration,LastModifiedTime,LastModifiedTimeOnClient,CreatedTime,ExpirationTime,OperationExpirationTime,OperationOrder,AppId,OperationType,Description,PlatformDeviceId,DevicePlatform,TimeZone,AppActivityId,ClipboardText"
             };
         }
 
@@ -2007,58 +1459,16 @@ namespace TLEFileEZTools
 
         public void ProcessFile(string filename)
         {
-            DataList.Clear();
-
-            using var fileReader = File.OpenText(filename);
-            var csv = new CsvReader(fileReader, CultureInfo.InvariantCulture);
-                
-
-            var foo = csv.Context.AutoMap<ActivityOperationData>();
-
-            var o = new TypeConverterOptions
+            CsvLoader.Load<ActivityOperationData>(filename, DataList, TaggedLines, map =>
             {
-                DateTimeStyle = DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal
-            };
-            csv.Context.TypeConverterOptionsCache.AddOptions<ActivityOperationData>(o);
-
-            foo.Map(t => t.Line).Ignore();
-            foo.Map(t => t.Tag).Ignore();
-
-            foo.Map(m => m.CreatedTime).TypeConverterOption
-                .DateTimeStyles(DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal);
-
-            foo.Map(m => m.EndTime).TypeConverterOption
-                .DateTimeStyles(DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal);
-
-            foo.Map(m => m.ExpirationTime).TypeConverterOption
-                .DateTimeStyles(DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal);
-
-            foo.Map(m => m.LastModifiedTimeOnClient).TypeConverterOption
-                .DateTimeStyles(DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal);
-
-            foo.Map(m => m.LastModifiedTime).TypeConverterOption
-                .DateTimeStyles(DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal);
-
-            foo.Map(m => m.OperationExpirationTime).TypeConverterOption
-                .DateTimeStyles(DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal);
-
-            foo.Map(m => m.StartTime).TypeConverterOption
-                .DateTimeStyles(DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal);
-
-            csv.Context.RegisterClassMap(foo);
-
-            var records = csv.GetRecords<ActivityOperationData>();
-                
-            var ln = 1;
-            foreach (var record in records)
-            {
-                Log.Debug("Line # {Line}, Record: {RawRecord}",ln,csv.Context.Parser.RawRecord);
-                record.Line = ln;
-                record.Tag = TaggedLines.Contains(ln);
-                DataList.Add(record);
-
-                ln += 1;
-            }
+                map.Map(m => m.CreatedTime).TypeConverterOption.DateTimeStyles(DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal);
+                map.Map(m => m.EndTime).TypeConverterOption.DateTimeStyles(DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal);
+                map.Map(m => m.ExpirationTime).TypeConverterOption.DateTimeStyles(DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal);
+                map.Map(m => m.LastModifiedTimeOnClient).TypeConverterOption.DateTimeStyles(DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal);
+                map.Map(m => m.LastModifiedTime).TypeConverterOption.DateTimeStyles(DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal);
+                map.Map(m => m.OperationExpirationTime).TypeConverterOption.DateTimeStyles(DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal);
+                map.Map(m => m.StartTime).TypeConverterOption.DateTimeStyles(DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal);
+            });
         }
     }
 
@@ -2113,37 +1523,7 @@ namespace TLEFileEZTools
 
         public void ProcessFile(string filename)
         {
-            DataList.Clear();
-
-            using var fileReader = File.OpenText(filename);
-            var csv = new CsvReader(fileReader, CultureInfo.InvariantCulture);
-                
-
-            var o = new TypeConverterOptions
-            {
-                DateTimeStyle = DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal
-            };
-            csv.Context.TypeConverterOptionsCache.AddOptions<AmcacheParserProgramsData>(o);
-
-            var foo = csv.Context.AutoMap<AmcacheParserProgramsData>();
-
-            foo.Map(t => t.Line).Ignore();
-            foo.Map(t => t.Tag).Ignore();
-
-            csv.Context.RegisterClassMap(foo);
-
-            var records = csv.GetRecords<AmcacheParserProgramsData>();
-                
-            var ln = 1;
-            foreach (var record in records)
-            {
-                Log.Debug("Line # {Line}, Record: {RawRecord}",ln,csv.Context.Parser.RawRecord);
-                record.Line = ln;
-                record.Tag = TaggedLines.Contains(ln);
-                DataList.Add(record);
-
-                ln += 1;
-            }
+            CsvLoader.Load<AmcacheParserProgramsData>(filename, DataList, TaggedLines);
         }
     }
 
@@ -2212,37 +1592,7 @@ namespace TLEFileEZTools
 
         public void ProcessFile(string filename)
         {
-            DataList.Clear();
-
-            using var fileReader = File.OpenText(filename);
-            var csv = new CsvReader(fileReader, CultureInfo.InvariantCulture);
-                
-
-            var foo = csv.Context.AutoMap<AmcacheParserFilesData>();
-
-            var o = new TypeConverterOptions
-            {
-                DateTimeStyle = DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal
-            };
-            csv.Context.TypeConverterOptionsCache.AddOptions<AmcacheParserFilesData>(o);
-
-            foo.Map(t => t.Line).Ignore();
-            foo.Map(t => t.Tag).Ignore();
-
-            csv.Context.RegisterClassMap(foo);
-
-            var records = csv.GetRecords<AmcacheParserFilesData>();
-                
-            var ln = 1;
-            foreach (var record in records)
-            {
-                Log.Debug("Line # {Line}, Record: {RawRecord}",ln,csv.Context.Parser.RawRecord);
-                record.Line = ln;
-                record.Tag = TaggedLines.Contains(ln);
-                DataList.Add(record);
-
-                ln += 1;
-            }
+            CsvLoader.Load<AmcacheParserFilesData>(filename, DataList, TaggedLines);
         }
     }
 
@@ -2271,13 +1621,20 @@ namespace TLEFileEZTools
         public long Usn { get; set; }
         public string Description { get; set; }
 
+        //added in the 2026.10 versions of the tool
+        public string Publisher { get; set; }
+        public string Sha256 { get; set; }
+        public string KeyName { get; set; }
+        public string AppxPackageFullName { get; set; }
+        public string AppxPackageRelativeId { get; set; }
+
         public int Line { get; set; }
         public bool Tag { get; set; }
 
         public override string ToString()
         {
             return
-                $"{ApplicationName} {ProgramId} {FileKeyLastWriteTimestamp} {SHA1} {IsOsComponent} {FullPath} {Name} {FileExtension} {LinkDate} {ProductName} {Size} {Version} {ProductVersion} {LongPathHash} {BinaryType} {IsPeFile} {BinFileVersion} {BinProductVersion} {Usn} {Language} {Description}";
+                $"{ApplicationName} {ProgramId} {FileKeyLastWriteTimestamp} {SHA1} {IsOsComponent} {FullPath} {Name} {FileExtension} {LinkDate} {ProductName} {Size} {Version} {ProductVersion} {LongPathHash} {BinaryType} {IsPeFile} {BinFileVersion} {BinProductVersion} {Usn} {Language} {Description} {Publisher} {Sha256} {KeyName} {AppxPackageFullName} {AppxPackageRelativeId}";
         }
     }
 
@@ -2294,7 +1651,8 @@ namespace TLEFileEZTools
             ExpectedHeaders = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
             {
                 "ApplicationName,ProgramId,FileKeyLastWriteTimestamp,SHA1,IsOsComponent,FullPath,Name,FileExtension,LinkDate,ProductName,Size,Version,ProductVersion,LongPathHash,BinaryType,IsPeFile,BinFileVersion,BinProductVersion,Usn,Language,Description",
-                "ApplicationName,ProgramId,FileKeyLastWriteTimestamp,SHA1,IsOsComponent,FullPath,Name,FileExtension,LinkDate,ProductName,Size,Version,ProductVersion,LongPathHash,BinaryType,IsPeFile,BinFileVersion,BinProductVersion,Usn,Language,Description,OriginalFileName"
+                "ApplicationName,ProgramId,FileKeyLastWriteTimestamp,SHA1,IsOsComponent,FullPath,Name,FileExtension,LinkDate,ProductName,Size,Version,ProductVersion,LongPathHash,BinaryType,IsPeFile,BinFileVersion,BinProductVersion,Usn,Language,Description,OriginalFileName",
+                "ApplicationName,ProgramId,FileKeyLastWriteTimestamp,SHA1,IsOsComponent,FullPath,Name,FileExtension,LinkDate,ProductName,Size,Version,ProductVersion,LongPathHash,BinaryType,IsPeFile,BinFileVersion,BinProductVersion,Usn,Language,Description,OriginalFileName,Publisher,Sha256,KeyName,AppxPackageFullName,AppxPackageRelativeId"
             };
         }
 
@@ -2309,39 +1667,7 @@ namespace TLEFileEZTools
 
         public void ProcessFile(string filename)
         {
-            DataList.Clear();
-
-            using var fileReader = File.OpenText(filename);
-            var csv = new CsvReader(fileReader, CultureInfo.InvariantCulture);
-                
-
-
-            var o = new TypeConverterOptions
-            {
-                DateTimeStyle = DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal
-            };
-            csv.Context.TypeConverterOptionsCache.AddOptions<AmcacheParserNewFilesData>(o);
-
-            var foo = csv.Context.AutoMap<AmcacheParserNewFilesData>();
-
-            foo.Map(t => t.Line).Ignore();
-            foo.Map(t => t.Tag).Ignore();
-            foo.Map(t => t.Usn).Ignore();
-
-            csv.Context.RegisterClassMap(foo);
-
-            var records = csv.GetRecords<AmcacheParserNewFilesData>();
-                
-            var ln = 1;
-            foreach (var record in records)
-            {
-                Log.Debug("Line # {Line}, Record: {RawRecord}",ln,csv.Context.Parser.RawRecord);
-                record.Line = ln;
-                record.Tag = TaggedLines.Contains(ln);
-                DataList.Add(record);
-
-                ln += 1;
-            }
+            CsvLoader.Load<AmcacheParserNewFilesData>(filename, DataList, TaggedLines, map => map.Map(t => t.Usn).Ignore());
         }
     }
 
@@ -2373,13 +1699,25 @@ namespace TLEFileEZTools
         public string Provider { get; set; }
         public string Service { get; set; }
         public string Stackid { get; set; }
+        //added in the 2026.10 versions of the tool
+        public string DeviceState { get; set; }
+        public string InstallDate { get; set; }
+        public string FirstInstallDate { get; set; }
+        public string ExtendedInfs { get; set; }
+        public string UpperClassFilters { get; set; }
+        public string LowerClassFilters { get; set; }
+        public string UpperFilters { get; set; }
+        public string LowerFilters { get; set; }
+        public string DeviceInterfaceClasses { get; set; }
+        public string LocationPaths { get; set; }
+
         public int Line { get; set; }
         public bool Tag { get; set; }
 
         public override string ToString()
         {
             return
-                $"{KeyName} {KeyLastWriteTimestamp} {BusReportedDescription} {Class} {ClassGuid} {Compid} {ContainerId} {Description} {DriverId} {DriverPackageStrongName} {DriverName} {DriverVerDate} {DriverVerVersion} {Enumerator} {HWID} {Inf} {InstallState} {Manufacturer} {MatchingId} {Model} {ParentId} {ProblemCode} {Provider} {Service} {Stackid}";
+                $"{KeyName} {KeyLastWriteTimestamp} {BusReportedDescription} {Class} {ClassGuid} {Compid} {ContainerId} {Description} {DriverId} {DriverPackageStrongName} {DriverName} {DriverVerDate} {DriverVerVersion} {Enumerator} {HWID} {Inf} {InstallState} {Manufacturer} {MatchingId} {Model} {ParentId} {ProblemCode} {Provider} {Service} {Stackid} {DeviceState} {InstallDate} {FirstInstallDate} {ExtendedInfs} {UpperClassFilters} {LowerClassFilters} {UpperFilters} {LowerFilters} {DeviceInterfaceClasses} {LocationPaths}";
         }
     }
 
@@ -2395,7 +1733,8 @@ namespace TLEFileEZTools
 
             ExpectedHeaders = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
             {
-                "KeyName,KeyLastWriteTimestamp,BusReportedDescription,Class,ClassGuid,Compid,ContainerId,Description,DriverId,DriverPackageStrongName,DriverName,DriverVerDate,DriverVerVersion,Enumerator,HWID,Inf,InstallState,Manufacturer,MatchingId,Model,ParentId,ProblemCode,Provider,Service,Stackid"
+                "KeyName,KeyLastWriteTimestamp,BusReportedDescription,Class,ClassGuid,Compid,ContainerId,Description,DriverId,DriverPackageStrongName,DriverName,DriverVerDate,DriverVerVersion,Enumerator,HWID,Inf,InstallState,Manufacturer,MatchingId,Model,ParentId,ProblemCode,Provider,Service,Stackid",
+                "KeyName,KeyLastWriteTimestamp,BusReportedDescription,Class,ClassGuid,Compid,ContainerId,Description,DriverId,DriverPackageStrongName,DriverName,DriverVerDate,DriverVerVersion,Enumerator,HWID,Inf,InstallState,Manufacturer,MatchingId,Model,ParentId,ProblemCode,Provider,Service,Stackid,DeviceState,InstallDate,FirstInstallDate,ExtendedInfs,UpperClassFilters,LowerClassFilters,UpperFilters,LowerFilters,DeviceInterfaceClasses,LocationPaths"
             };
         }
 
@@ -2410,37 +1749,7 @@ namespace TLEFileEZTools
 
         public void ProcessFile(string filename)
         {
-            DataList.Clear();
-
-            using var fileReader = File.OpenText(filename);
-            var csv = new CsvReader(fileReader, CultureInfo.InvariantCulture);
-                
-
-            var foo = csv.Context.AutoMap<AmcacheParserNewDevicePnPData>();
-
-            var o = new TypeConverterOptions
-            {
-                DateTimeStyle = DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal
-            };
-            csv.Context.TypeConverterOptionsCache.AddOptions<AmcacheParserNewDevicePnPData>(o);
-
-            foo.Map(t => t.Line).Ignore();
-            foo.Map(t => t.Tag).Ignore();
-
-            csv.Context.RegisterClassMap(foo);
-
-            var records = csv.GetRecords<AmcacheParserNewDevicePnPData>();
-                
-            var ln = 1;
-            foreach (var record in records)
-            {
-                Log.Debug("Line # {Line}, Record: {RawRecord}",ln,csv.Context.Parser.RawRecord);
-                record.Line = ln;
-                record.Tag = TaggedLines.Contains(ln);
-                DataList.Add(record);
-
-                ln += 1;
-            }
+            CsvLoader.Load<AmcacheParserNewDevicePnPData>(filename, DataList, TaggedLines);
         }
     }
 
@@ -2462,7 +1771,7 @@ namespace TLEFileEZTools
         public string ModelName { get; set; }
         public string ModelNumber { get; set; }
         public string PrimaryCategory { get; set; }
-        public int State { get; set; }
+        public int? State { get; set; }
         public int Line { get; set; }
         public bool Tag { get; set; }
 
@@ -2500,37 +1809,7 @@ namespace TLEFileEZTools
 
         public void ProcessFile(string filename)
         {
-            DataList.Clear();
-
-            using var fileReader = File.OpenText(filename);
-            var csv = new CsvReader(fileReader, CultureInfo.InvariantCulture);
-                
-
-            var foo = csv.Context.AutoMap<AmcacheParserDeviceContainerData>();
-
-            var o = new TypeConverterOptions
-            {
-                DateTimeStyle = DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal
-            };
-            csv.Context.TypeConverterOptionsCache.AddOptions<AmcacheParserDeviceContainerData>(o);
-
-            foo.Map(t => t.Line).Ignore();
-            foo.Map(t => t.Tag).Ignore();
-
-            csv.Context.RegisterClassMap(foo);
-
-            var records = csv.GetRecords<AmcacheParserDeviceContainerData>();
-                
-            var ln = 1;
-            foreach (var record in records)
-            {
-                Log.Debug("Line # {Line}, Record: {RawRecord}",ln,csv.Context.Parser.RawRecord);
-                record.Line = ln;
-                record.Tag = TaggedLines.Contains(ln);
-                DataList.Add(record);
-
-                ln += 1;
-            }
+            CsvLoader.Load<AmcacheParserDeviceContainerData>(filename, DataList, TaggedLines);
         }
     }
 
@@ -2538,7 +1817,7 @@ namespace TLEFileEZTools
     {
         public string KeyName { get; set; }
         public DateTime KeyLastWriteTimestamp { get; set; }
-        public DateTime Date { get; set; }
+        public DateTime? Date { get; set; }
         public string Class { get; set; }
         public string Directory { get; set; }
         public bool DriverInBox { get; set; }
@@ -2548,13 +1827,20 @@ namespace TLEFileEZTools
         public string SubmissionId { get; set; }
         public string SYSFILE { get; set; }
         public string Version { get; set; }
+        //added in the 2026.10 versions of the tool
+        public string ClassGuid { get; set; }
+        public string DriverPackageStrongName { get; set; }
+        public string FlightIds { get; set; }
+        public string RecoveryIds { get; set; }
+        public string IsActive { get; set; }
+
         public int Line { get; set; }
         public bool Tag { get; set; }
 
         public override string ToString()
         {
             return
-                $"{KeyName} {KeyLastWriteTimestamp} {Date} {Class} {Directory} {DriverInBox} {Hwids} {Inf} {Provider} {SubmissionId} {SYSFILE} {Version}";
+                $"{KeyName} {KeyLastWriteTimestamp} {Date} {Class} {Directory} {DriverInBox} {Hwids} {Inf} {Provider} {SubmissionId} {SYSFILE} {Version} {ClassGuid} {DriverPackageStrongName} {FlightIds} {RecoveryIds} {IsActive}";
         }
     }
 
@@ -2570,7 +1856,8 @@ namespace TLEFileEZTools
 
             ExpectedHeaders = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
             {
-                "KeyName,KeyLastWriteTimestamp,Date,Class,Directory,DriverInBox,Hwids,Inf,Provider,SubmissionId,SYSFILE,Version"
+                "KeyName,KeyLastWriteTimestamp,Date,Class,Directory,DriverInBox,Hwids,Inf,Provider,SubmissionId,SYSFILE,Version",
+                "KeyName,KeyLastWriteTimestamp,Date,Class,Directory,DriverInBox,Hwids,Inf,Provider,SubmissionId,SYSFILE,Version,ClassGuid,DriverPackageStrongName,FlightIds,RecoveryIds,IsActive"
             };
         }
 
@@ -2585,37 +1872,7 @@ namespace TLEFileEZTools
 
         public void ProcessFile(string filename)
         {
-            DataList.Clear();
-
-            using var fileReader = File.OpenText(filename);
-            var csv = new CsvReader(fileReader, CultureInfo.InvariantCulture);
-                
-
-            var foo = csv.Context.AutoMap<AmcacheParserDriverPackageData>();
-
-            var o = new TypeConverterOptions
-            {
-                DateTimeStyle = DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal
-            };
-            csv.Context.TypeConverterOptionsCache.AddOptions<AmcacheParserDriverPackageData>(o);
-
-            foo.Map(t => t.Line).Ignore();
-            foo.Map(t => t.Tag).Ignore();
-
-            csv.Context.RegisterClassMap(foo);
-
-            var records = csv.GetRecords<AmcacheParserDriverPackageData>();
-                
-            var ln = 1;
-            foreach (var record in records)
-            {
-                Log.Debug("Line # {Line}, Record: {RawRecord}",ln,csv.Context.Parser.RawRecord);
-                record.Line = ln;
-                record.Tag = TaggedLines.Contains(ln);
-                DataList.Add(record);
-
-                ln += 1;
-            }
+            CsvLoader.Load<AmcacheParserDriverPackageData>(filename, DataList, TaggedLines);
         }
     }
 
@@ -2679,38 +1936,7 @@ namespace TLEFileEZTools
 
         public void ProcessFile(string filename)
         {
-            DataList.Clear();
-
-            using var fileReader = File.OpenText(filename);
-            var csv = new CsvReader(fileReader, CultureInfo.InvariantCulture);
-                
-
-            var foo = csv.Context.AutoMap<AmcacheParserDriverBinaryData>();
-
-            var o = new TypeConverterOptions
-            {
-                DateTimeStyle = DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal
-            };
-            csv.Context.TypeConverterOptionsCache.AddOptions<AmcacheParserDriverBinaryData>(o);
-
-            foo.Map(t => t.Line).Ignore();
-            foo.Map(t => t.Tag).Ignore();
-
-            csv.Context.RegisterClassMap(foo);
-
-
-            var records = csv.GetRecords<AmcacheParserDriverBinaryData>();
-                
-            var ln = 1;
-            foreach (var record in records)
-            {
-                Log.Debug("Line # {Line}, Record: {RawRecord}",ln,csv.Context.Parser.RawRecord);
-                record.Line = ln;
-                record.Tag = TaggedLines.Contains(ln);
-                DataList.Add(record);
-
-                ln += 1;
-            }
+            CsvLoader.Load<AmcacheParserDriverBinaryData>(filename, DataList, TaggedLines);
         }
     }
 
@@ -2720,12 +1946,17 @@ namespace TLEFileEZTools
         public string KeyName { get; set; }
         public string LnkName { get; set; }
         public DateTime KeyLastWriteTimestamp { get; set; }
+        //added in the 2026.10 versions of the tool
+        public string ShortcutTargetPath { get; set; }
+        public string ShortcutAumid { get; set; }
+        public string ShortcutProgramId { get; set; }
+
         public int Line { get; set; }
         public bool Tag { get; set; }
 
         public override string ToString()
         {
-            return $"{KeyName} {LnkName} {KeyLastWriteTimestamp}";
+            return $"{KeyName} {LnkName} {KeyLastWriteTimestamp} {ShortcutTargetPath} {ShortcutAumid} {ShortcutProgramId}";
         }
     }
 
@@ -2741,7 +1972,8 @@ namespace TLEFileEZTools
 
             ExpectedHeaders = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
             {
-                "KeyName,LnkName,KeyLastWriteTimestamp"
+                "KeyName,LnkName,KeyLastWriteTimestamp",
+                "KeyName,LnkName,KeyLastWriteTimestamp,ShortcutTargetPath,ShortcutAumid,ShortcutProgramId"
             };
         }
 
@@ -2756,39 +1988,7 @@ namespace TLEFileEZTools
 
         public void ProcessFile(string filename)
         {
-            DataList.Clear();
-
-            using var fileReader = File.OpenText(filename);
-            var csv = new CsvReader(fileReader, CultureInfo.InvariantCulture);
-                
-
-            var foo = csv.Context.AutoMap<AmcacheParserNewShortcutData>();
-
-            var o = new TypeConverterOptions
-            {
-                DateTimeStyle = DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal
-            };
-            csv.Context.TypeConverterOptionsCache.AddOptions<AmcacheParserNewShortcutData>(o);
-
-            foo.Map(t => t.Line).Ignore();
-            foo.Map(t => t.Tag).Ignore();
-
-            csv.Context.RegisterClassMap(foo);
-
-                
-
-            var records = csv.GetRecords<AmcacheParserNewShortcutData>();
-
-            var ln = 1;
-            foreach (var record in records)
-            {
-                Log.Debug("Line # {Line}, Record: {RawRecord}",ln,csv.Context.Parser.RawRecord);
-                record.Line = ln;
-                record.Tag = TaggedLines.Contains(ln);
-                DataList.Add(record);
-
-                ln += 1;
-            }
+            CsvLoader.Load<AmcacheParserNewShortcutData>(filename, DataList, TaggedLines);
         }
     }
 
@@ -2820,13 +2020,18 @@ namespace TLEFileEZTools
         public string StoreAppType { get; set; }
         public string UninstallString { get; set; }
         public string Manufacturer { get; set; }
+        //added in the 2026.10 versions of the tool
+        public string KeyName { get; set; }
+        public string UserSid { get; set; }
+        public DateTime? MsiInstallDate { get; set; }
+
         public int Line { get; set; }
         public bool Tag { get; set; }
 
         public override string ToString()
         {
             return
-                $"{ProgramId} {KeyLastWriteTimestamp} {Name} {Version} {Publisher} {InstallDateArpLastModified} {InstallDate} {InstallDateMsi} {OSVersionAtInstallTime} {InstallDateFromLinkFile} {BundleManifestPath} {HiddenArp} {InboxModernApp} {Language} {ManifestPath} {MsiPackageCode} {MsiProductCode} {PackageFullName} {ProgramInstanceId} {RegistryKeyPath} {RootDirPath} {Type} {Source} {StoreAppType} {UninstallString} {Manufacturer}";
+                $"{ProgramId} {KeyLastWriteTimestamp} {Name} {Version} {Publisher} {InstallDateArpLastModified} {InstallDate} {InstallDateMsi} {OSVersionAtInstallTime} {InstallDateFromLinkFile} {BundleManifestPath} {HiddenArp} {InboxModernApp} {Language} {ManifestPath} {MsiPackageCode} {MsiProductCode} {PackageFullName} {ProgramInstanceId} {RegistryKeyPath} {RootDirPath} {Type} {Source} {StoreAppType} {UninstallString} {Manufacturer} {KeyName} {UserSid} {MsiInstallDate}";
         }
     }
 
@@ -2842,7 +2047,8 @@ namespace TLEFileEZTools
 
             ExpectedHeaders = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
             {
-                "ProgramId,KeyLastWriteTimestamp,Name,Version,Publisher,InstallDateArpLastModified,InstallDate,InstallDateMsi,OSVersionAtInstallTime,InstallDateFromLinkFile,BundleManifestPath,HiddenArp,InboxModernApp,Language,ManifestPath,MsiPackageCode,MsiProductCode,PackageFullName,ProgramInstanceId,RegistryKeyPath,RootDirPath,Type,Source,StoreAppType,UninstallString,Manufacturer"
+                "ProgramId,KeyLastWriteTimestamp,Name,Version,Publisher,InstallDateArpLastModified,InstallDate,InstallDateMsi,OSVersionAtInstallTime,InstallDateFromLinkFile,BundleManifestPath,HiddenArp,InboxModernApp,Language,ManifestPath,MsiPackageCode,MsiProductCode,PackageFullName,ProgramInstanceId,RegistryKeyPath,RootDirPath,Type,Source,StoreAppType,UninstallString,Manufacturer",
+                "ProgramId,KeyLastWriteTimestamp,Name,Version,Publisher,InstallDateArpLastModified,InstallDate,InstallDateMsi,OSVersionAtInstallTime,InstallDateFromLinkFile,BundleManifestPath,HiddenArp,InboxModernApp,Language,ManifestPath,MsiPackageCode,MsiProductCode,PackageFullName,ProgramInstanceId,RegistryKeyPath,RootDirPath,Type,Source,StoreAppType,UninstallString,Manufacturer,KeyName,UserSid,MsiInstallDate"
             };
         }
 
@@ -2857,40 +2063,7 @@ namespace TLEFileEZTools
 
         public void ProcessFile(string filename)
         {
-            DataList.Clear();
-
-            using var fileReader = File.OpenText(filename);
-            var csv = new CsvReader(fileReader, CultureInfo.InvariantCulture);
-                
-
-            var foo = csv.Context.AutoMap<AmcacheParserNewProgramData>();
-
-            var o = new TypeConverterOptions
-            {
-                DateTimeStyle = DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal
-            };
-            csv.Context.TypeConverterOptionsCache.AddOptions<AmcacheParserNewProgramData>(o);
-
-            foo.Map(t => t.Line).Ignore();
-            foo.Map(t => t.Tag).Ignore();
-
-            csv.Context.RegisterClassMap(foo);
-
-                
-
-            var records = csv.GetRecords<AmcacheParserNewProgramData>();
-
-            var ln = 1;
-            foreach (var record in records)
-            {
-                Log.Debug("Line # {Line}, Record: {RawRecord}",ln,csv.Context.Parser.RawRecord);
-
-                record.Line = ln;
-                record.Tag = TaggedLines.Contains(ln);
-                DataList.Add(record);
-
-                ln += 1;
-            }
+            CsvLoader.Load<AmcacheParserNewProgramData>(filename, DataList, TaggedLines);
         }
     }
 
@@ -2953,39 +2126,7 @@ namespace TLEFileEZTools
 
         public void ProcessFile(string filename)
         {
-            DataList.Clear();
-            using var fileReader = File.OpenText(filename);
-            var csv = new CsvReader(fileReader, CultureInfo.InvariantCulture);
-                
-
-            var o = new TypeConverterOptions
-            {
-                DateTimeStyle = DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal
-            };
-            csv.Context.TypeConverterOptionsCache.AddOptions<NetworkUsageData>(o);
-
-            var foo = csv.Context.AutoMap<NetworkUsageData>();
-
-            foo.Map(t => t.Line).Ignore();
-            foo.Map(t => t.Tag).Ignore();
-
-            csv.Context.RegisterClassMap(foo);
-
-            var records = csv.GetRecords<NetworkUsageData>();
-
-                
-
-
-            var ln = 1;
-            foreach (var record in records)
-            {
-                Log.Debug("Line # {Line}, Record: {RawRecord}",ln,csv.Context.Parser.RawRecord);
-                record.Line = ln;
-                record.Tag = TaggedLines.Contains(ln);
-                DataList.Add(record);
-
-                ln += 1;
-            }
+            CsvLoader.Load<NetworkUsageData>(filename, DataList, TaggedLines);
         }
     }
 
@@ -3043,39 +2184,7 @@ namespace TLEFileEZTools
 
         public void ProcessFile(string filename)
         {
-            DataList.Clear();
-            using var fileReader = File.OpenText(filename);
-            var csv = new CsvReader(fileReader, CultureInfo.InvariantCulture);
-                
-
-            var o = new TypeConverterOptions
-            {
-                DateTimeStyle = DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal
-            };
-            csv.Context.TypeConverterOptionsCache.AddOptions<PushNotificationData>(o);
-
-            var foo = csv.Context.AutoMap<PushNotificationData>();
-
-            foo.Map(t => t.Line).Ignore();
-            foo.Map(t => t.Tag).Ignore();
-
-            csv.Context.RegisterClassMap(foo);
-
-            var records = csv.GetRecords<PushNotificationData>();
-
-                
-
-
-            var ln = 1;
-            foreach (var record in records)
-            {
-                Log.Debug("Line # {Line}, Record: {RawRecord}",ln,csv.Context.Parser.RawRecord);
-                record.Line = ln;
-                record.Tag = TaggedLines.Contains(ln);
-                DataList.Add(record);
-
-                ln += 1;
-            }
+            CsvLoader.Load<PushNotificationData>(filename, DataList, TaggedLines);
         }
     }
 
@@ -3138,39 +2247,7 @@ namespace TLEFileEZTools
 
         public void ProcessFile(string filename)
         {
-            DataList.Clear();
-            using var fileReader = File.OpenText(filename);
-            var csv = new CsvReader(fileReader, CultureInfo.InvariantCulture);
-                
-
-            var o = new TypeConverterOptions
-            {
-                DateTimeStyle = DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal
-            };
-            csv.Context.TypeConverterOptionsCache.AddOptions<NetworkConnectionData>(o);
-
-            var foo = csv.Context.AutoMap<NetworkConnectionData>();
-
-            foo.Map(t => t.Line).Ignore();
-            foo.Map(t => t.Tag).Ignore();
-
-            csv.Context.RegisterClassMap(foo);
-
-            var records = csv.GetRecords<NetworkConnectionData>();
-
-                
-
-
-            var ln = 1;
-            foreach (var record in records)
-            {
-                Log.Debug("Line # {Line}, Record: {RawRecord}",ln,csv.Context.Parser.RawRecord);
-                record.Line = ln;
-                record.Tag = TaggedLines.Contains(ln);
-                DataList.Add(record);
-
-                ln += 1;
-            }
+            CsvLoader.Load<NetworkConnectionData>(filename, DataList, TaggedLines);
         }
     }
 
@@ -3242,40 +2319,7 @@ namespace TLEFileEZTools
 
         public void ProcessFile(string filename)
         {
-            DataList.Clear();
-            using var fileReader = File.OpenText(filename);
-            var csv = new CsvReader(fileReader, CultureInfo.InvariantCulture);
-                
-
-            var o = new TypeConverterOptions
-            {
-                DateTimeStyle = DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal
-            };
-            csv.Context.TypeConverterOptionsCache.AddOptions<AppResourceUseInfoData>(o);
-
-            var foo = csv.Context.AutoMap<AppResourceUseInfoData>();
-
-            foo.Map(t => t.Line).Ignore();
-            foo.Map(t => t.Tag).Ignore();
-
-
-            csv.Context.RegisterClassMap(foo);
-
-            var records = csv.GetRecords<AppResourceUseInfoData>();
-
-                
-
-
-            var ln = 1;
-            foreach (var record in records)
-            {
-                Log.Debug("Line # {Line}, Record: {RawRecord}",ln,csv.Context.Parser.RawRecord);
-                record.Line = ln;
-                record.Tag = TaggedLines.Contains(ln);
-                DataList.Add(record);
-
-                ln += 1;
-            }
+            CsvLoader.Load<AppResourceUseInfoData>(filename, DataList, TaggedLines);
         }
     }
 
@@ -3338,39 +2382,7 @@ namespace TLEFileEZTools
 
         public void ProcessFile(string filename)
         {
-            DataList.Clear();
-            using var fileReader = File.OpenText(filename);
-            var csv = new CsvReader(fileReader, CultureInfo.InvariantCulture);
-                
-
-            var o = new TypeConverterOptions
-            {
-                DateTimeStyle = DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal
-            };
-            csv.Context.TypeConverterOptionsCache.AddOptions<UnknownD8FData>(o);
-
-            var foo = csv.Context.AutoMap<UnknownD8FData>();
-
-            foo.Map(t => t.Line).Ignore();
-            foo.Map(t => t.Tag).Ignore();
-
-            csv.Context.RegisterClassMap(foo);
-
-            var records = csv.GetRecords<UnknownD8FData>();
-
-                
-
-
-            var ln = 1;
-            foreach (var record in records)
-            {
-                Log.Debug("Line # {Line}, Record: {RawRecord}",ln,csv.Context.Parser.RawRecord);
-                record.Line = ln;
-                record.Tag = TaggedLines.Contains(ln);
-                DataList.Add(record);
-
-                ln += 1;
-            }
+            CsvLoader.Load<UnknownD8FData>(filename, DataList, TaggedLines);
         }
     }
 
@@ -3395,13 +2407,23 @@ namespace TLEFileEZTools
 
         public int DurationMs { get; set; }
 
+        //added in the 2026.10 versions of the tool
+        public int? InFocusS { get; set; }
+        public int? PsmForegroundS { get; set; }
+        public int? UserInputS { get; set; }
+        public int? KeyboardInputS { get; set; }
+        public int? MouseInputS { get; set; }
+        public int? DisplayRequiredS { get; set; }
+        public int? AudioInS { get; set; }
+        public int? AudioOutS { get; set; }
+
         public int Line { get; set; }
         public bool Tag { get; set; }
 
         public override string ToString()
         {
             return
-                $"{Timestamp} {Id} {ExeInfo} {ExeInfoDescription} {ExeTimestamp} {SidType} {Sid} {UserName} {UserId} {AppId} {EndTime} {DurationMs}";
+                $"{Timestamp} {Id} {ExeInfo} {ExeInfoDescription} {ExeTimestamp} {SidType} {Sid} {UserName} {UserId} {AppId} {EndTime} {DurationMs} {InFocusS} {PsmForegroundS} {UserInputS} {KeyboardInputS} {MouseInputS} {DisplayRequiredS} {AudioInS} {AudioOutS}";
         }
     }
 
@@ -3415,7 +2437,8 @@ namespace TLEFileEZTools
 
             ExpectedHeaders = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
             {
-                "Id,Timestamp,ExeInfo,ExeInfoDescription,ExeTimestamp,SidType,Sid,UserName,UserId,AppId,EndTime,DurationMs"
+                "Id,Timestamp,ExeInfo,ExeInfoDescription,ExeTimestamp,SidType,Sid,UserName,UserId,AppId,EndTime,DurationMs",
+                "Id,Timestamp,ExeInfo,ExeInfoDescription,ExeTimestamp,SidType,Sid,UserName,UserId,AppId,EndTime,DurationMs,InFocusS,PsmForegroundS,UserInputS,KeyboardInputS,MouseInputS,DisplayRequiredS,AudioInS,AudioOutS"
             };
         }
 
@@ -3430,38 +2453,7 @@ namespace TLEFileEZTools
 
         public void ProcessFile(string filename)
         {
-            DataList.Clear();
-            using var fileReader = File.OpenText(filename);
-            var csv = new CsvReader(fileReader, CultureInfo.InvariantCulture);
-                
-
-            var o = new TypeConverterOptions
-            {
-                DateTimeStyle = DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal
-            };
-            csv.Context.TypeConverterOptionsCache.AddOptions<Unknown312Data>(o);
-
-            var foo = csv.Context.AutoMap<Unknown312Data>();
-
-            foo.Map(t => t.Line).Ignore();
-            foo.Map(t => t.Tag).Ignore();
-
-            csv.Context.RegisterClassMap(foo);
-
-            var records = csv.GetRecords<Unknown312Data>();
-
-                
-
-            var ln = 1;
-            foreach (var record in records)
-            {
-                Log.Debug("Line # {Line}, Record: {RawRecord}",ln,csv.Context.Parser.RawRecord);
-                record.Line = ln;
-                record.Tag = TaggedLines.Contains(ln);
-                DataList.Add(record);
-
-                ln += 1;
-            }
+            CsvLoader.Load<Unknown312Data>(filename, DataList, TaggedLines);
         }
     }
 
@@ -3534,39 +2526,7 @@ namespace TLEFileEZTools
 
         public void ProcessFile(string filename)
         {
-            DataList.Clear();
-            using var fileReader = File.OpenText(filename);
-            var csv = new CsvReader(fileReader, CultureInfo.InvariantCulture);
-                
-
-            var o = new TypeConverterOptions
-            {
-                DateTimeStyle = DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal
-            };
-            csv.Context.TypeConverterOptionsCache.AddOptions<EnergyUsageData>(o);
-
-            var foo = csv.Context.AutoMap<EnergyUsageData>();
-
-            foo.Map(t => t.Line).Ignore();
-            foo.Map(t => t.Tag).Ignore();
-
-            csv.Context.RegisterClassMap(foo);
-
-            var records = csv.GetRecords<EnergyUsageData>();
-
-                
-
-
-            var ln = 1;
-            foreach (var record in records)
-            {
-                Log.Debug("Line # {Line}, Record: {RawRecord}",ln,csv.Context.Parser.RawRecord);
-                record.Line = ln;
-                record.Tag = TaggedLines.Contains(ln);
-                DataList.Add(record);
-
-                ln += 1;
-            }
+            CsvLoader.Load<EnergyUsageData>(filename, DataList, TaggedLines);
         }
     }
 
@@ -3615,44 +2575,11 @@ namespace TLEFileEZTools
 
         public void ProcessFile(string filename)
         {
-            DataList.Clear();
-            using var fileReader = File.OpenText(filename);
-            var csv = new CsvReader(fileReader, CultureInfo.InvariantCulture);
-                
-
-            var o = new TypeConverterOptions
+            CsvLoader.Load<MFTFileListingData>(filename, DataList, TaggedLines, map =>
             {
-                DateTimeStyle = DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal
-            };
-            csv.Context.TypeConverterOptionsCache.AddOptions<MFTFileListingData>(o);
-
-            var foo = csv.Context.AutoMap<MFTFileListingData>();
-
-            foo.Map(m => m.Created0x10).TypeConverterOption
-                .DateTimeStyles(DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal);
-            foo.Map(m => m.LastModified0x10).TypeConverterOption
-                .DateTimeStyles(DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal);
-
-            foo.Map(t => t.Line).Ignore();
-            foo.Map(t => t.Tag).Ignore();
-
-            csv.Context.RegisterClassMap(foo);
-
-            var records = csv.GetRecords<MFTFileListingData>();
-
-                
-
-
-            var ln = 1;
-            foreach (var record in records)
-            {
-                Log.Debug("Line # {Line}, Record: {RawRecord}",ln,csv.Context.Parser.RawRecord);
-                record.Line = ln;
-                record.Tag = TaggedLines.Contains(ln);
-                DataList.Add(record);
-
-                ln += 1;
-            }
+                map.Map(m => m.Created0x10).TypeConverterOption.DateTimeStyles(DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal);
+                map.Map(m => m.LastModified0x10).TypeConverterOption.DateTimeStyles(DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal);
+            });
         }
     }
 
@@ -3697,37 +2624,7 @@ namespace TLEFileEZTools
 
         public void ProcessFile(string filename)
         {
-            DataList.Clear();
-            using var fileReader = File.OpenText(filename);
-            var csv = new CsvReader(fileReader, CultureInfo.InvariantCulture);
-                
-            var o = new TypeConverterOptions
-            {
-                DateTimeStyle = DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal
-            };
-            csv.Context.TypeConverterOptionsCache.AddOptions<SumChainedDbData>(o);
-
-            var foo = csv.Context.AutoMap<SumChainedDbData>();
-           
-            foo.Map(t => t.Line).Ignore();
-            foo.Map(t => t.Tag).Ignore();
-
-            csv.Context.RegisterClassMap(foo);
-
-            var records = csv.GetRecords<SumChainedDbData>();
-
-                
-
-            var ln = 1;
-            foreach (var record in records)
-            {
-                Log.Debug("Line # {Line}, Record: {RawRecord}",ln,csv.Context.Parser.RawRecord);
-                record.Line = ln;
-                record.Tag = TaggedLines.Contains(ln);
-                DataList.Add(record);
-
-                ln += 1;
-            }
+            CsvLoader.Load<SumChainedDbData>(filename, DataList, TaggedLines);
         }
     }
 
@@ -3741,13 +2638,35 @@ namespace TLEFileEZTools
 
         public int OsBuild { get; set; }
 
+        //added in the 2026.10 versions of the tool
+        public string SystemDnsHostName { get; set; }
+        public string SystemDomainName { get; set; }
+        public string SystemManufacturer { get; set; }
+        public string SystemProductName { get; set; }
+        public string SystemSerialNumber { get; set; }
+        public string SystemSmbiosUuid { get; set; }
+        public string OsSerialNumber { get; set; }
+        public string OsLastBootUpTime { get; set; }
+        public string OsCountryCode { get; set; }
+        public int? OsCurrentTimeZone { get; set; }
+        public bool? OsDaylightInEffect { get; set; }
+        public int? OsProductType { get; set; }
+        public int? OsSuiteMask { get; set; }
+        public int? OsPlatformId { get; set; }
+        public int? ServicePackMajor { get; set; }
+        public int? ServicePackMinor { get; set; }
+        public int? PhysicalProcessorCount { get; set; }
+        public int? CoresPerPhysicalProcessor { get; set; }
+        public int? LogicalProcessorsPerPhysicalProcessor { get; set; }
+        public long? MaximumMemory { get; set; }
+
         public int Line { get; set; }
         public bool Tag { get; set; }
 
         public override string ToString()
         {
             return
-                $"{CreationTime} {OsMajor} {OsMinor} {OsBuild}";
+                $"{CreationTime} {OsMajor} {OsMinor} {OsBuild} {SystemDnsHostName} {SystemDomainName} {SystemManufacturer} {SystemProductName} {SystemSerialNumber} {SystemSmbiosUuid} {OsSerialNumber} {OsLastBootUpTime} {OsCountryCode} {OsCurrentTimeZone} {OsDaylightInEffect} {OsProductType} {OsSuiteMask} {OsPlatformId} {ServicePackMajor} {ServicePackMinor} {PhysicalProcessorCount} {CoresPerPhysicalProcessor} {LogicalProcessorsPerPhysicalProcessor} {MaximumMemory}";
         }
     }
 
@@ -3761,7 +2680,8 @@ namespace TLEFileEZTools
 
             ExpectedHeaders = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
             {
-                "CreationTime,OsMajor,OsMinor,OsBuild"
+                "CreationTime,OsMajor,OsMinor,OsBuild",
+                "CreationTime,OsMajor,OsMinor,OsBuild,SystemDnsHostName,SystemDomainName,SystemManufacturer,SystemProductName,SystemSerialNumber,SystemSmbiosUuid,OsSerialNumber,OsLastBootUpTime,OsCountryCode,OsCurrentTimeZone,OsDaylightInEffect,OsProductType,OsSuiteMask,OsPlatformId,ServicePackMajor,ServicePackMinor,PhysicalProcessorCount,CoresPerPhysicalProcessor,LogicalProcessorsPerPhysicalProcessor,MaximumMemory"
             };
         }
 
@@ -3776,40 +2696,7 @@ namespace TLEFileEZTools
 
         public void ProcessFile(string filename)
         {
-            DataList.Clear();
-            using var fileReader = File.OpenText(filename);
-            var csv = new CsvReader(fileReader, CultureInfo.InvariantCulture);
-
-            var o = new TypeConverterOptions
-            {
-                DateTimeStyle = DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal
-            };
-            csv.Context.TypeConverterOptionsCache.AddOptions<SumSystemIdentInfoData>(o);
-
-            var foo = csv.Context.AutoMap<SumSystemIdentInfoData>();
-
-            foo.Map(m => m.CreationTime).TypeConverterOption
-                .DateTimeStyles(DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal);
-              
-            foo.Map(t => t.Line).Ignore();
-            foo.Map(t => t.Tag).Ignore();
-
-            csv.Context.RegisterClassMap(foo);
-
-            var records = csv.GetRecords<SumSystemIdentInfoData>();
-
-                
-
-            var ln = 1;
-            foreach (var record in records)
-            {
-                Log.Debug("Line # {Line}, Record: {RawRecord}",ln,csv.Context.Parser.RawRecord);
-                record.Line = ln;
-                record.Tag = TaggedLines.Contains(ln);
-                DataList.Add(record);
-
-                ln += 1;
-            }
+            CsvLoader.Load<SumSystemIdentInfoData>(filename, DataList, TaggedLines, map => map.Map(m => m.CreationTime).TypeConverterOption.DateTimeStyles(DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal));
         }
     }
 
@@ -3858,38 +2745,7 @@ namespace TLEFileEZTools
 
         public void ProcessFile(string filename)
         {
-            DataList.Clear();
-            using var fileReader = File.OpenText(filename);
-            var csv = new CsvReader(fileReader, CultureInfo.InvariantCulture);
-
-            var o = new TypeConverterOptions
-            {
-                DateTimeStyle = DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal
-            };
-            csv.Context.TypeConverterOptionsCache.AddOptions<SumRoleInfoData>(o);
-
-            var foo = csv.Context.AutoMap<SumRoleInfoData>();
-
-              
-            foo.Map(t => t.Line).Ignore();
-            foo.Map(t => t.Tag).Ignore();
-
-            csv.Context.RegisterClassMap(foo);
-
-            var records = csv.GetRecords<SumRoleInfoData>();
-
-                
-
-            var ln = 1;
-            foreach (var record in records)
-            {
-                Log.Debug("Line # {Line}, Record: {RawRecord}",ln,csv.Context.Parser.RawRecord);
-                record.Line = ln;
-                record.Tag = TaggedLines.Contains(ln);
-                DataList.Add(record);
-
-                ln += 1;
-            }
+            CsvLoader.Load<SumRoleInfoData>(filename, DataList, TaggedLines);
         }
     }
 
@@ -3940,42 +2796,11 @@ namespace TLEFileEZTools
 
         public void ProcessFile(string filename)
         {
-            DataList.Clear();
-            using var fileReader = File.OpenText(filename);
-            var csv = new CsvReader(fileReader, CultureInfo.InvariantCulture);
-
-            var o = new TypeConverterOptions
+            CsvLoader.Load<SumRoleAccessData>(filename, DataList, TaggedLines, map =>
             {
-                DateTimeStyle = DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal
-            };
-            csv.Context.TypeConverterOptionsCache.AddOptions<SumRoleAccessData>(o);
-
-            var foo = csv.Context.AutoMap<SumRoleAccessData>();
-
-            foo.Map(m => m.FirstSeen).TypeConverterOption
-                .DateTimeStyles(DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal);
-            foo.Map(m => m.LastSeen).TypeConverterOption
-                .DateTimeStyles(DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal);
-              
-            foo.Map(t => t.Line).Ignore();
-            foo.Map(t => t.Tag).Ignore();
-
-            csv.Context.RegisterClassMap(foo);
-
-            var records = csv.GetRecords<SumRoleAccessData>();
-
-                
-
-            var ln = 1;
-            foreach (var record in records)
-            {
-                Log.Debug("Line # {Line}, Record: {RawRecord}",ln,csv.Context.Parser.RawRecord);
-                record.Line = ln;
-                record.Tag = TaggedLines.Contains(ln);
-                DataList.Add(record);
-
-                ln += 1;
-            }
+                map.Map(m => m.FirstSeen).TypeConverterOption.DateTimeStyles(DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal);
+                map.Map(m => m.LastSeen).TypeConverterOption.DateTimeStyles(DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal);
+            });
         }
     }
 
@@ -4030,42 +2855,11 @@ namespace TLEFileEZTools
 
         public void ProcessFile(string filename)
         {
-            DataList.Clear();
-            using var fileReader = File.OpenText(filename);
-            var csv = new CsvReader(fileReader, CultureInfo.InvariantCulture);
-
-            var o = new TypeConverterOptions
+            CsvLoader.Load<SumClientData>(filename, DataList, TaggedLines, map =>
             {
-                DateTimeStyle = DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal
-            };
-            csv.Context.TypeConverterOptionsCache.AddOptions<SumClientData>(o);
-
-            var foo = csv.Context.AutoMap<SumClientData>();
-
-            foo.Map(m => m.InsertDate).TypeConverterOption
-                .DateTimeStyles(DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal);
-            foo.Map(m => m.LastAccess).TypeConverterOption
-                .DateTimeStyles(DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal);
-              
-            foo.Map(t => t.Line).Ignore();
-            foo.Map(t => t.Tag).Ignore();
-
-            csv.Context.RegisterClassMap(foo);
-
-            var records = csv.GetRecords<SumClientData>();
-
-                
-
-            var ln = 1;
-            foreach (var record in records)
-            {
-                Log.Debug("Line # {Line}, Record: {RawRecord}",ln,csv.Context.Parser.RawRecord);
-                record.Line = ln;
-                record.Tag = TaggedLines.Contains(ln);
-                DataList.Add(record);
-
-                ln += 1;
-            }
+                map.Map(m => m.InsertDate).TypeConverterOption.DateTimeStyles(DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal);
+                map.Map(m => m.LastAccess).TypeConverterOption.DateTimeStyles(DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal);
+            });
         }
     }
 
@@ -4126,45 +2920,12 @@ namespace TLEFileEZTools
 
         public void ProcessFile(string filename)
         {
-            DataList.Clear();
-            using var fileReader = File.OpenText(filename);
-            var csv = new CsvReader(fileReader, CultureInfo.InvariantCulture);
-
-            var o = new TypeConverterOptions
+            CsvLoader.Load<SumClientDetailedData>(filename, DataList, TaggedLines, map =>
             {
-                DateTimeStyle = DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal
-            };
-            csv.Context.TypeConverterOptionsCache.AddOptions<SumClientDetailedData>(o);
-
-            var foo = csv.Context.AutoMap<SumClientDetailedData>();
-
-            foo.Map(m => m.Date).TypeConverterOption
-                .DateTimeStyles(DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal);
-
-            foo.Map(m => m.InsertDate).TypeConverterOption
-                .DateTimeStyles(DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal);
-            foo.Map(m => m.LastAccess).TypeConverterOption
-                .DateTimeStyles(DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal);
-              
-            foo.Map(t => t.Line).Ignore();
-            foo.Map(t => t.Tag).Ignore();
-
-            csv.Context.RegisterClassMap(foo);
-
-            var records = csv.GetRecords<SumClientDetailedData>();
-
-                
-
-            var ln = 1;
-            foreach (var record in records)
-            {
-                Log.Debug("Line # {Line}, Record: {RawRecord}",ln,csv.Context.Parser.RawRecord);
-                record.Line = ln;
-                record.Tag = TaggedLines.Contains(ln);
-                DataList.Add(record);
-
-                ln += 1;
-            }
+                map.Map(m => m.Date).TypeConverterOption.DateTimeStyles(DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal);
+                map.Map(m => m.InsertDate).TypeConverterOption.DateTimeStyles(DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal);
+                map.Map(m => m.LastAccess).TypeConverterOption.DateTimeStyles(DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal);
+            });
         }
     }
 
@@ -4210,39 +2971,345 @@ namespace TLEFileEZTools
 
         public void ProcessFile(string filename)
         {
-            DataList.Clear();
-            using var fileReader = File.OpenText(filename);
-            var csv = new CsvReader(fileReader, CultureInfo.InvariantCulture);
-
-            var o = new TypeConverterOptions
-            {
-                DateTimeStyle = DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal
-            };
-            csv.Context.TypeConverterOptionsCache.AddOptions<SumDnsInfoData>(o);
-
-            var foo = csv.Context.AutoMap<SumDnsInfoData>();
-
-            foo.Map(m => m.LastSeen).TypeConverterOption
-                .DateTimeStyles(DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal);
-
-            foo.Map(t => t.Line).Ignore();
-            foo.Map(t => t.Tag).Ignore();
-
-            csv.Context.RegisterClassMap(foo);
-
-            var records = csv.GetRecords<SumDnsInfoData>();
-
-            var ln = 1;
-            foreach (var record in records)
-            {
-                Log.Debug("Line # {Line}, Record: {RawRecord}", ln, csv.Context.Parser.RawRecord);
-                record.Line = ln;
-                record.Tag = TaggedLines.Contains(ln);
-                DataList.Add(record);
-
-                ln += 1;
-            }
+            CsvLoader.Load<SumDnsInfoData>(filename, DataList, TaggedLines, map => map.Map(m => m.LastSeen).TypeConverterOption.DateTimeStyles(DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal));
         }
     }
 
+    public class LogFileData : IFileSpecData
+    {
+        public long Lsn { get; set; }
+        public long? TransactionId { get; set; }
+        public long? TransactionFirstLsn { get; set; }
+        public string RedoOperation { get; set; }
+        public string UndoOperation { get; set; }
+        public long? TargetEntryNumber { get; set; }
+        public int? TargetSequenceNumber { get; set; }
+        public string TargetAttributeType { get; set; }
+        public string TargetAttributeName { get; set; }
+        public string TargetPath { get; set; }
+        public long? EntryNumber { get; set; }
+        public int? SequenceNumber { get; set; }
+        public string FileName { get; set; }
+        public long? ParentEntryNumber { get; set; }
+        public int? ParentSequenceNumber { get; set; }
+        public string ParentPath { get; set; }
+        public DateTime? CreatedOn { get; set; }
+        public DateTime? ContentModifiedOn { get; set; }
+        public DateTime? RecordModifiedOn { get; set; }
+        public DateTime? LastAccessedOn { get; set; }
+        public long? FileSize { get; set; }
+        public string FileAttributes { get; set; }
+        public string AttributeType { get; set; }
+        public string Details { get; set; }
+        public long? PreviousLsn { get; set; }
+        public long? UndoNextLsn { get; set; }
+        public string RecordType { get; set; }
+        public int? TargetAttribute { get; set; }
+        public bool? TargetInferred { get; set; }
+        public long? TargetVcn { get; set; }
+        public string Lcns { get; set; }
+        public int? RecordOffset { get; set; }
+        public int? AttributeOffset { get; set; }
+        public int? ClusterBlockOffset { get; set; }
+        public int? RedoLength { get; set; }
+        public int? UndoLength { get; set; }
+        public bool? Truncated { get; set; }
+        public long? FileOffset { get; set; }
+        public string SourceFile { get; set; }
+
+        public int Line { get; set; }
+        public bool Tag { get; set; }
+
+        public override string ToString()
+        {
+            return $"{Lsn} {TransactionId} {TransactionFirstLsn} {RedoOperation} {UndoOperation} {TargetEntryNumber} {TargetSequenceNumber} {TargetAttributeType} {TargetAttributeName} {TargetPath} {EntryNumber} {SequenceNumber} {FileName} {ParentEntryNumber} {ParentSequenceNumber} {ParentPath} {CreatedOn} {ContentModifiedOn} {RecordModifiedOn} {LastAccessedOn} {FileSize} {FileAttributes} {AttributeType} {Details} {PreviousLsn} {UndoNextLsn} {RecordType} {TargetAttribute} {TargetInferred} {TargetVcn} {Lcns} {RecordOffset} {AttributeOffset} {ClusterBlockOffset} {RedoLength} {UndoLength} {Truncated} {FileOffset} {SourceFile}";
+        }
+    }
+
+    public class LogFile : IFileSpec
+    {
+        public LogFile()
+        {
+            TaggedLines = new List<int>();
+
+            DataList = new BindingList<LogFileData>();
+
+            ExpectedHeaders = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+            {
+                "Lsn,TransactionId,TransactionFirstLsn,RedoOperation,UndoOperation,TargetEntryNumber,TargetSequenceNumber,TargetAttributeType,TargetAttributeName,TargetPath,EntryNumber,SequenceNumber,FileName,ParentEntryNumber,ParentSequenceNumber,ParentPath,CreatedOn,ContentModifiedOn,RecordModifiedOn,LastAccessedOn,FileSize,FileAttributes,AttributeType,Details,PreviousLsn,UndoNextLsn,RecordType,TargetAttribute,TargetInferred,TargetVcn,Lcns,RecordOffset,AttributeOffset,ClusterBlockOffset,RedoLength,UndoLength,Truncated,FileOffset,SourceFile"
+            };
+        }
+
+        public string Author => "Eric Zimmerman";
+        public string FileDescription => "CSV generated from MFTECmd for $LogFile";
+        public HashSet<string> ExpectedHeaders { get; }
+
+        public IBindingList DataList { get; }
+        public List<int> TaggedLines { get; set; }
+
+        public string InternalGuid => "c4704fdc-0b19-4b10-a790-47bfe77e2906";
+
+        public void ProcessFile(string filename)
+        {
+            CsvLoader.Load<LogFileData>(filename, DataList, TaggedLines);
+        }
+    }
+
+    public class SrumProcessorTimeData : IFileSpecData
+    {
+        public int Id { get; set; }
+        public DateTime Timestamp { get; set; }
+        public string ExeInfo { get; set; }
+        public string ExeInfoDescription { get; set; }
+        public DateTime? ExeTimestamp { get; set; }
+        public string SidType { get; set; }
+        public string Sid { get; set; }
+        public string UserName { get; set; }
+        public int UserId { get; set; }
+        public int AppId { get; set; }
+        public long ProcessorTime { get; set; }
+
+        public int Line { get; set; }
+        public bool Tag { get; set; }
+
+        public override string ToString()
+        {
+            return $"{Id} {Timestamp} {ExeInfo} {ExeInfoDescription} {ExeTimestamp} {SidType} {Sid} {UserName} {UserId} {AppId} {ProcessorTime}";
+        }
+    }
+
+    public class SrumProcessorTime : IFileSpec
+    {
+        public SrumProcessorTime()
+        {
+            TaggedLines = new List<int>();
+
+            DataList = new BindingList<SrumProcessorTimeData>();
+
+            ExpectedHeaders = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+            {
+                "Id,Timestamp,ExeInfo,ExeInfoDescription,ExeTimestamp,SidType,Sid,UserName,UserId,AppId,ProcessorTime"
+            };
+        }
+
+        public string Author => "Eric Zimmerman";
+        public string FileDescription => "CSV generated from SrumECmd for ProcessorTime (Server 2022)";
+        public HashSet<string> ExpectedHeaders { get; }
+
+        public IBindingList DataList { get; }
+        public List<int> TaggedLines { get; set; }
+
+        public string InternalGuid => "6aa715f1-e7c5-4555-a238-3b481f0893c0";
+
+        public void ProcessFile(string filename)
+        {
+            CsvLoader.Load<SrumProcessorTimeData>(filename, DataList, TaggedLines);
+        }
+    }
+
+    public class SrumSizeInBytesData : IFileSpecData
+    {
+        public int Id { get; set; }
+        public DateTime Timestamp { get; set; }
+        public string ExeInfo { get; set; }
+        public string ExeInfoDescription { get; set; }
+        public DateTime? ExeTimestamp { get; set; }
+        public string SidType { get; set; }
+        public string Sid { get; set; }
+        public string UserName { get; set; }
+        public int UserId { get; set; }
+        public int AppId { get; set; }
+        public long SizeInBytes { get; set; }
+
+        public int Line { get; set; }
+        public bool Tag { get; set; }
+
+        public override string ToString()
+        {
+            return $"{Id} {Timestamp} {ExeInfo} {ExeInfoDescription} {ExeTimestamp} {SidType} {Sid} {UserName} {UserId} {AppId} {SizeInBytes}";
+        }
+    }
+
+    public class SrumSizeInBytes : IFileSpec
+    {
+        public SrumSizeInBytes()
+        {
+            TaggedLines = new List<int>();
+
+            DataList = new BindingList<SrumSizeInBytesData>();
+
+            ExpectedHeaders = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+            {
+                "Id,Timestamp,ExeInfo,ExeInfoDescription,ExeTimestamp,SidType,Sid,UserName,UserId,AppId,SizeInBytes"
+            };
+        }
+
+        public string Author => "Eric Zimmerman";
+        public string FileDescription => "CSV generated from SrumECmd for SizeInBytes (Server 2022)";
+        public HashSet<string> ExpectedHeaders { get; }
+
+        public IBindingList DataList { get; }
+        public List<int> TaggedLines { get; set; }
+
+        public string InternalGuid => "271eba23-64e5-4d1f-8db3-3702ea55b8e1";
+
+        public void ProcessFile(string filename)
+        {
+            CsvLoader.Load<SrumSizeInBytesData>(filename, DataList, TaggedLines);
+        }
+    }
+
+    public class SrumTotalUsedData : IFileSpecData
+    {
+        public int Id { get; set; }
+        public DateTime Timestamp { get; set; }
+        public string ExeInfo { get; set; }
+        public string ExeInfoDescription { get; set; }
+        public DateTime? ExeTimestamp { get; set; }
+        public string SidType { get; set; }
+        public string Sid { get; set; }
+        public string UserName { get; set; }
+        public int UserId { get; set; }
+        public int AppId { get; set; }
+        public long Total { get; set; }
+        public long Used { get; set; }
+
+        public int Line { get; set; }
+        public bool Tag { get; set; }
+
+        public override string ToString()
+        {
+            return $"{Id} {Timestamp} {ExeInfo} {ExeInfoDescription} {ExeTimestamp} {SidType} {Sid} {UserName} {UserId} {AppId} {Total} {Used}";
+        }
+    }
+
+    public class SrumTotalUsed : IFileSpec
+    {
+        public SrumTotalUsed()
+        {
+            TaggedLines = new List<int>();
+
+            DataList = new BindingList<SrumTotalUsedData>();
+
+            ExpectedHeaders = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+            {
+                "Id,Timestamp,ExeInfo,ExeInfoDescription,ExeTimestamp,SidType,Sid,UserName,UserId,AppId,Total,Used"
+            };
+        }
+
+        public string Author => "Eric Zimmerman";
+        public string FileDescription => "CSV generated from SrumECmd for TotalUsed (Server 2022)";
+        public HashSet<string> ExpectedHeaders { get; }
+
+        public IBindingList DataList { get; }
+        public List<int> TaggedLines { get; set; }
+
+        public string InternalGuid => "b6da69fa-9815-4cff-93ed-4f6611ab8b7d";
+
+        public void ProcessFile(string filename)
+        {
+            CsvLoader.Load<SrumTotalUsedData>(filename, DataList, TaggedLines);
+        }
+    }
+
+    public class SrumNetworkBytesData : IFileSpecData
+    {
+        public int Id { get; set; }
+        public DateTime Timestamp { get; set; }
+        public string ExeInfo { get; set; }
+        public string ExeInfoDescription { get; set; }
+        public DateTime? ExeTimestamp { get; set; }
+        public string SidType { get; set; }
+        public string Sid { get; set; }
+        public string UserName { get; set; }
+        public int UserId { get; set; }
+        public int AppId { get; set; }
+        public long BytesInBound { get; set; }
+        public long BytesOutBound { get; set; }
+        public long BytesTotal { get; set; }
+
+        public int Line { get; set; }
+        public bool Tag { get; set; }
+
+        public override string ToString()
+        {
+            return $"{Id} {Timestamp} {ExeInfo} {ExeInfoDescription} {ExeTimestamp} {SidType} {Sid} {UserName} {UserId} {AppId} {BytesInBound} {BytesOutBound} {BytesTotal}";
+        }
+    }
+
+    public class SrumNetworkBytes : IFileSpec
+    {
+        public SrumNetworkBytes()
+        {
+            TaggedLines = new List<int>();
+
+            DataList = new BindingList<SrumNetworkBytesData>();
+
+            ExpectedHeaders = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+            {
+                "Id,Timestamp,ExeInfo,ExeInfoDescription,ExeTimestamp,SidType,Sid,UserName,UserId,AppId,BytesInBound,BytesOutBound,BytesTotal"
+            };
+        }
+
+        public string Author => "Eric Zimmerman";
+        public string FileDescription => "CSV generated from SrumECmd for NetworkBytes (Server 2022)";
+        public HashSet<string> ExpectedHeaders { get; }
+
+        public IBindingList DataList { get; }
+        public List<int> TaggedLines { get; set; }
+
+        public string InternalGuid => "bca5a4e8-6459-4ad7-8277-ee299b5d1d44";
+
+        public void ProcessFile(string filename)
+        {
+            CsvLoader.Load<SrumNetworkBytesData>(filename, DataList, TaggedLines);
+        }
+    }
+
+    public class SumVmInfoData : IFileSpecData
+    {
+        public string VmGuid { get; set; }
+        public DateTime CreationTime { get; set; }
+        public DateTime LastSeenActive { get; set; }
+        public string BiosGuid { get; set; }
+        public string SerialNumber { get; set; }
+        public string SourceFile { get; set; }
+
+        public int Line { get; set; }
+        public bool Tag { get; set; }
+
+        public override string ToString()
+        {
+            return $"{VmGuid} {CreationTime} {LastSeenActive} {BiosGuid} {SerialNumber} {SourceFile}";
+        }
+    }
+
+    public class SumVmInfo : IFileSpec
+    {
+        public SumVmInfo()
+        {
+            TaggedLines = new List<int>();
+
+            DataList = new BindingList<SumVmInfoData>();
+
+            ExpectedHeaders = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+            {
+                "VmGuid,CreationTime,LastSeenActive,BiosGuid,SerialNumber,SourceFile"
+            };
+        }
+
+        public string Author => "Eric Zimmerman";
+        public string FileDescription => "CSV generated from SumECmd VM Info";
+        public HashSet<string> ExpectedHeaders { get; }
+
+        public IBindingList DataList { get; }
+        public List<int> TaggedLines { get; set; }
+
+        public string InternalGuid => "346bf2d1-21f6-48fa-841b-98a5e964094c";
+
+        public void ProcessFile(string filename)
+        {
+            CsvLoader.Load<SumVmInfoData>(filename, DataList, TaggedLines);
+        }
+    }
 }

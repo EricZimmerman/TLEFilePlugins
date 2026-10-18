@@ -1,0 +1,11 @@
+<Solution>
+  <Project Path="ITLEFileSpec/ITLEFileSpec.csproj" />
+  <Project Path="TLEFileEZTools/TLEFileEZTools.csproj" />
+  <Project Path="TLEFileGenericCsv/TLEFileGenericCsv.csproj" />
+  <Project Path="TLEFileKAPE/TLEFileKAPE.csproj" />
+  <Project Path="TLEFileMicrosoft/TLEFileMicrosoft.csproj" />
+  <Project Path="TLEFileMisc/TLEFileMisc.csproj" />
+  <Project Path="TLEFileTimelines/TLEFileTimelines.csproj" />
+  <Project Path="TLEFileTzWorks/TLEFileTzWorks.csproj" />
+  <Project Path="TLEFile.Test/TLEFile.Test.csproj" />
+</Solution>

@@ -1,24 +1,26 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>net9.0</TargetFramework>
-    <AssemblyTitle>TLEFile.Test</AssemblyTitle>
-    <Product>TLEFile.Test</Product>
-    <Copyright>Eric Zimmerman</Copyright>
-    <LangVersion>10</LangVersion>
+    <TargetFramework>net10.0</TargetFramework>
+    <LangVersion>latest</LangVersion>
+    <IsPackable>false</IsPackable>
+    <IsTestProject>true</IsTestProject>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="18.4.0" />
+    <PackageReference Include="FluentAssertions" Version="[7.2.2,8.0.0)" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="18.11.0" />
+    <PackageReference Include="NUnit" Version="5.0.0" />
+    <PackageReference Include="NUnit3TestAdapter" Version="6.3.1" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\TLEFileEZTools\TLEFileEZTools.csproj" />
     <ProjectReference Include="..\TLEFileGenericCsv\TLEFileGenericCsv.csproj" />
+    <ProjectReference Include="..\TLEFileKAPE\TLEFileKAPE.csproj" />
+    <ProjectReference Include="..\TLEFileMicrosoft\TLEFileMicrosoft.csproj" />
     <ProjectReference Include="..\TLEFileMisc\TLEFileMisc.csproj" />
     <ProjectReference Include="..\TLEFileTimelines\TLEFileTimelines.csproj" />
+    <ProjectReference Include="..\TLEFileTzWorks\TLEFileTzWorks.csproj" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Serilog" Version="4.3.1" />
-    <PackageReference Include="NUnit" Version="4.5.1" />
-    <PackageReference Include="Serilog.Sinks.Console" Version="6.1.1" />
-    <PackageReference Include="Serilog.Sinks.Debug" Version="3.0.0" />
+    <None Update="TestFiles\**" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
 </Project>

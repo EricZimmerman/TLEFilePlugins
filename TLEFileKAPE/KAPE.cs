@@ -6,6 +6,7 @@ using System.IO;
 using CsvHelper;
 using CsvHelper.TypeConversion;
 using ITLEFileSpec;
+using TLEFilePlugins.Shared;
 using Serilog;
 
 namespace TLEFileKAPE
@@ -62,42 +63,7 @@ namespace TLEFileKAPE
 
         public void ProcessFile(string filename)
         {
-            DataList.Clear();
-
-            using var fileReader = File.OpenText(filename);
-            var csv = new CsvReader(fileReader, CultureInfo.InvariantCulture);
-                
-
-            var o = new TypeConverterOptions
-            {
-                DateTimeStyle = DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal
-            };
-            csv.Context.TypeConverterOptionsCache.AddOptions<KapeCopyLogData>(o);
-
-
-            var foo = csv.Context.AutoMap<KapeCopyLogData>();
-
-            foo.Map(t => t.Line).Ignore();
-            foo.Map(t => t.Tag).Ignore();
-
-            csv.Context.RegisterClassMap(foo);
-
-                
-
-            var records = csv.GetRecords<KapeCopyLogData>();
-
-            var ln = 1;
-            foreach (var record in records)
-            {
-                Log.Debug("Line # {Line}, Record: {RawRecord}",ln,csv.Context.Parser.RawRecord);
-                record.Line = ln;
-
-                record.Tag = TaggedLines.Contains(ln);
-
-                DataList.Add(record);
-
-                ln += 1;
-            }
+            CsvLoader.Load<KapeCopyLogData>(filename, DataList, TaggedLines);
         }
     }
 
@@ -144,42 +110,7 @@ namespace TLEFileKAPE
 
         public void ProcessFile(string filename)
         {
-            DataList.Clear();
-
-            using var fileReader = File.OpenText(filename);
-            var csv = new CsvReader(fileReader, CultureInfo.InvariantCulture);
-                
-
-            var o = new TypeConverterOptions
-            {
-                DateTimeStyle = DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal
-            };
-            csv.Context.TypeConverterOptionsCache.AddOptions<KapeSkipLogData>(o);
-
-
-            var foo = csv.Context.AutoMap<KapeSkipLogData>();
-
-            foo.Map(t => t.Line).Ignore();
-            foo.Map(t => t.Tag).Ignore();
-
-            csv.Context.RegisterClassMap(foo);
-
-                
-
-            var records = csv.GetRecords<KapeSkipLogData>();
-
-            var ln = 1;
-            foreach (var record in records)
-            {
-                Log.Debug("Line # {Line}, Record: {RawRecord}",ln,csv.Context.Parser.RawRecord);
-                record.Line = ln;
-
-                record.Tag = TaggedLines.Contains(ln);
-
-                DataList.Add(record);
-
-                ln += 1;
-            }
+            CsvLoader.Load<KapeSkipLogData>(filename, DataList, TaggedLines);
         }
     }
 
@@ -241,40 +172,7 @@ namespace TLEFileKAPE
 
         public void ProcessFile(string filename)
         {
-            DataList.Clear();
-
-            using var fileReader = File.OpenText(filename);
-            var csv = new CsvReader(fileReader, CultureInfo.InvariantCulture);
-                
-
-            var o = new TypeConverterOptions
-            {
-                DateTimeStyle = DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal
-            };
-            csv.Context.TypeConverterOptionsCache.AddOptions<KapeTriageData>(o);
-
-            var foo = csv.Context.AutoMap<KapeTriageData>();
-
-            foo.Map(t => t.Line).Ignore();
-            foo.Map(t => t.Tag).Ignore();
-
-            csv.Context.RegisterClassMap(foo);
-                
-
-            var records = csv.GetRecords<KapeTriageData>();
-
-            var ln = 1;
-            foreach (var record in records)
-            {
-                Log.Debug("Line # {Line}, Record: {RawRecord}",ln,csv.Context.Parser.RawRecord);
-                record.Line = ln;
-
-                record.Tag = TaggedLines.Contains(ln);
-
-                DataList.Add(record);
-
-                ln += 1;
-            }
+            CsvLoader.Load<KapeTriageData>(filename, DataList, TaggedLines);
         }
     }
 }

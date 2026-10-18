@@ -69,6 +69,9 @@ namespace TLEFileTimelines
 
         public void ProcessFile(string filename)
         {
+            //(TaggedLines.Contains was a list scan for every row)
+            var tagged = new HashSet<int>(TaggedLines);
+
             var ln = 1;
             using var fileReader = File.OpenText(filename);
             var csv = new CsvReader(fileReader, CultureInfo.InvariantCulture);
@@ -98,7 +101,7 @@ namespace TLEFileTimelines
                     Log.Debug("Line # {Line}, Record: {RawRecord}", ln, csv.Context.Parser.RawRecord);
 
                     record.Line = ln;
-                    record.Tag = TaggedLines.Contains(ln);
+                    record.Tag = tagged.Contains(ln);
 
                     // SIMPLE COLOR LOGIC
                     if (record.ArtifactName != null)
@@ -333,6 +336,9 @@ namespace TLEFileTimelines
 
         public void ProcessFile(string filename)
         {
+            //(TaggedLines.Contains was a list scan for every row)
+            var tagged = new HashSet<int>(TaggedLines);
+
             DataList.Clear();
 
             using var fileReader = File.OpenText(filename);
@@ -405,7 +411,7 @@ namespace TLEFileTimelines
 
 
                     var psd = new PsortTimelineData(ln, dt, tsD, source, sourceLong, message, parser, displayName, tag);
-                    psd.Tag = TaggedLines.Contains(ln);
+                    psd.Tag = tagged.Contains(ln);
                     DataList.Add(psd);
                     ln += 1;
                 }
@@ -627,6 +633,9 @@ namespace TLEFileTimelines
 
         public void ProcessFile(string filename)
         {
+            //(TaggedLines.Contains was a list scan for every row)
+            var tagged = new HashSet<int>(TaggedLines);
+
             DataList.Clear();
 
             using var fileReader = File.OpenText(filename);
@@ -714,7 +723,7 @@ namespace TLEFileTimelines
                     var lfe = new SuperTimelineData(ln, dt, time, tz, macb, sourceName, sourceDesc, type,
                         username, hostname, shortDesc, longDesc, version, filename1, inode, notes, format,
                         extra);
-                    lfe.Tag = TaggedLines.Contains(ln);
+                    lfe.Tag = tagged.Contains(ln);
                     DataList.Add(lfe);
                     ln += 1;
                 }
@@ -840,6 +849,9 @@ namespace TLEFileTimelines
 
         public void ProcessFile(string filename)
         {
+            //(TaggedLines.Contains was a list scan for every row)
+            var tagged = new HashSet<int>(TaggedLines);
+
             DataList.Clear();
 
             using var fileReader = File.OpenText(filename);
@@ -888,7 +900,7 @@ namespace TLEFileTimelines
 
                 var f = csv.GetRecord<MacTimeData>();
                 f.Line = ln;
-                f.Tag = TaggedLines.Contains(ln);
+                f.Tag = tagged.Contains(ln);
                 if (f.Timestamp != null && f.Timestamp?.Year == 1)
                 {
                     f.Timestamp = null;
@@ -950,6 +962,9 @@ namespace TLEFileTimelines
 
         public void ProcessFile(string filename)
         {
+            //(TaggedLines.Contains was a list scan for every row)
+            var tagged = new HashSet<int>(TaggedLines);
+
             DataList.Clear();
 
             using var fileReader = File.OpenText(filename);
@@ -1001,7 +1016,7 @@ namespace TLEFileTimelines
 
                 var f = csv.GetRecord<KapeMiniTimelineData>();
                 f.Line = ln;
-                f.Tag = TaggedLines.Contains(ln);
+                f.Tag = tagged.Contains(ln);
 
 
                 DataList.Add(f);

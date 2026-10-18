@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <AssemblyTitle>TLEFileMicrosoft</AssemblyTitle>
@@ -12,6 +12,10 @@
   </ItemGroup>
   <ItemGroup>
 
-    <PackageReference Include="System.Text.Encoding.CodePages" Version="10.0.7" />
+    <PackageReference Include="System.Text.Encoding.CodePages" Version="10.0.13" />
+  </ItemGroup>
+  <ItemGroup>
+    <!-- CsvLoader: compiled into each plugin assembly -->
+    <Compile Include="..\Shared\CsvLoader.cs" Link="Shared\CsvLoader.cs" />
   </ItemGroup>
 </Project>
