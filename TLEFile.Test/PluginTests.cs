@@ -108,7 +108,7 @@ public class PluginTests
             }
 
             var parts = line.Split('\t', 3);
-            if (Match(parts[2]) == null && !NoPluginExpected(parts[0], parts[1]))
+            if (Match(parts[2]) == null)
             {
                 unmatched.Add($"{parts[0]} {parts[1]}");
             }
@@ -116,12 +116,6 @@ public class PluginTests
 
         unmatched.Should().BeEmpty();
     }
-
-    /// <summary>
-    ///     AmcacheParser's other database tables (one CSV each, mostly a few columns) are shown by the generic CSV loader
-    /// </summary>
-    private static bool NoPluginExpected(string tool, string csv) =>
-        tool == "AmcacheParser" && (csv.Contains("_Inventory") || csv.Contains("_Mare") || csv.Contains("_Metadata") || csv.Contains("_DeviceCensus"));
 
     /// <summary>
     ///     TLE finds a layout by the plugin's full class name (in Layouts/Default). Misspelt names were never used

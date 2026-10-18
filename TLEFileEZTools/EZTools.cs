@@ -3312,4 +3312,1026 @@ namespace TLEFileEZTools
             CsvLoader.Load<SumVmInfoData>(filename, DataList, TaggedLines);
         }
     }
+
+    public class AmcacheParserDeviceCensusData : IFileSpecData
+    {
+        public string ItemKey { get; set; }
+        public string Data { get; set; }
+        public DateTime? LastModified { get; set; }
+
+        public int Line { get; set; }
+        public bool Tag { get; set; }
+
+        public override string ToString()
+        {
+            return $"{ItemKey} {Data} {LastModified}";
+        }
+    }
+
+    /// <summary>
+    ///     AmcacheParser's DeviceCensus CSV: the database table as it is (the columns are those of the Windows 11 26H2
+    ///     Inventory databases; another schema is shown as a generic CSV)
+    /// </summary>
+    public class AmcacheParserDeviceCensus : IFileSpec
+    {
+        public AmcacheParserDeviceCensus()
+        {
+            TaggedLines = new List<int>();
+
+            DataList = new BindingList<AmcacheParserDeviceCensusData>();
+
+            ExpectedHeaders = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+            {
+                "ItemKey,Data,LastModified"
+            };
+        }
+
+        public string Author => "Eric Zimmerman";
+        public string FileDescription => "CSV generated from AmcacheParser for the DeviceCensus database table";
+        public HashSet<string> ExpectedHeaders { get; }
+
+        public IBindingList DataList { get; }
+        public List<int> TaggedLines { get; set; }
+
+        public string InternalGuid => "07594958-889d-4cd7-8e45-3e88fd5d1d9c";
+
+        public void ProcessFile(string filename)
+        {
+            CsvLoader.Load<AmcacheParserDeviceCensusData>(filename, DataList, TaggedLines);
+        }
+    }
+
+    public class AmcacheParserInventoryAcpiPhatHealthRecordData : IFileSpecData
+    {
+        public string ItemKey { get; set; }
+        public string AmHealthy { get; set; }
+        public string DevicePathType { get; set; }
+        public string DevicePathSubtype { get; set; }
+        public DateTime? LastModified { get; set; }
+
+        public int Line { get; set; }
+        public bool Tag { get; set; }
+
+        public override string ToString()
+        {
+            return $"{ItemKey} {AmHealthy} {DevicePathType} {DevicePathSubtype} {LastModified}";
+        }
+    }
+
+    /// <summary>
+    ///     AmcacheParser's InventoryAcpiPhatHealthRecord CSV: the database table as it is (the columns are those of the Windows 11 26H2
+    ///     Inventory databases; another schema is shown as a generic CSV)
+    /// </summary>
+    public class AmcacheParserInventoryAcpiPhatHealthRecord : IFileSpec
+    {
+        public AmcacheParserInventoryAcpiPhatHealthRecord()
+        {
+            TaggedLines = new List<int>();
+
+            DataList = new BindingList<AmcacheParserInventoryAcpiPhatHealthRecordData>();
+
+            ExpectedHeaders = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+            {
+                "ItemKey,AmHealthy,DevicePathType,DevicePathSubtype,LastModified"
+            };
+        }
+
+        public string Author => "Eric Zimmerman";
+        public string FileDescription => "CSV generated from AmcacheParser for the InventoryAcpiPhatHealthRecord database table";
+        public HashSet<string> ExpectedHeaders { get; }
+
+        public IBindingList DataList { get; }
+        public List<int> TaggedLines { get; set; }
+
+        public string InternalGuid => "fd3f395c-ca7f-4f98-b933-00c101dd70e7";
+
+        public void ProcessFile(string filename)
+        {
+            CsvLoader.Load<AmcacheParserInventoryAcpiPhatHealthRecordData>(filename, DataList, TaggedLines);
+        }
+    }
+
+    public class AmcacheParserInventoryAcpiPhatVersionElementData : IFileSpecData
+    {
+        public string ItemKey { get; set; }
+        public string VersionValue { get; set; }
+        public string ProducerId { get; set; }
+        public DateTime? LastModified { get; set; }
+
+        public int Line { get; set; }
+        public bool Tag { get; set; }
+
+        public override string ToString()
+        {
+            return $"{ItemKey} {VersionValue} {ProducerId} {LastModified}";
+        }
+    }
+
+    /// <summary>
+    ///     AmcacheParser's InventoryAcpiPhatVersionElement CSV: the database table as it is (the columns are those of the Windows 11 26H2
+    ///     Inventory databases; another schema is shown as a generic CSV)
+    /// </summary>
+    public class AmcacheParserInventoryAcpiPhatVersionElement : IFileSpec
+    {
+        public AmcacheParserInventoryAcpiPhatVersionElement()
+        {
+            TaggedLines = new List<int>();
+
+            DataList = new BindingList<AmcacheParserInventoryAcpiPhatVersionElementData>();
+
+            ExpectedHeaders = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+            {
+                "ItemKey,VersionValue,ProducerId,LastModified"
+            };
+        }
+
+        public string Author => "Eric Zimmerman";
+        public string FileDescription => "CSV generated from AmcacheParser for the InventoryAcpiPhatVersionElement database table";
+        public HashSet<string> ExpectedHeaders { get; }
+
+        public IBindingList DataList { get; }
+        public List<int> TaggedLines { get; set; }
+
+        public string InternalGuid => "560a7ab8-74fb-42cb-a6cb-1904299aa9d9";
+
+        public void ProcessFile(string filename)
+        {
+            CsvLoader.Load<AmcacheParserInventoryAcpiPhatVersionElementData>(filename, DataList, TaggedLines);
+        }
+    }
+
+    public class AmcacheParserInventoryApplicationAppVData : IFileSpecData
+    {
+        public string ItemKey { get; set; }
+        public string ProgramIds { get; set; }
+        public DateTime? LastModified { get; set; }
+
+        public int Line { get; set; }
+        public bool Tag { get; set; }
+
+        public override string ToString()
+        {
+            return $"{ItemKey} {ProgramIds} {LastModified}";
+        }
+    }
+
+    /// <summary>
+    ///     AmcacheParser's InventoryApplicationAppV CSV: the database table as it is (the columns are those of the Windows 11 26H2
+    ///     Inventory databases; another schema is shown as a generic CSV)
+    /// </summary>
+    public class AmcacheParserInventoryApplicationAppV : IFileSpec
+    {
+        public AmcacheParserInventoryApplicationAppV()
+        {
+            TaggedLines = new List<int>();
+
+            DataList = new BindingList<AmcacheParserInventoryApplicationAppVData>();
+
+            ExpectedHeaders = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+            {
+                "ItemKey,ProgramIds,LastModified"
+            };
+        }
+
+        public string Author => "Eric Zimmerman";
+        public string FileDescription => "CSV generated from AmcacheParser for the InventoryApplicationAppV database table";
+        public HashSet<string> ExpectedHeaders { get; }
+
+        public IBindingList DataList { get; }
+        public List<int> TaggedLines { get; set; }
+
+        public string InternalGuid => "03ccc1b0-bb72-41fd-a417-ae5aaaf75bb9";
+
+        public void ProcessFile(string filename)
+        {
+            CsvLoader.Load<AmcacheParserInventoryApplicationAppVData>(filename, DataList, TaggedLines);
+        }
+    }
+
+    public class AmcacheParserInventoryApplicationFrameworkData : IFileSpecData
+    {
+        public string ItemKey { get; set; }
+        public string Frameworks { get; set; }
+        public DateTime? LastModified { get; set; }
+
+        public int Line { get; set; }
+        public bool Tag { get; set; }
+
+        public override string ToString()
+        {
+            return $"{ItemKey} {Frameworks} {LastModified}";
+        }
+    }
+
+    /// <summary>
+    ///     AmcacheParser's InventoryApplicationFramework CSV: the database table as it is (the columns are those of the Windows 11 26H2
+    ///     Inventory databases; another schema is shown as a generic CSV)
+    /// </summary>
+    public class AmcacheParserInventoryApplicationFramework : IFileSpec
+    {
+        public AmcacheParserInventoryApplicationFramework()
+        {
+            TaggedLines = new List<int>();
+
+            DataList = new BindingList<AmcacheParserInventoryApplicationFrameworkData>();
+
+            ExpectedHeaders = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+            {
+                "ItemKey,Frameworks,LastModified"
+            };
+        }
+
+        public string Author => "Eric Zimmerman";
+        public string FileDescription => "CSV generated from AmcacheParser for the InventoryApplicationFramework database table";
+        public HashSet<string> ExpectedHeaders { get; }
+
+        public IBindingList DataList { get; }
+        public List<int> TaggedLines { get; set; }
+
+        public string InternalGuid => "032ccb81-0b35-400f-b3c4-bdc2eac435e6";
+
+        public void ProcessFile(string filename)
+        {
+            CsvLoader.Load<AmcacheParserInventoryApplicationFrameworkData>(filename, DataList, TaggedLines);
+        }
+    }
+
+    public class AmcacheParserInventoryDeviceInterfaceData : IFileSpecData
+    {
+        public string ItemKey { get; set; }
+        public string Accelerometer3D { get; set; }
+        public string ActivityDetection { get; set; }
+        public string AmbientLight { get; set; }
+        public string Barometer { get; set; }
+        public string Custom { get; set; }
+        public string FloorElevation { get; set; }
+        public string GeomagneticOrientation { get; set; }
+        public string GravityVector { get; set; }
+        public string Gyrometer3D { get; set; }
+        public string Humidity { get; set; }
+        public string LinearAccelerometer { get; set; }
+        public string Magnetometer3D { get; set; }
+        public string Orientation { get; set; }
+        public string Pedometer { get; set; }
+        public string Proximity { get; set; }
+        public string RelativeOrientation { get; set; }
+        public string SimpleDeviceOrientation { get; set; }
+        public string Temperature { get; set; }
+        public string EnergyMeter { get; set; }
+        public string HingeAngle { get; set; }
+        public string PresenceCapabilities { get; set; }
+        public DateTime? LastModified { get; set; }
+
+        public int Line { get; set; }
+        public bool Tag { get; set; }
+
+        public override string ToString()
+        {
+            return $"{ItemKey} {Accelerometer3D} {ActivityDetection} {AmbientLight} {Barometer} {Custom} {FloorElevation} {GeomagneticOrientation} {GravityVector} {Gyrometer3D} {Humidity} {LinearAccelerometer} {Magnetometer3D} {Orientation} {Pedometer} {Proximity} {RelativeOrientation} {SimpleDeviceOrientation} {Temperature} {EnergyMeter} {HingeAngle} {PresenceCapabilities} {LastModified}";
+        }
+    }
+
+    /// <summary>
+    ///     AmcacheParser's InventoryDeviceInterface CSV: the database table as it is (the columns are those of the Windows 11 26H2
+    ///     Inventory databases; another schema is shown as a generic CSV)
+    /// </summary>
+    public class AmcacheParserInventoryDeviceInterface : IFileSpec
+    {
+        public AmcacheParserInventoryDeviceInterface()
+        {
+            TaggedLines = new List<int>();
+
+            DataList = new BindingList<AmcacheParserInventoryDeviceInterfaceData>();
+
+            ExpectedHeaders = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+            {
+                "ItemKey,Accelerometer3D,ActivityDetection,AmbientLight,Barometer,Custom,FloorElevation,GeomagneticOrientation,GravityVector,Gyrometer3D,Humidity,LinearAccelerometer,Magnetometer3D,Orientation,Pedometer,Proximity,RelativeOrientation,SimpleDeviceOrientation,Temperature,EnergyMeter,HingeAngle,PresenceCapabilities,LastModified"
+            };
+        }
+
+        public string Author => "Eric Zimmerman";
+        public string FileDescription => "CSV generated from AmcacheParser for the InventoryDeviceInterface database table";
+        public HashSet<string> ExpectedHeaders { get; }
+
+        public IBindingList DataList { get; }
+        public List<int> TaggedLines { get; set; }
+
+        public string InternalGuid => "dd14c3c5-e05d-4c99-b3be-4c3642be4b64";
+
+        public void ProcessFile(string filename)
+        {
+            CsvLoader.Load<AmcacheParserInventoryDeviceInterfaceData>(filename, DataList, TaggedLines);
+        }
+    }
+
+    public class AmcacheParserInventoryDeviceMediaClassData : IFileSpecData
+    {
+        public string ItemKey { get; set; }
+        public string Audio_RenderDriver { get; set; }
+        public string Audio_CaptureDriver { get; set; }
+        public DateTime? LastModified { get; set; }
+
+        public int Line { get; set; }
+        public bool Tag { get; set; }
+
+        public override string ToString()
+        {
+            return $"{ItemKey} {Audio_RenderDriver} {Audio_CaptureDriver} {LastModified}";
+        }
+    }
+
+    /// <summary>
+    ///     AmcacheParser's InventoryDeviceMediaClass CSV: the database table as it is (the columns are those of the Windows 11 26H2
+    ///     Inventory databases; another schema is shown as a generic CSV)
+    /// </summary>
+    public class AmcacheParserInventoryDeviceMediaClass : IFileSpec
+    {
+        public AmcacheParserInventoryDeviceMediaClass()
+        {
+            TaggedLines = new List<int>();
+
+            DataList = new BindingList<AmcacheParserInventoryDeviceMediaClassData>();
+
+            ExpectedHeaders = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+            {
+                "ItemKey,Audio_RenderDriver,Audio_CaptureDriver,LastModified"
+            };
+        }
+
+        public string Author => "Eric Zimmerman";
+        public string FileDescription => "CSV generated from AmcacheParser for the InventoryDeviceMediaClass database table";
+        public HashSet<string> ExpectedHeaders { get; }
+
+        public IBindingList DataList { get; }
+        public List<int> TaggedLines { get; set; }
+
+        public string InternalGuid => "0de76279-40a9-4804-8d94-e886de4ef326";
+
+        public void ProcessFile(string filename)
+        {
+            CsvLoader.Load<AmcacheParserInventoryDeviceMediaClassData>(filename, DataList, TaggedLines);
+        }
+    }
+
+    public class AmcacheParserInventoryDevicePciData : IFileSpecData
+    {
+        public string ItemKey { get; set; }
+        public string IsTunneledDevice { get; set; }
+        public DateTime? LastModified { get; set; }
+
+        public int Line { get; set; }
+        public bool Tag { get; set; }
+
+        public override string ToString()
+        {
+            return $"{ItemKey} {IsTunneledDevice} {LastModified}";
+        }
+    }
+
+    /// <summary>
+    ///     AmcacheParser's InventoryDevicePci CSV: the database table as it is (the columns are those of the Windows 11 26H2
+    ///     Inventory databases; another schema is shown as a generic CSV)
+    /// </summary>
+    public class AmcacheParserInventoryDevicePci : IFileSpec
+    {
+        public AmcacheParserInventoryDevicePci()
+        {
+            TaggedLines = new List<int>();
+
+            DataList = new BindingList<AmcacheParserInventoryDevicePciData>();
+
+            ExpectedHeaders = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+            {
+                "ItemKey,IsTunneledDevice,LastModified"
+            };
+        }
+
+        public string Author => "Eric Zimmerman";
+        public string FileDescription => "CSV generated from AmcacheParser for the InventoryDevicePci database table";
+        public HashSet<string> ExpectedHeaders { get; }
+
+        public IBindingList DataList { get; }
+        public List<int> TaggedLines { get; set; }
+
+        public string InternalGuid => "e0d47a8f-5ada-4fad-94d7-1af03246cc07";
+
+        public void ProcessFile(string filename)
+        {
+            CsvLoader.Load<AmcacheParserInventoryDevicePciData>(filename, DataList, TaggedLines);
+        }
+    }
+
+    public class AmcacheParserInventoryDeviceSensorData : IFileSpecData
+    {
+        public string ItemKey { get; set; }
+        public string Manufacturer { get; set; }
+        public DateTime? LastModified { get; set; }
+
+        public int Line { get; set; }
+        public bool Tag { get; set; }
+
+        public override string ToString()
+        {
+            return $"{ItemKey} {Manufacturer} {LastModified}";
+        }
+    }
+
+    /// <summary>
+    ///     AmcacheParser's InventoryDeviceSensor CSV: the database table as it is (the columns are those of the Windows 11 26H2
+    ///     Inventory databases; another schema is shown as a generic CSV)
+    /// </summary>
+    public class AmcacheParserInventoryDeviceSensor : IFileSpec
+    {
+        public AmcacheParserInventoryDeviceSensor()
+        {
+            TaggedLines = new List<int>();
+
+            DataList = new BindingList<AmcacheParserInventoryDeviceSensorData>();
+
+            ExpectedHeaders = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+            {
+                "ItemKey,Manufacturer,LastModified"
+            };
+        }
+
+        public string Author => "Eric Zimmerman";
+        public string FileDescription => "CSV generated from AmcacheParser for the InventoryDeviceSensor database table";
+        public HashSet<string> ExpectedHeaders { get; }
+
+        public IBindingList DataList { get; }
+        public List<int> TaggedLines { get; set; }
+
+        public string InternalGuid => "d6437cd5-80c5-4e65-8081-0dda49b58706";
+
+        public void ProcessFile(string filename)
+        {
+            CsvLoader.Load<AmcacheParserInventoryDeviceSensorData>(filename, DataList, TaggedLines);
+        }
+    }
+
+    public class AmcacheParserInventoryDeviceUsbHubClassData : IFileSpecData
+    {
+        public string ItemKey { get; set; }
+        public string TotalUserConnectablePorts { get; set; }
+        public string TotalUserConnectableTypeCPorts { get; set; }
+        public DateTime? LastModified { get; set; }
+
+        public int Line { get; set; }
+        public bool Tag { get; set; }
+
+        public override string ToString()
+        {
+            return $"{ItemKey} {TotalUserConnectablePorts} {TotalUserConnectableTypeCPorts} {LastModified}";
+        }
+    }
+
+    /// <summary>
+    ///     AmcacheParser's InventoryDeviceUsbHubClass CSV: the database table as it is (the columns are those of the Windows 11 26H2
+    ///     Inventory databases; another schema is shown as a generic CSV)
+    /// </summary>
+    public class AmcacheParserInventoryDeviceUsbHubClass : IFileSpec
+    {
+        public AmcacheParserInventoryDeviceUsbHubClass()
+        {
+            TaggedLines = new List<int>();
+
+            DataList = new BindingList<AmcacheParserInventoryDeviceUsbHubClassData>();
+
+            ExpectedHeaders = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+            {
+                "ItemKey,TotalUserConnectablePorts,TotalUserConnectableTypeCPorts,LastModified"
+            };
+        }
+
+        public string Author => "Eric Zimmerman";
+        public string FileDescription => "CSV generated from AmcacheParser for the InventoryDeviceUsbHubClass database table";
+        public HashSet<string> ExpectedHeaders { get; }
+
+        public IBindingList DataList { get; }
+        public List<int> TaggedLines { get; set; }
+
+        public string InternalGuid => "cfb56500-36e9-462c-a6f4-686f27199fe9";
+
+        public void ProcessFile(string filename)
+        {
+            CsvLoader.Load<AmcacheParserInventoryDeviceUsbHubClassData>(filename, DataList, TaggedLines);
+        }
+    }
+
+    public class AmcacheParserInventoryInstallerData : IFileSpecData
+    {
+        public string ItemKey { get; set; }
+        public string InstallerId { get; set; }
+        public string InstallerName { get; set; }
+        public string InstallerVersion { get; set; }
+        public string InstallerPublisher { get; set; }
+        public DateTime? LastModified { get; set; }
+
+        public int Line { get; set; }
+        public bool Tag { get; set; }
+
+        public override string ToString()
+        {
+            return $"{ItemKey} {InstallerId} {InstallerName} {InstallerVersion} {InstallerPublisher} {LastModified}";
+        }
+    }
+
+    /// <summary>
+    ///     AmcacheParser's InventoryInstaller CSV: the database table as it is (the columns are those of the Windows 11 26H2
+    ///     Inventory databases; another schema is shown as a generic CSV)
+    /// </summary>
+    public class AmcacheParserInventoryInstaller : IFileSpec
+    {
+        public AmcacheParserInventoryInstaller()
+        {
+            TaggedLines = new List<int>();
+
+            DataList = new BindingList<AmcacheParserInventoryInstallerData>();
+
+            ExpectedHeaders = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+            {
+                "ItemKey,InstallerId,InstallerName,InstallerVersion,InstallerPublisher,LastModified"
+            };
+        }
+
+        public string Author => "Eric Zimmerman";
+        public string FileDescription => "CSV generated from AmcacheParser for the InventoryInstaller database table";
+        public HashSet<string> ExpectedHeaders { get; }
+
+        public IBindingList DataList { get; }
+        public List<int> TaggedLines { get; set; }
+
+        public string InternalGuid => "4a2f68e8-1f3e-4d2b-b676-fbb1d272bc01";
+
+        public void ProcessFile(string filename)
+        {
+            CsvLoader.Load<AmcacheParserInventoryInstallerData>(filename, DataList, TaggedLines);
+        }
+    }
+
+    public class AmcacheParserInventoryInstallerApplicationData : IFileSpecData
+    {
+        public string ItemKey { get; set; }
+        public string ProgramId { get; set; }
+        public string Name { get; set; }
+        public string Version { get; set; }
+        public string Publisher { get; set; }
+        public string Language { get; set; }
+        public string UninstallKey { get; set; }
+        public string InstallerId { get; set; }
+        public DateTime? LastModified { get; set; }
+
+        public int Line { get; set; }
+        public bool Tag { get; set; }
+
+        public override string ToString()
+        {
+            return $"{ItemKey} {ProgramId} {Name} {Version} {Publisher} {Language} {UninstallKey} {InstallerId} {LastModified}";
+        }
+    }
+
+    /// <summary>
+    ///     AmcacheParser's InventoryInstallerApplication CSV: the database table as it is (the columns are those of the Windows 11 26H2
+    ///     Inventory databases; another schema is shown as a generic CSV)
+    /// </summary>
+    public class AmcacheParserInventoryInstallerApplication : IFileSpec
+    {
+        public AmcacheParserInventoryInstallerApplication()
+        {
+            TaggedLines = new List<int>();
+
+            DataList = new BindingList<AmcacheParserInventoryInstallerApplicationData>();
+
+            ExpectedHeaders = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+            {
+                "ItemKey,ProgramId,Name,Version,Publisher,Language,UninstallKey,InstallerId,LastModified"
+            };
+        }
+
+        public string Author => "Eric Zimmerman";
+        public string FileDescription => "CSV generated from AmcacheParser for the InventoryInstallerApplication database table";
+        public HashSet<string> ExpectedHeaders { get; }
+
+        public IBindingList DataList { get; }
+        public List<int> TaggedLines { get; set; }
+
+        public string InternalGuid => "b9a32a28-c1d8-420d-b5fa-7d4e1f82970d";
+
+        public void ProcessFile(string filename)
+        {
+            CsvLoader.Load<AmcacheParserInventoryInstallerApplicationData>(filename, DataList, TaggedLines);
+        }
+    }
+
+    public class AmcacheParserInventoryInstallerApplicationFileData : IFileSpecData
+    {
+        public string ItemKey { get; set; }
+        public string InstallerId { get; set; }
+        public string FilePath { get; set; }
+        public string FileId { get; set; }
+        public string ProgramId { get; set; }
+        public DateTime? LastModified { get; set; }
+
+        public int Line { get; set; }
+        public bool Tag { get; set; }
+
+        public override string ToString()
+        {
+            return $"{ItemKey} {InstallerId} {FilePath} {FileId} {ProgramId} {LastModified}";
+        }
+    }
+
+    /// <summary>
+    ///     AmcacheParser's InventoryInstallerApplicationFile CSV: the database table as it is (the columns are those of the Windows 11 26H2
+    ///     Inventory databases; another schema is shown as a generic CSV)
+    /// </summary>
+    public class AmcacheParserInventoryInstallerApplicationFile : IFileSpec
+    {
+        public AmcacheParserInventoryInstallerApplicationFile()
+        {
+            TaggedLines = new List<int>();
+
+            DataList = new BindingList<AmcacheParserInventoryInstallerApplicationFileData>();
+
+            ExpectedHeaders = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+            {
+                "ItemKey,InstallerId,FilePath,FileId,ProgramId,LastModified"
+            };
+        }
+
+        public string Author => "Eric Zimmerman";
+        public string FileDescription => "CSV generated from AmcacheParser for the InventoryInstallerApplicationFile database table";
+        public HashSet<string> ExpectedHeaders { get; }
+
+        public IBindingList DataList { get; }
+        public List<int> TaggedLines { get; set; }
+
+        public string InternalGuid => "4291d9e7-5dd8-4bfb-9962-c540d73b9e6b";
+
+        public void ProcessFile(string filename)
+        {
+            CsvLoader.Load<AmcacheParserInventoryInstallerApplicationFileData>(filename, DataList, TaggedLines);
+        }
+    }
+
+    public class AmcacheParserInventoryMiscellaneousData : IFileSpecData
+    {
+        public string ItemKey { get; set; }
+        public string Exists { get; set; }
+        public string Value { get; set; }
+        public DateTime? LastModified { get; set; }
+
+        public int Line { get; set; }
+        public bool Tag { get; set; }
+
+        public override string ToString()
+        {
+            return $"{ItemKey} {Exists} {Value} {LastModified}";
+        }
+    }
+
+    /// <summary>
+    ///     AmcacheParser's InventoryMiscellaneous CSV: the database table as it is (the columns are those of the Windows 11 26H2
+    ///     Inventory databases; another schema is shown as a generic CSV)
+    /// </summary>
+    public class AmcacheParserInventoryMiscellaneous : IFileSpec
+    {
+        public AmcacheParserInventoryMiscellaneous()
+        {
+            TaggedLines = new List<int>();
+
+            DataList = new BindingList<AmcacheParserInventoryMiscellaneousData>();
+
+            ExpectedHeaders = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+            {
+                "ItemKey,Exists,Value,LastModified"
+            };
+        }
+
+        public string Author => "Eric Zimmerman";
+        public string FileDescription => "CSV generated from AmcacheParser for the InventoryMiscellaneous database table";
+        public HashSet<string> ExpectedHeaders { get; }
+
+        public IBindingList DataList { get; }
+        public List<int> TaggedLines { get; set; }
+
+        public string InternalGuid => "22b7d1ea-535b-45c8-88e2-835fec32eb52";
+
+        public void ProcessFile(string filename)
+        {
+            CsvLoader.Load<AmcacheParserInventoryMiscellaneousData>(filename, DataList, TaggedLines);
+        }
+    }
+
+    public class AmcacheParserInventoryMiscellaneousMemorySlotArrayInfoData : IFileSpecData
+    {
+        public string ItemKey { get; set; }
+        public string Slot { get; set; }
+        public string Type { get; set; }
+        public string TypeDetails { get; set; }
+        public string Speed { get; set; }
+        public string Capacity { get; set; }
+        public string Model { get; set; }
+        public string Manufacturer { get; set; }
+        public string TotalWidth { get; set; }
+        public string DataWidth { get; set; }
+        public string MemoryErrorCorrection { get; set; }
+        public DateTime? LastModified { get; set; }
+
+        public int Line { get; set; }
+        public bool Tag { get; set; }
+
+        public override string ToString()
+        {
+            return $"{ItemKey} {Slot} {Type} {TypeDetails} {Speed} {Capacity} {Model} {Manufacturer} {TotalWidth} {DataWidth} {MemoryErrorCorrection} {LastModified}";
+        }
+    }
+
+    /// <summary>
+    ///     AmcacheParser's InventoryMiscellaneousMemorySlotArrayInfo CSV: the database table as it is (the columns are those of the Windows 11 26H2
+    ///     Inventory databases; another schema is shown as a generic CSV)
+    /// </summary>
+    public class AmcacheParserInventoryMiscellaneousMemorySlotArrayInfo : IFileSpec
+    {
+        public AmcacheParserInventoryMiscellaneousMemorySlotArrayInfo()
+        {
+            TaggedLines = new List<int>();
+
+            DataList = new BindingList<AmcacheParserInventoryMiscellaneousMemorySlotArrayInfoData>();
+
+            ExpectedHeaders = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+            {
+                "ItemKey,Slot,Type,TypeDetails,Speed,Capacity,Model,Manufacturer,TotalWidth,DataWidth,MemoryErrorCorrection,LastModified"
+            };
+        }
+
+        public string Author => "Eric Zimmerman";
+        public string FileDescription => "CSV generated from AmcacheParser for the InventoryMiscellaneousMemorySlotArrayInfo database table";
+        public HashSet<string> ExpectedHeaders { get; }
+
+        public IBindingList DataList { get; }
+        public List<int> TaggedLines { get; set; }
+
+        public string InternalGuid => "63342ace-0207-42d3-a975-21c82e03d4e5";
+
+        public void ProcessFile(string filename)
+        {
+            CsvLoader.Load<AmcacheParserInventoryMiscellaneousMemorySlotArrayInfoData>(filename, DataList, TaggedLines);
+        }
+    }
+
+    public class AmcacheParserInventoryMiscellaneousUUPInfoData : IFileSpecData
+    {
+        public string ItemKey { get; set; }
+        public string Identifier { get; set; }
+        public string Version { get; set; }
+        public string Source { get; set; }
+        public string PreviousVersion { get; set; }
+        public string LastActivatedVersion { get; set; }
+        public DateTime? LastModified { get; set; }
+
+        public int Line { get; set; }
+        public bool Tag { get; set; }
+
+        public override string ToString()
+        {
+            return $"{ItemKey} {Identifier} {Version} {Source} {PreviousVersion} {LastActivatedVersion} {LastModified}";
+        }
+    }
+
+    /// <summary>
+    ///     AmcacheParser's InventoryMiscellaneousUUPInfo CSV: the database table as it is (the columns are those of the Windows 11 26H2
+    ///     Inventory databases; another schema is shown as a generic CSV)
+    /// </summary>
+    public class AmcacheParserInventoryMiscellaneousUUPInfo : IFileSpec
+    {
+        public AmcacheParserInventoryMiscellaneousUUPInfo()
+        {
+            TaggedLines = new List<int>();
+
+            DataList = new BindingList<AmcacheParserInventoryMiscellaneousUUPInfoData>();
+
+            ExpectedHeaders = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+            {
+                "ItemKey,Identifier,Version,Source,PreviousVersion,LastActivatedVersion,LastModified"
+            };
+        }
+
+        public string Author => "Eric Zimmerman";
+        public string FileDescription => "CSV generated from AmcacheParser for the InventoryMiscellaneousUUPInfo database table";
+        public HashSet<string> ExpectedHeaders { get; }
+
+        public IBindingList DataList { get; }
+        public List<int> TaggedLines { get; set; }
+
+        public string InternalGuid => "c83436f4-86bb-454e-bccb-209d8f7a835f";
+
+        public void ProcessFile(string filename)
+        {
+            CsvLoader.Load<AmcacheParserInventoryMiscellaneousUUPInfoData>(filename, DataList, TaggedLines);
+        }
+    }
+
+    public class AmcacheParserInventoryMiscellaneousUserData : IFileSpecData
+    {
+        public string ItemKey { get; set; }
+        public string OriginalName { get; set; }
+        public string Exists { get; set; }
+        public string Value { get; set; }
+        public string UserId { get; set; }
+        public string StandardUserHash { get; set; }
+        public DateTime? LastModified { get; set; }
+
+        public int Line { get; set; }
+        public bool Tag { get; set; }
+
+        public override string ToString()
+        {
+            return $"{ItemKey} {OriginalName} {Exists} {Value} {UserId} {StandardUserHash} {LastModified}";
+        }
+    }
+
+    /// <summary>
+    ///     AmcacheParser's InventoryMiscellaneousUser CSV: the database table as it is (the columns are those of the Windows 11 26H2
+    ///     Inventory databases; another schema is shown as a generic CSV)
+    /// </summary>
+    public class AmcacheParserInventoryMiscellaneousUser : IFileSpec
+    {
+        public AmcacheParserInventoryMiscellaneousUser()
+        {
+            TaggedLines = new List<int>();
+
+            DataList = new BindingList<AmcacheParserInventoryMiscellaneousUserData>();
+
+            ExpectedHeaders = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+            {
+                "ItemKey,OriginalName,Exists,Value,UserId,StandardUserHash,LastModified"
+            };
+        }
+
+        public string Author => "Eric Zimmerman";
+        public string FileDescription => "CSV generated from AmcacheParser for the InventoryMiscellaneousUser database table";
+        public HashSet<string> ExpectedHeaders { get; }
+
+        public IBindingList DataList { get; }
+        public List<int> TaggedLines { get; set; }
+
+        public string InternalGuid => "b458caf0-2433-4a69-a438-1797c39447b1";
+
+        public void ProcessFile(string filename)
+        {
+            CsvLoader.Load<AmcacheParserInventoryMiscellaneousUserData>(filename, DataList, TaggedLines);
+        }
+    }
+
+    public class AmcacheParserMareData : IFileSpecData
+    {
+        public string ItemKey { get; set; }
+        public string Path { get; set; }
+        public string ProgramId { get; set; }
+        public string Flags { get; set; }
+        public string Far { get; set; }
+        public string Restore { get; set; }
+        public string Sdbentryguid { get; set; }
+        public DateTime? LastModified { get; set; }
+
+        public int Line { get; set; }
+        public bool Tag { get; set; }
+
+        public override string ToString()
+        {
+            return $"{ItemKey} {Path} {ProgramId} {Flags} {Far} {Restore} {Sdbentryguid} {LastModified}";
+        }
+    }
+
+    /// <summary>
+    ///     AmcacheParser's Mare CSV: the database table as it is (the columns are those of the Windows 11 26H2
+    ///     Inventory databases; another schema is shown as a generic CSV)
+    /// </summary>
+    public class AmcacheParserMare : IFileSpec
+    {
+        public AmcacheParserMare()
+        {
+            TaggedLines = new List<int>();
+
+            DataList = new BindingList<AmcacheParserMareData>();
+
+            ExpectedHeaders = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+            {
+                "ItemKey,path,programId,flags,far,restore,sdbentryguid,LastModified"
+            };
+        }
+
+        public string Author => "Eric Zimmerman";
+        public string FileDescription => "CSV generated from AmcacheParser for the Mare database table";
+        public HashSet<string> ExpectedHeaders { get; }
+
+        public IBindingList DataList { get; }
+        public List<int> TaggedLines { get; set; }
+
+        public string InternalGuid => "4b3f0a76-ad3d-440d-b645-de0d4ecf8c4a";
+
+        public void ProcessFile(string filename)
+        {
+            CsvLoader.Load<AmcacheParserMareData>(filename, DataList, TaggedLines);
+        }
+    }
+
+    public class AmcacheParserMareBackupAppsData : IFileSpecData
+    {
+        public string ItemKey { get; set; }
+        public string Hash { get; set; }
+        public string Aumids { get; set; }
+        public string SidState { get; set; }
+        public DateTime? LastModified { get; set; }
+
+        public int Line { get; set; }
+        public bool Tag { get; set; }
+
+        public override string ToString()
+        {
+            return $"{ItemKey} {Hash} {Aumids} {SidState} {LastModified}";
+        }
+    }
+
+    /// <summary>
+    ///     AmcacheParser's MareBackupApps CSV: the database table as it is (the columns are those of the Windows 11 26H2
+    ///     Inventory databases; another schema is shown as a generic CSV)
+    /// </summary>
+    public class AmcacheParserMareBackupApps : IFileSpec
+    {
+        public AmcacheParserMareBackupApps()
+        {
+            TaggedLines = new List<int>();
+
+            DataList = new BindingList<AmcacheParserMareBackupAppsData>();
+
+            ExpectedHeaders = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+            {
+                "ItemKey,Hash,Aumids,SidState,LastModified"
+            };
+        }
+
+        public string Author => "Eric Zimmerman";
+        public string FileDescription => "CSV generated from AmcacheParser for the MareBackupApps database table";
+        public HashSet<string> ExpectedHeaders { get; }
+
+        public IBindingList DataList { get; }
+        public List<int> TaggedLines { get; set; }
+
+        public string InternalGuid => "6121a9ed-ab76-4e8a-8ee0-7338dd61328d";
+
+        public void ProcessFile(string filename)
+        {
+            CsvLoader.Load<AmcacheParserMareBackupAppsData>(filename, DataList, TaggedLines);
+        }
+    }
+
+    public class AmcacheParserMetadataData : IFileSpecData
+    {
+        public string Database { get; set; }
+        public string Name { get; set; }
+        public string Value { get; set; }
+
+        public int Line { get; set; }
+        public bool Tag { get; set; }
+
+        public override string ToString()
+        {
+            return $"{Database} {Name} {Value}";
+        }
+    }
+
+    /// <summary>
+    ///     AmcacheParser's Metadata CSV: the database table as it is (the columns are those of the Windows 11 26H2
+    ///     Inventory databases; another schema is shown as a generic CSV)
+    /// </summary>
+    public class AmcacheParserMetadata : IFileSpec
+    {
+        public AmcacheParserMetadata()
+        {
+            TaggedLines = new List<int>();
+
+            DataList = new BindingList<AmcacheParserMetadataData>();
+
+            ExpectedHeaders = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+            {
+                "Database,Name,Value"
+            };
+        }
+
+        public string Author => "Eric Zimmerman";
+        public string FileDescription => "CSV generated from AmcacheParser for the Metadata database table";
+        public HashSet<string> ExpectedHeaders { get; }
+
+        public IBindingList DataList { get; }
+        public List<int> TaggedLines { get; set; }
+
+        public string InternalGuid => "21f6ae62-974a-4f7f-af6c-87802d582411";
+
+        public void ProcessFile(string filename)
+        {
+            CsvLoader.Load<AmcacheParserMetadataData>(filename, DataList, TaggedLines);
+        }
+    }
 }
