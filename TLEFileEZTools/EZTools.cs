@@ -1508,7 +1508,9 @@ namespace TLEFileEZTools
 
             ExpectedHeaders = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
             {
-                "ProgramID,LastWriteTimestamp,ProgramName_0,ProgramVersion_1,VendorName_2,InstallDateEpoch_a,InstallDateEpoch_b,LanguageCode_3,InstallSource_6,UninstallRegistryKey_7,PathsList_d,UnknownGuid_10,UnknownGuid_12,UninstallGuid_11,UnknownDword_5,UnknownDword_13,UnknownDword_14,UnknownDword_15,UnknownBytes_16,UnknownQWord_17,UnknownDword_18,UninstallGuid_f"
+                "ProgramID,LastWriteTimestamp,ProgramName_0,ProgramVersion_1,VendorName_2,InstallDateEpoch_a,InstallDateEpoch_b,LanguageCode_3,InstallSource_6,UninstallRegistryKey_7,PathsList_d,UnknownGuid_10,UnknownGuid_12,UninstallGuid_11,UnknownDword_5,UnknownDword_13,UnknownDword_14,UnknownDword_15,UnknownBytes_16,UnknownQWord_17,UnknownDword_18,UninstallGuid_f",
+                //the old format's programs CSV as AmcacheParser writes it (2026.5 too)
+                "ProgramID,LastWriteTimestamp,ProgramName_0,ProgramVersion_1,VendorName_2,InstallDateEpoch_a,UnknownGuid_10,InstallDateEpoch_b,LanguageCode_3,UnknownGuid_12,InstallSource_6,UninstallGuid_11,UninstallRegistryKey_7,UnknownDword_5,PathsList_d,UnknownDword_13,UnknownDword_14,UnknownDword_15,UnknownBytes_16,UnknownQWord_17,UnknownDword_18,UninstallGuid_f"
             };
         }
 
@@ -1577,7 +1579,9 @@ namespace TLEFileEZTools
 
             ExpectedHeaders = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
             {
-                "ProgramName,ProgramID,VolumeID,VolumeIDLastWriteTimestamp,FileID,FileIDLastWriteTimestamp,SHA1,FullPath,FileExtension,MFTEntryNumber,MFTSequenceNumber,FileSize,FileVersionString,FileVersionNumber,FileDescription,SizeOfImage,PEHeaderHash,PEHeaderChecksum,BinProductVersion,BinFileVersion,LinkerVersion,BinaryType,IsLocal,GuessProgramID,Created,LastModified,LastModifiedStore,LinkDate,LanguageID,ProductName,CompanyName,SwitchBackContext"
+                "ProgramName,ProgramID,VolumeID,VolumeIDLastWriteTimestamp,FileID,FileIDLastWriteTimestamp,SHA1,FullPath,FileExtension,MFTEntryNumber,MFTSequenceNumber,FileSize,FileVersionString,FileVersionNumber,FileDescription,SizeOfImage,PEHeaderHash,PEHeaderChecksum,BinProductVersion,BinFileVersion,LinkerVersion,BinaryType,IsLocal,GuessProgramID,Created,LastModified,LastModifiedStore,LinkDate,LanguageID,ProductName,CompanyName,SwitchBackContext",
+                //the old format's associated files CSV (its columns are in another order than the unassociated one)
+                "ProgramName,ProgramID,ProductName,VolumeID,CompanyName,VolumeIDLastWriteTimestamp,FileID,FileIDLastWriteTimestamp,SHA1,FullPath,FileExtension,MFTEntryNumber,MFTSequenceNumber,FileSize,FileVersionString,FileVersionNumber,FileDescription,SwitchBackContext,SizeOfImage,PEHeaderHash,PEHeaderChecksum,BinProductVersion,BinFileVersion,LinkerVersion,BinaryType,IsLocal,GuessProgramID,Created,LastModified,LastModifiedStore,LinkDate,LanguageID"
             };
         }
 
