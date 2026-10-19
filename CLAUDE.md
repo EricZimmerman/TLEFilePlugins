@@ -26,7 +26,7 @@ pwsh ./CopyPlugins.ps1 -ImportLayouts <TLE>     # TLE's saved layouts (*.layout.
 
 ## Tests (`TLEFile.Test`, net10.0)
 
-- `PluginTests`: unique InternalGuids; no header line claimed by two plugins; for every plugin (except the hand-parsed ones) and each of its header lines, a synthesized file (typed values by property name) loads 3 rows and tags; `TestFiles/CurrentHeaders.tsv` (the header lines of every CSV the 2026.10 tools write; header lines only, no data) all go to a plugin; layouts match plugins and have every column; `RealOutputs` (`[Explicit]`, `TLE_CSV_DIR`) loads real tool outputs.
+- `PluginTests`: unique InternalGuids; no header line claimed by two plugins; for every plugin (except the hand-parsed ones) and each of its header lines, a synthesized file (typed values by property name) loads 3 rows and tags; `TestFiles/CurrentHeaders.tsv` (the header lines of every CSV the 2026.10 tools write; header lines only, no data) all go to a plugin; layouts match plugins and have every column; every layout starts with Line, then Tag (`LayoutsStartWithLineThenTag`); `RealOutputs` (`[Explicit]`, `TLE_CSV_DIR`) loads real tool outputs.
 - `LoaderTests`: older header versions, empty values, header case, times as written, GenericCsv delimiters.
 - When a tool changes its CSV: run it, add its header line to `CurrentHeaders.tsv`, then to the plugin, then the layout.
 
