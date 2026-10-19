@@ -76,7 +76,7 @@
       <property name="Name">colType</property>
       <property name="VisibleIndex">2</property>
       <property name="Visible">true</property>
-      <property name="Width">80</property>
+      <property name="Width">125</property>
       <property name="MinWidth">20</property>
       <property name="MaxWidth">0</property>
     </property>
@@ -84,7 +84,7 @@
       <property name="Name">colBatchKeyPath</property>
       <property name="VisibleIndex">3</property>
       <property name="Visible">true</property>
-      <property name="Width">138</property>
+      <property name="Width">450</property>
       <property name="MinWidth">20</property>
       <property name="MaxWidth">0</property>
     </property>
@@ -92,7 +92,7 @@
       <property name="Name">colKeyName</property>
       <property name="VisibleIndex">4</property>
       <property name="Visible">true</property>
-      <property name="Width">93</property>
+      <property name="Width">450</property>
       <property name="MinWidth">20</property>
       <property name="MaxWidth">0</property>
     </property>
@@ -100,7 +100,7 @@
       <property name="Name">colBatchValueName</property>
       <property name="VisibleIndex">5</property>
       <property name="Visible">true</property>
-      <property name="Width">156</property>
+      <property name="Width">118</property>
       <property name="MinWidth">20</property>
       <property name="MaxWidth">0</property>
     </property>
@@ -108,7 +108,7 @@
       <property name="Name">colService</property>
       <property name="VisibleIndex">6</property>
       <property name="Visible">true</property>
-      <property name="Width">93</property>
+      <property name="Width">118</property>
       <property name="MinWidth">20</property>
       <property name="MaxWidth">0</property>
     </property>
@@ -116,7 +116,7 @@
       <property name="Name">colDeviceDesc</property>
       <property name="VisibleIndex">7</property>
       <property name="Visible">true</property>
-      <property name="Width">120</property>
+      <property name="Width">202</property>
       <property name="MinWidth">20</property>
       <property name="MaxWidth">0</property>
     </property>
@@ -124,7 +124,7 @@
       <property name="Name">colFriendlyName</property>
       <property name="VisibleIndex">8</property>
       <property name="Visible">true</property>
-      <property name="Width">138</property>
+      <property name="Width">328</property>
       <property name="MinWidth">20</property>
       <property name="MaxWidth">0</property>
     </property>
@@ -132,7 +132,7 @@
       <property name="Name">colInstalled</property>
       <property name="VisibleIndex">9</property>
       <property name="Visible">true</property>
-      <property name="Width">111</property>
+      <property name="Width">209</property>
       <property name="MinWidth">20</property>
       <property name="MaxWidth">0</property>
     </property>
@@ -140,7 +140,7 @@
       <property name="Name">colFirstInstalled</property>
       <property name="VisibleIndex">10</property>
       <property name="Visible">true</property>
-      <property name="Width">156</property>
+      <property name="Width">209</property>
       <property name="MinWidth">20</property>
       <property name="MaxWidth">0</property>
     </property>
@@ -148,7 +148,7 @@
       <property name="Name">colLastConnected</property>
       <property name="VisibleIndex">11</property>
       <property name="Visible">true</property>
-      <property name="Width">147</property>
+      <property name="Width">209</property>
       <property name="MinWidth">20</property>
       <property name="MaxWidth">0</property>
     </property>
@@ -156,7 +156,7 @@
       <property name="Name">colLastRemoved</property>
       <property name="VisibleIndex">12</property>
       <property name="Visible">true</property>
-      <property name="Width">129</property>
+      <property name="Width">209</property>
       <property name="MinWidth">20</property>
       <property name="MaxWidth">0</property>
     </property>

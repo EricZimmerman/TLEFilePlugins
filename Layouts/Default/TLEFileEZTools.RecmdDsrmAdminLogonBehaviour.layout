@@ -76,7 +76,7 @@
       <property name="Name">colValueName</property>
       <property name="VisibleIndex">2</property>
       <property name="Visible">true</property>
-      <property name="Width">111</property>
+      <property name="Width">174</property>
       <property name="MinWidth">20</property>
       <property name="MaxWidth">0</property>
     </property>
@@ -84,7 +84,7 @@
       <property name="Name">colBatchKeyPath</property>
       <property name="VisibleIndex">3</property>
       <property name="Visible">true</property>
-      <property name="Width">138</property>
+      <property name="Width">230</property>
       <property name="MinWidth">20</property>
       <property name="MaxWidth">0</property>
     </property>
@@ -92,7 +92,7 @@
       <property name="Name">colValueData</property>
       <property name="VisibleIndex">4</property>
       <property name="Visible">true</property>
-      <property name="Width">111</property>
+      <property name="Width">83</property>
       <property name="MinWidth">20</property>
       <property name="MaxWidth">0</property>
     </property>
@@ -100,7 +100,7 @@
       <property name="Name">colBatchValueName</property>
       <property name="VisibleIndex">5</property>
       <property name="Visible">true</property>
-      <property name="Width">156</property>
+      <property name="Width">174</property>
       <property name="MinWidth">20</property>
       <property name="MaxWidth">0</property>
     </property>
@@ -108,7 +108,7 @@
       <property name="Name">colLastWriteTime</property>
       <property name="VisibleIndex">6</property>
       <property name="Visible">true</property>
-      <property name="Width">147</property>
+      <property name="Width">209</property>
       <property name="MinWidth">20</property>
       <property name="MaxWidth">0</property>
     </property>
@@ -116,7 +116,7 @@
       <property name="Name">colPersistenceDetection</property>
       <property name="VisibleIndex">7</property>
       <property name="Visible">true</property>
-      <property name="Width">210</property>
+      <property name="Width">160</property>
       <property name="MinWidth">20</property>
       <property name="MaxWidth">0</property>
     </property>

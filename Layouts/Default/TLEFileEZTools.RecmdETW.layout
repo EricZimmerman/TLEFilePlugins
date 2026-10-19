@@ -76,7 +76,7 @@
       <property name="Name">colLastWriteTimestamp</property>
       <property name="VisibleIndex">2</property>
       <property name="Visible">true</property>
-      <property name="Width">192</property>
+      <property name="Width">209</property>
       <property name="MinWidth">20</property>
       <property name="MaxWidth">0</property>
     </property>
@@ -84,7 +84,7 @@
       <property name="Name">colBatchKeyPath</property>
       <property name="VisibleIndex">3</property>
       <property name="Visible">true</property>
-      <property name="Width">138</property>
+      <property name="Width">450</property>
       <property name="MinWidth">20</property>
       <property name="MaxWidth">0</property>
     </property>
@@ -92,7 +92,7 @@
       <property name="Name">colGuid</property>
       <property name="VisibleIndex">4</property>
       <property name="Visible">true</property>
-      <property name="Width">80</property>
+      <property name="Width">286</property>
       <property name="MinWidth">20</property>
       <property name="MaxWidth">0</property>
     </property>
@@ -100,7 +100,7 @@
       <property name="Name">colBatchValueName</property>
       <property name="VisibleIndex">5</property>
       <property name="Visible">true</property>
-      <property name="Width">156</property>
+      <property name="Width">118</property>
       <property name="MinWidth">20</property>
       <property name="MaxWidth">0</property>
     </property>
@@ -108,7 +108,7 @@
       <property name="Name">colProvider</property>
       <property name="VisibleIndex">6</property>
       <property name="Visible">true</property>
-      <property name="Width">102</property>
+      <property name="Width">398</property>
       <property name="MinWidth">20</property>
       <property name="MaxWidth">0</property>
     </property>
@@ -116,7 +116,7 @@
       <property name="Name">colEnabled</property>
       <property name="VisibleIndex">7</property>
       <property name="Visible">true</property>
-      <property name="Width">93</property>
+      <property name="Width">69</property>
       <property name="MinWidth">20</property>
       <property name="MaxWidth">0</property>
     </property>
@@ -124,7 +124,7 @@
       <property name="Name">colEnabledProperty</property>
       <property name="VisibleIndex">8</property>
       <property name="Visible">true</property>
-      <property name="Width">165</property>
+      <property name="Width">125</property>
       <property name="MinWidth">20</property>
       <property name="MaxWidth">0</property>
     </property>

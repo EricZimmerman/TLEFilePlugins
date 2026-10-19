@@ -76,7 +76,7 @@
       <property name="Name">colValidUserId</property>
       <property name="VisibleIndex">2</property>
       <property name="Visible">true</property>
-      <property name="Width">129</property>
+      <property name="Width">97</property>
       <property name="MinWidth">20</property>
       <property name="MaxWidth">0</property>
     </property>
@@ -84,7 +84,7 @@
       <property name="Name">colBatchKeyPath</property>
       <property name="VisibleIndex">3</property>
       <property name="Visible">true</property>
-      <property name="Width">138</property>
+      <property name="Width">450</property>
       <property name="MinWidth">20</property>
       <property name="MaxWidth">0</property>
     </property>
@@ -92,7 +92,7 @@
       <property name="Name">colBatchValueName</property>
       <property name="VisibleIndex">4</property>
       <property name="Visible">true</property>
-      <property name="Width">156</property>
+      <property name="Width">118</property>
       <property name="MinWidth">20</property>
       <property name="MaxWidth">0</property>
     </property>
@@ -100,7 +100,7 @@
       <property name="Name">colUserId</property>
       <property name="VisibleIndex">5</property>
       <property name="Visible">true</property>
-      <property name="Width">84</property>
+      <property name="Width">62</property>
       <property name="MinWidth">20</property>
       <property name="MaxWidth">0</property>
     </property>
@@ -108,7 +108,7 @@
       <property name="Name">colInvalidLoginCount</property>
       <property name="VisibleIndex">6</property>
       <property name="Visible">true</property>
-      <property name="Width">183</property>
+      <property name="Width">139</property>
       <property name="MinWidth">20</property>
       <property name="MaxWidth">0</property>
     </property>
@@ -116,7 +116,7 @@
       <property name="Name">colTotalLoginCount</property>
       <property name="VisibleIndex">7</property>
       <property name="Visible">true</property>
-      <property name="Width">165</property>
+      <property name="Width">125</property>
       <property name="MinWidth">20</property>
       <property name="MaxWidth">0</property>
     </property>
@@ -124,7 +124,7 @@
       <property name="Name">colCreatedOn</property>
       <property name="VisibleIndex">8</property>
       <property name="Visible">true</property>
-      <property name="Width">111</property>
+      <property name="Width">209</property>
       <property name="MinWidth">20</property>
       <property name="MaxWidth">0</property>
     </property>
@@ -132,7 +132,7 @@
       <property name="Name">colLastLoginTime</property>
       <property name="VisibleIndex">9</property>
       <property name="Visible">true</property>
-      <property name="Width">147</property>
+      <property name="Width">111</property>
       <property name="MinWidth">20</property>
       <property name="MaxWidth">0</property>
     </property>
@@ -140,7 +140,7 @@
       <property name="Name">colLastPasswordChange</property>
       <property name="VisibleIndex">10</property>
       <property name="Visible">true</property>
-      <property name="Width">192</property>
+      <property name="Width">146</property>
       <property name="MinWidth">20</property>
       <property name="MaxWidth">0</property>
     </property>
@@ -148,7 +148,7 @@
       <property name="Name">colLastIncorrectPassword</property>
       <property name="VisibleIndex">11</property>
       <property name="Visible">true</property>
-      <property name="Width">219</property>
+      <property name="Width">167</property>
       <property name="MinWidth">20</property>
       <property name="MaxWidth">0</property>
     </property>
@@ -156,7 +156,7 @@
       <property name="Name">colExpiresOn</property>
       <property name="VisibleIndex">12</property>
       <property name="Visible">true</property>
-      <property name="Width">111</property>
+      <property name="Width">83</property>
       <property name="MinWidth">20</property>
       <property name="MaxWidth">0</property>
     </property>
@@ -164,7 +164,7 @@
       <property name="Name">colUserName</property>
       <property name="VisibleIndex">13</property>
       <property name="Visible">true</property>
-      <property name="Width">102</property>
+      <property name="Width">111</property>
       <property name="MinWidth">20</property>
       <property name="MaxWidth">0</property>
     </property>
@@ -172,7 +172,7 @@
       <property name="Name">colFullName</property>
       <property name="VisibleIndex">14</property>
       <property name="Visible">true</property>
-      <property name="Width">102</property>
+      <property name="Width">76</property>
       <property name="MinWidth">20</property>
       <property name="MaxWidth">0</property>
     </property>
@@ -180,7 +180,7 @@
       <property name="Name">colPasswordHint</property>
       <property name="VisibleIndex">15</property>
       <property name="Visible">true</property>
-      <property name="Width">138</property>
+      <property name="Width">104</property>
       <property name="MinWidth">20</property>
       <property name="MaxWidth">0</property>
     </property>
@@ -188,7 +188,7 @@
       <property name="Name">colGroups</property>
       <property name="VisibleIndex">16</property>
       <property name="Visible">true</property>
-      <property name="Width">84</property>
+      <property name="Width">118</property>
       <property name="MinWidth">20</property>
       <property name="MaxWidth">0</property>
     </property>
@@ -196,7 +196,7 @@
       <property name="Name">colComment</property>
       <property name="VisibleIndex">17</property>
       <property name="Visible">true</property>
-      <property name="Width">93</property>
+      <property name="Width">412</property>
       <property name="MinWidth">20</property>
       <property name="MaxWidth">0</property>
     </property>
@@ -204,7 +204,7 @@
       <property name="Name">colUserComment</property>
       <property name="VisibleIndex">18</property>
       <property name="Visible">true</property>
-      <property name="Width">129</property>
+      <property name="Width">97</property>
       <property name="MinWidth">20</property>
       <property name="MaxWidth">0</property>
     </property>
@@ -212,7 +212,7 @@
       <property name="Name">colHomeDirectory</property>
       <property name="VisibleIndex">19</property>
       <property name="Visible">true</property>
-      <property name="Width">147</property>
+      <property name="Width">111</property>
       <property name="MinWidth">20</property>
       <property name="MaxWidth">0</property>
     </property>
@@ -220,7 +220,7 @@
       <property name="Name">colInternetUserName</property>
       <property name="VisibleIndex">20</property>
       <property name="Visible">true</property>
-      <property name="Width">174</property>
+      <property name="Width">132</property>
       <property name="MinWidth">20</property>
       <property name="MaxWidth">0</property>
     </property>
@@ -228,7 +228,7 @@
       <property name="Name">colResetData</property>
       <property name="VisibleIndex">21</property>
       <property name="Visible">true</property>
-      <property name="Width">111</property>
+      <property name="Width">83</property>
       <property name="MinWidth">20</property>
       <property name="MaxWidth">0</property>
     </property>
@@ -236,7 +236,7 @@
       <property name="Name">colAccountDisabled</property>
       <property name="VisibleIndex">22</property>
       <property name="Visible">true</property>
-      <property name="Width">165</property>
+      <property name="Width">125</property>
       <property name="MinWidth">20</property>
       <property name="MaxWidth">0</property>
     </property>
@@ -244,7 +244,7 @@
       <property name="Name">colHomeDirectoryRequired</property>
       <property name="VisibleIndex">23</property>
       <property name="Visible">true</property>
-      <property name="Width">219</property>
+      <property name="Width">167</property>
       <property name="MinWidth">20</property>
       <property name="MaxWidth">0</property>
     </property>
@@ -252,7 +252,7 @@
       <property name="Name">colPasswordNotRequired</property>
       <property name="VisibleIndex">24</property>
       <property name="Visible">true</property>
-      <property name="Width">201</property>
+      <property name="Width">153</property>
       <property name="MinWidth">20</property>
       <property name="MaxWidth">0</property>
     </property>
@@ -260,7 +260,7 @@
       <property name="Name">colTempDuplicateAccount</property>
       <property name="VisibleIndex">25</property>
       <property name="Visible">true</property>
-      <property name="Width">210</property>
+      <property name="Width">160</property>
       <property name="MinWidth">20</property>
       <property name="MaxWidth">0</property>
     </property>
@@ -268,7 +268,7 @@
       <property name="Name">colNormalUserAccount</property>
       <property name="VisibleIndex">26</property>
       <property name="Visible">true</property>
-      <property name="Width">183</property>
+      <property name="Width">139</property>
       <property name="MinWidth">20</property>
       <property name="MaxWidth">0</property>
     </property>
@@ -276,7 +276,7 @@
       <property name="Name">colMnsLogonAccount</property>
       <property name="VisibleIndex">27</property>
       <property name="Visible">true</property>
-      <property name="Width">165</property>
+      <property name="Width">125</property>
       <property name="MinWidth">20</property>
       <property name="MaxWidth">0</property>
     </property>
@@ -284,7 +284,7 @@
       <property name="Name">colInterdomainTrustAccount</property>
       <property name="VisibleIndex">28</property>
       <property name="Visible">true</property>
-      <property name="Width">237</property>
+      <property name="Width">181</property>
       <property name="MinWidth">20</property>
       <property name="MaxWidth">0</property>
     </property>
@@ -292,7 +292,7 @@
       <property name="Name">colWorkstationTrustAccount</property>
       <property name="VisibleIndex">29</property>
       <property name="Visible">true</property>
-      <property name="Width">237</property>
+      <property name="Width">181</property>
       <property name="MinWidth">20</property>
       <property name="MaxWidth">0</property>
     </property>
@@ -300,7 +300,7 @@
       <property name="Name">colServerTrustAccount</property>
       <property name="VisibleIndex">30</property>
       <property name="Visible">true</property>
-      <property name="Width">192</property>
+      <property name="Width">146</property>
       <property name="MinWidth">20</property>
       <property name="MaxWidth">0</property>
     </property>
@@ -308,7 +308,7 @@
       <property name="Name">colPasswordDoesNotExpire</property>
       <property name="VisibleIndex">31</property>
       <property name="Visible">true</property>
-      <property name="Width">219</property>
+      <property name="Width">167</property>
       <property name="MinWidth">20</property>
       <property name="MaxWidth">0</property>
     </property>
@@ -316,7 +316,7 @@
       <property name="Name">colAutoLocked</property>
       <property name="VisibleIndex">32</property>
       <property name="Visible">true</property>
-      <property name="Width">120</property>
+      <property name="Width">90</property>
       <property name="MinWidth">20</property>
       <property name="MaxWidth">0</property>
     </property>
