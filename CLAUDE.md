@@ -31,3 +31,5 @@ pwsh ./CopyPlugins.ps1 -Out <TLE>\Plugins -Layouts <TLE>\Layouts [-Build]
 ## Versioning and release
 
 No package or version: TLE ships the plugin DLLs (built here, copied to its `Plugins` folder) and the layouts.
+- **`Layouts/Default` is the source of truth for TLE's default layouts** (Eric, 2026-10). To make a layout saved in TLE the default, copy its `Layouts\<namespace>.<class>.layout.local` here as `<namespace>.<class>.layout` and commit. `PluginTests` fails for an EZ Tools plugin without a layout or a layout without a plugin.
+- `Build-ZimmermanTools.ps1` (get-zimmermantools) runs `CopyPlugins.ps1 -Build` and stages the plugin DLLs in Timeline Explorer's `Plugins` and these layouts in its `Layouts\Default`: every plugin project in the solution ships.
