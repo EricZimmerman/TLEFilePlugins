@@ -6,6 +6,7 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text;
+using System.Xml.Linq;
 using CsvHelper;
 using FluentAssertions;
 using ITLEFileSpec;
@@ -146,6 +147,36 @@ public class PluginTests
             props.Where(n => !layout.Contains($"<property name=\"Name\">col{n}</property>", StringComparison.OrdinalIgnoreCase))
                 .Should().BeEmpty($"{p.GetType().FullName}.layout should have every column");
         }
+    }
+
+    /// <summary>
+    ///     Every layout starts with Line, then Tag (Eric, 2026-10): its first two visible columns, by VisibleIndex
+    /// </summary>
+    [Test]
+    public void LayoutsStartWithLineThenTag()
+    {
+        var wrong = new List<string>();
+
+        foreach (var file in Directory.GetFiles(LayoutsDir(), "*.layout"))
+        {
+            var columns = XDocument.Load(file).Descendants("property")
+                .Where(e => e.Elements("property").Any(c => c.Attribute("name")?.Value == "Name" && c.Value.StartsWith("col")))
+                .Select(e => new
+                {
+                    Name = e.Elements("property").First(c => c.Attribute("name")?.Value == "Name").Value.Substring(3),
+                    Index = int.TryParse(e.Elements("property").FirstOrDefault(c => c.Attribute("name")?.Value == "VisibleIndex")?.Value, out var i) ? i : -1,
+                    Visible = e.Elements("property").FirstOrDefault(c => c.Attribute("name")?.Value == "Visible")?.Value != "false"
+                })
+                .ToList();
+
+            var firstTwo = columns.Where(c => c.Visible && c.Index >= 0).OrderBy(c => c.Index).Take(2).Select(c => c.Name);
+            if (string.Join(",", firstTwo) != "Line,Tag")
+            {
+                wrong.Add($"{Path.GetFileName(file)}: {string.Join(",", firstTwo)}");
+            }
+        }
+
+        wrong.Should().BeEmpty("every layout starts with Line, then Tag");
     }
 
     private static string LayoutsDir()
