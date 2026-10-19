@@ -25,46 +25,46 @@ public class LoaderTests
     public void AnOlderVersionOfACsvLoads()
     {
         //RBCmd before 2026.10 had no Removed column: the plugin claims both header lines, the new column stays empty
-        var p = new RbCmd();
+        var p = new RBCmd();
         p.ProcessFile(Write("rb_old.csv", "SourceName,FileType,FileName,FileSize,DeletedOn\r\nC:\\$IABC,File,C:\\x.txt,12,2024-01-02 03:04:05\r\n"));
 
-        var row = (RbCmdData) p.DataList[0];
+        var row = (RBCmdData) p.DataList[0];
         row.FileSize.Should().Be(12);
         row.Removed.Should().BeNull();
 
         p.ProcessFile(Write("rb_new.csv", "SourceName,FileType,FileName,FileSize,DeletedOn,Removed\r\nC:\\$IABC,File,C:\\x.txt,12,2024-01-02 03:04:05,True\r\n"));
-        ((RbCmdData) p.DataList[0]).Removed.Should().BeTrue();
+        ((RBCmdData) p.DataList[0]).Removed.Should().BeTrue();
     }
 
     [Test]
     public void EmptyNumbersAndDatesDoNotFailTheFile()
     {
         //one empty value failed the whole file
-        var p = new RbCmd();
+        var p = new RBCmd();
         p.ProcessFile(Write("rb_empty.csv", "SourceName,FileType,FileName,FileSize,DeletedOn,Removed\r\na,File,b,,,\r\nc,File,d,5,2024-01-02 03:04:05,False\r\n"));
 
         p.DataList.Count.Should().Be(2);
-        ((RbCmdData) p.DataList[0]).FileSize.Should().Be(0);
-        ((RbCmdData) p.DataList[1]).FileSize.Should().Be(5);
+        ((RBCmdData) p.DataList[0]).FileSize.Should().Be(0);
+        ((RBCmdData) p.DataList[1]).FileSize.Should().Be(5);
     }
 
     [Test]
     public void HeaderCaseDoesNotMatter()
     {
         //TLE matches header lines ignoring case: the columns are matched the same way
-        var p = new RbCmd();
+        var p = new RBCmd();
         p.ProcessFile(Write("rb_case.csv", "sourcename,filetype,filename,filesize,deletedon\r\na,File,b,7,2024-01-02 03:04:05\r\n"));
 
-        ((RbCmdData) p.DataList[0]).FileSize.Should().Be(7);
+        ((RBCmdData) p.DataList[0]).FileSize.Should().Be(7);
     }
 
     [Test]
     public void TimesAreReadAsWritten()
     {
-        var p = new RbCmd();
+        var p = new RBCmd();
         p.ProcessFile(Write("rb_time.csv", "SourceName,FileType,FileName,FileSize,DeletedOn\r\na,File,b,7,2024-01-02 03:04:05\r\n"));
 
-        ((RbCmdData) p.DataList[0]).DeletedOn.Should().Be(new System.DateTime(2024, 1, 2, 3, 4, 5));
+        ((RBCmdData) p.DataList[0]).DeletedOn.Should().Be(new System.DateTime(2024, 1, 2, 3, 4, 5));
     }
 
     [TestCase("a,b,c\r\n1,2,3\r\n", ',')]

@@ -510,7 +510,7 @@ namespace TLEFileEZTools
     }
 
 
-    public class SbeCmdData : IFileSpecData
+    public class SBECmdData : IFileSpecData
     {
         public string BagPath { get; set; }
         public int Slot { get; set; }
@@ -546,14 +546,14 @@ namespace TLEFileEZTools
     }
 
 
-    public class SbeCmd : IFileSpec
+    public class SBECmd : IFileSpec
     {
-        public SbeCmd()
+        public SBECmd()
         {
             //Initialize collections here, one for TaggedLines TLE can add values to, and the collection that TLE will display
             TaggedLines = new List<int>();
 
-            DataList = new BindingList<SbeCmdData>();
+            DataList = new BindingList<SBECmdData>();
 
             ExpectedHeaders = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
             {
@@ -572,7 +572,7 @@ namespace TLEFileEZTools
 
         public void ProcessFile(string filename)
         {
-            CsvLoader.Load<SbeCmdData>(filename, DataList, TaggedLines, map =>
+            CsvLoader.Load<SBECmdData>(filename, DataList, TaggedLines, map =>
             {
                 map.Map(m => m.AccessedOn).TypeConverterOption.DateTimeStyles(DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal);
                 map.Map(m => m.CreatedOn).TypeConverterOption.DateTimeStyles(DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal);
@@ -584,7 +584,7 @@ namespace TLEFileEZTools
         }
     }
 
-    public class RbCmdData : IFileSpecData
+    public class RBCmdData : IFileSpecData
     {
         public string SourceName { get; set; }
         public string FileType { get; set; }
@@ -606,14 +606,14 @@ namespace TLEFileEZTools
     }
 
 
-    public class RbCmd : IFileSpec
+    public class RBCmd : IFileSpec
     {
-        public RbCmd()
+        public RBCmd()
         {
             //Initialize collections here, one for TaggedLines TLE can add values to, and the collection that TLE will display
             TaggedLines = new List<int>();
 
-            DataList = new BindingList<RbCmdData>();
+            DataList = new BindingList<RBCmdData>();
 
             ExpectedHeaders = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
             {
@@ -633,12 +633,12 @@ namespace TLEFileEZTools
 
         public void ProcessFile(string filename)
         {
-            CsvLoader.Load<RbCmdData>(filename, DataList, TaggedLines, map => map.Map(m => m.DeletedOn).TypeConverterOption.DateTimeStyles(DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal));
+            CsvLoader.Load<RBCmdData>(filename, DataList, TaggedLines, map => map.Map(m => m.DeletedOn).TypeConverterOption.DateTimeStyles(DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal));
         }
     }
 
 
-    public class PeCmdData : IFileSpecData
+    public class PECmdData : IFileSpecData
     {
         public string Note { get; set; }
         public string SourceFilename { get; set; }
@@ -693,14 +693,14 @@ namespace TLEFileEZTools
     }
 
 
-    public class PeCmd : IFileSpec
+    public class PECmd : IFileSpec
     {
-        public PeCmd()
+        public PECmd()
         {
             //Initialize collections here, one for TaggedLines TLE can add values to, and the collection that TLE will display
             TaggedLines = new List<int>();
 
-            DataList = new BindingList<PeCmdData>();
+            DataList = new BindingList<PECmdData>();
 
             ExpectedHeaders = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
             {
@@ -720,7 +720,7 @@ namespace TLEFileEZTools
 
         public void ProcessFile(string filename)
         {
-            CsvLoader.Load<PeCmdData>(filename, DataList, TaggedLines);
+            CsvLoader.Load<PECmdData>(filename, DataList, TaggedLines);
         }
     }
 
@@ -858,7 +858,7 @@ namespace TLEFileEZTools
         }
     }
 
-    public class JleCmdAutoData : IFileSpecData
+    public class JLECmdAutoData : IFileSpecData
     {
         public string SourceFile { get; set; }
         public DateTime? SourceCreated { get; set; }
@@ -925,14 +925,14 @@ namespace TLEFileEZTools
     }
 
 
-    public class JleCmdAuto : IFileSpec
+    public class JLECmdAuto : IFileSpec
     {
-        public JleCmdAuto()
+        public JLECmdAuto()
         {
             //Initialize collections here, one for TaggedLines TLE can add values to, and the collection that TLE will display
             TaggedLines = new List<int>();
 
-            DataList = new BindingList<JleCmdAutoData>();
+            DataList = new BindingList<JLECmdAutoData>();
 
             ExpectedHeaders = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
             {
@@ -942,7 +942,7 @@ namespace TLEFileEZTools
         }
 
         public string Author => "Eric Zimmerman";
-        public string FileDescription => "CSV generated from JleCmd for AutomaticDestinations";
+        public string FileDescription => "CSV generated from JLECmd for AutomaticDestinations";
         public HashSet<string> ExpectedHeaders { get; }
 
         public IBindingList DataList { get; }
@@ -952,7 +952,7 @@ namespace TLEFileEZTools
 
         public void ProcessFile(string filename)
         {
-            CsvLoader.Load<JleCmdAutoData>(filename, DataList, TaggedLines, fixup: record =>
+            CsvLoader.Load<JLECmdAutoData>(filename, DataList, TaggedLines, fixup: record =>
             {
                 if (record.FileAttributes == "0")
                 {
@@ -962,7 +962,7 @@ namespace TLEFileEZTools
         }
     }
 
-    public class JleCmdCustomData : IFileSpecData
+    public class JLECmdCustomData : IFileSpecData
     {
         public string SourceFile { get; set; }
         public DateTime? SourceCreated { get; set; }
@@ -1010,14 +1010,14 @@ namespace TLEFileEZTools
     }
 
 
-    public class JleCmdCustom : IFileSpec
+    public class JLECmdCustom : IFileSpec
     {
-        public JleCmdCustom()
+        public JLECmdCustom()
         {
             //Initialize collections here, one for TaggedLines TLE can add values to, and the collection that TLE will display
             TaggedLines = new List<int>();
 
-            DataList = new BindingList<JleCmdCustomData>();
+            DataList = new BindingList<JLECmdCustomData>();
 
             ExpectedHeaders = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
             {
@@ -1027,7 +1027,7 @@ namespace TLEFileEZTools
         }
 
         public string Author => "Eric Zimmerman";
-        public string FileDescription => "CSV generated from JleCmd for CustomDestinations";
+        public string FileDescription => "CSV generated from JLECmd for CustomDestinations";
         public HashSet<string> ExpectedHeaders { get; }
 
         public IBindingList DataList { get; }
@@ -1037,7 +1037,7 @@ namespace TLEFileEZTools
 
         public void ProcessFile(string filename)
         {
-            CsvLoader.Load<JleCmdCustomData>(filename, DataList, TaggedLines);
+            CsvLoader.Load<JLECmdCustomData>(filename, DataList, TaggedLines);
         }
     }
 

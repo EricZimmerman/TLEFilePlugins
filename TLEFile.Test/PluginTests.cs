@@ -118,28 +118,26 @@ public class PluginTests
     }
 
     /// <summary>
-    ///     TLE finds a layout by the plugin's full class name (in Layouts/Default). Misspelt names were never used
+    ///     TLE finds a layout by the plugin's full class name (in Layouts/Default). Misspelt names were never used. Named
+    ///     exactly as the class: Windows ignores the case of file names, Linux doesn't
     /// </summary>
     [Test]
     public void EveryLayoutBelongsToAPlugin()
     {
-        var names = Plugins().Select(p => p.GetType().FullName).ToHashSet(StringComparer.OrdinalIgnoreCase);
+        var names = Plugins().Select(p => p.GetType().FullName).ToHashSet();
         var layouts = Directory.GetFiles(LayoutsDir(), "*.layout").Select(f => Path.GetFileNameWithoutExtension(f)).ToList();
 
         layouts.Should().NotBeEmpty();
         layouts.Where(l => !names.Contains(l)).Should().BeEmpty();
 
         //every EZ Tools plugin has one
-        names.Where(n => n.StartsWith("TLEFileEZTools.")).Where(n => !layouts.Contains(n, StringComparer.OrdinalIgnoreCase)).Should().BeEmpty();
+        names.Where(n => n.StartsWith("TLEFileEZTools.")).Where(n => !layouts.Contains(n)).Should().BeEmpty();
     }
 
     [Test]
     public void LayoutsHaveEveryColumn()
     {
-        //TLE runs on Windows, where file names ignore case (AppCompatcache.layout is AppCompatCache's); the tests also
-        //run on Linux
-        var files = Directory.GetFiles(LayoutsDir(), "*.layout")
-            .ToDictionary(f => Path.GetFileNameWithoutExtension(f), StringComparer.OrdinalIgnoreCase);
+        var files = Directory.GetFiles(LayoutsDir(), "*.layout").ToDictionary(f => Path.GetFileNameWithoutExtension(f));
 
         foreach (var p in Plugins().Where(p => p.GetType().FullName.StartsWith("TLEFileEZTools.")))
         {
