@@ -10,8 +10,9 @@
 
     With -ImportLayouts, does the opposite for the layouts: copies the layouts saved in Timeline Explorer
     (<namespace>.<class>.layout.local) to Layouts\Default as <namespace>.<class>.layout, so they become the defaults.
-    Only the ones that differ from the default are copied, and only for a plugin in this solution. It reports a
-    filter, find text, sorting or grouping saved in a layout, since those become the default too.
+    Only the ones that differ from the default are copied, and only for a plugin in this solution. A sort by Line
+    alone (the file's order) is removed. It reports a filter, find text, other sorting or grouping saved in a layout,
+    since those become the default too.
 
 .PARAMETER Out
     The folder to copy the plugins to. It is created when it doesn't exist.
@@ -68,6 +69,21 @@ function Get-LayoutNotes([string] $path) {
     $notes
 }
 
+# a sort by Line alone is the file's order, which every grid has unsorted; it only slows loading a large file
+function Remove-LineSort([byte[]] $bytes) {
+    $bom = $bytes.Length -ge 3 -and $bytes[0] -eq 0xEF -and $bytes[1] -eq 0xBB -and $bytes[2] -eq 0xBF
+    $encoding = [Text.UTF8Encoding]::new($bom)
+    $text = $encoding.GetString($bytes, $(if ($bom) { 3 } else { 0 }), $bytes.Length - $(if ($bom) { 3 } else { 0 }))
+    $sort = '\r?\n[ \t]*<property name="SortInfoState" iskey="true" value="1">\s*' +
+        '<property name="Item1" isnull="true" iskey="true">\s*<property name="Orders">\w+</property>\s*' +
+        '<property name="Columns">colLine</property>\s*</property>\s*' +
+        '<property name="Content" isnull="true" iskey="true">\s*<property name="GroupCount">0</property>\s*</property>\s*' +
+        '</property>'
+    $new = [regex]::Replace($text, $sort, '')
+    if ($new -ceq $text) { return , $bytes }
+    , [byte[]]($encoding.GetPreamble() + $encoding.GetBytes($new))
+}
+
 if ($PSCmdlet.ParameterSetName -eq 'Import') {
     $source = $ImportLayouts
     if (-not (Get-ChildItem -LiteralPath $source -Filter *.layout.local) -and (Test-Path (Join-Path $source 'Layouts'))) {
@@ -94,12 +110,14 @@ if ($PSCmdlet.ParameterSetName -eq 'Import') {
                 continue
             }
         }
-        elseif ((Get-FileHash -LiteralPath $file.FullName).Hash -eq (Get-FileHash -LiteralPath $target).Hash) {
+
+        [byte[]]$bytes = Remove-LineSort ([IO.File]::ReadAllBytes($file.FullName))
+        if ($exists -and [Linq.Enumerable]::SequenceEqual($bytes, [IO.File]::ReadAllBytes($target))) {
             $unchanged++
             continue
         }
 
-        Copy-Item -LiteralPath $file.FullName -Destination $target -Force
+        [IO.File]::WriteAllBytes($target, $bytes)
         $imported++
         Write-Host "$(if ($exists) { 'Updated' } else { 'Added  ' }) $name"
         foreach ($note in Get-LayoutNotes $target) { Write-Host "          $note" -ForegroundColor Yellow }
