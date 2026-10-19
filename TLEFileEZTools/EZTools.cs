@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Globalization;
@@ -8070,6 +8070,416 @@ namespace TLEFileEZTools
             {
                 map.Map(t => t.LastWriteTimestamp).TypeConverter<LenientDateTimeConverter>();
             });
+        }
+    }
+
+    public class I30Data : IFileSpecData
+    {
+        public long Offset { get; set; }
+        public bool FromSlack { get; set; }
+        //(48 bit entry numbers; entries recovered from slack can have any value)
+        public ulong? SelfMftEntry { get; set; }
+        public int? SelfMftSequence { get; set; }
+        public string FileName { get; set; }
+        public string Flags { get; set; }
+        public string NameType { get; set; }
+        public ulong ParentMftEntry { get; set; }
+        public int ParentMftSequence { get; set; }
+        public DateTime? CreatedOn { get; set; }
+        public DateTime? ContentModifiedOn { get; set; }
+        public DateTime? RecordModifiedOn { get; set; }
+        public DateTime? LastAccessedOn { get; set; }
+        public ulong PhysicalSize { get; set; }
+        public ulong LogicalSize { get; set; }
+        public string SourceFile { get; set; }
+
+        public int Line { get; set; }
+        public bool Tag { get; set; }
+
+        public override string ToString()
+        {
+            return
+                $"{Offset} {FromSlack} {SelfMftEntry} {SelfMftSequence} {FileName} {Flags} {NameType} {ParentMftEntry} {ParentMftSequence} {CreatedOn} {ContentModifiedOn} {RecordModifiedOn} {LastAccessedOn} {PhysicalSize} {LogicalSize} {SourceFile}";
+        }
+    }
+
+    /// <summary>
+    ///     MFTECmd's CSV for an $I30 index (one header line in every version)
+    /// </summary>
+    public class I30 : IFileSpec
+    {
+        public I30()
+        {
+            TaggedLines = new List<int>();
+
+            DataList = new BindingList<I30Data>();
+
+            ExpectedHeaders = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+            {
+                "Offset,FromSlack,SelfMftEntry,SelfMftSequence,FileName,Flags,NameType,ParentMftEntry,ParentMftSequence,CreatedOn,ContentModifiedOn,RecordModifiedOn,LastAccessedOn,PhysicalSize,LogicalSize,SourceFile"
+            };
+        }
+
+        public string Author => "Eric Zimmerman";
+        public string FileDescription => "CSV generated from MFTECmd for $I30";
+        public HashSet<string> ExpectedHeaders { get; }
+
+        public IBindingList DataList { get; }
+        public List<int> TaggedLines { get; set; }
+
+        public string InternalGuid => "2814f118-7427-4ef3-b03e-91649c5af7a2";
+
+        public void ProcessFile(string filename)
+        {
+            CsvLoader.Load<I30Data>(filename, DataList, TaggedLines);
+        }
+    }
+
+    public class RecentFileCacheData : IFileSpecData
+    {
+        public string SourceFile { get; set; }
+        public DateTime? SourceCreated { get; set; }
+        public DateTime? SourceModified { get; set; }
+        public DateTime? SourceAccessed { get; set; }
+        public string Filename { get; set; }
+
+        public int Line { get; set; }
+        public bool Tag { get; set; }
+
+        public override string ToString()
+        {
+            return $"{SourceFile} {SourceCreated} {SourceModified} {SourceAccessed} {Filename}";
+        }
+    }
+
+    /// <summary>
+    ///     RecentFileCacheParser's CSV (one header line in every version)
+    /// </summary>
+    public class RecentFileCache : IFileSpec
+    {
+        public RecentFileCache()
+        {
+            TaggedLines = new List<int>();
+
+            DataList = new BindingList<RecentFileCacheData>();
+
+            ExpectedHeaders = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+            {
+                "SourceFile,SourceCreated,SourceModified,SourceAccessed,Filename"
+            };
+        }
+
+        public string Author => "Eric Zimmerman";
+        public string FileDescription => "CSV generated from RecentFileCacheParser";
+        public HashSet<string> ExpectedHeaders { get; }
+
+        public IBindingList DataList { get; }
+        public List<int> TaggedLines { get; set; }
+
+        public string InternalGuid => "af797492-1ec2-4199-894c-387184beef83";
+
+        public void ProcessFile(string filename)
+        {
+            CsvLoader.Load<RecentFileCacheData>(filename, DataList, TaggedLines);
+        }
+    }
+
+    /// <summary>
+    ///     A number in a W3C log field: IIS writes "-" for an empty field, which is null here (one failed the file)
+    /// </summary>
+    internal class W3CNumberConverter : DefaultTypeConverter
+    {
+        public override object ConvertFromString(string text, IReaderRow row, MemberMapData memberMapData)
+        {
+            var type = Nullable.GetUnderlyingType(memberMapData.Type) ?? memberMapData.Type;
+            if (string.IsNullOrWhiteSpace(text) || text.Trim() == "-" ||
+                !long.TryParse(text.Trim(), NumberStyles.Integer, CultureInfo.InvariantCulture, out var value))
+            {
+                return null;
+            }
+
+            return Convert.ChangeType(value, type, CultureInfo.InvariantCulture);
+        }
+    }
+
+    public class IisGeolocateData : IFileSpecData
+    {
+        /// <summary>
+        ///     date and time together (IIS writes UTC); null for logs without a date field
+        /// </summary>
+        public DateTime? Timestamp => DateTime.TryParseExact($"{Date} {Time}", "yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture,
+            DateTimeStyles.None, out var t)
+            ? t
+            : (DateTime?) null;
+
+        public string Date { get; set; }
+        public string Time { get; set; }
+        public string SiteName { get; set; }
+        public string ComputerName { get; set; }
+        public string ServerIp { get; set; }
+        public string Method { get; set; }
+        public string UriStem { get; set; }
+        public string UriQuery { get; set; }
+        public int? ServerPort { get; set; }
+        public string UserName { get; set; }
+        public string ClientIp { get; set; }
+        public string ProtocolVersion { get; set; }
+        public string UserAgent { get; set; }
+        public string Cookie { get; set; }
+        public string Referer { get; set; }
+        public string Host { get; set; }
+        public int? Status { get; set; }
+        public int? SubStatus { get; set; }
+        public long? Win32Status { get; set; }
+        public long? BytesSent { get; set; }
+        public long? BytesReceived { get; set; }
+        public long? TimeTaken { get; set; }
+        public string GeoCity { get; set; }
+        public string GeoCountry { get; set; }
+
+        public int Line { get; set; }
+        public bool Tag { get; set; }
+
+        public override string ToString()
+        {
+            return
+                $"{Timestamp} {Date} {Time} {SiteName} {ComputerName} {ServerIp} {Method} {UriStem} {UriQuery} {ServerPort} {UserName} {ClientIp} {ProtocolVersion} {UserAgent} {Cookie} {Referer} {Host} {Status} {SubStatus} {Win32Status} {BytesSent} {BytesReceived} {TimeTaken} {GeoCity} {GeoCountry}";
+        }
+    }
+
+    /// <summary>
+    ///     iisGeolocate's CSVs: the log's own fields (its #Fields line) plus GeoCity and GeoCountry, so the header depends
+    ///     on what the server logs. TLE matches whole header lines: these are the IIS 6 and IIS 7-10 defaults, IIS with
+    ///     every standard field, and the variants seen in test logs. Any other field list loads as a generic CSV
+    /// </summary>
+    public class IisGeolocate : IFileSpec
+    {
+        public IisGeolocate()
+        {
+            TaggedLines = new List<int>();
+
+            DataList = new BindingList<IisGeolocateData>();
+
+            ExpectedHeaders = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+            {
+                //IIS 7 to 10 default fields
+                "date,time,s-ip,cs-method,cs-uri-stem,cs-uri-query,s-port,cs-username,c-ip,cs(User-Agent),cs(Referer),sc-status,sc-substatus,sc-win32-status,time-taken,GeoCity,GeoCountry",
+                //IIS 6 default fields
+                "date,time,s-sitename,s-ip,cs-method,cs-uri-stem,cs-uri-query,s-port,cs-username,c-ip,cs(User-Agent),sc-status,sc-substatus,sc-win32-status,GeoCity,GeoCountry",
+                //every standard W3C field
+                "date,time,s-sitename,s-computername,s-ip,cs-method,cs-uri-stem,cs-uri-query,s-port,cs-username,c-ip,cs-version,cs(User-Agent),cs(Cookie),cs(Referer),cs-host,sc-status,sc-substatus,sc-win32-status,sc-bytes,cs-bytes,time-taken,GeoCity,GeoCountry",
+                //seen in test logs
+                "date,time,s-ip,cs-method,cs-uri-stem,cs-uri-query,s-port,cs-username,c-ip,cs(User-Agent),cs(Cookie),cs(Referer),sc-status,sc-substatus,sc-win32-status,time-taken,GeoCity,GeoCountry",
+                "date,time,s-ip,cs-method,cs-uri-stem,cs-uri-query,s-port,cs-username,c-ip,cs(User-Agent),sc-status,sc-substatus,sc-win32-status,time-taken,GeoCity,GeoCountry",
+                "date,time,s-ip,cs-method,cs-uri-stem,cs-uri-query,s-port,cs-username,c-ip,cs(User-Agent),sc-status,GeoCity,GeoCountry",
+                "time,s-sitename,s-ip,cs-method,cs-uri-stem,cs-uri-query,s-port,cs-username,c-ip,cs-version,cs(User-Agent),sc-status,sc-substatus,sc-win32-status,GeoCity,GeoCountry"
+            };
+        }
+
+        public string Author => "Eric Zimmerman";
+        public string FileDescription => "CSV generated from iisGeolocate";
+        public HashSet<string> ExpectedHeaders { get; }
+
+        public IBindingList DataList { get; }
+        public List<int> TaggedLines { get; set; }
+
+        public string InternalGuid => "0fc11038-eddb-4290-b49d-ef6e7b035af9";
+
+        public void ProcessFile(string filename)
+        {
+            CsvLoader.Load<IisGeolocateData>(filename, DataList, TaggedLines, map =>
+            {
+                map.Map(t => t.Timestamp).Ignore();
+                map.Map(t => t.Date).Name("date");
+                map.Map(t => t.Time).Name("time");
+                map.Map(t => t.SiteName).Name("s-sitename");
+                map.Map(t => t.ComputerName).Name("s-computername");
+                map.Map(t => t.ServerIp).Name("s-ip");
+                map.Map(t => t.Method).Name("cs-method");
+                map.Map(t => t.UriStem).Name("cs-uri-stem");
+                map.Map(t => t.UriQuery).Name("cs-uri-query");
+                map.Map(t => t.ServerPort).Name("s-port").TypeConverter<W3CNumberConverter>();
+                map.Map(t => t.UserName).Name("cs-username");
+                map.Map(t => t.ClientIp).Name("c-ip");
+                map.Map(t => t.ProtocolVersion).Name("cs-version");
+                map.Map(t => t.UserAgent).Name("cs(user-agent)");
+                map.Map(t => t.Cookie).Name("cs(cookie)");
+                map.Map(t => t.Referer).Name("cs(referer)");
+                map.Map(t => t.Host).Name("cs-host");
+                map.Map(t => t.Status).Name("sc-status").TypeConverter<W3CNumberConverter>();
+                map.Map(t => t.SubStatus).Name("sc-substatus").TypeConverter<W3CNumberConverter>();
+                map.Map(t => t.Win32Status).Name("sc-win32-status").TypeConverter<W3CNumberConverter>();
+                map.Map(t => t.BytesSent).Name("sc-bytes").TypeConverter<W3CNumberConverter>();
+                map.Map(t => t.BytesReceived).Name("cs-bytes").TypeConverter<W3CNumberConverter>();
+                map.Map(t => t.TimeTaken).Name("time-taken").TypeConverter<W3CNumberConverter>();
+            });
+        }
+    }
+
+    public class SqleActivitiesCacheData : IFileSpecData
+    {
+        public string Id { get; set; }
+        public string Payload { get; set; }
+        public DateTime? LastModifiedTime { get; set; }
+        public DateTime? ExpirationTime { get; set; }
+        public DateTime? CreatedInCloud { get; set; }
+        public DateTime? StartTime { get; set; }
+        public DateTime? EndTime { get; set; }
+        public DateTime? LastModifiedOnClient { get; set; }
+        public DateTime? OriginalLastModifiedOnClient { get; set; }
+        public int? ActivityType { get; set; }
+        public int? IsLocalOnly { get; set; }
+        public long? ETag { get; set; }
+        public string PackageIdHash { get; set; }
+        public string PlatformDeviceId { get; set; }
+        public string SourceFile { get; set; }
+
+        public int Line { get; set; }
+        public bool Tag { get; set; }
+
+        public override string ToString()
+        {
+            return
+                $"{Id} {Payload} {LastModifiedTime} {ExpirationTime} {CreatedInCloud} {StartTime} {EndTime} {LastModifiedOnClient} {OriginalLastModifiedOnClient} {ActivityType} {IsLocalOnly} {ETag} {PackageIdHash} {PlatformDeviceId} {SourceFile}";
+        }
+    }
+
+    /// <summary>
+    ///     SQLECmd's CSV for the Windows Timeline Activity table (map Windows_ActivitiesCache, Windows_ActivitiesCacheDB
+    ///     in the file name); WxTCmd's Activity CSV has other columns
+    /// </summary>
+    public class SqleActivitiesCache : IFileSpec
+    {
+        public SqleActivitiesCache()
+        {
+            TaggedLines = new List<int>();
+
+            DataList = new BindingList<SqleActivitiesCacheData>();
+
+            ExpectedHeaders = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+            {
+                "Id,Payload,LastModifiedTime,ExpirationTime,CreatedInCloud,StartTime,EndTime,LastModifiedOnClient,OriginalLastModifiedOnClient,ActivityType,IsLocalOnly,ETag,PackageIdHash,PlatformDeviceId,SourceFile"
+            };
+        }
+
+        public string Author => "Eric Zimmerman";
+        public string FileDescription => "CSV generated from SQLECmd for ActivitiesCache.db (Activity)";
+        public HashSet<string> ExpectedHeaders { get; }
+
+        public IBindingList DataList { get; }
+        public List<int> TaggedLines { get; set; }
+
+        public string InternalGuid => "22bfb8cb-6cf9-4222-84ec-cdedbfb626b4";
+
+        public void ProcessFile(string filename)
+        {
+            CsvLoader.Load<SqleActivitiesCacheData>(filename, DataList, TaggedLines);
+        }
+    }
+
+    public class SqleActivityPackageIdData : IFileSpecData
+    {
+        public string ActivityId { get; set; }
+        public string Platform { get; set; }
+        public string PackageName { get; set; }
+        public DateTime? ExpirationTime { get; set; }
+        public string SourceFile { get; set; }
+
+        public int Line { get; set; }
+        public bool Tag { get; set; }
+
+        public override string ToString()
+        {
+            return $"{ActivityId} {Platform} {PackageName} {ExpirationTime} {SourceFile}";
+        }
+    }
+
+    /// <summary>
+    ///     SQLECmd's CSV for the Windows Timeline Activity_PackageId table (Windows_ActivityPackageId in the file name);
+    ///     WxTCmd's Activity_PackageIDs CSV has other columns
+    /// </summary>
+    public class SqleActivityPackageId : IFileSpec
+    {
+        public SqleActivityPackageId()
+        {
+            TaggedLines = new List<int>();
+
+            DataList = new BindingList<SqleActivityPackageIdData>();
+
+            ExpectedHeaders = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+            {
+                "ActivityId,Platform,PackageName,ExpirationTime,SourceFile"
+            };
+        }
+
+        public string Author => "Eric Zimmerman";
+        public string FileDescription => "CSV generated from SQLECmd for ActivitiesCache.db (Activity_PackageId)";
+        public HashSet<string> ExpectedHeaders { get; }
+
+        public IBindingList DataList { get; }
+        public List<int> TaggedLines { get; set; }
+
+        public string InternalGuid => "3ccd8b34-3ac9-41ef-b727-a0193b6af1db";
+
+        public void ProcessFile(string filename)
+        {
+            CsvLoader.Load<SqleActivityPackageIdData>(filename, DataList, TaggedLines);
+        }
+    }
+
+    public class SqleActivityOperationData : IFileSpecData
+    {
+        public long? OperationOrder { get; set; }
+        public string AppId { get; set; }
+        public int? ActivityType { get; set; }
+        public DateTime? LastModifiedTime { get; set; }
+        public DateTime? ExpirationTime { get; set; }
+        public DateTime? CreatedTime { get; set; }
+        public DateTime? EndTime { get; set; }
+        public DateTime? LastModifiedOnClient { get; set; }
+        public string PlatformDeviceId { get; set; }
+        public string SourceFile { get; set; }
+
+        public int Line { get; set; }
+        public bool Tag { get; set; }
+
+        public override string ToString()
+        {
+            return
+                $"{OperationOrder} {AppId} {ActivityType} {LastModifiedTime} {ExpirationTime} {CreatedTime} {EndTime} {LastModifiedOnClient} {PlatformDeviceId} {SourceFile}";
+        }
+    }
+
+    /// <summary>
+    ///     SQLECmd's CSV for the Windows Timeline ActivityOperation table (Windows_ActivityOperation in the file name;
+    ///     written only when the table has rows)
+    /// </summary>
+    public class SqleActivityOperation : IFileSpec
+    {
+        public SqleActivityOperation()
+        {
+            TaggedLines = new List<int>();
+
+            DataList = new BindingList<SqleActivityOperationData>();
+
+            ExpectedHeaders = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+            {
+                "OperationOrder,AppId,ActivityType,LastModifiedTime,ExpirationTime,CreatedTime,EndTime,LastModifiedOnClient,PlatformDeviceId,SourceFile"
+            };
+        }
+
+        public string Author => "Eric Zimmerman";
+        public string FileDescription => "CSV generated from SQLECmd for ActivitiesCache.db (ActivityOperation)";
+        public HashSet<string> ExpectedHeaders { get; }
+
+        public IBindingList DataList { get; }
+        public List<int> TaggedLines { get; set; }
+
+        public string InternalGuid => "48519d73-f6c2-40c1-a46f-7ed9227a4433";
+
+        public void ProcessFile(string filename)
+        {
+            CsvLoader.Load<SqleActivityOperationData>(filename, DataList, TaggedLines);
         }
     }
 }
