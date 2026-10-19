@@ -29,3 +29,7 @@ For more advanced uses of CSVHelper, look at things like **AnalyzeMFT** or **Sup
     dotnet build TLEFilePlugins.slnx -c Release
     dotnet test TLEFilePlugins.slnx -c Release
     .\CopyPlugins.ps1 -Out C:\Tools\TimelineExplorer\Plugins -Layouts C:\Tools\TimelineExplorer\Layouts
+
+To make the layouts saved in Timeline Explorer (`Layouts\*.layout.local`) the defaults in `Layouts/Default` (only the ones that changed, and only for plugins in this solution; a saved filter, find text, sorting or grouping is reported, since it becomes the default too):
+
+    .\CopyPlugins.ps1 -ImportLayouts C:\Tools\TimelineExplorer
