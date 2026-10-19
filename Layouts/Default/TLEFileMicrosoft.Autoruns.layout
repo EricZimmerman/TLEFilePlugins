@@ -108,7 +108,7 @@
     </property>
     <property name="Item7" isnull="true" iskey="true">
       <property name="Name">colTime</property>
-      <property name="VisibleIndex">1</property>
+      <property name="VisibleIndex">2</property>
       <property name="Visible">true</property>
       <property name="Width">230</property>
       <property name="MinWidth">20</property>
@@ -156,7 +156,7 @@
     </property>
     <property name="Item13" isnull="true" iskey="true">
       <property name="Name">colTag</property>
-      <property name="VisibleIndex">2</property>
+      <property name="VisibleIndex">1</property>
       <property name="Visible">true</property>
       <property name="Width">47</property>
       <property name="MinWidth">20</property>
