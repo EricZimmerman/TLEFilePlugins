@@ -35,28 +35,6 @@ namespace TLEFileGenericCsv
         public List<int> TaggedLines { get; set; }
         public string InternalGuid => "40dd7405-16cf-4612-a480-9a050d0a9952";
 
-        private static ExpandoObject ConvertToDynamic(IDictionary<string, object> fastDynamicObject)
-        {
-            if (fastDynamicObject == null)
-            {
-                return null;
-            }
-
-            IDictionary<string, object> result = new ExpandoObject();
-            foreach (var item in fastDynamicObject)
-            {
-                //a column without a name, or a second one with the same name, would throw (PR #18)
-                if (string.IsNullOrWhiteSpace(item.Key) || result.ContainsKey(item.Key))
-                {
-                    continue;
-                }
-
-                result.Add(item.Key, item.Value);
-            }
-
-            return (ExpandoObject) result;
-        }
-
         /// <summary>
         ///     The delimiter that occurs most often in the header line (the first line that isn't a PowerShell #TYPE line)
         /// </summary>
@@ -104,26 +82,50 @@ namespace TLEFileGenericCsv
             //(RawRecord was built for every row even with debug messages off)
             var debug = Log.IsEnabled(LogEventLevel.Debug);
 
-            var ln = 1;
-            while (csv.Read())
+            //the header line, after a PowerShell #TYPE line (only the first line is checked: a row starting with #TYPE was
+            //skipped too)
+            var hasHeader = csv.Read();
+            if (hasHeader && csv.Parser.RawRecord.StartsWith("#TYPE", StringComparison.Ordinal))
             {
-                if (csv.Parser.RawRecord.StartsWith("#TYPE"))
+                hasHeader = csv.Read();
+            }
+
+            if (hasHeader)
+            {
+                csv.ReadHeader();
+
+                //each row goes straight into an ExpandoObject (Timeline Explorer needs one): CsvHelper's dynamic record
+                //was made and then copied for every row. A column without a name is left out, and of two with the same
+                //name the last value is kept in the first one's place, as before (PR #18)
+                var names = csv.HeaderRecord;
+
+                var ln = 1;
+                while (csv.Read())
                 {
-                    csv.Read();
+                    if (debug)
+                    {
+                        Log.Debug("Line # {Line}, Record: {RawRecord}", ln, csv.Context.Parser.RawRecord);
+                    }
+
+                    IDictionary<string, object> row = new ExpandoObject();
+                    for (var i = 0; i < names.Length; i++)
+                    {
+                        if (string.IsNullOrWhiteSpace(names[i]))
+                        {
+                            continue;
+                        }
+
+                        csv.TryGetField(i, out string field);
+                        row[names[i]] = field;
+                    }
+
+                    row["Line"] = ln;
+                    row["Tag"] = tagged.Contains(ln);
+
+                    tempList.Add(row);
+
+                    ln += 1;
                 }
-
-                if (debug)
-                {
-                    Log.Debug("Line # {Line}, Record: {RawRecord}", ln, csv.Context.Parser.RawRecord);
-                }
-
-                var f = csv.GetRecord<dynamic>();
-                f.Line = ln;
-                f.Tag = tagged.Contains(ln);
-
-                tempList.Add(ConvertToDynamic(f));
-
-                ln += 1;
             }
 
             DataList = new BindingList<dynamic>(tempList);
