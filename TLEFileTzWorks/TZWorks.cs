@@ -94,6 +94,8 @@ namespace TLEFileTzWorks
             using var fileReader = File.OpenText(filename);
             var config = new CsvConfiguration(CultureInfo.InvariantCulture)
             {
+                //one string for a value repeated in many rows, not one for each (CsvHelper caches values of up to 128 characters while the file loads)
+                CacheFields = true,
                 BadDataFound = null,
             };
 
@@ -296,7 +298,8 @@ namespace TLEFileTzWorks
 
             int rawFlag;
             using var fileReader = File.OpenText(filename);
-            var csv = new CsvReader(fileReader, CultureInfo.InvariantCulture);
+            //one string for a value repeated in many rows, not one for each (CsvHelper caches values of up to 128 characters while the file loads)
+            var csv = new CsvReader(fileReader, new CsvConfiguration(CultureInfo.InvariantCulture) {CacheFields = true});
                 
 
             var o = new TypeConverterOptions

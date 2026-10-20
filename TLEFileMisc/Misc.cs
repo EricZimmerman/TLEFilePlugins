@@ -1805,7 +1805,8 @@ namespace TLEFileMisc
             DataList.Clear();
 
             using var fileReader = File.OpenText(filename);
-            var csv = new CsvReader(fileReader, CultureInfo.InvariantCulture);
+            //one string for a value repeated in many rows, not one for each (CsvHelper caches values of up to 128 characters while the file loads)
+            var csv = new CsvReader(fileReader, new CsvConfiguration(CultureInfo.InvariantCulture) {CacheFields = true});
 
             var foo = csv.Context.AutoMap<AnalyzeMftData>();
 
@@ -2410,7 +2411,8 @@ namespace TLEFileMisc
             DataList.Clear();
 
             using var fileReader = File.OpenText(filename);
-            var csv = new CsvReader(fileReader, CultureInfo.InvariantCulture);
+            //one string for a value repeated in many rows, not one for each (CsvHelper caches values of up to 128 characters while the file loads)
+            var csv = new CsvReader(fileReader, new CsvConfiguration(CultureInfo.InvariantCulture) {CacheFields = true});
 
             var foo = csv.Context.AutoMap<ShimcacheParserData>();
 
@@ -2542,7 +2544,8 @@ namespace TLEFileMisc
             DataList.Clear();
 
             using var fileReader = File.OpenText(filename);
-            var csv = new CsvReader(fileReader, CultureInfo.InvariantCulture);
+            //one string for a value repeated in many rows, not one for each (CsvHelper caches values of up to 128 characters while the file loads)
+            var csv = new CsvReader(fileReader, new CsvConfiguration(CultureInfo.InvariantCulture) {CacheFields = true});
 
             var foo = csv.Context.AutoMap<ShimcacheVolatilityData>();
 
@@ -2886,7 +2889,8 @@ namespace TLEFileMisc
             DataList.Clear();
 
             using var fileReader = File.OpenText(filename);
-            var csv = new CsvReader(fileReader, CultureInfo.InvariantCulture);
+            //one string for a value repeated in many rows, not one for each (CsvHelper caches values of up to 128 characters while the file loads)
+            var csv = new CsvReader(fileReader, new CsvConfiguration(CultureInfo.InvariantCulture) {CacheFields = true});
 
             var o = new TypeConverterOptions
             {

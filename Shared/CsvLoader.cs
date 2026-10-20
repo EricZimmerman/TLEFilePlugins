@@ -111,6 +111,8 @@ namespace TLEFilePlugins.Shared
 
             var config = new CsvConfiguration(CultureInfo.InvariantCulture)
             {
+                //one string for a value repeated in many rows, not one for each (CsvHelper caches values of up to 128 characters while the file loads)
+                CacheFields = true,
                 HeaderValidated = null,
                 MissingFieldFound = null,
                 //TLE matches header lines ignoring case, so the columns are too

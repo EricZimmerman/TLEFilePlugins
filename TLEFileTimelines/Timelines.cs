@@ -76,7 +76,8 @@ namespace TLEFileTimelines
 
             var ln = 1;
             using var fileReader = File.OpenText(filename);
-            var csv = new CsvReader(fileReader, CultureInfo.InvariantCulture);
+            //one string for a value repeated in many rows, not one for each (CsvHelper caches values of up to 128 characters while the file loads)
+            var csv = new CsvReader(fileReader, new CsvConfiguration(CultureInfo.InvariantCulture) {CacheFields = true});
 
             try
             {
@@ -350,6 +351,8 @@ namespace TLEFileTimelines
             using var fileReader = File.OpenText(filename);
             var config = new CsvConfiguration(CultureInfo.InvariantCulture)
             {
+                //one string for a value repeated in many rows, not one for each (CsvHelper caches values of up to 128 characters while the file loads)
+                CacheFields = true,
                 BadDataFound = context =>
                 {
                     Log.Warning("Bad data found in {Field}! Skipping. Raw data: {RawRecord}", context.Field, context.RawRecord);
@@ -653,6 +656,8 @@ namespace TLEFileTimelines
             using var fileReader = File.OpenText(filename);
             var config = new CsvConfiguration(CultureInfo.InvariantCulture)
             {
+                //one string for a value repeated in many rows, not one for each (CsvHelper caches values of up to 128 characters while the file loads)
+                CacheFields = true,
                 BadDataFound = null,
                 MissingFieldFound = null
             };
@@ -876,7 +881,8 @@ namespace TLEFileTimelines
             DataList.Clear();
 
             using var fileReader = File.OpenText(filename);
-            var csv = new CsvReader(fileReader, CultureInfo.InvariantCulture);
+            //one string for a value repeated in many rows, not one for each (CsvHelper caches values of up to 128 characters while the file loads)
+            var csv = new CsvReader(fileReader, new CsvConfiguration(CultureInfo.InvariantCulture) {CacheFields = true});
 
             var foo = csv.Context.AutoMap<MacTimeData>();
 
@@ -1001,6 +1007,8 @@ namespace TLEFileTimelines
             using var fileReader = File.OpenText(filename);
             var csvO = new CsvConfiguration(CultureInfo.InvariantCulture)
             {
+                //one string for a value repeated in many rows, not one for each (CsvHelper caches values of up to 128 characters while the file loads)
+                CacheFields = true,
 
             };
 
