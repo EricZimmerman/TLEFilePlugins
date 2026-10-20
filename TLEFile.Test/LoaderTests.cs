@@ -1,6 +1,10 @@
-using System.IO;
+﻿using System.IO;
 using System.Linq;
 using System.Text;
+using TLEFileTimelines;
+using TLEFileMisc;
+using TLEFileMicrosoft;
+using System;
 using FluentAssertions;
 using NUnit.Framework;
 using TLEFileEZTools;
@@ -91,5 +95,54 @@ public class LoaderTests
         rows[0]["Value"].Should().Be("1");
         rows[1]["Tag"].Should().Be(true);
         rows[0].Keys.Should().NotContain(k => string.IsNullOrWhiteSpace(k), "a column without a name is left out");
+    }
+
+    [TestCase("SuperTimelineLowerCase.csv")]
+    [TestCase("SuperTimelinePlaso.csv")]
+    public void SuperTimelineHeaderCaseDoesNotMatter(string name)
+    {
+        //TLE matched the lower-case header line, but the plugin read the MACB column by its plaso name only, so the
+        //first row failed ("Object reference not set")
+        var file = Path.Combine(TestContext.CurrentContext.TestDirectory, "TestFiles", name);
+        var p = new SuperTimeline();
+        p.ExpectedHeaders.Should().Contain(File.ReadLines(file).First());
+
+        p.ProcessFile(file);
+
+        p.DataList.Count.Should().Be(3);
+        var row = (SuperTimelineData) p.DataList[0];
+        row.Timestamp.Should().Be(new DateTime(2020, 1, 2, 3, 4, 5, DateTimeKind.Utc));
+        row.Macb.Should().Be("m...");
+        row.SourceName.Should().Be("FILE");
+        row.LongDescription.Should().Be("C:/Users/a/x.lnk");
+        row.Inode.Should().Be(123);
+        row.Color.Should().Be("FileOpening");
+        ((SuperTimelineData) p.DataList[1]).Color.Should().Be("WebHistory");
+        ((SuperTimelineData) p.DataList[2]).Color.Should().Be("LogFile");
+    }
+
+    [Test]
+    public void HandParsedPluginsMatchHeadersIgnoringCase()
+    {
+        //the plugins that don't use CsvLoader matched their columns by exact case: a header line TLE matched (it
+        //ignores case) could fail or leave columns empty
+        var mac = new MacTime();
+        mac.ProcessFile(Write("mactime_lower.csv", "date,size,type,mode,uid,gid,meta,file name\r\nMon Apr 02 2012 00:46:02,1938,m...,r/rrwxrwxrwx,0,0,51206-128-4,C:/x.pf\r\n"));
+        var m = (MacTimeData) mac.DataList[0];
+        m.FileSize.Should().Be(1938);
+        m.Meta.Should().Be("51206-128-4");
+        m.FileName.Should().Be("C:/x.pf");
+
+        var shim = new ShimcacheParser();
+        shim.ProcessFile(Write("shim_lower.csv", "last modified,last update,path,file size,exec flag\r\n2020-01-02 03:04:05,N/A,C:\\x.exe,12,True\r\n"));
+        var sh = (ShimcacheParserData) shim.DataList[0];
+        sh.FilePath.Should().Be(@"C:\x.exe");
+        sh.Executed.Should().BeTrue();
+
+        var sig = new Sigcheck();
+        sig.ProcessFile(Write("sig_lower.csv", "path,verified,date,publisher,company,description,product,product version,file version,machine type,md5,sha1,pesha1,pesha256,sha256,imp,vt detection,vt link\r\nC:\\x.exe,Signed,10:00 AM 1/2/2020,MS,MS,d,p,1.0,2.0,64-bit,a,b,c,d,e,f,0|70,http://x\r\n"));
+        var sg = (SigcheckData) sig.DataList[0];
+        sg.Verified.Should().BeTrue();
+        sg.FileVersion.Should().Be("2.0");
     }
 }

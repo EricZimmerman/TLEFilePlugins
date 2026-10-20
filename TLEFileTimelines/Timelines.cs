@@ -77,7 +77,8 @@ namespace TLEFileTimelines
             var ln = 1;
             using var fileReader = File.OpenText(filename);
             //one string for a value repeated in many rows, not one for each (CsvHelper caches values of up to 128 characters while the file loads)
-            var csv = new CsvReader(fileReader, new CsvConfiguration(CultureInfo.InvariantCulture) {CacheFields = true});
+            //TLE matches header lines ignoring case: the columns are matched the same way (a lower-case header failed)
+            var csv = new CsvReader(fileReader, new CsvConfiguration(CultureInfo.InvariantCulture) {CacheFields = true, PrepareHeaderForMatch = args => args.Header.ToLowerInvariant()});
 
             try
             {
@@ -353,6 +354,8 @@ namespace TLEFileTimelines
             {
                 //one string for a value repeated in many rows, not one for each (CsvHelper caches values of up to 128 characters while the file loads)
                 CacheFields = true,
+                //TLE matches header lines ignoring case: the columns are matched the same way (a lower-case header failed)
+                PrepareHeaderForMatch = args => args.Header.ToLowerInvariant(),
                 BadDataFound = context =>
                 {
                     Log.Warning("Bad data found in {Field}! Skipping. Raw data: {RawRecord}", context.Field, context.RawRecord);
@@ -658,6 +661,8 @@ namespace TLEFileTimelines
             {
                 //one string for a value repeated in many rows, not one for each (CsvHelper caches values of up to 128 characters while the file loads)
                 CacheFields = true,
+                //TLE matches header lines ignoring case: the columns are matched the same way (a lower-case header failed)
+                PrepareHeaderForMatch = args => args.Header.ToLowerInvariant(),
                 BadDataFound = null,
                 MissingFieldFound = null
             };
@@ -882,7 +887,8 @@ namespace TLEFileTimelines
 
             using var fileReader = File.OpenText(filename);
             //one string for a value repeated in many rows, not one for each (CsvHelper caches values of up to 128 characters while the file loads)
-            var csv = new CsvReader(fileReader, new CsvConfiguration(CultureInfo.InvariantCulture) {CacheFields = true});
+            //TLE matches header lines ignoring case: the columns are matched the same way (a lower-case header failed)
+            var csv = new CsvReader(fileReader, new CsvConfiguration(CultureInfo.InvariantCulture) {CacheFields = true, PrepareHeaderForMatch = args => args.Header.ToLowerInvariant()});
 
             var foo = csv.Context.AutoMap<MacTimeData>();
 
@@ -1009,6 +1015,8 @@ namespace TLEFileTimelines
             {
                 //one string for a value repeated in many rows, not one for each (CsvHelper caches values of up to 128 characters while the file loads)
                 CacheFields = true,
+                //TLE matches header lines ignoring case: the columns are matched the same way (a lower-case header failed)
+                PrepareHeaderForMatch = args => args.Header.ToLowerInvariant(),
 
             };
 

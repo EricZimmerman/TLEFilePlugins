@@ -2412,7 +2412,8 @@ namespace TLEFileMisc
 
             using var fileReader = File.OpenText(filename);
             //one string for a value repeated in many rows, not one for each (CsvHelper caches values of up to 128 characters while the file loads)
-            var csv = new CsvReader(fileReader, new CsvConfiguration(CultureInfo.InvariantCulture) {CacheFields = true});
+            //TLE matches header lines ignoring case: the columns are matched the same way (a lower-case header failed)
+            var csv = new CsvReader(fileReader, new CsvConfiguration(CultureInfo.InvariantCulture) {CacheFields = true, PrepareHeaderForMatch = args => args.Header.ToLowerInvariant()});
 
             var foo = csv.Context.AutoMap<ShimcacheParserData>();
 
@@ -2545,7 +2546,8 @@ namespace TLEFileMisc
 
             using var fileReader = File.OpenText(filename);
             //one string for a value repeated in many rows, not one for each (CsvHelper caches values of up to 128 characters while the file loads)
-            var csv = new CsvReader(fileReader, new CsvConfiguration(CultureInfo.InvariantCulture) {CacheFields = true});
+            //TLE matches header lines ignoring case: the columns are matched the same way (a lower-case header failed)
+            var csv = new CsvReader(fileReader, new CsvConfiguration(CultureInfo.InvariantCulture) {CacheFields = true, PrepareHeaderForMatch = args => args.Header.ToLowerInvariant()});
 
             var foo = csv.Context.AutoMap<ShimcacheVolatilityData>();
 
@@ -2890,7 +2892,8 @@ namespace TLEFileMisc
 
             using var fileReader = File.OpenText(filename);
             //one string for a value repeated in many rows, not one for each (CsvHelper caches values of up to 128 characters while the file loads)
-            var csv = new CsvReader(fileReader, new CsvConfiguration(CultureInfo.InvariantCulture) {CacheFields = true});
+            //TLE matches header lines ignoring case: the columns are matched the same way (a lower-case header failed)
+            var csv = new CsvReader(fileReader, new CsvConfiguration(CultureInfo.InvariantCulture) {CacheFields = true, PrepareHeaderForMatch = args => args.Header.ToLowerInvariant()});
 
             var o = new TypeConverterOptions
             {

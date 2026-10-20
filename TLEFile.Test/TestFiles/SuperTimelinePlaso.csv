@@ -1,0 +1,4 @@
+date,time,timezone,MACB,source,sourcetype,type,user,host,short,desc,version,filename,inode,notes,format,extra
+01/02/2020,03:04:05,UTC,M...,FILE,NTFS $MFT,Content Modification Time,-,HOST1,x.lnk,C:/Users/a/x.lnk,2,TSK:/Users/a/x.lnk,123,-,filestat,size: 10
+02/03/2021,04:05:06,UTC,.A.B,WEBHIST,Chrome History,Last Visited Time,eric,HOST1,visit,https://example.com visited,2,TSK:/h,456,-,chrome,-
+03/04/2022,05:06:07,UTC,..C.,EVT,WinEVTX,Content Modification Time,SYSTEM,HOST1,evt,Event Level: 4,2,TSK:/e,789,-,winevtx,-
