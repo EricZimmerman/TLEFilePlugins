@@ -44,6 +44,45 @@ namespace TLEFilePlugins.Shared
     internal static class CsvLoader
     {
         /// <summary>
+        ///     For a plugin that adds its rows itself: no ListChanged event for each row while loading; when disposed, the
+        ///     events are back as they were, with one reset if they were on (what <see cref="Load{T}" /> does)
+        /// </summary>
+        public static IDisposable QuietList<T>(IBindingList dataList)
+        {
+            return new ListChangedSuspension<T>(dataList as BindingList<T>);
+        }
+
+        private sealed class ListChangedSuspension<T> : IDisposable
+        {
+            private readonly BindingList<T> _list;
+            private readonly bool _raise;
+
+            public ListChangedSuspension(BindingList<T> list)
+            {
+                _list = list;
+                if (list != null)
+                {
+                    _raise = list.RaiseListChangedEvents;
+                    list.RaiseListChangedEvents = false;
+                }
+            }
+
+            public void Dispose()
+            {
+                if (_list == null)
+                {
+                    return;
+                }
+
+                _list.RaiseListChangedEvents = _raise;
+                if (_raise)
+                {
+                    _list.ResetBindings();
+                }
+            }
+        }
+
+        /// <summary>
         ///     A time from a converter: DateTime.Parse (the current culture), but DateTime.MinValue for an empty or unreadable
         ///     value (DateTime.Parse threw, and that failed the whole file)
         /// </summary>

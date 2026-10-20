@@ -13,4 +13,8 @@
   <ItemGroup>
 
   </ItemGroup>
+  <ItemGroup>
+    <!-- CsvLoader: compiled into each plugin assembly -->
+    <Compile Include="..\Shared\CsvLoader.cs" Link="Shared\CsvLoader.cs" />
+  </ItemGroup>
 </Project>

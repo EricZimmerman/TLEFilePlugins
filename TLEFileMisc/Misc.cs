@@ -10,6 +10,7 @@ using CsvHelper.TypeConversion;
 using ITLEFileSpec;
 using TLEFilePlugins.Shared;
 using Serilog;
+using Serilog.Events;
 
 namespace TLEFileMisc
 {
@@ -1884,9 +1885,18 @@ namespace TLEFileMisc
             csv.ReadHeader();
 
             var ln = 1;
+            //(RawRecord was built for every row even with debug messages off)
+            var debug = Log.IsEnabled(LogEventLevel.Debug);
+
+            //one reset at the end instead of a ListChanged event for every row
+            using var quiet = CsvLoader.QuietList<AnalyzeMftData>(DataList);
+
             while (csv.Read())
             {
-                Log.Debug("Line # {Line}, Record: {RawRecord}", ln, csv.Context.Parser.RawRecord);
+                if (debug)
+                {
+                    Log.Debug("Line # {Line}, Record: {RawRecord}", ln, csv.Context.Parser.RawRecord);
+                }
 
                 if (csv.Context.Parser.RawRecord.Contains("BAAD MFT Record"))
                 {
@@ -2426,9 +2436,18 @@ namespace TLEFileMisc
             csv.ReadHeader();
 
             var ln = 1;
+            //(RawRecord was built for every row even with debug messages off)
+            var debug = Log.IsEnabled(LogEventLevel.Debug);
+
+            //one reset at the end instead of a ListChanged event for every row
+            using var quiet = CsvLoader.QuietList<ShimcacheParserData>(DataList);
+
             while (csv.Read())
             {
-                Log.Debug("Line # {Line}, Record: {RawRecord}", ln, csv.Context.Parser.RawRecord);
+                if (debug)
+                {
+                    Log.Debug("Line # {Line}, Record: {RawRecord}", ln, csv.Context.Parser.RawRecord);
+                }
 
                 var modified = DateTime.Parse(csv.GetField("Last Modified"),
                     CultureInfo.InvariantCulture, DateTimeStyles.AssumeUniversal).ToUniversalTime();
@@ -2550,9 +2569,18 @@ namespace TLEFileMisc
             csv.ReadHeader();
 
             var ln = 1;
+            //(RawRecord was built for every row even with debug messages off)
+            var debug = Log.IsEnabled(LogEventLevel.Debug);
+
+            //one reset at the end instead of a ListChanged event for every row
+            using var quiet = CsvLoader.QuietList<ShimcacheVolatilityData>(DataList);
+
             while (csv.Read())
             {
-                Log.Debug("Line # {Line}, Record: {RawRecord}", ln, csv.Context.Parser.RawRecord);
+                if (debug)
+                {
+                    Log.Debug("Line # {Line}, Record: {RawRecord}", ln, csv.Context.Parser.RawRecord);
+                }
 
                 var order = int.Parse(csv.GetField("Order"));
 
@@ -2633,9 +2661,19 @@ namespace TLEFileMisc
             using var fileReader = File.OpenText(filename);
             var ln = fileReader.ReadLine();
             var ln1 = 1;
+
+            var debug = Log.IsEnabled(LogEventLevel.Debug);
+
+            //one reset at the end instead of a ListChanged event for every row
+            using var quiet = CsvLoader.QuietList<DensityScoutData>(DataList);
+
             while (ln != null)
             {
-                Log.Debug($"Line # {ln1}, Record: {ln}", ln1, ln);
+                if (debug)
+                {
+                    //(the line was built into the message template, a new template for every row)
+                    Log.Debug("Line # {Line}, Record: {Record}", ln1, ln);
+                }
 
                 var d = new DensityScoutData();
 
@@ -2892,10 +2930,18 @@ namespace TLEFileMisc
             var ln = 1;
             try
             {
+                //(RawRecord was built for every row even with debug messages off)
+                var debug = Log.IsEnabled(LogEventLevel.Debug);
+
+                //one reset at the end instead of a ListChanged event for every row
+                using var quiet = CsvLoader.QuietList<ConvertPSHistoryToCSVData>(DataList);
+
                 foreach (var record in records)
                 {
-                    Console.WriteLine("Line # {0}, Record: {1}", ln, csv.Context.Parser.RawRecord);
-                    Log.Debug("Line # {Line}, Record: {RawRecord}",ln,csv.Context.Parser.RawRecord);
+                    if (debug)
+                    {
+                        Log.Debug("Line # {Line}, Record: {RawRecord}", ln, csv.Context.Parser.RawRecord);
+                    }
 
                     record.Line = ln;
 

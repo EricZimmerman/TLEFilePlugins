@@ -10,6 +10,7 @@ using CsvHelper.TypeConversion;
 using ITLEFileSpec;
 using TLEFilePlugins.Shared;
 using Serilog;
+using Serilog.Events;
 
 namespace TLEFileMicrosoft
 {
@@ -113,9 +114,18 @@ namespace TLEFileMicrosoft
             var records = csv.GetRecords<SigcheckData>();
 
             var ln = 1;
+            //(RawRecord was built for every row even with debug messages off)
+            var debug = Log.IsEnabled(LogEventLevel.Debug);
+
+            //one reset at the end instead of a ListChanged event for every row
+            using var quiet = CsvLoader.QuietList<SigcheckData>(DataList);
+
             foreach (var sc in records)
             {
-                Log.Debug("Line # {Line}, Record: {RawRecord}",ln,csv.Context.Parser.RawRecord);
+                if (debug)
+                {
+                    Log.Debug("Line # {Line}, Record: {RawRecord}", ln, csv.Context.Parser.RawRecord);
+                }
 
                 sc.Line = ln;
                 sc.Tag = tagged.Contains(ln);
@@ -236,9 +246,18 @@ namespace TLEFileMicrosoft
             var records = csv.GetRecords<SigcheckTroyData>();
 
             var ln = 1;
+            //(RawRecord was built for every row even with debug messages off)
+            var debug = Log.IsEnabled(LogEventLevel.Debug);
+
+            //one reset at the end instead of a ListChanged event for every row
+            using var quiet = CsvLoader.QuietList<SigcheckTroyData>(DataList);
+
             foreach (var sc in records)
             {
-                Log.Debug("Line # {Line}, Record: {RawRecord}",ln,csv.Context.Parser.RawRecord);
+                if (debug)
+                {
+                    Log.Debug("Line # {Line}, Record: {RawRecord}", ln, csv.Context.Parser.RawRecord);
+                }
 
                 sc.Line = ln;
                 sc.Tag = tagged.Contains(ln);
@@ -342,9 +361,18 @@ namespace TLEFileMicrosoft
             var records = csv.GetRecords<AutorunsData>();
 
             var ln = 1;
+            //(RawRecord was built for every row even with debug messages off)
+            var debug = Log.IsEnabled(LogEventLevel.Debug);
+
+            //one reset at the end instead of a ListChanged event for every row
+            using var quiet = CsvLoader.QuietList<AutorunsData>(DataList);
+
             foreach (var autorunsEntry in records)
             {
-                Log.Debug("Line # {Line}, Record: {RawRecord}",ln,csv.Context.Parser.RawRecord);
+                if (debug)
+                {
+                    Log.Debug("Line # {Line}, Record: {RawRecord}", ln, csv.Context.Parser.RawRecord);
+                }
 
                 autorunsEntry.Line = ln;
                 autorunsEntry.Tag = tagged.Contains(ln);

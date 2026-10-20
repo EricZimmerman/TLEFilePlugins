@@ -9,6 +9,8 @@ using CsvHelper.Configuration;
 using CsvHelper.TypeConversion;
 using ITLEFileSpec;
 using Serilog;
+using Serilog.Events;
+using TLEFilePlugins.Shared;
 
 namespace TLEFileTimelines
 {
@@ -96,9 +98,18 @@ namespace TLEFileTimelines
 
                 var records = csv.GetRecords<ForensicTimelineData>();
 
+                //(RawRecord was built for every row even with debug messages off)
+                var debug = Log.IsEnabled(LogEventLevel.Debug);
+
+                //one reset at the end instead of a ListChanged event for every row
+                using var quiet = CsvLoader.QuietList<ForensicTimelineData>(DataList);
+
                 foreach (var record in records)
                 {
-                    Log.Debug("Line # {Line}, Record: {RawRecord}", ln, csv.Context.Parser.RawRecord);
+                    if (debug)
+                    {
+                        Log.Debug("Line # {Line}, Record: {RawRecord}", ln, csv.Context.Parser.RawRecord);
+                    }
 
                     record.Line = ln;
                     record.Tag = tagged.Contains(ln);
@@ -161,15 +172,10 @@ namespace TLEFileTimelines
             DisplayName = displayName;
             TagInfo = tagInfo;
 
-            try
-            {
-                //Timestamp = DateTime.ParseExact($"{date} {time}", "MM/dd/yyyy HH:mm:ss", CultureInfo.InvariantCulture, DateTimeStyles.AssumeUniversal).ToUniversalTime();
-                Timestamp = DateTime.Parse(timestamp, CultureInfo.InvariantCulture, DateTimeStyles.AssumeUniversal).ToUniversalTime();
-            }
-            catch (Exception)
-            {
-                Timestamp = DateTime.MinValue;
-            }
+            //(an exception for every row without a time was slow)
+            Timestamp = DateTime.TryParse(timestamp, CultureInfo.InvariantCulture, DateTimeStyles.AssumeUniversal, out var ts)
+                ? ts.ToUniversalTime()
+                : DateTime.MinValue;
 
             TimestampDescription = timestampDescription;
             Source = source;
@@ -198,12 +204,12 @@ namespace TLEFileTimelines
                 sourceLong.Contains("URL") && source.Contains("FILE") == false ||
                 sourceLong.Contains("Flash Cookie") ||
                 sourceLong.Contains("LSO") && source.Contains("REG") == false ||
-                sourceLong.ToLowerInvariant().Contains("http://") ||
-                sourceLong.ToLowerInvariant().Contains("https://") ||
+                sourceLong.IndexOf("http://", StringComparison.OrdinalIgnoreCase) >= 0 ||
+                sourceLong.IndexOf("https://", StringComparison.OrdinalIgnoreCase) >= 0 ||
                 sourceLong.Contains("Location:") ||
                 sourceLong.Contains("time(s) [HTTP") ||
                 sourceLong.Contains("Last Visited Time") ||
-                source.StartsWith("WEBHIST"))
+                source.StartsWith("WEBHIST", StringComparison.Ordinal))
             {
                 Color = "WebHistory";
             }
@@ -228,11 +234,11 @@ namespace TLEFileTimelines
                 sourceLong.Contains("File attribute flags") ||
                 sourceLong.Contains("Birth droid volume identifier:") ||
                 sourceLong.Contains("UserAssist entry") ||
-                sourceLong.ToLowerInvariant().EndsWith(".lnk") ||
+                sourceLong.EndsWith(".lnk", StringComparison.OrdinalIgnoreCase) ||
                 sourceLong.Contains("Recently opened file") ||
                 sourceLong.Contains("file of extension") ||
                 sourceLong.Contains("Recently") && source.Contains("Firefox") == false ||
-                sourceLong.EndsWith("LNK") ||
+                sourceLong.EndsWith("LNK", StringComparison.Ordinal) ||
                 sourceLong.Contains("file://") && source.Contains("Firefox") == false ||
                 sourceLong.Contains("RecentDocs"))
             {
@@ -256,7 +262,7 @@ namespace TLEFileTimelines
             if (sourceLong.Contains("EVT") ||
                 sourceLong.Contains("XP Firewall Log") ||
                 sourceLong.Contains("Event Level:") ||
-                source.StartsWith("EVT")
+                source.StartsWith("EVT", StringComparison.Ordinal)
             )
             {
                 Color = "LogFile";
@@ -275,10 +281,10 @@ namespace TLEFileTimelines
                 sourceLong.Contains("Prefetch") ||
                 sourceLong.Contains("SHIMCACHE") ||
                 sourceLong.Contains("Scheduled") ||
-                sourceLong.ToLowerInvariant().EndsWith(".pf") ||
+                sourceLong.EndsWith(".pf", StringComparison.OrdinalIgnoreCase) ||
                 sourceLong.Contains("was run") ||
                 sourceLong.Contains("UEME_") ||
-                sourceLong.StartsWith("[PROCESS]")
+                sourceLong.StartsWith("[PROCESS]", StringComparison.Ordinal)
             )
             {
                 Color = "Execution";
@@ -386,11 +392,20 @@ namespace TLEFileTimelines
 
             var ln = 1;
 
+            //(RawRecord was built for every row even with debug messages off)
+            var debug = Log.IsEnabled(LogEventLevel.Debug);
+
+            //one reset at the end instead of a ListChanged event for every row
+            using var quiet = CsvLoader.QuietList<PsortTimelineData>(DataList);
+
             try
             {
                 while (csv.Read())
                 {
-                    Log.Debug("Line # {Line}, Record: {RawRecord}", ln, csv.Context.Parser.RawRecord);
+                    if (debug)
+                    {
+                        Log.Debug("Line # {Line}, Record: {RawRecord}", ln, csv.Context.Parser.RawRecord);
+                    }
 
                     // "datetime,timestamp_desc,source,source_long,message,parser,display_name,tag"
                     // var dt = csv.GetField("date");
@@ -437,15 +452,11 @@ namespace TLEFileTimelines
         {
             Line = line;
 
-            try
-            {
-                Timestamp = DateTime.ParseExact($"{date} {time}", "MM/dd/yyyy HH:mm:ss", CultureInfo.InvariantCulture,
-                    DateTimeStyles.AssumeUniversal).ToUniversalTime();
-            }
-            catch (Exception)
-            {
-                Timestamp = DateTime.MinValue;
-            }
+            //(an exception for every row without a time was slow)
+            Timestamp = DateTime.TryParseExact($"{date} {time}", "MM/dd/yyyy HH:mm:ss", CultureInfo.InvariantCulture,
+                DateTimeStyles.AssumeUniversal, out var timestamp)
+                ? timestamp.ToUniversalTime()
+                : DateTime.MinValue;
 
 
             TimeZone = tz;
@@ -492,12 +503,13 @@ namespace TLEFileTimelines
                 longDesc.Contains("URL") && sourceName.Contains("FILE") == false ||
                 longDesc.Contains("Flash Cookie") ||
                 longDesc.Contains("LSO") && sourceName.Contains("REG") == false ||
-                longDesc.ToLowerInvariant().Contains("http://") ||
-                longDesc.ToLowerInvariant().Contains("https://") ||
+                //(ignoring case without a lower case copy of the description for each test)
+                longDesc.IndexOf("http://", StringComparison.OrdinalIgnoreCase) >= 0 ||
+                longDesc.IndexOf("https://", StringComparison.OrdinalIgnoreCase) >= 0 ||
                 longDesc.Contains("Location:") ||
                 longDesc.Contains("time(s) [HTTP") ||
                 longDesc.Contains("Last Visited Time") ||
-                sourceName.StartsWith("WEBHIST"))
+                sourceName.StartsWith("WEBHIST", StringComparison.Ordinal))
             {
                 Color = "WebHistory";
             }
@@ -522,11 +534,11 @@ namespace TLEFileTimelines
                 longDesc.Contains("File attribute flags") ||
                 longDesc.Contains("Birth droid volume identifier:") ||
                 longDesc.Contains("UserAssist entry") ||
-                longDesc.ToLowerInvariant().EndsWith(".lnk") ||
+                longDesc.EndsWith(".lnk", StringComparison.OrdinalIgnoreCase) ||
                 longDesc.Contains("Recently opened file") ||
                 longDesc.Contains("file of extension") ||
                 longDesc.Contains("Recently") && sourceDesc.Contains("Firefox") == false ||
-                longDesc.EndsWith("LNK") ||
+                longDesc.EndsWith("LNK", StringComparison.Ordinal) ||
                 longDesc.Contains("file://") && sourceDesc.Contains("Firefox") == false ||
                 longDesc.Contains("RecentDocs"))
             {
@@ -550,7 +562,7 @@ namespace TLEFileTimelines
             if (longDesc.Contains("EVT") ||
                 longDesc.Contains("XP Firewall Log") ||
                 longDesc.Contains("Event Level:") ||
-                sourceName.StartsWith("EVT")
+                sourceName.StartsWith("EVT", StringComparison.Ordinal)
             )
             {
                 Color = "LogFile";
@@ -569,10 +581,10 @@ namespace TLEFileTimelines
                 longDesc.Contains("Prefetch") ||
                 longDesc.Contains("SHIMCACHE") ||
                 longDesc.Contains("Scheduled") ||
-                longDesc.ToLowerInvariant().EndsWith(".pf") ||
+                longDesc.EndsWith(".pf", StringComparison.OrdinalIgnoreCase) ||
                 longDesc.Contains("was run") ||
                 longDesc.Contains("UEME_") ||
-                longDesc.StartsWith("[PROCESS]")
+                longDesc.StartsWith("[PROCESS]", StringComparison.Ordinal)
             )
             {
                 Color = "Execution";
@@ -687,16 +699,25 @@ namespace TLEFileTimelines
 
             var ln = 1;
 
+            //(RawRecord was built for every row even with debug messages off)
+            var debug = Log.IsEnabled(LogEventLevel.Debug);
+
+            //one reset at the end instead of a ListChanged event for every row
+            using var quiet = CsvLoader.QuietList<SuperTimelineData>(DataList);
+
             try
             {
                 while (csv.Read())
                 {
-                    Log.Debug("Line # {Line}, Record: {RawRecord}", ln, csv.Context.Parser.RawRecord);
+                    if (debug)
+                    {
+                        Log.Debug("Line # {Line}, Record: {RawRecord}", ln, csv.Context.Parser.RawRecord);
+                    }
 
                     //"date,time,timezone,macb,source,sourcetype,type,user,host,short,desc,version,filename,inode,notes,format,extra":
                     var dt = csv.GetField("date");
 
-                    if (dt.StartsWith("Processing"))
+                    if (dt.StartsWith("Processing", StringComparison.Ordinal))
                     {
                         break;
                     }
@@ -803,21 +824,21 @@ namespace TLEFileTimelines
                 Color = "DeletedData";
             }
 
-            if (FileName.StartsWith("[IEHISTORY]"))
+            if (FileName.StartsWith("[IEHISTORY]", StringComparison.Ordinal))
             {
                 Color = "WebHistory";
             }
 
 
-            if (FileName.ToLowerInvariant().Contains(".lnk"))
+            if (FileName.IndexOf(".lnk", StringComparison.OrdinalIgnoreCase) >= 0)
             {
                 Color = "FileOpening";
             }
 
-            if (FileName.StartsWith("[SHIMCACHE]") ||
-                FileName.ToLowerInvariant().EndsWith(".pf") ||
-                FileName.StartsWith(@"[USER ASSIST]") ||
-                FileName.StartsWith("[PROCESS]"))
+            if (FileName.StartsWith("[SHIMCACHE]", StringComparison.Ordinal) ||
+                FileName.EndsWith(".pf", StringComparison.OrdinalIgnoreCase) ||
+                FileName.StartsWith(@"[USER ASSIST]", StringComparison.Ordinal) ||
+                FileName.StartsWith("[PROCESS]", StringComparison.Ordinal))
             {
                 Color = "Execution";
             }
@@ -894,9 +915,19 @@ namespace TLEFileTimelines
 
 
             var ln = 1;
+
+            //(RawRecord was built for every row even with debug messages off)
+            var debug = Log.IsEnabled(LogEventLevel.Debug);
+
+            //one reset at the end instead of a ListChanged event for every row
+            using var quiet = CsvLoader.QuietList<MacTimeData>(DataList);
+
             while (csv.Read())
             {
-                Log.Debug("Line # {Line}, Record: {RawRecord}", ln, csv.Context.Parser.RawRecord);
+                if (debug)
+                {
+                    Log.Debug("Line # {Line}, Record: {RawRecord}", ln, csv.Context.Parser.RawRecord);
+                }
 
                 var f = csv.GetRecord<MacTimeData>();
                 f.Line = ln;
@@ -1002,9 +1033,19 @@ namespace TLEFileTimelines
             csv.ReadHeader();
 
             var ln = 1;
+
+            //(RawRecord was built for every row even with debug messages off)
+            var debug = Log.IsEnabled(LogEventLevel.Debug);
+
+            //one reset at the end instead of a ListChanged event for every row
+            using var quiet = CsvLoader.QuietList<KapeMiniTimelineData>(DataList);
+
             while (csv.Read())
             {
-                Log.Debug("Line # {Line}, Record: {RawRecord}", ln, csv.Context.Parser.RawRecord);
+                if (debug)
+                {
+                    Log.Debug("Line # {Line}, Record: {RawRecord}", ln, csv.Context.Parser.RawRecord);
+                }
 
                 var testStr = csv.GetField<string>(0);
 

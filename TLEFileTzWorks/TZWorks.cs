@@ -8,6 +8,8 @@ using CsvHelper.Configuration;
 using CsvHelper.TypeConversion;
 using ITLEFileSpec;
 using Serilog;
+using TLEFilePlugins.Shared;
+using Serilog.Events;
 using ServiceStack;
 
 namespace TLEFileTzWorks
@@ -123,9 +125,18 @@ namespace TLEFileTzWorks
         
 
             var ln11 = 1;
+            //(RawRecord was built for every row even with debug messages off)
+            var debug = Log.IsEnabled(LogEventLevel.Debug);
+
+            //one reset at the end instead of a ListChanged event for every row
+            using var quiet = CsvLoader.QuietList<PeScanOutData>(DataList);
+
             while (csv.Read())
             {
-                Log.Debug("Line # {Line}, Record: {Record}",ln11,csv.Context.Parser.RawRecord);
+                if (debug)
+                {
+                    Log.Debug("Line # {Line}, Record: {Record}", ln11, csv.Context.Parser.RawRecord);
+                }
 
                 var compiled = csv.GetField(0);
                 var compTime = csv.GetField(1);
@@ -309,9 +320,18 @@ namespace TLEFileTzWorks
                 
 
             var ln11 = 1;
+            //(RawRecord was built for every row even with debug messages off)
+            var debug = Log.IsEnabled(LogEventLevel.Debug);
+
+            //one reset at the end instead of a ListChanged event for every row
+            using var quiet = CsvLoader.QuietList<WispOutData>(DataList);
+
             while (csv.Read())
             {
-                Log.Debug("Line # {Line}, Record: {RawRecord}",ln11,csv.Context.Parser.RawRecord);
+                if (debug)
+                {
+                    Log.Debug("Line # {Line}, Record: {RawRecord}", ln11, csv.Context.Parser.RawRecord);
+                }
                 
                 var mftEntry = csv.GetField(0);
                 var mftSeq = csv.GetField(1);
