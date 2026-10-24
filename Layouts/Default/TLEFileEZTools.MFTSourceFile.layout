@@ -55,7 +55,7 @@
   <property name="HorzScrollStep">0</property>
   <property name="ActiveFilterEnabled">true</property>
   <property name="ViewCaptionHeight">-1</property>
-  <property name="Columns" iskey="true" value="35">
+  <property name="Columns" iskey="true" value="37">
     <property name="Item1" isnull="true" iskey="true">
       <property name="Name">colEntryNumber</property>
       <property name="VisibleIndex">2</property>
@@ -327,6 +327,14 @@
       <property name="VisibleIndex">28</property>
       <property name="Visible">true</property>
       <property name="Width">279</property>
+      <property name="MinWidth">20</property>
+      <property name="MaxWidth">0</property>
+    </property>
+    <property name="Item37" isnull="true" iskey="true">
+      <property name="Name">colParseErrors</property>
+      <property name="VisibleIndex">29</property>
+      <property name="Visible">true</property>
+      <property name="Width">150</property>
       <property name="MinWidth">20</property>
       <property name="MaxWidth">0</property>
     </property>
