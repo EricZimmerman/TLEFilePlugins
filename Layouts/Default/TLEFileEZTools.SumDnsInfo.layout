@@ -66,7 +66,7 @@
   </property>
   <property name="ActiveFilterEnabled">true</property>
   <property name="ViewCaptionHeight">-1</property>
-  <property name="Columns" iskey="true" value="6">
+  <property name="Columns" iskey="true" value="7">
     <property name="Item1" isnull="true" iskey="true">
       <property name="Name">colLastSeen</property>
       <property name="VisibleIndex">4</property>
@@ -113,6 +113,14 @@
       <property name="Visible">true</property>
       <property name="Width">64</property>
       <property name="MinWidth">23</property>
+      <property name="MaxWidth">0</property>
+    </property>
+    <property name="Item7" isnull="true" iskey="true">
+      <property name="Name">colSourceDirectory</property>
+      <property name="VisibleIndex">6</property>
+      <property name="Visible">true</property>
+      <property name="Width">150</property>
+      <property name="MinWidth">20</property>
       <property name="MaxWidth">0</property>
     </property>
   </property>

@@ -2604,6 +2604,9 @@ namespace TLEFileEZTools
      public class SumChainedDbData : IFileSpecData
     {
         public int Year { get; set; }
+
+        //added in SumECmd 2026.11 (Issues #265)
+        public string SourceDirectory { get; set; }
         public string FileName { get; set; }
 
         public int Line { get; set; }
@@ -2612,7 +2615,7 @@ namespace TLEFileEZTools
         public override string ToString()
         {
             return
-                $"{Year} {FileName}";
+                $"{Year} {FileName} {SourceDirectory}";
         }
     }
 
@@ -2626,7 +2629,8 @@ namespace TLEFileEZTools
 
             ExpectedHeaders = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
             {
-                "Year,FileName"
+                "Year,FileName",
+                "Year,FileName,SourceDirectory"
             };
         }
 
@@ -2675,6 +2679,9 @@ namespace TLEFileEZTools
         public int? PhysicalProcessorCount { get; set; }
         public int? CoresPerPhysicalProcessor { get; set; }
         public int? LogicalProcessorsPerPhysicalProcessor { get; set; }
+
+        //added in SumECmd 2026.11 (Issues #265)
+        public string SourceDirectory { get; set; }
         public long? MaximumMemory { get; set; }
 
         public int Line { get; set; }
@@ -2683,7 +2690,7 @@ namespace TLEFileEZTools
         public override string ToString()
         {
             return
-                $"{CreationTime} {OsMajor} {OsMinor} {OsBuild} {SystemDnsHostName} {SystemDomainName} {SystemManufacturer} {SystemProductName} {SystemSerialNumber} {SystemSmbiosUuid} {OsSerialNumber} {OsLastBootUpTime} {OsCountryCode} {OsCurrentTimeZone} {OsDaylightInEffect} {OsProductType} {OsSuiteMask} {OsPlatformId} {ServicePackMajor} {ServicePackMinor} {PhysicalProcessorCount} {CoresPerPhysicalProcessor} {LogicalProcessorsPerPhysicalProcessor} {MaximumMemory}";
+                $"{CreationTime} {OsMajor} {OsMinor} {OsBuild} {SystemDnsHostName} {SystemDomainName} {SystemManufacturer} {SystemProductName} {SystemSerialNumber} {SystemSmbiosUuid} {OsSerialNumber} {OsLastBootUpTime} {OsCountryCode} {OsCurrentTimeZone} {OsDaylightInEffect} {OsProductType} {OsSuiteMask} {OsPlatformId} {ServicePackMajor} {ServicePackMinor} {PhysicalProcessorCount} {CoresPerPhysicalProcessor} {LogicalProcessorsPerPhysicalProcessor} {MaximumMemory} {SourceDirectory}";
         }
     }
 
@@ -2698,7 +2705,8 @@ namespace TLEFileEZTools
             ExpectedHeaders = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
             {
                 "CreationTime,OsMajor,OsMinor,OsBuild",
-                "CreationTime,OsMajor,OsMinor,OsBuild,SystemDnsHostName,SystemDomainName,SystemManufacturer,SystemProductName,SystemSerialNumber,SystemSmbiosUuid,OsSerialNumber,OsLastBootUpTime,OsCountryCode,OsCurrentTimeZone,OsDaylightInEffect,OsProductType,OsSuiteMask,OsPlatformId,ServicePackMajor,ServicePackMinor,PhysicalProcessorCount,CoresPerPhysicalProcessor,LogicalProcessorsPerPhysicalProcessor,MaximumMemory"
+                "CreationTime,OsMajor,OsMinor,OsBuild,SystemDnsHostName,SystemDomainName,SystemManufacturer,SystemProductName,SystemSerialNumber,SystemSmbiosUuid,OsSerialNumber,OsLastBootUpTime,OsCountryCode,OsCurrentTimeZone,OsDaylightInEffect,OsProductType,OsSuiteMask,OsPlatformId,ServicePackMajor,ServicePackMinor,PhysicalProcessorCount,CoresPerPhysicalProcessor,LogicalProcessorsPerPhysicalProcessor,MaximumMemory",
+                "CreationTime,OsMajor,OsMinor,OsBuild,SystemDnsHostName,SystemDomainName,SystemManufacturer,SystemProductName,SystemSerialNumber,SystemSmbiosUuid,OsSerialNumber,OsLastBootUpTime,OsCountryCode,OsCurrentTimeZone,OsDaylightInEffect,OsProductType,OsSuiteMask,OsPlatformId,ServicePackMajor,ServicePackMinor,PhysicalProcessorCount,CoresPerPhysicalProcessor,LogicalProcessorsPerPhysicalProcessor,MaximumMemory,SourceDirectory"
             };
         }
 
@@ -2727,13 +2735,16 @@ namespace TLEFileEZTools
 
         public string ProductName { get; set; }
 
+        //added in SumECmd 2026.11 (Issues #265)
+        public string SourceDirectory { get; set; }
+
         public int Line { get; set; }
         public bool Tag { get; set; }
 
         public override string ToString()
         {
             return
-                $"{RoleGuid} {RoleName} {ProductName}";
+                $"{RoleGuid} {RoleName} {ProductName} {SourceDirectory}";
         }
     }
 
@@ -2747,7 +2758,8 @@ namespace TLEFileEZTools
 
             ExpectedHeaders = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
             {
-                "RoleGuid,RoleName,ProductName"
+                "RoleGuid,RoleName,ProductName",
+                "RoleGuid,RoleName,ProductName,SourceDirectory"
             };
         }
 
@@ -2778,13 +2790,16 @@ namespace TLEFileEZTools
 
         public string SourceFile { get; set; }
 
+        //added in SumECmd 2026.11 (Issues #265)
+        public string SourceDirectory { get; set; }
+
         public int Line { get; set; }
         public bool Tag { get; set; }
 
         public override string ToString()
         {
             return
-                $"{RoleGuid} {RoleDescription} {FirstSeen} {LastSeen} {SourceFile}";
+                $"{RoleGuid} {RoleDescription} {FirstSeen} {LastSeen} {SourceFile} {SourceDirectory}";
         }
     }
 
@@ -2798,7 +2813,8 @@ namespace TLEFileEZTools
 
             ExpectedHeaders = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
             {
-                "RoleGuid,RoleDescription,FirstSeen,LastSeen,SourceFile"
+                "RoleGuid,RoleDescription,FirstSeen,LastSeen,SourceFile",
+                "RoleGuid,RoleDescription,FirstSeen,LastSeen,SourceFile,SourceDirectory"
             };
         }
 
@@ -2835,6 +2851,9 @@ namespace TLEFileEZTools
         public string IpAddress { get; set; }
         public string ClientName { get; set; }
         public string TenantId { get; set; }
+
+        //added in SumECmd 2026.11 (Issues #265)
+        public string SourceDirectory { get; set; }
         public string SourceFile { get; set; }
 
         public int Line { get; set; }
@@ -2843,7 +2862,7 @@ namespace TLEFileEZTools
         public override string ToString()
         {
             return
-                $"{RoleGuid} {RoleDescription} {AuthenticatedUserName} {TotalAccesses} {InsertDate} {LastAccess} {IpAddress} {ClientName} {TenantId} {SourceFile}";
+                $"{RoleGuid} {RoleDescription} {AuthenticatedUserName} {TotalAccesses} {InsertDate} {LastAccess} {IpAddress} {ClientName} {TenantId} {SourceFile} {SourceDirectory}";
         }
     }
 
@@ -2857,7 +2876,8 @@ namespace TLEFileEZTools
 
             ExpectedHeaders = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
             {
-                "RoleGuid,RoleDescription,AuthenticatedUserName,TotalAccesses,InsertDate,LastAccess,IpAddress,ClientName,TenantId,SourceFile"
+                "RoleGuid,RoleDescription,AuthenticatedUserName,TotalAccesses,InsertDate,LastAccess,IpAddress,ClientName,TenantId,SourceFile",
+                "RoleGuid,RoleDescription,AuthenticatedUserName,TotalAccesses,InsertDate,LastAccess,IpAddress,ClientName,TenantId,SourceFile,SourceDirectory"
             };
         }
 
@@ -2900,6 +2920,9 @@ namespace TLEFileEZTools
         public string IpAddress { get; set; }
         public string ClientName { get; set; }
         public string TenantId { get; set; }
+
+        //added in SumECmd 2026.11 (Issues #265)
+        public string SourceDirectory { get; set; }
         public string SourceFile { get; set; }
 
         public int Line { get; set; }
@@ -2908,7 +2931,7 @@ namespace TLEFileEZTools
         public override string ToString()
         {
             return
-                $"{Date} {Count} {DayNumber} {RoleGuid} {RoleDescription} {AuthenticatedUserName} {TotalAccesses} {InsertDate} {LastAccess} {IpAddress} {ClientName} {TenantId} {SourceFile}";
+                $"{Date} {Count} {DayNumber} {RoleGuid} {RoleDescription} {AuthenticatedUserName} {TotalAccesses} {InsertDate} {LastAccess} {IpAddress} {ClientName} {TenantId} {SourceFile} {SourceDirectory}";
         }
     }
 
@@ -2922,7 +2945,8 @@ namespace TLEFileEZTools
 
             ExpectedHeaders = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
             {
-                "Date,Count,DayNumber,RoleGuid,RoleDescription,AuthenticatedUserName,TotalAccesses,InsertDate,LastAccess,IpAddress,ClientName,TenantId,SourceFile"
+                "Date,Count,DayNumber,RoleGuid,RoleDescription,AuthenticatedUserName,TotalAccesses,InsertDate,LastAccess,IpAddress,ClientName,TenantId,SourceFile",
+                "Date,Count,DayNumber,RoleGuid,RoleDescription,AuthenticatedUserName,TotalAccesses,InsertDate,LastAccess,IpAddress,ClientName,TenantId,SourceFile,SourceDirectory"
             };
         }
 
@@ -2951,6 +2975,9 @@ namespace TLEFileEZTools
         public string HostName { get; set; }
         public string Address { get; set; }
         public DateTime LastSeen { get; set; }
+
+        //added in SumECmd 2026.11 (Issues #265)
+        public string SourceDirectory { get; set; }
         public string SourceFile{ get; set; }
 
         public int Line { get; set; }
@@ -2959,7 +2986,7 @@ namespace TLEFileEZTools
         public override string ToString()
         {
             return
-                $"{HostName} {Address} {LastSeen} {SourceFile}";
+                $"{HostName} {Address} {LastSeen} {SourceFile} {SourceDirectory}";
         }
     }
 
@@ -2973,7 +3000,8 @@ namespace TLEFileEZTools
 
             ExpectedHeaders = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
             {
-                "HostName,Address,LastSeen,SourceFile"
+                "HostName,Address,LastSeen,SourceFile",
+                "HostName,Address,LastSeen,SourceFile,SourceDirectory"
             };
         }
 
@@ -3290,6 +3318,9 @@ namespace TLEFileEZTools
         public DateTime LastSeenActive { get; set; }
         public string BiosGuid { get; set; }
         public string SerialNumber { get; set; }
+
+        //added in SumECmd 2026.11 (Issues #265)
+        public string SourceDirectory { get; set; }
         public string SourceFile { get; set; }
 
         public int Line { get; set; }
@@ -3297,7 +3328,7 @@ namespace TLEFileEZTools
 
         public override string ToString()
         {
-            return $"{VmGuid} {CreationTime} {LastSeenActive} {BiosGuid} {SerialNumber} {SourceFile}";
+            return $"{VmGuid} {CreationTime} {LastSeenActive} {BiosGuid} {SerialNumber} {SourceFile} {SourceDirectory}";
         }
     }
 
@@ -3311,7 +3342,8 @@ namespace TLEFileEZTools
 
             ExpectedHeaders = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
             {
-                "VmGuid,CreationTime,LastSeenActive,BiosGuid,SerialNumber,SourceFile"
+                "VmGuid,CreationTime,LastSeenActive,BiosGuid,SerialNumber,SourceFile",
+                "VmGuid,CreationTime,LastSeenActive,BiosGuid,SerialNumber,SourceFile,SourceDirectory"
             };
         }
 
