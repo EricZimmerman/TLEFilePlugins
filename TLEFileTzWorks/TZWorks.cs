@@ -4,8 +4,6 @@ using System.ComponentModel;
 using System.Globalization;
 using System.IO;
 using CsvHelper;
-using CsvHelper.Configuration;
-using CsvHelper.TypeConversion;
 using ITLEFileSpec;
 using Serilog;
 using TLEFilePlugins.Shared;
@@ -91,38 +89,21 @@ namespace TLEFileTzWorks
 
             DataList.Clear();
 
-            using var fileReader = File.OpenText(filename);
-            var config = new CsvConfiguration(CultureInfo.InvariantCulture)
-            {
-                //one string for a value repeated in many rows, not one for each (CsvHelper caches values of up to 128 characters while the file loads)
-                CacheFields = true,
-                BadDataFound = null,
-            };
+            //fields by index: the header is read as a record and skipped (comma separated: the preamble would confuse a
+            //detected separator); bad quoting is recovered from
+            using var csv = CsvReader.FromFile(filename, CsvLoader.Options.With((nameof(CsvReaderOptions.HasHeader), false)));
 
-            var csv = new CsvReader(fileReader, config);
-                
-
-            var o = new TypeConverterOptions
-            {
-                DateTimeStyle = DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal
-            };
-            csv.Context.TypeConverterOptionsCache.AddOptions<PeScanOutData>(o);
-
-
+            //the header line
             csv.Read();
 
-            if (csv.Context.Parser.RawRecord.StartsWith("pescan - "))
+            if (csv.Current.ToString().StartsWith("pescan - "))
             {
-                //dumb ass non-csv, so skip it
+                //dumb ass non-csv, so skip it: the header is the fifth record
                 csv.Read();
                 csv.Read();
                 csv.Read();
                 csv.Read();
             }
-
-                
-
-            csv.ReadHeader();
 
         
 
@@ -137,39 +118,39 @@ namespace TLEFileTzWorks
             {
                 if (debug)
                 {
-                    Log.Debug("Line # {Line}, Record: {Record}", ln11, csv.Context.Parser.RawRecord);
+                    Log.Debug("Line # {Line}, Record: {Record}", ln11, csv.Current.ToString());
                 }
 
-                var compiled = csv.GetField(0);
-                var compTime = csv.GetField(1);
-                var created = csv.GetField(2);
-                var createdTime = csv.GetField(3);
-                var accessd = csv.GetField(4);
-                var accessedTime = csv.GetField(5);
-                var modified = csv.GetField(6);
-                var modTime = csv.GetField(7);
-                var size = csv.GetField(8);
-                var fileType = csv.GetField(9);
-                var cpu = csv.GetField(10);
-                var linker = csv.GetField(11);
-                var codeSize = csv.GetField(12);
-                var initData = csv.GetField(13);
-                var uinitData = csv.GetField(14);
-                var imageVer = csv.GetField(15);
-                var subsysVer = csv.GetField(16);
-                var minOs = csv.GetField(17);
-                var entryRva = csv.GetField(18);
-                var entryfAddr = csv.GetField(19);
-                var imagebase = csv.GetField(20);
-                var cert = csv.GetField(21);
-                var checksum = csv.GetField(22);
-                var md5 = csv.GetField(23);
-                var company = csv.GetField(24);
-                var file = csv.GetField(25);
-                var rating = csv.GetField(26);
-                var notes = csv.GetField(27);
-                var peid = csv.GetField(28);
-                var symbolFile = csv.GetField(29);
+                var compiled = csv.GetString(0);
+                var compTime = csv.GetString(1);
+                var created = csv.GetString(2);
+                var createdTime = csv.GetString(3);
+                var accessd = csv.GetString(4);
+                var accessedTime = csv.GetString(5);
+                var modified = csv.GetString(6);
+                var modTime = csv.GetString(7);
+                var size = csv.GetString(8);
+                var fileType = csv.GetString(9);
+                var cpu = csv.GetString(10);
+                var linker = csv.GetString(11);
+                var codeSize = csv.GetString(12);
+                var initData = csv.GetString(13);
+                var uinitData = csv.GetString(14);
+                var imageVer = csv.GetString(15);
+                var subsysVer = csv.GetString(16);
+                var minOs = csv.GetString(17);
+                var entryRva = csv.GetString(18);
+                var entryfAddr = csv.GetString(19);
+                var imagebase = csv.GetString(20);
+                var cert = csv.GetString(21);
+                var checksum = csv.GetString(22);
+                var md5 = csv.GetString(23);
+                var company = csv.GetString(24);
+                var file = csv.GetString(25);
+                var rating = csv.GetString(26);
+                var notes = csv.GetString(27);
+                var peid = csv.GetString(28);
+                var symbolFile = csv.GetString(29);
 
                 var pe = new PeScanOutData {Line = ln11};
                 pe.Tag = tagged.Contains(ln11);
@@ -297,29 +278,21 @@ namespace TLEFileTzWorks
             DataList.Clear();
 
             int rawFlag;
-            using var fileReader = File.OpenText(filename);
-            //one string for a value repeated in many rows, not one for each (CsvHelper caches values of up to 128 characters while the file loads)
-            var csv = new CsvReader(fileReader, new CsvConfiguration(CultureInfo.InvariantCulture) {CacheFields = true});
-                
+            //fields by index: the header is read as a record and skipped (comma separated: the preamble would confuse a
+            //detected separator); bad quoting is recovered from
+            using var csv = CsvReader.FromFile(filename, CsvLoader.Options.With((nameof(CsvReaderOptions.HasHeader), false)));
 
-            var o = new TypeConverterOptions
-            {
-                DateTimeStyle = DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal
-            };
-            csv.Context.TypeConverterOptionsCache.AddOptions<WispOutData>(o);
-
+            //the header line
             csv.Read();
 
-            if (csv.Context.Parser.RawRecord.StartsWith("wisp - "))
+            if (csv.Current.ToString().StartsWith("wisp - "))
             {
-                //dumb ass non-csv, so skip it
+                //dumb ass non-csv, so skip it: the header is the fifth record
                 csv.Read();
                 csv.Read();
                 csv.Read();
                 csv.Read();
             }
-
-            csv.ReadHeader();
                 
 
             var ln11 = 1;
@@ -333,29 +306,29 @@ namespace TLEFileTzWorks
             {
                 if (debug)
                 {
-                    Log.Debug("Line # {Line}, Record: {RawRecord}", ln11, csv.Context.Parser.RawRecord);
+                    Log.Debug("Line # {Line}, Record: {RawRecord}", ln11, csv.Current.ToString());
                 }
                 
-                var mftEntry = csv.GetField(0);
-                var mftSeq = csv.GetField(1);
-                var parentMftEntry = csv.GetField(2);
-                var parentMftSeq = csv.GetField(3);
-                var entryType = csv.GetField(4);
-                var modified = csv.GetField(5);
-                var modTime = csv.GetField(6);
-                var accessd = csv.GetField(7);
-                var accessedTime = csv.GetField(8);
-                var recordChanged = csv.GetField(9);
-                var recordChangedTime = csv.GetField(10);
-                var created = csv.GetField(11);
-                var createTime = csv.GetField(12);
+                var mftEntry = csv.GetString(0);
+                var mftSeq = csv.GetString(1);
+                var parentMftEntry = csv.GetString(2);
+                var parentMftSeq = csv.GetString(3);
+                var entryType = csv.GetString(4);
+                var modified = csv.GetString(5);
+                var modTime = csv.GetString(6);
+                var accessd = csv.GetString(7);
+                var accessedTime = csv.GetString(8);
+                var recordChanged = csv.GetString(9);
+                var recordChangedTime = csv.GetString(10);
+                var created = csv.GetString(11);
+                var createTime = csv.GetString(12);
 
-                var fileType = csv.GetField(13);
-                var sizeRes = csv.GetField(14);
-                var sizeAct = csv.GetField(15);
-                var flags = csv.GetField(16);
-                var name = csv.GetField(17);
-                var comment = csv.GetField(18);
+                var fileType = csv.GetString(13);
+                var sizeRes = csv.GetString(14);
+                var sizeAct = csv.GetString(15);
+                var flags = csv.GetString(16);
+                var name = csv.GetString(17);
+                var comment = csv.GetString(18);
 
 
                 var wi = new WispOutData

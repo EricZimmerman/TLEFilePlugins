@@ -53,6 +53,40 @@ public class LoaderTests
     }
 
     [Test]
+    public void BadQuotingAndTimesInUtcLoad()
+    {
+        //CsvHelper 33 threw on a stray quote (the file stopped there) and converted a time ending in Z to local time
+        var p = new RBCmd();
+        p.ProcessFile(Write("rb_quote.csv", "SourceName,FileType,FileName,FileSize,DeletedOn\r\na\"b,File,c,1,2024-01-02T03:04:05Z\r\nd,File,e,2,2024-01-02 03:04:05\r\n"));
+
+        p.DataList.Count.Should().Be(2);
+        var row = (RBCmdData) p.DataList[0];
+        row.SourceName.Should().Be("a\"b");
+        row.DeletedOn.Should().Be(new DateTime(2024, 1, 2, 3, 4, 5, DateTimeKind.Utc));
+        row.DeletedOn.Kind.Should().Be(DateTimeKind.Utc);
+        ((RBCmdData) p.DataList[1]).Line.Should().Be(2);
+    }
+
+    [Test]
+    public void RepeatedValuesShareOneString()
+    {
+        //one string for a value repeated in many rows (TLE keeps every row), also in a column where most values are new
+        var sb = new StringBuilder("SourceName,FileType,FileName,FileSize,DeletedOn\r\n");
+        for (var i = 0; i < 5000; i++)
+        {
+            sb.Append($"C:\\$I{i},File,C:\\Users\\name\\file{i % 2000}.txt,{i},2024-01-02 03:04:05\r\n");
+        }
+
+        var p = new RBCmd();
+        p.ProcessFile(Write("rb_pool.csv", sb.ToString()));
+
+        var rows = p.DataList.Cast<RBCmdData>().ToList();
+        rows.Should().HaveCount(5000);
+        ReferenceEquals(rows[10].FileName, rows[2010].FileName).Should().BeTrue();
+        ReferenceEquals(rows[10].FileType, rows[11].FileType).Should().BeTrue();
+    }
+
+    [Test]
     public void HeaderCaseDoesNotMatter()
     {
         //TLE matches header lines ignoring case: the columns are matched the same way

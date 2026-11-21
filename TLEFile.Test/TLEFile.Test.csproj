@@ -23,4 +23,7 @@
   <ItemGroup>
     <None Update="TestFiles\**" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="CsvHelper" Version="34.1.0" />
+  </ItemGroup>
 </Project>

@@ -5,8 +5,6 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using CsvHelper;
-using CsvHelper.Configuration;
-using CsvHelper.TypeConversion;
 using ITLEFileSpec;
 using Serilog;
 using Serilog.Events;
@@ -14,7 +12,43 @@ using TLEFilePlugins.Shared;
 
 namespace TLEFileTimelines
 {
-    public class ForensicTimelineData : IFileSpecData
+    internal static class CsvReaderExtensions
+    {
+        /// <summary>
+        ///     The field of the column called <paramref name="name" /> (matched ignoring case), or null when the header or
+        ///     the record doesn't have it (CsvHelper 33's GetField with MissingFieldFound off)
+        /// </summary>
+        public static string GetOrNull(this CsvReader csv, string name) =>
+            csv.TryGetFieldIndex(name, out var i) && i < csv.FieldCount ? csv.GetString(i) : null;
+    }
+
+    /// <summary>
+    ///     mactime's Date (the first column): parsed with the invariant culture, a time without a zone taken as UTC, as
+    ///     UTC; null when it doesn't parse
+    /// </summary>
+    internal sealed class MacTimeTimestampConverter : ICsvConverter<DateTime?>
+    {
+        public DateTime? Read(CsvReader reader, int index) =>
+            DateTime.TryParse(reader.GetString(index), CultureInfo.InvariantCulture, DateTimeStyles.AssumeUniversal, out var outDate)
+                ? outDate.ToUniversalTime()
+                : null;
+
+        public void Write(CsvWriter writer, DateTime? value) => writer.WriteField(value?.ToString("O", CultureInfo.InvariantCulture) ?? string.Empty);
+    }
+
+    /// <summary>
+    ///     DateTime.Parse with the invariant culture and AssumeUniversal (a time without a zone is UTC, given as the local
+    ///     time), as CsvHelper 33 read the KAPE mini timeline's Time with that style
+    /// </summary>
+    internal sealed class AssumeUniversalTimeConverter : ICsvConverter<DateTime>
+    {
+        public DateTime Read(CsvReader reader, int index) => DateTime.Parse(reader.GetString(index), CultureInfo.InvariantCulture, DateTimeStyles.AssumeUniversal);
+
+        public void Write(CsvWriter writer, DateTime value) => writer.WriteField(value.ToString("O", CultureInfo.InvariantCulture));
+    }
+
+    [CsvRecord]
+    public partial class ForensicTimelineData : IFileSpecData
     {
         public DateTime DateTime { get; set; }
         public string TimestampInfo { get; set; }
@@ -36,9 +70,9 @@ namespace TLEFileTimelines
         public string Count { get; set; }
         public string RawData { get; set; }
 
-        public int Line { get; set; }
-        public bool Tag { get; set; }
-        public string Color { get; set; }
+        [CsvIgnore] public int Line { get; set; }
+        [CsvIgnore] public bool Tag { get; set; }
+        [CsvIgnore] public string Color { get; set; }
 
         public override string ToString()
         {
@@ -75,28 +109,12 @@ namespace TLEFileTimelines
             var tagged = new HashSet<int>(TaggedLines);
 
             var ln = 1;
-            using var fileReader = File.OpenText(filename);
-            //one string for a value repeated in many rows, not one for each (CsvHelper caches values of up to 128 characters while the file loads)
-            //TLE matches header lines ignoring case: the columns are matched the same way (a lower-case header failed)
-            var csv = new CsvReader(fileReader, new CsvConfiguration(CultureInfo.InvariantCulture) {CacheFields = true, PrepareHeaderForMatch = args => args.Header.ToLowerInvariant()});
+            //the columns are matched ignoring case, as TLE matches header lines (a lower-case header failed); Color is set here
+            using var csv = CsvReader.FromFile(filename, CsvLoader.Options);
 
             try
             {
                 DataList.Clear();
-                var o = new TypeConverterOptions
-                {
-                    DateTimeStyle = DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal
-                };
-                csv.Context.TypeConverterOptionsCache.AddOptions<ForensicTimelineData>(o);
-
-                var foo = csv.Context.AutoMap<ForensicTimelineData>();
-
-                // Ignore internal fields
-                foo.Map(t => t.Line).Ignore();
-                foo.Map(t => t.Tag).Ignore();
-                foo.Map(t => t.Color).Ignore();
-
-                csv.Context.RegisterClassMap(foo);
 
                 var records = csv.GetRecords<ForensicTimelineData>();
 
@@ -110,7 +128,7 @@ namespace TLEFileTimelines
                 {
                     if (debug)
                     {
-                        Log.Debug("Line # {Line}, Record: {RawRecord}", ln, csv.Context.Parser.RawRecord);
+                        Log.Debug("Line # {Line}, Record: {RawRecord}", ln, csv.Current.ToString());
                     }
 
                     record.Line = ln;
@@ -156,7 +174,7 @@ namespace TLEFileTimelines
             catch (Exception e)
             {
                 throw new Exception(
-                    $"Error loading data on line '{ln}': {e.Message}. Line: {csv.Context.Parser.RawRecord}", e);
+                    $"Error loading data on line '{ln}': {e.Message}. Line: {csv.Current.ToString()}", e);
             }
         }
     }
@@ -349,52 +367,18 @@ namespace TLEFileTimelines
 
             DataList.Clear();
 
-            using var fileReader = File.OpenText(filename);
-            var config = new CsvConfiguration(CultureInfo.InvariantCulture)
-            {
-                //one string for a value repeated in many rows, not one for each (CsvHelper caches values of up to 128 characters while the file loads)
-                CacheFields = true,
-                //TLE matches header lines ignoring case: the columns are matched the same way (a lower-case header failed)
-                PrepareHeaderForMatch = args => args.Header.ToLowerInvariant(),
-                BadDataFound = context =>
-                {
-                    Log.Warning("Bad data found in {Field}! Skipping. Raw data: {RawRecord}", context.Field, context.RawRecord);
-                },
-                MissingFieldFound = null,
-                Mode = CsvMode.Escape
-            };
+            //columns by name, matched ignoring case as TLE matches header lines (a lower-case header failed). No quotes: a
+            //double quote escapes the character after it (CsvHelper 33's Escape mode with its default escape character)
+            using var csv = CsvReader.FromFile(filename, CsvLoader.Options.With(
+                (nameof(CsvReaderOptions.Mode), CsvMode.Escape),
+                (nameof(CsvReaderOptions.Escape), '"'),
+                (nameof(CsvReaderOptions.OnMalformedRecord), (Action<CsvMalformedRecord>) (record =>
+                    Log.Warning("Bad data found ({Reason}) in record {Record}! Raw data: {RawRecord}", record.Reason, record.RecordNumber, record.RawRecord)))));
 
 
-            var csv = new CsvReader(fileReader, config);
 
-
-            var foo = csv.Context.AutoMap<PsortTimelineData>();
-
-            foo.Map(t => t.Line).Ignore();
-            foo.Map(t => t.Tag).Ignore();
-            foo.Map(t => t.Color).Ignore();
-            foo.Map(t => t.Timestamp).Name("datetime");
-            foo.Map(t => t.TimestampDescription).Name("timestamp_desc");
-            foo.Map(t => t.Source).Name("source");
-            foo.Map(t => t.SourceLong).Name("source_long");
-            foo.Map(t => t.Message).Name("message");
-            foo.Map(t => t.Parser).Name("parser");
-            foo.Map(t => t.DisplayName).Name("display_name");
-            foo.Map(t => t.TagInfo).Name("tag");
-
-
-            var o = new TypeConverterOptions
-            {
-                DateTimeStyle = DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal
-            };
-            csv.Context.TypeConverterOptionsCache.AddOptions<PsortTimelineData>(o);
-
-            csv.Context.RegisterClassMap(foo);
-
-            csv.Read();
-            csv.ReadHeader();
-
-
+            //one string for a value repeated in many rows (PoolStrings alone stops pooling most columns of a large file)
+            var pool = new StringPool();
 
             var ln = 1;
 
@@ -410,25 +394,25 @@ namespace TLEFileTimelines
                 {
                     if (debug)
                     {
-                        Log.Debug("Line # {Line}, Record: {RawRecord}", ln, csv.Context.Parser.RawRecord);
+                        Log.Debug("Line # {Line}, Record: {RawRecord}", ln, csv.Current.ToString());
                     }
 
                     // "datetime,timestamp_desc,source,source_long,message,parser,display_name,tag"
-                    // var dt = csv.GetField("date");
+                    // var dt = csv.GetString("date");
                     //
                     // if (dt.StartsWith("Processing"))
                     // {
                     //     break;
                     // }
 
-                    var dt = csv.GetField("datetime");
-                    var tsD = csv.GetField("timestamp_desc");
-                    var source = csv.GetField("source");
-                    var sourceLong = csv.GetField("source_long");
-                    var message = csv.GetField("message");
-                    var parser = csv.GetField("parser");
-                    var displayName = csv.GetField("display_name");
-                    var tag = csv.GetField("tag");
+                    var dt = pool.Get(csv.GetOrNull("datetime"));
+                    var tsD = pool.Get(csv.GetOrNull("timestamp_desc"));
+                    var source = pool.Get(csv.GetOrNull("source"));
+                    var sourceLong = pool.Get(csv.GetOrNull("source_long"));
+                    var message = pool.Get(csv.GetOrNull("message"));
+                    var parser = pool.Get(csv.GetOrNull("parser"));
+                    var displayName = pool.Get(csv.GetOrNull("display_name"));
+                    var tag = pool.Get(csv.GetOrNull("tag"));
 
 
                     var psd = new PsortTimelineData(ln, dt, tsD, source, sourceLong, message, parser, displayName, tag);
@@ -440,7 +424,7 @@ namespace TLEFileTimelines
             catch (Exception e)
             {
                 throw new Exception(
-                    $"Error loading data on line '{ln}': {e.Message}. Line: {csv.Context.Parser.RawRecord}", e);
+                    $"Error loading data on line '{ln}': {e.Message}. Line: {csv.Current.ToString()}", e);
             }
         }
     }
@@ -656,56 +640,13 @@ namespace TLEFileTimelines
 
             DataList.Clear();
 
-            using var fileReader = File.OpenText(filename);
-            var config = new CsvConfiguration(CultureInfo.InvariantCulture)
-            {
-                //one string for a value repeated in many rows, not one for each (CsvHelper caches values of up to 128 characters while the file loads)
-                CacheFields = true,
-                //TLE matches header lines ignoring case: the columns are matched the same way (a lower-case header failed)
-                PrepareHeaderForMatch = args => args.Header.ToLowerInvariant(),
-                BadDataFound = null,
-                MissingFieldFound = null
-            };
+            //columns by name, matched ignoring case as TLE matches header lines (a lower-case header failed); bad quoting is recovered from
+            using var csv = CsvReader.FromFile(filename, CsvLoader.Options);
 
 
-            var csv = new CsvReader(fileReader, config);
 
-
-            var foo = csv.Context.AutoMap<SuperTimelineData>();
-
-            foo.Map(t => t.Line).Ignore();
-            foo.Map(t => t.Tag).Ignore();
-            foo.Map(t => t.Color).Ignore();
-            foo.Map(t => t.Timestamp).Name("date");
-            foo.Map(t => t.TimeZone).Name("timezone");
-            foo.Map(t => t.Macb).Name("macb");
-            foo.Map(t => t.SourceName).Name("source");
-            foo.Map(t => t.ShortDescription).Name("sourcetype");
-            foo.Map(t => t.Timestamp).Name("sourcetype");
-            foo.Map(t => t.Type).Name("type");
-            foo.Map(t => t.Username).Name("user");
-            foo.Map(t => t.HostName).Name("host");
-            foo.Map(t => t.ShortDescription).Name("short");
-            foo.Map(t => t.LongDescription).Name("desc");
-            foo.Map(t => t.Version).Name("version");
-            foo.Map(t => t.FileName).Name("filename");
-            foo.Map(t => t.Inode).Name("inode");
-            foo.Map(t => t.Notes).Name("notes");
-            foo.Map(t => t.Format).Name("format");
-            foo.Map(t => t.Extra).Name("extra");
-
-            var o = new TypeConverterOptions
-            {
-                DateTimeStyle = DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal
-            };
-            csv.Context.TypeConverterOptionsCache.AddOptions<SuperTimelineData>(o);
-
-            csv.Context.RegisterClassMap(foo);
-
-            csv.Read();
-            csv.ReadHeader();
-
-
+            //one string for a value repeated in many rows (PoolStrings alone stops pooling most columns of a large file)
+            var pool = new StringPool();
 
             var ln = 1;
 
@@ -721,33 +662,33 @@ namespace TLEFileTimelines
                 {
                     if (debug)
                     {
-                        Log.Debug("Line # {Line}, Record: {RawRecord}", ln, csv.Context.Parser.RawRecord);
+                        Log.Debug("Line # {Line}, Record: {RawRecord}", ln, csv.Current.ToString());
                     }
 
                     //"date,time,timezone,macb,source,sourcetype,type,user,host,short,desc,version,filename,inode,notes,format,extra":
-                    var dt = csv.GetField("date");
+                    var dt = pool.Get(csv.GetOrNull("date"));
 
                     if (dt.StartsWith("Processing", StringComparison.Ordinal))
                     {
                         break;
                     }
 
-                    var time = csv.GetField("time");
-                    var tz = csv.GetField("timezone");
-                    var macb = csv.GetField("MACB");
-                    var sourceName = csv.GetField("source");
-                    var sourceDesc = csv.GetField("sourcetype");
-                    var type = csv.GetField("type");
-                    var username = csv.GetField("user");
-                    var hostname = csv.GetField("host");
-                    var shortDesc = csv.GetField("short");
-                    var longDesc = csv.GetField("desc");
-                    var version = csv.GetField("version");
-                    var filename1 = csv.GetField("filename");
-                    var inodeRaw = csv.GetField("inode");
-                    var notes = csv.GetField("notes");
-                    var format = csv.GetField("format");
-                    var extra = csv.GetField("extra");
+                    var time = pool.Get(csv.GetOrNull("time"));
+                    var tz = pool.Get(csv.GetOrNull("timezone"));
+                    var macb = pool.Get(csv.GetOrNull("MACB"));
+                    var sourceName = pool.Get(csv.GetOrNull("source"));
+                    var sourceDesc = pool.Get(csv.GetOrNull("sourcetype"));
+                    var type = pool.Get(csv.GetOrNull("type"));
+                    var username = pool.Get(csv.GetOrNull("user"));
+                    var hostname = pool.Get(csv.GetOrNull("host"));
+                    var shortDesc = pool.Get(csv.GetOrNull("short"));
+                    var longDesc = pool.Get(csv.GetOrNull("desc"));
+                    var version = pool.Get(csv.GetOrNull("version"));
+                    var filename1 = pool.Get(csv.GetOrNull("filename"));
+                    var inodeRaw = pool.Get(csv.GetOrNull("inode"));
+                    var notes = pool.Get(csv.GetOrNull("notes"));
+                    var format = pool.Get(csv.GetOrNull("format"));
+                    var extra = pool.Get(csv.GetOrNull("extra"));
 
                     int.TryParse(inodeRaw, out var inode);
 
@@ -762,12 +703,13 @@ namespace TLEFileTimelines
             catch (Exception e)
             {
                 throw new Exception(
-                    $"Error loading data on line '{ln}': {e.Message}. Line: {csv.Context.Parser.RawRecord}", e);
+                    $"Error loading data on line '{ln}': {e.Message}. Line: {csv.Current.ToString()}", e);
             }
         }
     }
 
-    public class MacTimeData : IFileSpecData
+    [CsvRecord]
+    public partial class MacTimeData : IFileSpecData
     {
         [Flags]
         public enum TimestampType
@@ -803,22 +745,22 @@ namespace TLEFileTimelines
             FileName = filename.TrimStart('"').TrimEnd('"');
         }
 
-        public DateTime? Timestamp { get; set; }
+        [CsvColumn(Index = 0), CsvConverter(typeof(MacTimeTimestampConverter))] public DateTime? Timestamp { get; set; }
 
 
-        public long FileSize { get; set; }
-        public string Macb { get; set; }
-        public string Permissions { get; set; }
-        public string UId { get; set; }
-        public string GId { get; set; }
-        public string Meta { get; set; }
-        public string FileName { get; set; }
+        [CsvColumn("Size")] public long FileSize { get; set; }
+        [CsvColumn("Type")] public string Macb { get; set; }
+        [CsvColumn("Mode")] public string Permissions { get; set; }
+        [CsvColumn("UID")] public string UId { get; set; }
+        [CsvColumn("GID")] public string GId { get; set; }
+        [CsvColumn("Meta")] public string Meta { get; set; }
+        [CsvColumn("File Name")] public string FileName { get; set; }
 
 
-        public string Color { get; set; }
+        [CsvIgnore] public string Color { get; set; }
 
-        public int Line { get; set; }
-        public bool Tag { get; set; }
+        [CsvIgnore] public int Line { get; set; }
+        [CsvIgnore] public bool Tag { get; set; }
 
         public override string ToString()
         {
@@ -885,44 +827,8 @@ namespace TLEFileTimelines
 
             DataList.Clear();
 
-            using var fileReader = File.OpenText(filename);
-            //one string for a value repeated in many rows, not one for each (CsvHelper caches values of up to 128 characters while the file loads)
-            //TLE matches header lines ignoring case: the columns are matched the same way (a lower-case header failed)
-            var csv = new CsvReader(fileReader, new CsvConfiguration(CultureInfo.InvariantCulture) {CacheFields = true, PrepareHeaderForMatch = args => args.Header.ToLowerInvariant()});
-
-            var foo = csv.Context.AutoMap<MacTimeData>();
-
-            var o = new TypeConverterOptions
-            {
-                DateTimeStyle = DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal &
-                                DateTimeStyles.AdjustToUniversal
-            };
-            csv.Context.TypeConverterOptionsCache.AddOptions<MacTimeData>(o);
-
-            foo.Map(t => t.Line).Ignore();
-            foo.Map(t => t.Tag).Ignore();
-            foo.Map(t => t.Color).Ignore();
-            //
-            foo.Map(t => t.Timestamp).Name("Date");
-            foo.Map(m => m.Timestamp).Convert(row =>
-                DateTime.TryParse(row.Row.Context.Parser.Record[0], CultureInfo.InvariantCulture,
-                    DateTimeStyles.AssumeUniversal, out var outDate)
-                    ? outDate.ToUniversalTime()
-                    : new DateTime?());
-            foo.Map(m => m.Timestamp).TypeConverterOption.DateTimeStyles(DateTimeStyles.AssumeUniversal);
-
-            foo.Map(t => t.FileSize).Name("Size");
-            foo.Map(t => t.Macb).Name("Type");
-            foo.Map(t => t.Permissions).Name("Mode");
-            foo.Map(t => t.UId).Name("UID");
-            foo.Map(t => t.GId).Name("GID");
-            foo.Map(t => t.Meta).Name("Meta");
-            foo.Map(t => t.FileName).Name("File Name");
-
-            csv.Context.RegisterClassMap(foo);
-
-            csv.Read();
-            csv.ReadHeader();
+            //the columns are matched ignoring case, as TLE matches header lines (a lower-case header failed)
+            using var csv = CsvReader.FromFile(filename, CsvLoader.Options);
 
 
 
@@ -938,7 +844,7 @@ namespace TLEFileTimelines
             {
                 if (debug)
                 {
-                    Log.Debug("Line # {Line}, Record: {RawRecord}", ln, csv.Context.Parser.RawRecord);
+                    Log.Debug("Line # {Line}, Record: {RawRecord}", ln, csv.Current.ToString());
                 }
 
                 var f = csv.GetRecord<MacTimeData>();
@@ -960,18 +866,19 @@ namespace TLEFileTimelines
 
 
 
-    public class KapeMiniTimelineData : IFileSpecData
+    [CsvRecord]
+    public partial class KapeMiniTimelineData : IFileSpecData
     {
-        public DateTime Timestamp { get; set; }
+        [CsvColumn("Time"), CsvConverter(typeof(AssumeUniversalTimeConverter))] public DateTime Timestamp { get; set; }
 
-        public string DataType { get; set; }
+        [CsvColumn("Type")] public string DataType { get; set; }
         public string ComputerName { get; set; }
-        public string UserSource { get; set; }
+        [CsvColumn("User/Source")] public string UserSource { get; set; }
         public string Message { get; set; }
 
 
-        public int Line { get; set; }
-        public bool Tag { get; set; }
+        [CsvIgnore] public int Line { get; set; }
+        [CsvIgnore] public bool Tag { get; set; }
 
         public override string ToString()
         {
@@ -1010,43 +917,8 @@ namespace TLEFileTimelines
 
             DataList.Clear();
 
-            using var fileReader = File.OpenText(filename);
-            var csvO = new CsvConfiguration(CultureInfo.InvariantCulture)
-            {
-                //one string for a value repeated in many rows, not one for each (CsvHelper caches values of up to 128 characters while the file loads)
-                CacheFields = true,
-                //TLE matches header lines ignoring case: the columns are matched the same way (a lower-case header failed)
-                PrepareHeaderForMatch = args => args.Header.ToLowerInvariant(),
-
-            };
-
-            var csv = new CsvReader(fileReader, csvO);
-
-
-
-            var foo = csv.Context.AutoMap<KapeMiniTimelineData>();
-
-            var o = new TypeConverterOptions
-            {
-                DateTimeStyle = DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal &
-                                DateTimeStyles.AdjustToUniversal
-            };
-            csv.Context.TypeConverterOptionsCache.AddOptions<KapeMiniTimelineData>(o);
-
-            foo.Map(t => t.Line).Ignore();
-            foo.Map(t => t.Tag).Ignore();
-
-            foo.Map(t => t.Timestamp).Name("Time");
-            foo.Map(t => t.DataType).Name("Type");
-
-            foo.Map(m => m.Timestamp).TypeConverterOption.DateTimeStyles(DateTimeStyles.AssumeUniversal);
-
-            foo.Map(t => t.UserSource).Name("User/Source");
-
-            csv.Context.RegisterClassMap(foo);
-
-            csv.Read();
-            csv.ReadHeader();
+            //the columns are matched ignoring case, as TLE matches header lines (a lower-case header failed)
+            using var csv = CsvReader.FromFile(filename, CsvLoader.Options);
 
             var ln = 1;
 
@@ -1060,14 +932,14 @@ namespace TLEFileTimelines
             {
                 if (debug)
                 {
-                    Log.Debug("Line # {Line}, Record: {RawRecord}", ln, csv.Context.Parser.RawRecord);
+                    Log.Debug("Line # {Line}, Record: {RawRecord}", ln, csv.Current.ToString());
                 }
 
-                var testStr = csv.GetField<string>(0);
+                var testStr = csv.GetString(0);
 
                 if (DateTime.TryParse(testStr, out var s) == false)
                 {
-                    Log.Warning("Bad data found! Skipping. Raw data: {RawRecord}", csv.Context.Parser.RawRecord);
+                    Log.Warning("Bad data found! Skipping. Raw data: {RawRecord}", csv.Current.ToString());
                     continue;
                 }
 

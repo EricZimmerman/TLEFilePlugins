@@ -16,13 +16,13 @@ For CSVs with a header row, `ProcessFile` is one call:
         CsvLoader.Load<BootData>(filename, DataList, TaggedLines);
     }
 
-with optional column maps (`map => map.Map(t => t.Timestomped).Name("SI<FN")`), CsvHelper settings (`configure: c => c.Delimiter = "\t"`) and a per-record fixup. `CsvLoader` (in `Shared`, compiled into each plugin assembly) numbers and tags the lines and reads the times as written.
+The data class is a CsvHelper 34 record type: `[CsvRecord] public partial class BootData : IFileSpecData`, its columns `[CsvColumn(Optional = true)]` (a file from an older version of the tool may not have them), `[CsvColumn("SI<FN", Optional = true)]` for a column with another name, `[CsvConverter(typeof(...))]` for a value of its own format, and `[CsvIgnore]` on Line and Tag. `Load` takes optional reader options (`CsvLoader.Options.With((nameof(CsvReaderOptions.Separator), '\t'))`) and a per-record fixup. `CsvLoader` (in `Shared`, compiled into each plugin assembly) numbers and tags the lines and reads the times as written.
 
 For a complete example, see the Boot* classes at the link below.
 
 https://github.com/EricZimmerman/TLEFilePlugins/blob/master/TLEFileEZTools/EZTools.cs#L12
 
-For more advanced uses of CSVHelper, look at things like **AnalyzeMFT** or **Supertimeline** plugins.
+For files read field by field, look at the **AnalyzeMFT** or **Supertimeline** plugins.
 
 ## Building and installing
 

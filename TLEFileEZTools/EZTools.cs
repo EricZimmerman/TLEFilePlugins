@@ -4,36 +4,35 @@ using System.ComponentModel;
 using System.Globalization;
 using System.IO;
 using CsvHelper;
-using CsvHelper.Configuration;
-using CsvHelper.TypeConversion;
 using ITLEFileSpec;
 using TLEFilePlugins.Shared;
 using Serilog;
 
 namespace TLEFileEZTools
 {
-    public class BootData : IFileSpecData
+    [CsvRecord]
+    public partial class BootData : IFileSpecData
     {
-        public string EntryPoint { get; set; }
-        public string Signature { get; set; }
-        public int BytesPerSector { get; set; }
-        public int SectorsPerCluster { get; set; }
+        [CsvColumn(Optional = true)] public string EntryPoint { get; set; }
+        [CsvColumn(Optional = true)] public string Signature { get; set; }
+        [CsvColumn(Optional = true)] public int BytesPerSector { get; set; }
+        [CsvColumn(Optional = true)] public int SectorsPerCluster { get; set; }
         public int ClusterSize => BytesPerSector * SectorsPerCluster;
-        public long ReservedSectors { get; set; }
-        public long TotalSectors { get; set; }
-        public long MftClusterBlockNumber { get; set; }
-        public long MftMirrClusterBlockNumber { get; set; }
-        public int MftEntrySize { get; set; }
-        public int IndexEntrySize { get; set; }
-        public string VolumeSerialNumberRaw { get; set; }
-        public string VolumeSerialNumber { get; set; }
-        public string VolumeSerialNumber32 { get; set; }
-        public string VolumeSerialNumber32Reverse { get; set; }
-        public string SectorSignature { get; set; }
-        public string SourceFile { get; set; }
+        [CsvColumn(Optional = true)] public long ReservedSectors { get; set; }
+        [CsvColumn(Optional = true)] public long TotalSectors { get; set; }
+        [CsvColumn(Optional = true)] public long MftClusterBlockNumber { get; set; }
+        [CsvColumn(Optional = true)] public long MftMirrClusterBlockNumber { get; set; }
+        [CsvColumn(Optional = true)] public int MftEntrySize { get; set; }
+        [CsvColumn(Optional = true)] public int IndexEntrySize { get; set; }
+        [CsvColumn(Optional = true)] public string VolumeSerialNumberRaw { get; set; }
+        [CsvColumn(Optional = true)] public string VolumeSerialNumber { get; set; }
+        [CsvColumn(Optional = true)] public string VolumeSerialNumber32 { get; set; }
+        [CsvColumn(Optional = true)] public string VolumeSerialNumber32Reverse { get; set; }
+        [CsvColumn(Optional = true)] public string SectorSignature { get; set; }
+        [CsvColumn(Optional = true)] public string SourceFile { get; set; }
 
-        public int Line { get; set; }
-        public bool Tag { get; set; }
+        [CsvIgnore] public int Line { get; set; }
+        [CsvIgnore] public bool Tag { get; set; }
 
         /// <summary>
         ///     When searching in TLE, this is used to look for the search term across all the properties in the class
@@ -80,29 +79,30 @@ namespace TLEFileEZTools
         public string InternalGuid => "40dd7405-16cf-4612-a480-9b150d0a9952";
     }
 
-    public class SdsData : IFileSpecData
+    [CsvRecord]
+    public partial class SdsData : IFileSpecData
     {
-        public string Hash { get; set; }
-        public uint Id { get; set; }
-        public ulong Offset { get; set; }
-        public string OwnerSid { get; set; }
-        public string GroupSid { get; set; }
-        public string Control { get; set; }
+        [CsvColumn(Optional = true)] public string Hash { get; set; }
+        [CsvColumn(Optional = true)] public uint Id { get; set; }
+        [CsvColumn(Optional = true)] public ulong Offset { get; set; }
+        [CsvColumn(Optional = true)] public string OwnerSid { get; set; }
+        [CsvColumn(Optional = true)] public string GroupSid { get; set; }
+        [CsvColumn(Optional = true)] public string Control { get; set; }
 
-        public int SaclAceCount { get; set; }
-        public string UniqueSaclAceTypes { get; set; }
+        [CsvColumn(Optional = true)] public int SaclAceCount { get; set; }
+        [CsvColumn(Optional = true)] public string UniqueSaclAceTypes { get; set; }
 
-        public int DaclAceCount { get; set; }
-        public string UniqueDaclAceTypes { get; set; }
+        [CsvColumn(Optional = true)] public int DaclAceCount { get; set; }
+        [CsvColumn(Optional = true)] public string UniqueDaclAceTypes { get; set; }
 
-        public ulong FileOffset { get; set; }
-        public string SourceFile { get; set; }
+        [CsvColumn(Optional = true)] public ulong FileOffset { get; set; }
+        [CsvColumn(Optional = true)] public string SourceFile { get; set; }
 
         //added in the 2026.10 versions of the tool
-        public bool? FromMirror { get; set; }
+        [CsvColumn(Optional = true)] public bool? FromMirror { get; set; }
 
-        public int Line { get; set; }
-        public bool Tag { get; set; }
+        [CsvIgnore] public int Line { get; set; }
+        [CsvIgnore] public bool Tag { get; set; }
 
         public override string ToString()
         {
@@ -141,27 +141,28 @@ namespace TLEFileEZTools
         }
     }
 
-    public class JData : IFileSpecData
+    [CsvRecord]
+    public partial class JData : IFileSpecData
     {
-        public string Name { get; set; }
+        [CsvColumn(Optional = true)] public string Name { get; set; }
         public string Extension => $"{Path.GetExtension(Name)}{string.Empty}";
-        public ulong EntryNumber { get; set; }
-        public int SequenceNumber { get; set; }
-        public ulong ParentEntryNumber { get; set; }
-        public uint ParentSequenceNumber { get; set; }
+        [CsvColumn(Optional = true)] public ulong EntryNumber { get; set; }
+        [CsvColumn(Optional = true)] public int SequenceNumber { get; set; }
+        [CsvColumn(Optional = true)] public ulong ParentEntryNumber { get; set; }
+        [CsvColumn(Optional = true)] public uint ParentSequenceNumber { get; set; }
         
-        public string ParentPath { get; set; }
-        public ulong UpdateSequenceNumber { get; set; }
+        [CsvColumn(Optional = true)] public string ParentPath { get; set; }
+        [CsvColumn(Optional = true)] public ulong UpdateSequenceNumber { get; set; }
 
-        public DateTime UpdateTimestamp { get; set; }
+        [CsvColumn(Optional = true)] public DateTime UpdateTimestamp { get; set; }
 
-        public string UpdateReasons { get; set; }
-        public string FileAttributes { get; set; }
-        public long OffsetToData { get; set; }
-        public string SourceFile { get; set; }
+        [CsvColumn(Optional = true)] public string UpdateReasons { get; set; }
+        [CsvColumn(Optional = true)] public string FileAttributes { get; set; }
+        [CsvColumn(Optional = true)] public long OffsetToData { get; set; }
+        [CsvColumn(Optional = true)] public string SourceFile { get; set; }
 
-        public int Line { get; set; }
-        public bool Tag { get; set; }
+        [CsvIgnore] public int Line { get; set; }
+        [CsvIgnore] public bool Tag { get; set; }
 
         public override string ToString()
         {
@@ -195,71 +196,72 @@ namespace TLEFileEZTools
 
         public void ProcessFile(string filename)
         {
-            CsvLoader.Load<JData>(filename, DataList, TaggedLines, map => map.Map(m => m.UpdateTimestamp).TypeConverterOption.DateTimeStyles(DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal));
+            CsvLoader.Load<JData>(filename, DataList, TaggedLines);
         }
     }
 
-    public class MFTSourceFileResidentData : IFileSpecData
+    [CsvRecord]
+    public partial class MFTSourceFileResidentData : IFileSpecData
     {
-        public uint EntryNumber { get; set; }
-        public ushort SequenceNumber { get; set; }
-        public uint ParentEntryNumber { get; set; }
-        public ushort? ParentSequenceNumber { get; set; }
+        [CsvColumn(Optional = true)] public uint EntryNumber { get; set; }
+        [CsvColumn(Optional = true)] public ushort SequenceNumber { get; set; }
+        [CsvColumn(Optional = true)] public uint ParentEntryNumber { get; set; }
+        [CsvColumn(Optional = true)] public ushort? ParentSequenceNumber { get; set; }
 
-        public bool InUse { get; set; }
-        public string ParentPath { get; set; }
-        public string FileName { get; set; }
+        [CsvColumn(Optional = true)] public bool InUse { get; set; }
+        [CsvColumn(Optional = true)] public string ParentPath { get; set; }
+        [CsvColumn(Optional = true)] public string FileName { get; set; }
 
-        public string Extension { get; set; }
+        [CsvColumn(Optional = true)] public string Extension { get; set; }
 
-        public bool IsDirectory { get; set; }
-        public bool HasAds { get; set; }
-        public bool IsAds { get; set; }
+        [CsvColumn(Optional = true)] public bool IsDirectory { get; set; }
+        [CsvColumn(Optional = true)] public bool HasAds { get; set; }
+        [CsvColumn(Optional = true)] public bool IsAds { get; set; }
 
-        public ulong FileSize { get; set; }
+        [CsvColumn(Optional = true)] public ulong FileSize { get; set; }
 
-        public DateTime? Created0x10 { get; set; }
-        public DateTime? Created0x30 { get; set; }
+        [CsvColumn(Optional = true)] public DateTime? Created0x10 { get; set; }
+        [CsvColumn(Optional = true)] public DateTime? Created0x30 { get; set; }
 
-        public DateTime? LastModified0x10 { get; set; }
-        public DateTime? LastModified0x30 { get; set; }
+        [CsvColumn(Optional = true)] public DateTime? LastModified0x10 { get; set; }
+        [CsvColumn(Optional = true)] public DateTime? LastModified0x30 { get; set; }
 
-        public DateTime? LastRecordChange0x10 { get; set; }
-        public DateTime? LastRecordChange0x30 { get; set; }
+        [CsvColumn(Optional = true)] public DateTime? LastRecordChange0x10 { get; set; }
+        [CsvColumn(Optional = true)] public DateTime? LastRecordChange0x30 { get; set; }
 
-        public DateTime? LastAccess0x10 { get; set; }
+        [CsvColumn(Optional = true)] public DateTime? LastAccess0x10 { get; set; }
 
-        public DateTime? LastAccess0x30 { get; set; }
+        [CsvColumn(Optional = true)] public DateTime? LastAccess0x30 { get; set; }
 
-        public long UpdateSequenceNumber { get; set; }
-        public long LogfileSequenceNumber { get; set; }
+        [CsvColumn(Optional = true)] public long UpdateSequenceNumber { get; set; }
+        [CsvColumn(Optional = true)] public long LogfileSequenceNumber { get; set; }
 
-        public int SecurityId { get; set; }
+        [CsvColumn(Optional = true)] public int SecurityId { get; set; }
 
-        public string ZoneIdContents { get; set; }
-        public string SiFlags { get; set; }
-        public string ObjectIdFileDroid { get; set; }
-        public string ReparseTarget { get; set; }
-        public int ReferenceCount { get; set; }
-        public string NameType { get; set; }
-        public string LoggedUtilStream { get; set; }
-        public bool Timestomped { get; set; }
-        public bool uSecZeros { get; set; }
-        public bool Copied { get; set; }
-        public string SourceFile { get; set; }
-        public string ResidentDataBase64 { get; set; }
-        public string ResidentDataHex { get; set; }
-        public string ResidentDataASCII { get; set; }
+        [CsvColumn(Optional = true)] public string ZoneIdContents { get; set; }
+        [CsvColumn(Optional = true)] public string SiFlags { get; set; }
+        [CsvColumn(Optional = true)] public string ObjectIdFileDroid { get; set; }
+        [CsvColumn(Optional = true)] public string ReparseTarget { get; set; }
+        [CsvColumn(Optional = true)] public int ReferenceCount { get; set; }
+        [CsvColumn(Optional = true)] public string NameType { get; set; }
+        [CsvColumn(Optional = true)] public string LoggedUtilStream { get; set; }
+        [CsvColumn("SI<FN", Optional = true)] public bool Timestomped { get; set; }
+        [CsvColumn(Optional = true)] public bool uSecZeros { get; set; }
+        [CsvColumn(Optional = true)] public bool Copied { get; set; }
+        [CsvColumn(Optional = true)] public string SourceFile { get; set; }
+        [CsvColumn(Optional = true)] public string ResidentDataBase64 { get; set; }
+        [CsvColumn(Optional = true)] public string ResidentDataHex { get; set; }
+        [CsvColumn(Optional = true)] public string ResidentDataASCII { get; set; }
 
         //added in the 2026.10 versions of the tool
-        public string ParseErrors { get; set; }
+        [CsvColumn(Optional = true)] public string ParseErrors { get; set; }
 
         //added in MFTECmd 2026.11 (Issues #260)
-        public string ResidentDataDecoded { get; set; }
+        [CsvColumn(Optional = true)] public string ResidentDataDecoded { get; set; }
 
-        public int Line { get; set; }
+        [CsvIgnore] public int Line { get; set; }
 
-        public bool Tag { get; set; }
+        [CsvIgnore] public bool Tag { get; set; }
 
         public override string ToString()
         {
@@ -296,79 +298,69 @@ namespace TLEFileEZTools
 
         public void ProcessFile(string filename)
         {
-            CsvLoader.Load<MFTSourceFileResidentData>(filename, DataList, TaggedLines, map =>
-            {
-                map.Map(t => t.Timestomped).Name("SI<FN");
-                map.Map(m => m.Created0x10).TypeConverterOption.DateTimeStyles(DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal);
-                map.Map(m => m.Created0x30).TypeConverterOption.DateTimeStyles(DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal);
-                map.Map(m => m.LastModified0x10).TypeConverterOption.DateTimeStyles(DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal);
-                map.Map(m => m.LastModified0x30).TypeConverterOption.DateTimeStyles(DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal);
-                map.Map(m => m.LastRecordChange0x10).TypeConverterOption.DateTimeStyles(DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal);
-                map.Map(m => m.LastRecordChange0x30).TypeConverterOption.DateTimeStyles(DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal);
-                map.Map(m => m.LastAccess0x10).TypeConverterOption.DateTimeStyles(DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal);
-                map.Map(m => m.LastAccess0x30).TypeConverterOption.DateTimeStyles(DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal);
-            });
+            CsvLoader.Load<MFTSourceFileResidentData>(filename, DataList, TaggedLines);
         }
     }
 
-    public class MFTSourceFileData : IFileSpecData
+    [CsvRecord]
+    public partial class MFTSourceFileData : IFileSpecData
     {
-        public uint EntryNumber { get; set; }
-        public ushort SequenceNumber { get; set; }
-        public uint ParentEntryNumber { get; set; }
-        public ushort? ParentSequenceNumber { get; set; }
+        [CsvColumn(Optional = true)] public uint EntryNumber { get; set; }
+        [CsvColumn(Optional = true)] public ushort SequenceNumber { get; set; }
+        [CsvColumn(Optional = true)] public uint ParentEntryNumber { get; set; }
+        [CsvColumn(Optional = true)] public ushort? ParentSequenceNumber { get; set; }
 
-        public bool InUse { get; set; }
-        public string ParentPath { get; set; }
-        public string FileName { get; set; }
+        [CsvColumn(Optional = true)] public bool InUse { get; set; }
+        [CsvColumn(Optional = true)] public string ParentPath { get; set; }
+        [CsvColumn(Optional = true)] public string FileName { get; set; }
 
-        public string Extension { get; set; }
+        [CsvColumn(Optional = true)] public string Extension { get; set; }
 
-        public bool IsDirectory { get; set; }
-        public bool HasAds { get; set; }
-        public bool IsAds { get; set; }
+        [CsvColumn(Optional = true)] public bool IsDirectory { get; set; }
+        [CsvColumn(Optional = true)] public bool HasAds { get; set; }
+        [CsvColumn(Optional = true)] public bool IsAds { get; set; }
 
-        public ulong FileSize { get; set; }
+        [CsvColumn(Optional = true)] public ulong FileSize { get; set; }
 
-        public DateTime? Created0x10 { get; set; }
-        public DateTime? Created0x30 { get; set; }
+        [CsvColumn(Optional = true)] public DateTime? Created0x10 { get; set; }
+        [CsvColumn(Optional = true)] public DateTime? Created0x30 { get; set; }
 
-        public DateTime? LastModified0x10 { get; set; }
-        public DateTime? LastModified0x30 { get; set; }
+        [CsvColumn(Optional = true)] public DateTime? LastModified0x10 { get; set; }
+        [CsvColumn(Optional = true)] public DateTime? LastModified0x30 { get; set; }
 
-        public DateTime? LastRecordChange0x10 { get; set; }
-        public DateTime? LastRecordChange0x30 { get; set; }
+        [CsvColumn(Optional = true)] public DateTime? LastRecordChange0x10 { get; set; }
+        [CsvColumn(Optional = true)] public DateTime? LastRecordChange0x30 { get; set; }
 
-        public DateTime? LastAccess0x10 { get; set; }
+        [CsvColumn(Optional = true)] public DateTime? LastAccess0x10 { get; set; }
 
-        public DateTime? LastAccess0x30 { get; set; }
+        [CsvColumn(Optional = true)] public DateTime? LastAccess0x30 { get; set; }
 
-        public long UpdateSequenceNumber { get; set; }
-        public long LogfileSequenceNumber { get; set; }
+        [CsvColumn(Optional = true)] public long UpdateSequenceNumber { get; set; }
+        [CsvColumn(Optional = true)] public long LogfileSequenceNumber { get; set; }
 
-        public int SecurityId { get; set; }
+        [CsvColumn(Optional = true)] public int SecurityId { get; set; }
 
-        public string ZoneIdContents { get; set; }
-        public string SiFlags { get; set; }
-        public string ObjectIdFileDroid { get; set; }
-        public string ReparseTarget { get; set; }
-        public int ReferenceCount { get; set; }
-        public string NameType { get; set; }
-        public string LoggedUtilStream { get; set; }
-        public bool Timestomped { get; set; }
-        public bool uSecZeros { get; set; }
-        public bool Copied { get; set; }
-        public string SourceFile { get; set; }
+        [CsvColumn(Optional = true)] public string ZoneIdContents { get; set; }
+        [CsvColumn(Optional = true)] public string SiFlags { get; set; }
+        [CsvColumn(Optional = true)] public string ObjectIdFileDroid { get; set; }
+        [CsvColumn(Optional = true)] public string ReparseTarget { get; set; }
+        [CsvColumn(Optional = true)] public int ReferenceCount { get; set; }
+        [CsvColumn(Optional = true)] public string NameType { get; set; }
+        [CsvColumn(Optional = true)] public string LoggedUtilStream { get; set; }
+        [CsvColumn("SI<FN", Optional = true)] public bool Timestomped { get; set; }
+        [CsvColumn(Optional = true)] public bool uSecZeros { get; set; }
+        [CsvColumn(Optional = true)] public bool Copied { get; set; }
+        [CsvColumn(Optional = true)] public string SourceFile { get; set; }
 
         //added in the 2026.10 versions of the tool
-        public string ParseErrors { get; set; }
+        [CsvColumn(Optional = true)] public string ParseErrors { get; set; }
 
         //added in MFTECmd 2026.11 (Issues #260)
-        public string ResidentDataDecoded { get; set; }
+        [CsvColumn(Optional = true)] public string ResidentDataDecoded { get; set; }
 
-        public int Line { get; set; }
+        [CsvIgnore] public int Line { get; set; }
 
-        public bool Tag { get; set; }
+        [CsvIgnore] public bool Tag { get; set; }
 
         public override string ToString()
         {
@@ -406,73 +398,63 @@ namespace TLEFileEZTools
 
         public void ProcessFile(string filename)
         {
-            CsvLoader.Load<MFTSourceFileData>(filename, DataList, TaggedLines, map =>
-            {
-                map.Map(t => t.Timestomped).Name("SI<FN");
-                map.Map(m => m.Created0x10).TypeConverterOption.DateTimeStyles(DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal);
-                map.Map(m => m.Created0x30).TypeConverterOption.DateTimeStyles(DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal);
-                map.Map(m => m.LastModified0x10).TypeConverterOption.DateTimeStyles(DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal);
-                map.Map(m => m.LastModified0x30).TypeConverterOption.DateTimeStyles(DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal);
-                map.Map(m => m.LastRecordChange0x10).TypeConverterOption.DateTimeStyles(DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal);
-                map.Map(m => m.LastRecordChange0x30).TypeConverterOption.DateTimeStyles(DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal);
-                map.Map(m => m.LastAccess0x10).TypeConverterOption.DateTimeStyles(DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal);
-                map.Map(m => m.LastAccess0x30).TypeConverterOption.DateTimeStyles(DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal);
-            });
+            CsvLoader.Load<MFTSourceFileData>(filename, DataList, TaggedLines);
         }
     }
   
 
-        public class MFTData : IFileSpecData
+        [CsvRecord]
+        public partial class MFTData : IFileSpecData
     {
-        public uint EntryNumber { get; set; }
-        public ushort SequenceNumber { get; set; }
-        public uint ParentEntryNumber { get; set; }
-        public ushort? ParentSequenceNumber { get; set; }
+        [CsvColumn(Optional = true)] public uint EntryNumber { get; set; }
+        [CsvColumn(Optional = true)] public ushort SequenceNumber { get; set; }
+        [CsvColumn(Optional = true)] public uint ParentEntryNumber { get; set; }
+        [CsvColumn(Optional = true)] public ushort? ParentSequenceNumber { get; set; }
 
-        public bool InUse { get; set; }
-        public string ParentPath { get; set; }
-        public string FileName { get; set; }
+        [CsvColumn(Optional = true)] public bool InUse { get; set; }
+        [CsvColumn(Optional = true)] public string ParentPath { get; set; }
+        [CsvColumn(Optional = true)] public string FileName { get; set; }
 
-        public string Extension { get; set; }
+        [CsvColumn(Optional = true)] public string Extension { get; set; }
 
-        public bool IsDirectory { get; set; }
-        public bool HasAds { get; set; }
-        public bool IsAds { get; set; }
+        [CsvColumn(Optional = true)] public bool IsDirectory { get; set; }
+        [CsvColumn(Optional = true)] public bool HasAds { get; set; }
+        [CsvColumn(Optional = true)] public bool IsAds { get; set; }
 
-        public ulong FileSize { get; set; }
+        [CsvColumn(Optional = true)] public ulong FileSize { get; set; }
 
-        public DateTime? Created0x10 { get; set; }
-        public DateTime? Created0x30 { get; set; }
+        [CsvColumn(Optional = true)] public DateTime? Created0x10 { get; set; }
+        [CsvColumn(Optional = true)] public DateTime? Created0x30 { get; set; }
 
-        public DateTime? LastModified0x10 { get; set; }
-        public DateTime? LastModified0x30 { get; set; }
+        [CsvColumn(Optional = true)] public DateTime? LastModified0x10 { get; set; }
+        [CsvColumn(Optional = true)] public DateTime? LastModified0x30 { get; set; }
 
-        public DateTime? LastRecordChange0x10 { get; set; }
-        public DateTime? LastRecordChange0x30 { get; set; }
+        [CsvColumn(Optional = true)] public DateTime? LastRecordChange0x10 { get; set; }
+        [CsvColumn(Optional = true)] public DateTime? LastRecordChange0x30 { get; set; }
 
-        public DateTime? LastAccess0x10 { get; set; }
+        [CsvColumn(Optional = true)] public DateTime? LastAccess0x10 { get; set; }
 
-        public DateTime? LastAccess0x30 { get; set; }
+        [CsvColumn(Optional = true)] public DateTime? LastAccess0x30 { get; set; }
 
-        public long UpdateSequenceNumber { get; set; }
-        public long LogfileSequenceNumber { get; set; }
+        [CsvColumn(Optional = true)] public long UpdateSequenceNumber { get; set; }
+        [CsvColumn(Optional = true)] public long LogfileSequenceNumber { get; set; }
 
-        public int SecurityId { get; set; }
+        [CsvColumn(Optional = true)] public int SecurityId { get; set; }
 
-        public string ZoneIdContents { get; set; }
-        public string SiFlags { get; set; }
-        public string ObjectIdFileDroid { get; set; }
-        public string ReparseTarget { get; set; }
-        public int ReferenceCount { get; set; }
-        public string NameType { get; set; }
-        public string LoggedUtilStream { get; set; }
-        public bool Timestomped { get; set; }
-        public bool uSecZeros { get; set; }
-        public bool Copied { get; set; }
+        [CsvColumn(Optional = true)] public string ZoneIdContents { get; set; }
+        [CsvColumn(Optional = true)] public string SiFlags { get; set; }
+        [CsvColumn(Optional = true)] public string ObjectIdFileDroid { get; set; }
+        [CsvColumn(Optional = true)] public string ReparseTarget { get; set; }
+        [CsvColumn(Optional = true)] public int ReferenceCount { get; set; }
+        [CsvColumn(Optional = true)] public string NameType { get; set; }
+        [CsvColumn(Optional = true)] public string LoggedUtilStream { get; set; }
+        [CsvColumn("SI<FN", Optional = true)] public bool Timestomped { get; set; }
+        [CsvColumn(Optional = true)] public bool uSecZeros { get; set; }
+        [CsvColumn(Optional = true)] public bool Copied { get; set; }
 
-        public int Line { get; set; }
+        [CsvIgnore] public int Line { get; set; }
 
-        public bool Tag { get; set; }
+        [CsvIgnore] public bool Tag { get; set; }
 
         public override string ToString()
         {
@@ -507,49 +489,39 @@ namespace TLEFileEZTools
 
         public void ProcessFile(string filename)
         {
-            CsvLoader.Load<MFTData>(filename, DataList, TaggedLines, map =>
-            {
-                map.Map(t => t.Timestomped).Name("SI<FN");
-                map.Map(m => m.Created0x10).TypeConverterOption.DateTimeStyles(DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal);
-                map.Map(m => m.Created0x30).TypeConverterOption.DateTimeStyles(DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal);
-                map.Map(m => m.LastModified0x10).TypeConverterOption.DateTimeStyles(DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal);
-                map.Map(m => m.LastModified0x30).TypeConverterOption.DateTimeStyles(DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal);
-                map.Map(m => m.LastRecordChange0x10).TypeConverterOption.DateTimeStyles(DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal);
-                map.Map(m => m.LastRecordChange0x30).TypeConverterOption.DateTimeStyles(DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal);
-                map.Map(m => m.LastAccess0x10).TypeConverterOption.DateTimeStyles(DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal);
-                map.Map(m => m.LastAccess0x30).TypeConverterOption.DateTimeStyles(DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal);
-            });
+            CsvLoader.Load<MFTData>(filename, DataList, TaggedLines);
         }
     }
 
 
-    public class SBECmdData : IFileSpecData
+    [CsvRecord]
+    public partial class SBECmdData : IFileSpecData
     {
-        public string BagPath { get; set; }
-        public int Slot { get; set; }
-        public int NodeSlot { get; set; }
-        public int MRUPosition { get; set; }
-        public string AbsolutePath { get; set; }
-        public string ShellType { get; set; }
-        public string Value { get; set; }
-        public int ChildBags { get; set; }
-        public DateTime? CreatedOn { get; set; }
-        public DateTime? ModifiedOn { get; set; }
-        public DateTime? AccessedOn { get; set; }
-        public DateTime? LastWriteTime { get; set; }
-        public long? MFTEntry { get; set; }
-        public int? MFTSequenceNumber { get; set; }
-        public int ExtensionBlockCount { get; set; }
-        public DateTime? FirstInteracted { get; set; }
-        public DateTime? LastInteracted { get; set; }
+        [CsvColumn(Optional = true)] public string BagPath { get; set; }
+        [CsvColumn(Optional = true)] public int Slot { get; set; }
+        [CsvColumn(Optional = true)] public int NodeSlot { get; set; }
+        [CsvColumn(Optional = true)] public int MRUPosition { get; set; }
+        [CsvColumn(Optional = true)] public string AbsolutePath { get; set; }
+        [CsvColumn(Optional = true)] public string ShellType { get; set; }
+        [CsvColumn(Optional = true)] public string Value { get; set; }
+        [CsvColumn(Optional = true)] public int ChildBags { get; set; }
+        [CsvColumn(Optional = true)] public DateTime? CreatedOn { get; set; }
+        [CsvColumn(Optional = true)] public DateTime? ModifiedOn { get; set; }
+        [CsvColumn(Optional = true)] public DateTime? AccessedOn { get; set; }
+        [CsvColumn(Optional = true)] public DateTime? LastWriteTime { get; set; }
+        [CsvColumn(Optional = true)] public long? MFTEntry { get; set; }
+        [CsvColumn(Optional = true)] public int? MFTSequenceNumber { get; set; }
+        [CsvColumn(Optional = true)] public int ExtensionBlockCount { get; set; }
+        [CsvColumn(Optional = true)] public DateTime? FirstInteracted { get; set; }
+        [CsvColumn(Optional = true)] public DateTime? LastInteracted { get; set; }
 
-        public bool HasExplored { get; set; }
+        [CsvColumn(Optional = true)] public bool HasExplored { get; set; }
 
-        public string Miscellaneous { get; set; }
+        [CsvColumn(Optional = true)] public string Miscellaneous { get; set; }
 
-        public int Line { get; set; }
+        [CsvIgnore] public int Line { get; set; }
 
-        public bool Tag { get; set; }
+        [CsvIgnore] public bool Tag { get; set; }
 
         public override string ToString()
         {
@@ -585,32 +557,25 @@ namespace TLEFileEZTools
 
         public void ProcessFile(string filename)
         {
-            CsvLoader.Load<SBECmdData>(filename, DataList, TaggedLines, map =>
-            {
-                map.Map(m => m.AccessedOn).TypeConverterOption.DateTimeStyles(DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal);
-                map.Map(m => m.CreatedOn).TypeConverterOption.DateTimeStyles(DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal);
-                map.Map(m => m.ModifiedOn).TypeConverterOption.DateTimeStyles(DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal);
-                map.Map(m => m.FirstInteracted).TypeConverterOption.DateTimeStyles(DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal);
-                map.Map(m => m.LastInteracted).TypeConverterOption.DateTimeStyles(DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal);
-                map.Map(m => m.LastWriteTime).TypeConverterOption.DateTimeStyles(DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal);
-            });
+            CsvLoader.Load<SBECmdData>(filename, DataList, TaggedLines);
         }
     }
 
-    public class RBCmdData : IFileSpecData
+    [CsvRecord]
+    public partial class RBCmdData : IFileSpecData
     {
-        public string SourceName { get; set; }
-        public string FileType { get; set; }
-        public string FileName { get; set; }
-        public long FileSize { get; set; }
-        public DateTime DeletedOn { get; set; }
+        [CsvColumn(Optional = true)] public string SourceName { get; set; }
+        [CsvColumn(Optional = true)] public string FileType { get; set; }
+        [CsvColumn(Optional = true)] public string FileName { get; set; }
+        [CsvColumn(Optional = true)] public long FileSize { get; set; }
+        [CsvColumn(Optional = true)] public DateTime DeletedOn { get; set; }
 
         //added in the 2026.10 versions of the tool
-        public bool? Removed { get; set; }
+        [CsvColumn(Optional = true)] public bool? Removed { get; set; }
 
-        public int Line { get; set; }
+        [CsvIgnore] public int Line { get; set; }
 
-        public bool Tag { get; set; }
+        [CsvIgnore] public bool Tag { get; set; }
 
         public override string ToString()
         {
@@ -646,57 +611,58 @@ namespace TLEFileEZTools
 
         public void ProcessFile(string filename)
         {
-            CsvLoader.Load<RBCmdData>(filename, DataList, TaggedLines, map => map.Map(m => m.DeletedOn).TypeConverterOption.DateTimeStyles(DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal));
+            CsvLoader.Load<RBCmdData>(filename, DataList, TaggedLines);
         }
     }
 
 
-    public class PECmdData : IFileSpecData
+    [CsvRecord]
+    public partial class PECmdData : IFileSpecData
     {
-        public string Note { get; set; }
-        public string SourceFilename { get; set; }
-        public DateTime SourceCreated { get; set; }
-        public DateTime SourceModified { get; set; }
-        public DateTime SourceAccessed { get; set; }
+        [CsvColumn(Optional = true)] public string Note { get; set; }
+        [CsvColumn(Optional = true)] public string SourceFilename { get; set; }
+        [CsvColumn(Optional = true)] public DateTime SourceCreated { get; set; }
+        [CsvColumn(Optional = true)] public DateTime SourceModified { get; set; }
+        [CsvColumn(Optional = true)] public DateTime SourceAccessed { get; set; }
 
-        public string ExecutableName { get; set; }
-        public string Hash { get; set; }
-        public long Size { get; set; }
-        public string Version { get; set; }
-        public int RunCount { get; set; }
+        [CsvColumn(Optional = true)] public string ExecutableName { get; set; }
+        [CsvColumn(Optional = true)] public string Hash { get; set; }
+        [CsvColumn(Optional = true)] public long Size { get; set; }
+        [CsvColumn(Optional = true)] public string Version { get; set; }
+        [CsvColumn(Optional = true)] public int RunCount { get; set; }
 
-        public DateTime LastRun { get; set; }
-        public DateTime? PreviousRun0 { get; set; }
-        public DateTime? PreviousRun1 { get; set; }
-        public DateTime? PreviousRun2 { get; set; }
-        public DateTime? PreviousRun3 { get; set; }
-        public DateTime? PreviousRun4 { get; set; }
-        public DateTime? PreviousRun5 { get; set; }
-        public DateTime? PreviousRun6 { get; set; }
+        [CsvColumn(Optional = true)] public DateTime LastRun { get; set; }
+        [CsvColumn(Optional = true)] public DateTime? PreviousRun0 { get; set; }
+        [CsvColumn(Optional = true)] public DateTime? PreviousRun1 { get; set; }
+        [CsvColumn(Optional = true)] public DateTime? PreviousRun2 { get; set; }
+        [CsvColumn(Optional = true)] public DateTime? PreviousRun3 { get; set; }
+        [CsvColumn(Optional = true)] public DateTime? PreviousRun4 { get; set; }
+        [CsvColumn(Optional = true)] public DateTime? PreviousRun5 { get; set; }
+        [CsvColumn(Optional = true)] public DateTime? PreviousRun6 { get; set; }
 
-        public string Volume0Name { get; set; }
-        public string Volume0Serial { get; set; }
+        [CsvColumn(Optional = true)] public string Volume0Name { get; set; }
+        [CsvColumn(Optional = true)] public string Volume0Serial { get; set; }
 
-        public DateTime? Volume0Created { get; set; }
+        [CsvColumn(Optional = true)] public DateTime? Volume0Created { get; set; }
 
-        public string Volume1Name { get; set; }
-        public string Volume1Serial { get; set; }
+        [CsvColumn(Optional = true)] public string Volume1Name { get; set; }
+        [CsvColumn(Optional = true)] public string Volume1Serial { get; set; }
 
-        public DateTime? Volume1Created { get; set; }
+        [CsvColumn(Optional = true)] public DateTime? Volume1Created { get; set; }
 
-        public string Directories { get; set; }
+        [CsvColumn(Optional = true)] public string Directories { get; set; }
 
-        public string FilesLoaded { get; set; }
-        public bool ParsingError { get; set; }
+        [CsvColumn(Optional = true)] public string FilesLoaded { get; set; }
+        [CsvColumn(Optional = true)] public bool ParsingError { get; set; }
 
         //Note	SourceFilename	SourceCreated	SourceModified	SourceAccessed	ExecutableName	Hash	Size	Version	RunCount	LastRun	PreviousRun0	PreviousRun1	PreviousRun2	PreviousRun3	PreviousRun4	PreviousRun5	PreviousRun6	Volume0Name	Volume0Serial	Volume0Created	Volume1Name	Volume1Serial	Volume1Created	Directories	FilesLoaded
         //added in the 2026.10 versions of the tool
-        public string FullPath { get; set; }
-        public bool? PathValidated { get; set; }
+        [CsvColumn(Optional = true)] public string FullPath { get; set; }
+        [CsvColumn(Optional = true)] public bool? PathValidated { get; set; }
 
-        public int Line { get; set; }
+        [CsvIgnore] public int Line { get; set; }
 
-        public bool Tag { get; set; }
+        [CsvIgnore] public bool Tag { get; set; }
 
         public override string ToString()
         {
@@ -738,16 +704,17 @@ namespace TLEFileEZTools
     }
 
 
-    public class PECmdTimelineData : IFileSpecData
+    [CsvRecord]
+    public partial class PECmdTimelineData : IFileSpecData
     {
-        public DateTime RunTime { get; set; }
-        public string ExecutableName { get; set; }
+        [CsvColumn(Optional = true)] public DateTime RunTime { get; set; }
+        [CsvColumn(Optional = true)] public string ExecutableName { get; set; }
         //added in the 2026.10 versions of the tool
-        public string SourceFilename { get; set; }
-        public bool? PathValidated { get; set; }
+        [CsvColumn(Optional = true)] public string SourceFilename { get; set; }
+        [CsvColumn(Optional = true)] public bool? PathValidated { get; set; }
 
-        public int Line { get; set; }
-        public bool Tag { get; set; }
+        [CsvIgnore] public int Line { get; set; }
+        [CsvIgnore] public bool Tag { get; set; }
 
         public override string ToString()
         {
@@ -788,49 +755,50 @@ namespace TLEFileEZTools
     }
 
 
-    public class LECmdData : IFileSpecData
+    [CsvRecord]
+    public partial class LECmdData : IFileSpecData
     {
-        public string SourceFile { get; set; }
-        public DateTime? SourceCreated { get; set; }
-        public DateTime? SourceModified { get; set; }
-        public DateTime? SourceAccessed { get; set; }
-        public DateTime? TargetCreated { get; set; }
-        public DateTime? TargetModified { get; set; }
-        public DateTime? TargetAccessed { get; set; }
-        public long FileSize { get; set; }
-        public string RelativePath { get; set; }
-        public string WorkingDirectory { get; set; }
-        public string FileAttributes { get; set; }
-        public string HeaderFlags { get; set; }
-        public string DriveType { get; set; }
-        public string VolumeSerialNumber { get; set; }
-        public string VolumeLabel { get; set; }
-        public string LocalPath { get; set; }
-        public string NetworkPath { get; set; }
-        public string CommonPath { get; set; }
-        public string Arguments { get; set; }
-        public string TargetIDAbsolutePath { get; set; }
-        public string TargetMFTEntryNumber { get; set; }
-        public string TargetMFTSequenceNumber { get; set; }
-        public string MachineID { get; set; }
-        public string MachineMACAddress { get; set; }
-        public string MACVendor { get; set; }
+        [CsvColumn(Optional = true)] public string SourceFile { get; set; }
+        [CsvColumn(Optional = true)] public DateTime? SourceCreated { get; set; }
+        [CsvColumn(Optional = true)] public DateTime? SourceModified { get; set; }
+        [CsvColumn(Optional = true)] public DateTime? SourceAccessed { get; set; }
+        [CsvColumn(Optional = true)] public DateTime? TargetCreated { get; set; }
+        [CsvColumn(Optional = true)] public DateTime? TargetModified { get; set; }
+        [CsvColumn(Optional = true)] public DateTime? TargetAccessed { get; set; }
+        [CsvColumn(Optional = true)] public long FileSize { get; set; }
+        [CsvColumn(Optional = true)] public string RelativePath { get; set; }
+        [CsvColumn(Optional = true)] public string WorkingDirectory { get; set; }
+        [CsvColumn(Optional = true)] public string FileAttributes { get; set; }
+        [CsvColumn(Optional = true)] public string HeaderFlags { get; set; }
+        [CsvColumn(Optional = true)] public string DriveType { get; set; }
+        [CsvColumn(Optional = true)] public string VolumeSerialNumber { get; set; }
+        [CsvColumn(Optional = true)] public string VolumeLabel { get; set; }
+        [CsvColumn(Optional = true)] public string LocalPath { get; set; }
+        [CsvColumn(Optional = true)] public string NetworkPath { get; set; }
+        [CsvColumn(Optional = true)] public string CommonPath { get; set; }
+        [CsvColumn(Optional = true)] public string Arguments { get; set; }
+        [CsvColumn(Optional = true)] public string TargetIDAbsolutePath { get; set; }
+        [CsvColumn(Optional = true)] public string TargetMFTEntryNumber { get; set; }
+        [CsvColumn(Optional = true)] public string TargetMFTSequenceNumber { get; set; }
+        [CsvColumn(Optional = true)] public string MachineID { get; set; }
+        [CsvColumn(Optional = true)] public string MachineMACAddress { get; set; }
+        [CsvColumn(Optional = true)] public string MACVendor { get; set; }
 
-        public DateTime? TrackerCreatedOn { get; set; }
-        public string ExtraBlocksPresent { get; set; }
+        [CsvColumn(Optional = true)] public DateTime? TrackerCreatedOn { get; set; }
+        [CsvColumn(Optional = true)] public string ExtraBlocksPresent { get; set; }
         //added in the 2026.10 versions of the tool
-        public string Name { get; set; }
-        public string IconLocation { get; set; }
-        public string ShowWindow { get; set; }
-        public string EnvironmentVariables { get; set; }
-        public string VolumeDroid { get; set; }
-        public string FileDroid { get; set; }
-        public string VolumeDroidBirth { get; set; }
-        public string FileDroidBirth { get; set; }
-        public string Anomalies { get; set; }
+        [CsvColumn(Optional = true)] public string Name { get; set; }
+        [CsvColumn(Optional = true)] public string IconLocation { get; set; }
+        [CsvColumn(Optional = true)] public string ShowWindow { get; set; }
+        [CsvColumn(Optional = true)] public string EnvironmentVariables { get; set; }
+        [CsvColumn(Optional = true)] public string VolumeDroid { get; set; }
+        [CsvColumn(Optional = true)] public string FileDroid { get; set; }
+        [CsvColumn(Optional = true)] public string VolumeDroidBirth { get; set; }
+        [CsvColumn(Optional = true)] public string FileDroidBirth { get; set; }
+        [CsvColumn(Optional = true)] public string Anomalies { get; set; }
 
-        public int Line { get; set; }
-        public bool Tag { get; set; }
+        [CsvIgnore] public int Line { get; set; }
+        [CsvIgnore] public bool Tag { get; set; }
 
         public override string ToString()
         {
@@ -871,63 +839,64 @@ namespace TLEFileEZTools
         }
     }
 
-    public class JLECmdAutoData : IFileSpecData
+    [CsvRecord]
+    public partial class JLECmdAutoData : IFileSpecData
     {
-        public string SourceFile { get; set; }
-        public DateTime? SourceCreated { get; set; }
-        public DateTime? SourceModified { get; set; }
-        public DateTime? SourceAccessed { get; set; }
+        [CsvColumn(Optional = true)] public string SourceFile { get; set; }
+        [CsvColumn(Optional = true)] public DateTime? SourceCreated { get; set; }
+        [CsvColumn(Optional = true)] public DateTime? SourceModified { get; set; }
+        [CsvColumn(Optional = true)] public DateTime? SourceAccessed { get; set; }
 
-        public string AppId { get; set; }
+        [CsvColumn(Optional = true)] public string AppId { get; set; }
 
-        public string AppIdDescription { get; set; }
-        public bool HasSps { get; set; }
+        [CsvColumn(Optional = true)] public string AppIdDescription { get; set; }
+        [CsvColumn(Optional = true)] public bool HasSps { get; set; }
 
-        public int DestListVersion { get; set; }
-        public int LastUsedEntryNumber { get; set; }
-        public int MRU { get; set; }
-        public string EntryNumber { get; set; }
-        public DateTime? CreationTime { get; set; }
-        public DateTime? LastModified { get; set; }
-        public string Hostname { get; set; }
-        public string MacAddress { get; set; }
-        public string Path { get; set; }
-        public int InteractionCount { get; set; }
-        public string PinStatus { get; set; }
-        public string FileBirthDroid { get; set; }
-        public string FileDroid { get; set; }
-        public string VolumeBirthDroid { get; set; }
-        public string VolumeDroid { get; set; }
+        [CsvColumn(Optional = true)] public int DestListVersion { get; set; }
+        [CsvColumn(Optional = true)] public int LastUsedEntryNumber { get; set; }
+        [CsvColumn(Optional = true)] public int MRU { get; set; }
+        [CsvColumn(Optional = true)] public string EntryNumber { get; set; }
+        [CsvColumn(Optional = true)] public DateTime? CreationTime { get; set; }
+        [CsvColumn(Optional = true)] public DateTime? LastModified { get; set; }
+        [CsvColumn(Optional = true)] public string Hostname { get; set; }
+        [CsvColumn(Optional = true)] public string MacAddress { get; set; }
+        [CsvColumn(Optional = true)] public string Path { get; set; }
+        [CsvColumn(Optional = true)] public int InteractionCount { get; set; }
+        [CsvColumn(Optional = true)] public string PinStatus { get; set; }
+        [CsvColumn(Optional = true)] public string FileBirthDroid { get; set; }
+        [CsvColumn(Optional = true)] public string FileDroid { get; set; }
+        [CsvColumn(Optional = true)] public string VolumeBirthDroid { get; set; }
+        [CsvColumn(Optional = true)] public string VolumeDroid { get; set; }
 
 
-        public DateTime? TargetCreated { get; set; }
-        public DateTime? TargetModified { get; set; }
-        public DateTime? TargetAccessed { get; set; }
-        public long FileSize { get; set; }
-        public string RelativePath { get; set; }
-        public string WorkingDirectory { get; set; }
-        public string FileAttributes { get; set; }
-        public string HeaderFlags { get; set; }
-        public string DriveType { get; set; }
-        public string VolumeSerialNumber { get; set; }
-        public string VolumeLabel { get; set; }
-        public string LocalPath { get; set; }
-        public string CommonPath { get; set; }
-        public string Arguments { get; set; }
-        public string TargetIDAbsolutePath { get; set; }
-        public string TargetMFTEntryNumber { get; set; }
-        public string TargetMFTSequenceNumber { get; set; }
-        public string MachineID { get; set; }
-        public string MachineMACAddress { get; set; }
+        [CsvColumn(Optional = true)] public DateTime? TargetCreated { get; set; }
+        [CsvColumn(Optional = true)] public DateTime? TargetModified { get; set; }
+        [CsvColumn(Optional = true)] public DateTime? TargetAccessed { get; set; }
+        [CsvColumn(Optional = true)] public long FileSize { get; set; }
+        [CsvColumn(Optional = true)] public string RelativePath { get; set; }
+        [CsvColumn(Optional = true)] public string WorkingDirectory { get; set; }
+        [CsvColumn(Optional = true)] public string FileAttributes { get; set; }
+        [CsvColumn(Optional = true)] public string HeaderFlags { get; set; }
+        [CsvColumn(Optional = true)] public string DriveType { get; set; }
+        [CsvColumn(Optional = true)] public string VolumeSerialNumber { get; set; }
+        [CsvColumn(Optional = true)] public string VolumeLabel { get; set; }
+        [CsvColumn(Optional = true)] public string LocalPath { get; set; }
+        [CsvColumn(Optional = true)] public string CommonPath { get; set; }
+        [CsvColumn(Optional = true)] public string Arguments { get; set; }
+        [CsvColumn(Optional = true)] public string TargetIDAbsolutePath { get; set; }
+        [CsvColumn(Optional = true)] public string TargetMFTEntryNumber { get; set; }
+        [CsvColumn(Optional = true)] public string TargetMFTSequenceNumber { get; set; }
+        [CsvColumn(Optional = true)] public string MachineID { get; set; }
+        [CsvColumn(Optional = true)] public string MachineMACAddress { get; set; }
 
-        public DateTime? TrackerCreatedOn { get; set; }
-        public string ExtraBlocksPresent { get; set; }
-        public string Notes { get; set; }
+        [CsvColumn(Optional = true)] public DateTime? TrackerCreatedOn { get; set; }
+        [CsvColumn(Optional = true)] public string ExtraBlocksPresent { get; set; }
+        [CsvColumn(Optional = true)] public string Notes { get; set; }
         //added in the 2026.10 versions of the tool
-        public string User { get; set; }
+        [CsvColumn(Optional = true)] public string User { get; set; }
 
-        public int Line { get; set; }
-        public bool Tag { get; set; }
+        [CsvIgnore] public int Line { get; set; }
+        [CsvIgnore] public bool Tag { get; set; }
 
         public override string ToString()
         {
@@ -975,45 +944,46 @@ namespace TLEFileEZTools
         }
     }
 
-    public class JLECmdCustomData : IFileSpecData
+    [CsvRecord]
+    public partial class JLECmdCustomData : IFileSpecData
     {
-        public string SourceFile { get; set; }
-        public DateTime? SourceCreated { get; set; }
-        public DateTime? SourceModified { get; set; }
-        public DateTime? SourceAccessed { get; set; }
+        [CsvColumn(Optional = true)] public string SourceFile { get; set; }
+        [CsvColumn(Optional = true)] public DateTime? SourceCreated { get; set; }
+        [CsvColumn(Optional = true)] public DateTime? SourceModified { get; set; }
+        [CsvColumn(Optional = true)] public DateTime? SourceAccessed { get; set; }
 
-        public string AppId { get; set; }
+        [CsvColumn(Optional = true)] public string AppId { get; set; }
 
-        public string AppIdDescription { get; set; }
+        [CsvColumn(Optional = true)] public string AppIdDescription { get; set; }
 
-        public string EntryName { get; set; }
-        public DateTime? TargetCreated { get; set; }
-        public DateTime? TargetModified { get; set; }
-        public DateTime? TargetAccessed { get; set; }
-        public long FileSize { get; set; }
-        public string RelativePath { get; set; }
-        public string WorkingDirectory { get; set; }
-        public string FileAttributes { get; set; }
-        public string HeaderFlags { get; set; }
-        public string DriveType { get; set; }
-        public string VolumeSerialNumber { get; set; }
-        public string VolumeLabel { get; set; }
-        public string LocalPath { get; set; }
-        public string CommonPath { get; set; }
-        public string Arguments { get; set; }
-        public string TargetIDAbsolutePath { get; set; }
-        public string TargetMFTEntryNumber { get; set; }
-        public string TargetMFTSequenceNumber { get; set; }
-        public string MachineID { get; set; }
-        public string MachineMACAddress { get; set; }
+        [CsvColumn(Optional = true)] public string EntryName { get; set; }
+        [CsvColumn(Optional = true)] public DateTime? TargetCreated { get; set; }
+        [CsvColumn(Optional = true)] public DateTime? TargetModified { get; set; }
+        [CsvColumn(Optional = true)] public DateTime? TargetAccessed { get; set; }
+        [CsvColumn(Optional = true)] public long FileSize { get; set; }
+        [CsvColumn(Optional = true)] public string RelativePath { get; set; }
+        [CsvColumn(Optional = true)] public string WorkingDirectory { get; set; }
+        [CsvColumn(Optional = true)] public string FileAttributes { get; set; }
+        [CsvColumn(Optional = true)] public string HeaderFlags { get; set; }
+        [CsvColumn(Optional = true)] public string DriveType { get; set; }
+        [CsvColumn(Optional = true)] public string VolumeSerialNumber { get; set; }
+        [CsvColumn(Optional = true)] public string VolumeLabel { get; set; }
+        [CsvColumn(Optional = true)] public string LocalPath { get; set; }
+        [CsvColumn(Optional = true)] public string CommonPath { get; set; }
+        [CsvColumn(Optional = true)] public string Arguments { get; set; }
+        [CsvColumn(Optional = true)] public string TargetIDAbsolutePath { get; set; }
+        [CsvColumn(Optional = true)] public string TargetMFTEntryNumber { get; set; }
+        [CsvColumn(Optional = true)] public string TargetMFTSequenceNumber { get; set; }
+        [CsvColumn(Optional = true)] public string MachineID { get; set; }
+        [CsvColumn(Optional = true)] public string MachineMACAddress { get; set; }
 
-        public DateTime? TrackerCreatedOn { get; set; }
-        public string ExtraBlocksPresent { get; set; }
+        [CsvColumn(Optional = true)] public DateTime? TrackerCreatedOn { get; set; }
+        [CsvColumn(Optional = true)] public string ExtraBlocksPresent { get; set; }
         //added in the 2026.10 versions of the tool
-        public string User { get; set; }
+        [CsvColumn(Optional = true)] public string User { get; set; }
 
-        public int Line { get; set; }
-        public bool Tag { get; set; }
+        [CsvIgnore] public int Line { get; set; }
+        [CsvIgnore] public bool Tag { get; set; }
 
         public override string ToString()
         {
@@ -1054,42 +1024,43 @@ namespace TLEFileEZTools
         }
     }
 
-    public class EvtxECmdData : IFileSpecData
+    [CsvRecord]
+    public partial class EvtxECmdData : IFileSpecData
     {
-        public ulong RecordNumber { get; set; }
-        public ulong EventRecordId { get; set; }
-        public DateTime TimeCreated { get; set; }
-        public int EventId { get; set; }
-        public string Level { get; set; }
-        public string Provider { get; set; }
-        public string Channel { get; set; }
-        public int ProcessId { get; set; }
-        public int ThreadId { get; set; }
-        public string Computer { get; set; }
-        public string UserId { get; set; }
-        public string MapDescription { get; set; }
-        public string UserName { get; set; }
-        public string RemoteHost { get; set; }
-        public string PayloadData1 { get; set; }
-        public string PayloadData2 { get; set; }
-        public string PayloadData3 { get; set; }
-        public string PayloadData4 { get; set; }
-        public string PayloadData5 { get; set; }
-        public string PayloadData6 { get; set; }
-        public string ExecutableInfo { get; set; }
-        public string SourceFile { get; set; }
-        public string Payload { get; set; }
-        public string Keywords { get; set; }
-        public bool HiddenRecord { get; set; }
+        [CsvColumn(Optional = true)] public ulong RecordNumber { get; set; }
+        [CsvColumn(Optional = true)] public ulong EventRecordId { get; set; }
+        [CsvColumn(Optional = true)] public DateTime TimeCreated { get; set; }
+        [CsvColumn(Optional = true)] public int EventId { get; set; }
+        [CsvColumn(Optional = true)] public string Level { get; set; }
+        [CsvColumn(Optional = true)] public string Provider { get; set; }
+        [CsvColumn(Optional = true)] public string Channel { get; set; }
+        [CsvColumn(Optional = true)] public int ProcessId { get; set; }
+        [CsvColumn(Optional = true)] public int ThreadId { get; set; }
+        [CsvColumn(Optional = true)] public string Computer { get; set; }
+        [CsvColumn(Optional = true)] public string UserId { get; set; }
+        [CsvColumn(Optional = true)] public string MapDescription { get; set; }
+        [CsvColumn(Optional = true)] public string UserName { get; set; }
+        [CsvColumn(Optional = true)] public string RemoteHost { get; set; }
+        [CsvColumn(Optional = true)] public string PayloadData1 { get; set; }
+        [CsvColumn(Optional = true)] public string PayloadData2 { get; set; }
+        [CsvColumn(Optional = true)] public string PayloadData3 { get; set; }
+        [CsvColumn(Optional = true)] public string PayloadData4 { get; set; }
+        [CsvColumn(Optional = true)] public string PayloadData5 { get; set; }
+        [CsvColumn(Optional = true)] public string PayloadData6 { get; set; }
+        [CsvColumn(Optional = true)] public string ExecutableInfo { get; set; }
+        [CsvColumn(Optional = true)] public string SourceFile { get; set; }
+        [CsvColumn(Optional = true)] public string Payload { get; set; }
+        [CsvColumn(Optional = true)] public string Keywords { get; set; }
+        [CsvColumn(Optional = true)] public bool HiddenRecord { get; set; }
 
         //added in the 2026.10 versions of the tool
-        public string RenderingInfo { get; set; }
+        [CsvColumn(Optional = true)] public string RenderingInfo { get; set; }
 
         //added in EvtxECmd 2026.11 (--rr, Issues #268)
-        public string Recovered { get; set; }
+        [CsvColumn(Optional = true)] public string Recovered { get; set; }
 
-        public int Line { get; set; }
-        public bool Tag { get; set; }
+        [CsvIgnore] public int Line { get; set; }
+        [CsvIgnore] public bool Tag { get; set; }
 
         public override string ToString()
         {
@@ -1127,35 +1098,36 @@ namespace TLEFileEZTools
 
         public void ProcessFile(string filename)
         {
-            CsvLoader.Load<EvtxECmdData>(filename, DataList, TaggedLines, configure: config => { config.ShouldUseConstructorParameters = _ => false; });
+            CsvLoader.Load<EvtxECmdData>(filename, DataList, TaggedLines);
         }
     }
 
-    public class RecmdBatchData : IFileSpecData
+    [CsvRecord]
+    public partial class RecmdBatchData : IFileSpecData
     {
-        public string HivePath { get; set; }
-        public string HiveType { get; set; }
-        public string Description { get; set; }
-        public string Category { get; set; }
-        public string KeyPath { get; set; }
-        public string ValueName { get; set; }
+        [CsvColumn(Optional = true)] public string HivePath { get; set; }
+        [CsvColumn(Optional = true)] public string HiveType { get; set; }
+        [CsvColumn(Optional = true)] public string Description { get; set; }
+        [CsvColumn(Optional = true)] public string Category { get; set; }
+        [CsvColumn(Optional = true)] public string KeyPath { get; set; }
+        [CsvColumn(Optional = true)] public string ValueName { get; set; }
 
-        public string ValueType { get; set; }
-        public string ValueData { get; set; }
-        public string ValueData2 { get; set; }
-        public string ValueData3 { get; set; }
+        [CsvColumn(Optional = true)] public string ValueType { get; set; }
+        [CsvColumn(Optional = true)] public string ValueData { get; set; }
+        [CsvColumn(Optional = true)] public string ValueData2 { get; set; }
+        [CsvColumn(Optional = true)] public string ValueData3 { get; set; }
 
-        public string Comment { get; set; }
-        public bool Recursive { get; set; }
-        public bool Deleted { get; set; }
+        [CsvColumn(Optional = true)] public string Comment { get; set; }
+        [CsvColumn(Optional = true)] public bool Recursive { get; set; }
+        [CsvColumn(Optional = true)] public bool Deleted { get; set; }
 
 
-        public DateTime LastWriteTimestamp { get; set; }
+        [CsvColumn(Optional = true)] public DateTime LastWriteTimestamp { get; set; }
 
-        public string PluginDetailFile { get; set; }
+        [CsvColumn(Optional = true)] public string PluginDetailFile { get; set; }
 
-        public int Line { get; set; }
-        public bool Tag { get; set; }
+        [CsvIgnore] public int Line { get; set; }
+        [CsvIgnore] public bool Tag { get; set; }
 
         public override string ToString()
         {
@@ -1198,25 +1170,26 @@ namespace TLEFileEZTools
 
 
 
-    public class AppCompatCacheData : IFileSpecData
+    [CsvRecord]
+    public partial class AppCompatCacheData : IFileSpecData
     {
-        public int ControlSet { get; set; }
-        public int CacheEntryPosition { get; set; }
-        public string Path { get; set; }
-        public DateTime? LastModifiedTimeUTC { get; set; }
+        [CsvColumn(Optional = true)] public int ControlSet { get; set; }
+        [CsvColumn(Optional = true)] public int CacheEntryPosition { get; set; }
+        [CsvColumn(Optional = true)] public string Path { get; set; }
+        [CsvColumn(Optional = true)] public DateTime? LastModifiedTimeUTC { get; set; }
 
-        public string Executed { get; set; }
-        public bool Duplicate { get; set; }
-        public string SourceFile { get; set; }
+        [CsvColumn(Optional = true)] public string Executed { get; set; }
+        [CsvColumn(Optional = true)] public bool Duplicate { get; set; }
+        [CsvColumn(Optional = true)] public string SourceFile { get; set; }
 
 
         //ControlSet	CacheEntryPosition	Path	LastModifiedTimeUTC	Executed
         //added in the 2026.10 versions of the tool
-        public bool? FromSlack { get; set; }
+        [CsvColumn(Optional = true)] public bool? FromSlack { get; set; }
 
-        public int Line { get; set; }
+        [CsvIgnore] public int Line { get; set; }
 
-        public bool Tag { get; set; }
+        [CsvIgnore] public bool Tag { get; set; }
 
         public override string ToString()
         {
@@ -1257,17 +1230,18 @@ namespace TLEFileEZTools
         }
     }
 
-    public class ActivityPackageData : IFileSpecData
+    [CsvRecord]
+    public partial class ActivityPackageData : IFileSpecData
     {
-        public string Id { get; set; }
-        public string Platform { get; set; }
-        public string Name { get; set; }
-        public string AdditionalInformation { get; set; }
+        [CsvColumn(Optional = true)] public string Id { get; set; }
+        [CsvColumn(Optional = true)] public string Platform { get; set; }
+        [CsvColumn(Optional = true)] public string Name { get; set; }
+        [CsvColumn(Optional = true)] public string AdditionalInformation { get; set; }
 
-        public DateTime Expires { get; set; }
+        [CsvColumn(Optional = true)] public DateTime Expires { get; set; }
 
-        public int Line { get; set; }
-        public bool Tag { get; set; }
+        [CsvIgnore] public int Line { get; set; }
+        [CsvIgnore] public bool Tag { get; set; }
 
         public override string ToString()
         {
@@ -1302,50 +1276,51 @@ namespace TLEFileEZTools
 
         public void ProcessFile(string filename)
         {
-            CsvLoader.Load<ActivityPackageData>(filename, DataList, TaggedLines, map => map.Map(m => m.Expires).TypeConverterOption.DateTimeStyles(DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal));
+            CsvLoader.Load<ActivityPackageData>(filename, DataList, TaggedLines);
         }
     }
 
-    public class ActivityData : IFileSpecData
+    [CsvRecord]
+    public partial class ActivityData : IFileSpecData
     {
-        public string Id { get; set; }
-        public string Executable { get; set; }
-        public string DisplayText { get; set; }
-        public string Payload { get; set; }
-        public string ClipboardPayload { get; set; }
-        public string ContentInfo { get; set; }
-        public DateTime LastModifiedTime { get; set; }
-        public DateTime ExpirationTime { get; set; }
-        public DateTime? CreatedInCloud { get; set; }
-        public DateTime? StartTime { get; set; }
-        public DateTime? EndTime { get; set; }
+        [CsvColumn(Optional = true)] public string Id { get; set; }
+        [CsvColumn(Optional = true)] public string Executable { get; set; }
+        [CsvColumn(Optional = true)] public string DisplayText { get; set; }
+        [CsvColumn(Optional = true)] public string Payload { get; set; }
+        [CsvColumn(Optional = true)] public string ClipboardPayload { get; set; }
+        [CsvColumn(Optional = true)] public string ContentInfo { get; set; }
+        [CsvColumn(Optional = true)] public DateTime LastModifiedTime { get; set; }
+        [CsvColumn(Optional = true)] public DateTime ExpirationTime { get; set; }
+        [CsvColumn(Optional = true)] public DateTime? CreatedInCloud { get; set; }
+        [CsvColumn(Optional = true)] public DateTime? StartTime { get; set; }
+        [CsvColumn(Optional = true)] public DateTime? EndTime { get; set; }
 
-        public TimeSpan? Duration { get; set; }
+        [CsvColumn(Optional = true)] public TimeSpan? Duration { get; set; }
 
-        public DateTime LastModifiedOnClient { get; set; }
-        public DateTime? OriginalLastModifiedOnClient { get; set; }
+        [CsvColumn(Optional = true)] public DateTime LastModifiedOnClient { get; set; }
+        [CsvColumn(Optional = true)] public DateTime? OriginalLastModifiedOnClient { get; set; }
 
-        public int ActivityTypeOrg { get; set; }
-        public string ActivityType { get; set; }
+        [CsvColumn(Optional = true)] public int ActivityTypeOrg { get; set; }
+        [CsvColumn(Optional = true)] public string ActivityType { get; set; }
 
-        public bool IsLocalOnly { get; set; }
+        [CsvColumn(Optional = true)] public bool IsLocalOnly { get; set; }
 
-        public int ETag { get; set; }
+        [CsvColumn(Optional = true)] public int ETag { get; set; }
 
-        public string PackageIdHash { get; set; }
+        [CsvColumn(Optional = true)] public string PackageIdHash { get; set; }
 
 
-        public string PlatformDeviceId { get; set; }
+        [CsvColumn(Optional = true)] public string PlatformDeviceId { get; set; }
 
-        public string DevicePlatform { get; set; }
-        public string TimeZone { get; set; }
+        [CsvColumn(Optional = true)] public string DevicePlatform { get; set; }
+        [CsvColumn(Optional = true)] public string TimeZone { get; set; }
 
         //added in the 2026.10 versions of the tool
-        public string AppActivityId { get; set; }
-        public string ClipboardText { get; set; }
+        [CsvColumn(Optional = true)] public string AppActivityId { get; set; }
+        [CsvColumn(Optional = true)] public string ClipboardText { get; set; }
 
-        public int Line { get; set; }
-        public bool Tag { get; set; }
+        [CsvIgnore] public int Line { get; set; }
+        [CsvIgnore] public bool Tag { get; set; }
 
         public override string ToString()
         {
@@ -1382,64 +1357,56 @@ namespace TLEFileEZTools
 
         public void ProcessFile(string filename)
         {
-            CsvLoader.Load<ActivityData>(filename, DataList, TaggedLines, map =>
-            {
-                map.Map(m => m.CreatedInCloud).TypeConverterOption.DateTimeStyles(DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal);
-                map.Map(m => m.EndTime).TypeConverterOption.DateTimeStyles(DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal);
-                map.Map(m => m.ExpirationTime).TypeConverterOption.DateTimeStyles(DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal);
-                map.Map(m => m.LastModifiedOnClient).TypeConverterOption.DateTimeStyles(DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal);
-                map.Map(m => m.LastModifiedTime).TypeConverterOption.DateTimeStyles(DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal);
-                map.Map(m => m.OriginalLastModifiedOnClient).TypeConverterOption.DateTimeStyles(DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal);
-                map.Map(m => m.StartTime).TypeConverterOption.DateTimeStyles(DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal);
-            });
+            CsvLoader.Load<ActivityData>(filename, DataList, TaggedLines);
         }
     }
 
-    public class ActivityOperationData : IFileSpecData
+    [CsvRecord]
+    public partial class ActivityOperationData : IFileSpecData
     {
-        public string Id { get; set; }
+        [CsvColumn(Optional = true)] public string Id { get; set; }
 
-        public int OperationOrder { get; set; }
-        public int OperationType { get; set; }
+        [CsvColumn(Optional = true)] public int OperationOrder { get; set; }
+        [CsvColumn(Optional = true)] public int OperationType { get; set; }
 
-        public string AppId { get; set; }
+        [CsvColumn(Optional = true)] public string AppId { get; set; }
 
-        public string Executable { get; set; }
-        public string Description { get; set; }
+        [CsvColumn(Optional = true)] public string Executable { get; set; }
+        [CsvColumn(Optional = true)] public string Description { get; set; }
 
-        public DateTime? StartTime { get; set; }
-        public string DisplayText { get; set; }
-        public string ClipboardPayload { get; set; }
-        public string ContentInfo { get; set; }
-
-
-        public string DevicePlatform { get; set; }
-        public string TimeZone { get; set; }
+        [CsvColumn(Optional = true)] public DateTime? StartTime { get; set; }
+        [CsvColumn(Optional = true)] public string DisplayText { get; set; }
+        [CsvColumn(Optional = true)] public string ClipboardPayload { get; set; }
+        [CsvColumn(Optional = true)] public string ContentInfo { get; set; }
 
 
-        public int ActivityTypeOrg { get; set; }
-        public string ActivityType { get; set; }
+        [CsvColumn(Optional = true)] public string DevicePlatform { get; set; }
+        [CsvColumn(Optional = true)] public string TimeZone { get; set; }
 
-        public TimeSpan? Duration { get; set; }
 
-        public DateTime LastModifiedTime { get; set; }
-        public DateTime ExpirationTime { get; set; }
+        [CsvColumn(Optional = true)] public int ActivityTypeOrg { get; set; }
+        [CsvColumn(Optional = true)] public string ActivityType { get; set; }
 
-        public string Payload { get; set; }
+        [CsvColumn(Optional = true)] public TimeSpan? Duration { get; set; }
 
-        public DateTime CreatedTime { get; set; }
-        public DateTime? EndTime { get; set; }
-        public DateTime LastModifiedTimeOnClient { get; set; }
-        public DateTime OperationExpirationTime { get; set; }
+        [CsvColumn(Optional = true)] public DateTime LastModifiedTime { get; set; }
+        [CsvColumn(Optional = true)] public DateTime ExpirationTime { get; set; }
 
-        public string PlatformDeviceId { get; set; }
+        [CsvColumn(Optional = true)] public string Payload { get; set; }
+
+        [CsvColumn(Optional = true)] public DateTime CreatedTime { get; set; }
+        [CsvColumn(Optional = true)] public DateTime? EndTime { get; set; }
+        [CsvColumn(Optional = true)] public DateTime LastModifiedTimeOnClient { get; set; }
+        [CsvColumn(Optional = true)] public DateTime OperationExpirationTime { get; set; }
+
+        [CsvColumn(Optional = true)] public string PlatformDeviceId { get; set; }
 
         //added in the 2026.10 versions of the tool
-        public string AppActivityId { get; set; }
-        public string ClipboardText { get; set; }
+        [CsvColumn(Optional = true)] public string AppActivityId { get; set; }
+        [CsvColumn(Optional = true)] public string ClipboardText { get; set; }
 
-        public int Line { get; set; }
-        public bool Tag { get; set; }
+        [CsvIgnore] public int Line { get; set; }
+        [CsvIgnore] public bool Tag { get; set; }
 
         public override string ToString()
         {
@@ -1476,35 +1443,27 @@ namespace TLEFileEZTools
 
         public void ProcessFile(string filename)
         {
-            CsvLoader.Load<ActivityOperationData>(filename, DataList, TaggedLines, map =>
-            {
-                map.Map(m => m.CreatedTime).TypeConverterOption.DateTimeStyles(DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal);
-                map.Map(m => m.EndTime).TypeConverterOption.DateTimeStyles(DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal);
-                map.Map(m => m.ExpirationTime).TypeConverterOption.DateTimeStyles(DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal);
-                map.Map(m => m.LastModifiedTimeOnClient).TypeConverterOption.DateTimeStyles(DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal);
-                map.Map(m => m.LastModifiedTime).TypeConverterOption.DateTimeStyles(DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal);
-                map.Map(m => m.OperationExpirationTime).TypeConverterOption.DateTimeStyles(DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal);
-                map.Map(m => m.StartTime).TypeConverterOption.DateTimeStyles(DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal);
-            });
+            CsvLoader.Load<ActivityOperationData>(filename, DataList, TaggedLines);
         }
     }
 
 
-    public class AmcacheParserProgramsData : IFileSpecData
+    [CsvRecord]
+    public partial class AmcacheParserProgramsData : IFileSpecData
     {
-        public string ProgramID { get; set; }
-        public DateTime LastWriteTimestamp { get; set; }
-        public string ProgramName_0 { get; set; }
-        public string ProgramVersion_1 { get; set; }
-        public string VendorName_2 { get; set; }
-        public DateTime? InstallDateEpoch_a { get; set; }
-        public DateTime? InstallDateEpoch_b { get; set; }
-        public string LanguageCode_3 { get; set; }
-        public string InstallSource_6 { get; set; }
-        public string UninstallRegistryKey_7 { get; set; }
-        public string PathsList_d { get; set; }
-        public int Line { get; set; }
-        public bool Tag { get; set; }
+        [CsvColumn(Optional = true)] public string ProgramID { get; set; }
+        [CsvColumn(Optional = true)] public DateTime LastWriteTimestamp { get; set; }
+        [CsvColumn(Optional = true)] public string ProgramName_0 { get; set; }
+        [CsvColumn(Optional = true)] public string ProgramVersion_1 { get; set; }
+        [CsvColumn(Optional = true)] public string VendorName_2 { get; set; }
+        [CsvColumn(Optional = true)] public DateTime? InstallDateEpoch_a { get; set; }
+        [CsvColumn(Optional = true)] public DateTime? InstallDateEpoch_b { get; set; }
+        [CsvColumn(Optional = true)] public string LanguageCode_3 { get; set; }
+        [CsvColumn(Optional = true)] public string InstallSource_6 { get; set; }
+        [CsvColumn(Optional = true)] public string UninstallRegistryKey_7 { get; set; }
+        [CsvColumn(Optional = true)] public string PathsList_d { get; set; }
+        [CsvIgnore] public int Line { get; set; }
+        [CsvIgnore] public bool Tag { get; set; }
 
         public override string ToString()
         {
@@ -1546,37 +1505,38 @@ namespace TLEFileEZTools
         }
     }
 
-    public class AmcacheParserFilesData : IFileSpecData
+    [CsvRecord]
+    public partial class AmcacheParserFilesData : IFileSpecData
     {
-        public string ProgramName { get; set; }
-        public string ProgramID { get; set; }
-        public string VolumeID { get; set; }
-        public DateTime VolumeIDLastWriteTimestamp { get; set; }
-        public string FileID { get; set; }
-        public DateTime FileIDLastWriteTimestamp { get; set; }
-        public string SHA1 { get; set; }
-        public string FullPath { get; set; }
-        public string FileExtension { get; set; }
-        public long MFTEntryNumber { get; set; }
-        public int MFTSequenceNumber { get; set; }
-        public string FileSize { get; set; }
-        public string FileVersionString { get; set; }
-        public string FileVersionNumber { get; set; }
-        public string FileDescription { get; set; }
-        public string SizeOfImage { get; set; }
-        public string PEHeaderHash { get; set; }
-        public string PEHeaderChecksum { get; set; }
+        [CsvColumn(Optional = true)] public string ProgramName { get; set; }
+        [CsvColumn(Optional = true)] public string ProgramID { get; set; }
+        [CsvColumn(Optional = true)] public string VolumeID { get; set; }
+        [CsvColumn(Optional = true)] public DateTime VolumeIDLastWriteTimestamp { get; set; }
+        [CsvColumn(Optional = true)] public string FileID { get; set; }
+        [CsvColumn(Optional = true)] public DateTime FileIDLastWriteTimestamp { get; set; }
+        [CsvColumn(Optional = true)] public string SHA1 { get; set; }
+        [CsvColumn(Optional = true)] public string FullPath { get; set; }
+        [CsvColumn(Optional = true)] public string FileExtension { get; set; }
+        [CsvColumn(Optional = true)] public long MFTEntryNumber { get; set; }
+        [CsvColumn(Optional = true)] public int MFTSequenceNumber { get; set; }
+        [CsvColumn(Optional = true)] public string FileSize { get; set; }
+        [CsvColumn(Optional = true)] public string FileVersionString { get; set; }
+        [CsvColumn(Optional = true)] public string FileVersionNumber { get; set; }
+        [CsvColumn(Optional = true)] public string FileDescription { get; set; }
+        [CsvColumn(Optional = true)] public string SizeOfImage { get; set; }
+        [CsvColumn(Optional = true)] public string PEHeaderHash { get; set; }
+        [CsvColumn(Optional = true)] public string PEHeaderChecksum { get; set; }
 
-        public DateTime? Created { get; set; }
-        public DateTime? LastModified { get; set; }
-        public DateTime? LastModifiedStore { get; set; }
-        public DateTime? LinkDate { get; set; }
-        public string LanguageID { get; set; }
-        public string ProductName { get; set; }
-        public string CompanyName { get; set; }
+        [CsvColumn(Optional = true)] public DateTime? Created { get; set; }
+        [CsvColumn(Optional = true)] public DateTime? LastModified { get; set; }
+        [CsvColumn(Optional = true)] public DateTime? LastModifiedStore { get; set; }
+        [CsvColumn(Optional = true)] public DateTime? LinkDate { get; set; }
+        [CsvColumn(Optional = true)] public string LanguageID { get; set; }
+        [CsvColumn(Optional = true)] public string ProductName { get; set; }
+        [CsvColumn(Optional = true)] public string CompanyName { get; set; }
 
-        public int Line { get; set; }
-        public bool Tag { get; set; }
+        [CsvIgnore] public int Line { get; set; }
+        [CsvIgnore] public bool Tag { get; set; }
 
         public override string ToString()
         {
@@ -1618,39 +1578,40 @@ namespace TLEFileEZTools
     }
 
 
-    public class AmcacheParserNewFilesData : IFileSpecData
+    [CsvRecord]
+    public partial class AmcacheParserNewFilesData : IFileSpecData
     {
-        public string ApplicationName { get; set; }
-        public string ProgramId { get; set; }
-        public DateTime FileKeyLastWriteTimestamp { get; set; }
-        public string SHA1 { get; set; }
-        public bool IsOsComponent { get; set; }
-        public string FullPath { get; set; }
-        public string Name { get; set; }
-        public string FileExtension { get; set; }
-        public DateTime? LinkDate { get; set; }
-        public string ProductName { get; set; }
-        public long Size { get; set; }
-        public string Version { get; set; }
-        public string ProductVersion { get; set; }
-        public string LongPathHash { get; set; }
-        public string BinaryType { get; set; }
-        public bool IsPeFile { get; set; }
-        public string BinFileVersion { get; set; }
-        public string BinProductVersion { get; set; }
-        public int Language { get; set; }
-        public long Usn { get; set; }
-        public string Description { get; set; }
+        [CsvColumn(Optional = true)] public string ApplicationName { get; set; }
+        [CsvColumn(Optional = true)] public string ProgramId { get; set; }
+        [CsvColumn(Optional = true)] public DateTime FileKeyLastWriteTimestamp { get; set; }
+        [CsvColumn(Optional = true)] public string SHA1 { get; set; }
+        [CsvColumn(Optional = true)] public bool IsOsComponent { get; set; }
+        [CsvColumn(Optional = true)] public string FullPath { get; set; }
+        [CsvColumn(Optional = true)] public string Name { get; set; }
+        [CsvColumn(Optional = true)] public string FileExtension { get; set; }
+        [CsvColumn(Optional = true)] public DateTime? LinkDate { get; set; }
+        [CsvColumn(Optional = true)] public string ProductName { get; set; }
+        [CsvColumn(Optional = true)] public long Size { get; set; }
+        [CsvColumn(Optional = true)] public string Version { get; set; }
+        [CsvColumn(Optional = true)] public string ProductVersion { get; set; }
+        [CsvColumn(Optional = true)] public string LongPathHash { get; set; }
+        [CsvColumn(Optional = true)] public string BinaryType { get; set; }
+        [CsvColumn(Optional = true)] public bool IsPeFile { get; set; }
+        [CsvColumn(Optional = true)] public string BinFileVersion { get; set; }
+        [CsvColumn(Optional = true)] public string BinProductVersion { get; set; }
+        [CsvColumn(Optional = true)] public int Language { get; set; }
+        [CsvIgnore] public long Usn { get; set; }
+        [CsvColumn(Optional = true)] public string Description { get; set; }
 
         //added in the 2026.10 versions of the tool
-        public string Publisher { get; set; }
-        public string Sha256 { get; set; }
-        public string KeyName { get; set; }
-        public string AppxPackageFullName { get; set; }
-        public string AppxPackageRelativeId { get; set; }
+        [CsvColumn(Optional = true)] public string Publisher { get; set; }
+        [CsvColumn(Optional = true)] public string Sha256 { get; set; }
+        [CsvColumn(Optional = true)] public string KeyName { get; set; }
+        [CsvColumn(Optional = true)] public string AppxPackageFullName { get; set; }
+        [CsvColumn(Optional = true)] public string AppxPackageRelativeId { get; set; }
 
-        public int Line { get; set; }
-        public bool Tag { get; set; }
+        [CsvIgnore] public int Line { get; set; }
+        [CsvIgnore] public bool Tag { get; set; }
 
         public override string ToString()
         {
@@ -1688,52 +1649,53 @@ namespace TLEFileEZTools
 
         public void ProcessFile(string filename)
         {
-            CsvLoader.Load<AmcacheParserNewFilesData>(filename, DataList, TaggedLines, map => map.Map(t => t.Usn).Ignore());
+            CsvLoader.Load<AmcacheParserNewFilesData>(filename, DataList, TaggedLines);
         }
     }
 
 
-    public class AmcacheParserNewDevicePnPData : IFileSpecData
+    [CsvRecord]
+    public partial class AmcacheParserNewDevicePnPData : IFileSpecData
     {
-        public string KeyName { get; set; }
-        public DateTime KeyLastWriteTimestamp { get; set; }
-        public string BusReportedDescription { get; set; }
-        public string Class { get; set; }
-        public string ClassGuid { get; set; }
-        public string Compid { get; set; }
-        public string ContainerId { get; set; }
-        public string Description { get; set; }
-        public string DriverId { get; set; }
-        public string DriverPackageStrongName { get; set; }
-        public string DriverName { get; set; }
-        public DateTime? DriverVerDate { get; set; }
-        public string DriverVerVersion { get; set; }
-        public string Enumerator { get; set; }
-        public string HWID { get; set; }
-        public string Inf { get; set; }
-        public string InstallState { get; set; }
-        public string Manufacturer { get; set; }
-        public string MatchingId { get; set; }
-        public string Model { get; set; }
-        public string ParentId { get; set; }
-        public string ProblemCode { get; set; }
-        public string Provider { get; set; }
-        public string Service { get; set; }
-        public string Stackid { get; set; }
+        [CsvColumn(Optional = true)] public string KeyName { get; set; }
+        [CsvColumn(Optional = true)] public DateTime KeyLastWriteTimestamp { get; set; }
+        [CsvColumn(Optional = true)] public string BusReportedDescription { get; set; }
+        [CsvColumn(Optional = true)] public string Class { get; set; }
+        [CsvColumn(Optional = true)] public string ClassGuid { get; set; }
+        [CsvColumn(Optional = true)] public string Compid { get; set; }
+        [CsvColumn(Optional = true)] public string ContainerId { get; set; }
+        [CsvColumn(Optional = true)] public string Description { get; set; }
+        [CsvColumn(Optional = true)] public string DriverId { get; set; }
+        [CsvColumn(Optional = true)] public string DriverPackageStrongName { get; set; }
+        [CsvColumn(Optional = true)] public string DriverName { get; set; }
+        [CsvColumn(Optional = true)] public DateTime? DriverVerDate { get; set; }
+        [CsvColumn(Optional = true)] public string DriverVerVersion { get; set; }
+        [CsvColumn(Optional = true)] public string Enumerator { get; set; }
+        [CsvColumn(Optional = true)] public string HWID { get; set; }
+        [CsvColumn(Optional = true)] public string Inf { get; set; }
+        [CsvColumn(Optional = true)] public string InstallState { get; set; }
+        [CsvColumn(Optional = true)] public string Manufacturer { get; set; }
+        [CsvColumn(Optional = true)] public string MatchingId { get; set; }
+        [CsvColumn(Optional = true)] public string Model { get; set; }
+        [CsvColumn(Optional = true)] public string ParentId { get; set; }
+        [CsvColumn(Optional = true)] public string ProblemCode { get; set; }
+        [CsvColumn(Optional = true)] public string Provider { get; set; }
+        [CsvColumn(Optional = true)] public string Service { get; set; }
+        [CsvColumn(Optional = true)] public string Stackid { get; set; }
         //added in the 2026.10 versions of the tool
-        public string DeviceState { get; set; }
-        public string InstallDate { get; set; }
-        public string FirstInstallDate { get; set; }
-        public string ExtendedInfs { get; set; }
-        public string UpperClassFilters { get; set; }
-        public string LowerClassFilters { get; set; }
-        public string UpperFilters { get; set; }
-        public string LowerFilters { get; set; }
-        public string DeviceInterfaceClasses { get; set; }
-        public string LocationPaths { get; set; }
+        [CsvColumn(Optional = true)] public string DeviceState { get; set; }
+        [CsvColumn(Optional = true)] public string InstallDate { get; set; }
+        [CsvColumn(Optional = true)] public string FirstInstallDate { get; set; }
+        [CsvColumn(Optional = true)] public string ExtendedInfs { get; set; }
+        [CsvColumn(Optional = true)] public string UpperClassFilters { get; set; }
+        [CsvColumn(Optional = true)] public string LowerClassFilters { get; set; }
+        [CsvColumn(Optional = true)] public string UpperFilters { get; set; }
+        [CsvColumn(Optional = true)] public string LowerFilters { get; set; }
+        [CsvColumn(Optional = true)] public string DeviceInterfaceClasses { get; set; }
+        [CsvColumn(Optional = true)] public string LocationPaths { get; set; }
 
-        public int Line { get; set; }
-        public bool Tag { get; set; }
+        [CsvIgnore] public int Line { get; set; }
+        [CsvIgnore] public bool Tag { get; set; }
 
         public override string ToString()
         {
@@ -1774,27 +1736,28 @@ namespace TLEFileEZTools
         }
     }
 
-    public class AmcacheParserDeviceContainerData : IFileSpecData
+    [CsvRecord]
+    public partial class AmcacheParserDeviceContainerData : IFileSpecData
     {
-        public string KeyName { get; set; }
-        public DateTime KeyLastWriteTimestamp { get; set; }
-        public string Categories { get; set; }
-        public string DiscoveryMethod { get; set; }
-        public string FriendlyName { get; set; }
-        public string Icon { get; set; }
-        public bool IsActive { get; set; }
-        public bool IsConnected { get; set; }
-        public bool IsMachineContainer { get; set; }
-        public bool IsNetworked { get; set; }
-        public bool IsPaired { get; set; }
-        public string Manufacturer { get; set; }
-        public string ModelId { get; set; }
-        public string ModelName { get; set; }
-        public string ModelNumber { get; set; }
-        public string PrimaryCategory { get; set; }
-        public int? State { get; set; }
-        public int Line { get; set; }
-        public bool Tag { get; set; }
+        [CsvColumn(Optional = true)] public string KeyName { get; set; }
+        [CsvColumn(Optional = true)] public DateTime KeyLastWriteTimestamp { get; set; }
+        [CsvColumn(Optional = true)] public string Categories { get; set; }
+        [CsvColumn(Optional = true)] public string DiscoveryMethod { get; set; }
+        [CsvColumn(Optional = true)] public string FriendlyName { get; set; }
+        [CsvColumn(Optional = true)] public string Icon { get; set; }
+        [CsvColumn(Optional = true)] public bool IsActive { get; set; }
+        [CsvColumn(Optional = true)] public bool IsConnected { get; set; }
+        [CsvColumn(Optional = true)] public bool IsMachineContainer { get; set; }
+        [CsvColumn(Optional = true)] public bool IsNetworked { get; set; }
+        [CsvColumn(Optional = true)] public bool IsPaired { get; set; }
+        [CsvColumn(Optional = true)] public string Manufacturer { get; set; }
+        [CsvColumn(Optional = true)] public string ModelId { get; set; }
+        [CsvColumn(Optional = true)] public string ModelName { get; set; }
+        [CsvColumn(Optional = true)] public string ModelNumber { get; set; }
+        [CsvColumn(Optional = true)] public string PrimaryCategory { get; set; }
+        [CsvColumn(Optional = true)] public int? State { get; set; }
+        [CsvIgnore] public int Line { get; set; }
+        [CsvIgnore] public bool Tag { get; set; }
 
         public override string ToString()
         {
@@ -1834,29 +1797,30 @@ namespace TLEFileEZTools
         }
     }
 
-    public class AmcacheParserDriverPackageData : IFileSpecData
+    [CsvRecord]
+    public partial class AmcacheParserDriverPackageData : IFileSpecData
     {
-        public string KeyName { get; set; }
-        public DateTime KeyLastWriteTimestamp { get; set; }
-        public DateTime? Date { get; set; }
-        public string Class { get; set; }
-        public string Directory { get; set; }
-        public bool DriverInBox { get; set; }
-        public string Hwids { get; set; }
-        public string Inf { get; set; }
-        public string Provider { get; set; }
-        public string SubmissionId { get; set; }
-        public string SYSFILE { get; set; }
-        public string Version { get; set; }
+        [CsvColumn(Optional = true)] public string KeyName { get; set; }
+        [CsvColumn(Optional = true)] public DateTime KeyLastWriteTimestamp { get; set; }
+        [CsvColumn(Optional = true)] public DateTime? Date { get; set; }
+        [CsvColumn(Optional = true)] public string Class { get; set; }
+        [CsvColumn(Optional = true)] public string Directory { get; set; }
+        [CsvColumn(Optional = true)] public bool DriverInBox { get; set; }
+        [CsvColumn(Optional = true)] public string Hwids { get; set; }
+        [CsvColumn(Optional = true)] public string Inf { get; set; }
+        [CsvColumn(Optional = true)] public string Provider { get; set; }
+        [CsvColumn(Optional = true)] public string SubmissionId { get; set; }
+        [CsvColumn(Optional = true)] public string SYSFILE { get; set; }
+        [CsvColumn(Optional = true)] public string Version { get; set; }
         //added in the 2026.10 versions of the tool
-        public string ClassGuid { get; set; }
-        public string DriverPackageStrongName { get; set; }
-        public string FlightIds { get; set; }
-        public string RecoveryIds { get; set; }
-        public string IsActive { get; set; }
+        [CsvColumn(Optional = true)] public string ClassGuid { get; set; }
+        [CsvColumn(Optional = true)] public string DriverPackageStrongName { get; set; }
+        [CsvColumn(Optional = true)] public string FlightIds { get; set; }
+        [CsvColumn(Optional = true)] public string RecoveryIds { get; set; }
+        [CsvColumn(Optional = true)] public string IsActive { get; set; }
 
-        public int Line { get; set; }
-        public bool Tag { get; set; }
+        [CsvIgnore] public int Line { get; set; }
+        [CsvIgnore] public bool Tag { get; set; }
 
         public override string ToString()
         {
@@ -1898,30 +1862,31 @@ namespace TLEFileEZTools
     }
 
 
-    public class AmcacheParserDriverBinaryData : IFileSpecData
+    [CsvRecord]
+    public partial class AmcacheParserDriverBinaryData : IFileSpecData
     {
-        public string KeyName { get; set; }
-        public DateTime KeyLastWriteTimestamp { get; set; }
-        public DateTime DriverTimeStamp { get; set; }
-        public DateTime DriverLastWriteTime { get; set; }
-        public string DriverName { get; set; }
-        public bool DriverInBox { get; set; }
-        public bool DriverIsKernelMode { get; set; }
-        public bool DriverSigned { get; set; }
-        public string DriverCheckSum { get; set; }
-        public string DriverCompany { get; set; }
-        public string DriverId { get; set; }
-        public string DriverPackageStrongName { get; set; }
-        public string DriverType { get; set; }
-        public string DriverVersion { get; set; }
-        public string ImageSize { get; set; }
-        public string Inf { get; set; }
-        public string Product { get; set; }
-        public string ProductVersion { get; set; }
-        public string Service { get; set; }
-        public string WdfVersion { get; set; }
-        public int Line { get; set; }
-        public bool Tag { get; set; }
+        [CsvColumn(Optional = true)] public string KeyName { get; set; }
+        [CsvColumn(Optional = true)] public DateTime KeyLastWriteTimestamp { get; set; }
+        [CsvColumn(Optional = true)] public DateTime DriverTimeStamp { get; set; }
+        [CsvColumn(Optional = true)] public DateTime DriverLastWriteTime { get; set; }
+        [CsvColumn(Optional = true)] public string DriverName { get; set; }
+        [CsvColumn(Optional = true)] public bool DriverInBox { get; set; }
+        [CsvColumn(Optional = true)] public bool DriverIsKernelMode { get; set; }
+        [CsvColumn(Optional = true)] public bool DriverSigned { get; set; }
+        [CsvColumn(Optional = true)] public string DriverCheckSum { get; set; }
+        [CsvColumn(Optional = true)] public string DriverCompany { get; set; }
+        [CsvColumn(Optional = true)] public string DriverId { get; set; }
+        [CsvColumn(Optional = true)] public string DriverPackageStrongName { get; set; }
+        [CsvColumn(Optional = true)] public string DriverType { get; set; }
+        [CsvColumn(Optional = true)] public string DriverVersion { get; set; }
+        [CsvColumn(Optional = true)] public string ImageSize { get; set; }
+        [CsvColumn(Optional = true)] public string Inf { get; set; }
+        [CsvColumn(Optional = true)] public string Product { get; set; }
+        [CsvColumn(Optional = true)] public string ProductVersion { get; set; }
+        [CsvColumn(Optional = true)] public string Service { get; set; }
+        [CsvColumn(Optional = true)] public string WdfVersion { get; set; }
+        [CsvIgnore] public int Line { get; set; }
+        [CsvIgnore] public bool Tag { get; set; }
 
         public override string ToString()
         {
@@ -1962,18 +1927,19 @@ namespace TLEFileEZTools
     }
 
 
-    public class AmcacheParserNewShortcutData : IFileSpecData
+    [CsvRecord]
+    public partial class AmcacheParserNewShortcutData : IFileSpecData
     {
-        public string KeyName { get; set; }
-        public string LnkName { get; set; }
-        public DateTime KeyLastWriteTimestamp { get; set; }
+        [CsvColumn(Optional = true)] public string KeyName { get; set; }
+        [CsvColumn(Optional = true)] public string LnkName { get; set; }
+        [CsvColumn(Optional = true)] public DateTime KeyLastWriteTimestamp { get; set; }
         //added in the 2026.10 versions of the tool
-        public string ShortcutTargetPath { get; set; }
-        public string ShortcutAumid { get; set; }
-        public string ShortcutProgramId { get; set; }
+        [CsvColumn(Optional = true)] public string ShortcutTargetPath { get; set; }
+        [CsvColumn(Optional = true)] public string ShortcutAumid { get; set; }
+        [CsvColumn(Optional = true)] public string ShortcutProgramId { get; set; }
 
-        public int Line { get; set; }
-        public bool Tag { get; set; }
+        [CsvIgnore] public int Line { get; set; }
+        [CsvIgnore] public bool Tag { get; set; }
 
         public override string ToString()
         {
@@ -2013,41 +1979,42 @@ namespace TLEFileEZTools
         }
     }
 
-    public class AmcacheParserNewProgramData : IFileSpecData
+    [CsvRecord]
+    public partial class AmcacheParserNewProgramData : IFileSpecData
     {
-        public string ProgramId { get; set; }
-        public DateTime KeyLastWriteTimestamp { get; set; }
-        public string Name { get; set; }
-        public string Version { get; set; }
-        public string Publisher { get; set; }
-        public DateTime? InstallDateArpLastModified { get; set; }
-        public DateTime? InstallDate { get; set; }
-        public DateTime? InstallDateMsi { get; set; }
-        public string OSVersionAtInstallTime { get; set; }
-        public DateTime? InstallDateFromLinkFile { get; set; }
-        public string BundleManifestPath { get; set; }
-        public bool HiddenArp { get; set; }
-        public bool InboxModernApp { get; set; }
-        public int Language { get; set; }
-        public string ManifestPath { get; set; }
-        public string MsiPackageCode { get; set; }
-        public string MsiProductCode { get; set; }
-        public string PackageFullName { get; set; }
-        public string ProgramInstanceId { get; set; }
-        public string RegistryKeyPath { get; set; }
-        public string RootDirPath { get; set; }
-        public string Type { get; set; }
-        public string Source { get; set; }
-        public string StoreAppType { get; set; }
-        public string UninstallString { get; set; }
-        public string Manufacturer { get; set; }
+        [CsvColumn(Optional = true)] public string ProgramId { get; set; }
+        [CsvColumn(Optional = true)] public DateTime KeyLastWriteTimestamp { get; set; }
+        [CsvColumn(Optional = true)] public string Name { get; set; }
+        [CsvColumn(Optional = true)] public string Version { get; set; }
+        [CsvColumn(Optional = true)] public string Publisher { get; set; }
+        [CsvColumn(Optional = true)] public DateTime? InstallDateArpLastModified { get; set; }
+        [CsvColumn(Optional = true)] public DateTime? InstallDate { get; set; }
+        [CsvColumn(Optional = true)] public DateTime? InstallDateMsi { get; set; }
+        [CsvColumn(Optional = true)] public string OSVersionAtInstallTime { get; set; }
+        [CsvColumn(Optional = true)] public DateTime? InstallDateFromLinkFile { get; set; }
+        [CsvColumn(Optional = true)] public string BundleManifestPath { get; set; }
+        [CsvColumn(Optional = true)] public bool HiddenArp { get; set; }
+        [CsvColumn(Optional = true)] public bool InboxModernApp { get; set; }
+        [CsvColumn(Optional = true)] public int Language { get; set; }
+        [CsvColumn(Optional = true)] public string ManifestPath { get; set; }
+        [CsvColumn(Optional = true)] public string MsiPackageCode { get; set; }
+        [CsvColumn(Optional = true)] public string MsiProductCode { get; set; }
+        [CsvColumn(Optional = true)] public string PackageFullName { get; set; }
+        [CsvColumn(Optional = true)] public string ProgramInstanceId { get; set; }
+        [CsvColumn(Optional = true)] public string RegistryKeyPath { get; set; }
+        [CsvColumn(Optional = true)] public string RootDirPath { get; set; }
+        [CsvColumn(Optional = true)] public string Type { get; set; }
+        [CsvColumn(Optional = true)] public string Source { get; set; }
+        [CsvColumn(Optional = true)] public string StoreAppType { get; set; }
+        [CsvColumn(Optional = true)] public string UninstallString { get; set; }
+        [CsvColumn(Optional = true)] public string Manufacturer { get; set; }
         //added in the 2026.10 versions of the tool
-        public string KeyName { get; set; }
-        public string UserSid { get; set; }
-        public DateTime? MsiInstallDate { get; set; }
+        [CsvColumn(Optional = true)] public string KeyName { get; set; }
+        [CsvColumn(Optional = true)] public string UserSid { get; set; }
+        [CsvColumn(Optional = true)] public DateTime? MsiInstallDate { get; set; }
 
-        public int Line { get; set; }
-        public bool Tag { get; set; }
+        [CsvIgnore] public int Line { get; set; }
+        [CsvIgnore] public bool Tag { get; set; }
 
         public override string ToString()
         {
@@ -2089,31 +2056,32 @@ namespace TLEFileEZTools
     }
 
 
-    public class NetworkUsageData : IFileSpecData
+    [CsvRecord]
+    public partial class NetworkUsageData : IFileSpecData
     {
-        public int Id { get; set; }
-        public DateTime Timestamp { get; set; }
+        [CsvColumn(Optional = true)] public int Id { get; set; }
+        [CsvColumn(Optional = true)] public DateTime Timestamp { get; set; }
 
-        public string ExeInfo { get; set; }
-        public string ExeInfoDescription { get; set; }
+        [CsvColumn(Optional = true)] public string ExeInfo { get; set; }
+        [CsvColumn(Optional = true)] public string ExeInfoDescription { get; set; }
 
-        public DateTime? ExeTimestamp { get; set; }
+        [CsvColumn(Optional = true)] public DateTime? ExeTimestamp { get; set; }
 
-        public string SidType { get; set; }
-        public string Sid { get; set; }
-        public string UserName { get; set; }
-        public int UserId { get; set; }
-        public int AppId { get; set; }
-        public long BytesReceived { get; set; }
-        public long BytesSent { get; set; }
-        public long InterfaceLuid { get; set; }
-        public string InterfaceType { get; set; }
-        public int L2ProfileFlags { get; set; }
-        public int L2ProfileId { get; set; }
-        public string ProfileName { get; set; }
+        [CsvColumn(Optional = true)] public string SidType { get; set; }
+        [CsvColumn(Optional = true)] public string Sid { get; set; }
+        [CsvColumn(Optional = true)] public string UserName { get; set; }
+        [CsvColumn(Optional = true)] public int UserId { get; set; }
+        [CsvColumn(Optional = true)] public int AppId { get; set; }
+        [CsvColumn(Optional = true)] public long BytesReceived { get; set; }
+        [CsvColumn(Optional = true)] public long BytesSent { get; set; }
+        [CsvColumn(Optional = true)] public long InterfaceLuid { get; set; }
+        [CsvColumn(Optional = true)] public string InterfaceType { get; set; }
+        [CsvColumn(Optional = true)] public int L2ProfileFlags { get; set; }
+        [CsvColumn(Optional = true)] public int L2ProfileId { get; set; }
+        [CsvColumn(Optional = true)] public string ProfileName { get; set; }
 
-        public int Line { get; set; }
-        public bool Tag { get; set; }
+        [CsvIgnore] public int Line { get; set; }
+        [CsvIgnore] public bool Tag { get; set; }
 
         public override string ToString()
         {
@@ -2152,26 +2120,27 @@ namespace TLEFileEZTools
     }
 
 
-    public class PushNotificationData : IFileSpecData
+    [CsvRecord]
+    public partial class PushNotificationData : IFileSpecData
     {
-        public int Id { get; set; }
-        public DateTime Timestamp { get; set; }
+        [CsvColumn(Optional = true)] public int Id { get; set; }
+        [CsvColumn(Optional = true)] public DateTime Timestamp { get; set; }
 
-        public string ExeInfo { get; set; }
-        public string ExeInfoDescription { get; set; }
-        public DateTime? ExeTimestamp { get; set; }
-        public string SidType { get; set; }
-        public string Sid { get; set; }
-        public string UserName { get; set; }
-        public int UserId { get; set; }
-        public int AppId { get; set; }
+        [CsvColumn(Optional = true)] public string ExeInfo { get; set; }
+        [CsvColumn(Optional = true)] public string ExeInfoDescription { get; set; }
+        [CsvColumn(Optional = true)] public DateTime? ExeTimestamp { get; set; }
+        [CsvColumn(Optional = true)] public string SidType { get; set; }
+        [CsvColumn(Optional = true)] public string Sid { get; set; }
+        [CsvColumn(Optional = true)] public string UserName { get; set; }
+        [CsvColumn(Optional = true)] public int UserId { get; set; }
+        [CsvColumn(Optional = true)] public int AppId { get; set; }
 
-        public int NetworkType { get; set; }
-        public int NotificationType { get; set; }
-        public int PayloadSize { get; set; }
+        [CsvColumn(Optional = true)] public int NetworkType { get; set; }
+        [CsvColumn(Optional = true)] public int NotificationType { get; set; }
+        [CsvColumn(Optional = true)] public int PayloadSize { get; set; }
 
-        public int Line { get; set; }
-        public bool Tag { get; set; }
+        [CsvIgnore] public int Line { get; set; }
+        [CsvIgnore] public bool Tag { get; set; }
 
         public override string ToString()
         {
@@ -2209,32 +2178,33 @@ namespace TLEFileEZTools
         }
     }
 
-    public class NetworkConnectionData : IFileSpecData
+    [CsvRecord]
+    public partial class NetworkConnectionData : IFileSpecData
     {
-        public int Id { get; set; }
-        public DateTime Timestamp { get; set; }
+        [CsvColumn(Optional = true)] public int Id { get; set; }
+        [CsvColumn(Optional = true)] public DateTime Timestamp { get; set; }
 
-        public string ExeInfo { get; set; }
-        public string ExeInfoDescription { get; set; }
+        [CsvColumn(Optional = true)] public string ExeInfo { get; set; }
+        [CsvColumn(Optional = true)] public string ExeInfoDescription { get; set; }
 
-        public DateTime? ExeTimestamp { get; set; }
-        public string SidType { get; set; }
-        public string Sid { get; set; }
-        public string UserName { get; set; }
+        [CsvColumn(Optional = true)] public DateTime? ExeTimestamp { get; set; }
+        [CsvColumn(Optional = true)] public string SidType { get; set; }
+        [CsvColumn(Optional = true)] public string Sid { get; set; }
+        [CsvColumn(Optional = true)] public string UserName { get; set; }
 
-        public int UserId { get; set; }
-        public int AppId { get; set; }
+        [CsvColumn(Optional = true)] public int UserId { get; set; }
+        [CsvColumn(Optional = true)] public int AppId { get; set; }
 
-        public int ConnectedTime { get; set; }
-        public DateTime ConnectStartTime { get; set; }
-        public long InterfaceLuid { get; set; }
-        public string InterfaceType { get; set; }
-        public int L2ProfileFlags { get; set; }
-        public int L2ProfileId { get; set; }
-        public string ProfileName { get; set; }
+        [CsvColumn(Optional = true)] public int ConnectedTime { get; set; }
+        [CsvColumn(Optional = true)] public DateTime ConnectStartTime { get; set; }
+        [CsvColumn(Optional = true)] public long InterfaceLuid { get; set; }
+        [CsvColumn(Optional = true)] public string InterfaceType { get; set; }
+        [CsvColumn(Optional = true)] public int L2ProfileFlags { get; set; }
+        [CsvColumn(Optional = true)] public int L2ProfileId { get; set; }
+        [CsvColumn(Optional = true)] public string ProfileName { get; set; }
 
-        public int Line { get; set; }
-        public bool Tag { get; set; }
+        [CsvIgnore] public int Line { get; set; }
+        [CsvIgnore] public bool Tag { get; set; }
 
         public override string ToString()
         {
@@ -2272,41 +2242,42 @@ namespace TLEFileEZTools
         }
     }
 
-    public class AppResourceUseInfoData : IFileSpecData
+    [CsvRecord]
+    public partial class AppResourceUseInfoData : IFileSpecData
     {
-        public int Id { get; set; }
-        public DateTime Timestamp { get; set; }
+        [CsvColumn(Optional = true)] public int Id { get; set; }
+        [CsvColumn(Optional = true)] public DateTime Timestamp { get; set; }
 
-        public string ExeInfo { get; set; }
-        public string ExeInfoDescription { get; set; }
-        public DateTime? ExeTimestamp { get; set; }
-        public string SidType { get; set; }
-        public string Sid { get; set; }
-        public string UserName { get; set; }
+        [CsvColumn(Optional = true)] public string ExeInfo { get; set; }
+        [CsvColumn(Optional = true)] public string ExeInfoDescription { get; set; }
+        [CsvColumn(Optional = true)] public DateTime? ExeTimestamp { get; set; }
+        [CsvColumn(Optional = true)] public string SidType { get; set; }
+        [CsvColumn(Optional = true)] public string Sid { get; set; }
+        [CsvColumn(Optional = true)] public string UserName { get; set; }
 
-        public int UserId { get; set; }
-        public int AppId { get; set; }
+        [CsvColumn(Optional = true)] public int UserId { get; set; }
+        [CsvColumn(Optional = true)] public int AppId { get; set; }
 
-        public long BackgroundBytesRead { get; set; }
-        public long BackgroundBytesWritten { get; set; }
-        public int BackgroundContextSwitches { get; set; }
-        public long BackgroundCycleTime { get; set; }
-        public int BackgroundNumberOfFlushes { get; set; }
-        public int BackgroundNumReadOperations { get; set; }
-        public int BackgroundNumWriteOperations { get; set; }
-        public long FaceTime { get; set; }
-        public long ForegroundBytesRead { get; set; }
-        public long ForegroundBytesWritten { get; set; }
-        public int ForegroundContextSwitches { get; set; }
-        public long ForegroundCycleTime { get; set; }
-        public int ForegroundNumberOfFlushes { get; set; }
-        public int ForegroundNumReadOperations { get; set; }
+        [CsvColumn(Optional = true)] public long BackgroundBytesRead { get; set; }
+        [CsvColumn(Optional = true)] public long BackgroundBytesWritten { get; set; }
+        [CsvColumn(Optional = true)] public int BackgroundContextSwitches { get; set; }
+        [CsvColumn(Optional = true)] public long BackgroundCycleTime { get; set; }
+        [CsvColumn(Optional = true)] public int BackgroundNumberOfFlushes { get; set; }
+        [CsvColumn(Optional = true)] public int BackgroundNumReadOperations { get; set; }
+        [CsvColumn(Optional = true)] public int BackgroundNumWriteOperations { get; set; }
+        [CsvColumn(Optional = true)] public long FaceTime { get; set; }
+        [CsvColumn(Optional = true)] public long ForegroundBytesRead { get; set; }
+        [CsvColumn(Optional = true)] public long ForegroundBytesWritten { get; set; }
+        [CsvColumn(Optional = true)] public int ForegroundContextSwitches { get; set; }
+        [CsvColumn(Optional = true)] public long ForegroundCycleTime { get; set; }
+        [CsvColumn(Optional = true)] public int ForegroundNumberOfFlushes { get; set; }
+        [CsvColumn(Optional = true)] public int ForegroundNumReadOperations { get; set; }
 
-        public int ForegroundNumWriteOperations { get; set; }
+        [CsvColumn(Optional = true)] public int ForegroundNumWriteOperations { get; set; }
 
 
-        public int Line { get; set; }
-        public bool Tag { get; set; }
+        [CsvIgnore] public int Line { get; set; }
+        [CsvIgnore] public bool Tag { get; set; }
 
         public override string ToString()
         {
@@ -2344,32 +2315,33 @@ namespace TLEFileEZTools
         }
     }
 
-    public class UnknownD8FData : IFileSpecData
+    [CsvRecord]
+    public partial class UnknownD8FData : IFileSpecData
     {
-        public int Id { get; set; }
-        public DateTime Timestamp { get; set; }
-        public int UserId { get; set; }
-        public int AppId { get; set; }
+        [CsvColumn(Optional = true)] public int Id { get; set; }
+        [CsvColumn(Optional = true)] public DateTime Timestamp { get; set; }
+        [CsvColumn(Optional = true)] public int UserId { get; set; }
+        [CsvColumn(Optional = true)] public int AppId { get; set; }
 
-        public string ExeInfo { get; set; }
-        public string ExeInfoDescription { get; set; }
+        [CsvColumn(Optional = true)] public string ExeInfo { get; set; }
+        [CsvColumn(Optional = true)] public string ExeInfoDescription { get; set; }
 
-        public DateTime? ExeTimestamp { get; set; }
+        [CsvColumn(Optional = true)] public DateTime? ExeTimestamp { get; set; }
 
-        public string SidType { get; set; }
-        public string Sid { get; set; }
-        public string UserName { get; set; }
+        [CsvColumn(Optional = true)] public string SidType { get; set; }
+        [CsvColumn(Optional = true)] public string Sid { get; set; }
+        [CsvColumn(Optional = true)] public string UserName { get; set; }
 
-        public DateTime StartTime { get; set; }
+        [CsvColumn(Optional = true)] public DateTime StartTime { get; set; }
 
-        public DateTime EndTime { get; set; }
+        [CsvColumn(Optional = true)] public DateTime EndTime { get; set; }
 
-        public int Flags { get; set; }
+        [CsvColumn(Optional = true)] public int Flags { get; set; }
 
-        public TimeSpan Duration { get; set; }
+        [CsvColumn(Optional = true)] public TimeSpan Duration { get; set; }
 
-        public int Line { get; set; }
-        public bool Tag { get; set; }
+        [CsvIgnore] public int Line { get; set; }
+        [CsvIgnore] public bool Tag { get; set; }
 
         public override string ToString()
         {
@@ -2407,39 +2379,40 @@ namespace TLEFileEZTools
         }
     }
 
-    public class Unknown312Data : IFileSpecData
+    [CsvRecord]
+    public partial class Unknown312Data : IFileSpecData
     {
-        public int Id { get; set; }
-        public DateTime Timestamp { get; set; }
+        [CsvColumn(Optional = true)] public int Id { get; set; }
+        [CsvColumn(Optional = true)] public DateTime Timestamp { get; set; }
 
-        public string ExeInfo { get; set; }
-        public string ExeInfoDescription { get; set; }
+        [CsvColumn(Optional = true)] public string ExeInfo { get; set; }
+        [CsvColumn(Optional = true)] public string ExeInfoDescription { get; set; }
 
-        public DateTime? ExeTimestamp { get; set; }
+        [CsvColumn(Optional = true)] public DateTime? ExeTimestamp { get; set; }
 
-        public string SidType { get; set; }
-        public string Sid { get; set; }
-        public string UserName { get; set; }
+        [CsvColumn(Optional = true)] public string SidType { get; set; }
+        [CsvColumn(Optional = true)] public string Sid { get; set; }
+        [CsvColumn(Optional = true)] public string UserName { get; set; }
 
-        public int UserId { get; set; }
-        public int AppId { get; set; }
+        [CsvColumn(Optional = true)] public int UserId { get; set; }
+        [CsvColumn(Optional = true)] public int AppId { get; set; }
 
-        public DateTime EndTime { get; set; }
+        [CsvColumn(Optional = true)] public DateTime EndTime { get; set; }
 
-        public int DurationMs { get; set; }
+        [CsvColumn(Optional = true)] public int DurationMs { get; set; }
 
         //added in the 2026.10 versions of the tool
-        public int? InFocusS { get; set; }
-        public int? PsmForegroundS { get; set; }
-        public int? UserInputS { get; set; }
-        public int? KeyboardInputS { get; set; }
-        public int? MouseInputS { get; set; }
-        public int? DisplayRequiredS { get; set; }
-        public int? AudioInS { get; set; }
-        public int? AudioOutS { get; set; }
+        [CsvColumn(Optional = true)] public int? InFocusS { get; set; }
+        [CsvColumn(Optional = true)] public int? PsmForegroundS { get; set; }
+        [CsvColumn(Optional = true)] public int? UserInputS { get; set; }
+        [CsvColumn(Optional = true)] public int? KeyboardInputS { get; set; }
+        [CsvColumn(Optional = true)] public int? MouseInputS { get; set; }
+        [CsvColumn(Optional = true)] public int? DisplayRequiredS { get; set; }
+        [CsvColumn(Optional = true)] public int? AudioInS { get; set; }
+        [CsvColumn(Optional = true)] public int? AudioOutS { get; set; }
 
-        public int Line { get; set; }
-        public bool Tag { get; set; }
+        [CsvIgnore] public int Line { get; set; }
+        [CsvIgnore] public bool Tag { get; set; }
 
         public override string ToString()
         {
@@ -2478,42 +2451,43 @@ namespace TLEFileEZTools
         }
     }
 
-    public class EnergyUsageData : IFileSpecData
+    [CsvRecord]
+    public partial class EnergyUsageData : IFileSpecData
     {
-        public int Id { get; set; }
-        public DateTime Timestamp { get; set; }
-        public string ExeInfo { get; set; }
-        public string ExeInfoDescription { get; set; }
+        [CsvColumn(Optional = true)] public int Id { get; set; }
+        [CsvColumn(Optional = true)] public DateTime Timestamp { get; set; }
+        [CsvColumn(Optional = true)] public string ExeInfo { get; set; }
+        [CsvColumn(Optional = true)] public string ExeInfoDescription { get; set; }
 
-        public DateTime? ExeTimestamp { get; set; }
+        [CsvColumn(Optional = true)] public DateTime? ExeTimestamp { get; set; }
 
-        public string SidType { get; set; }
-        public string Sid { get; set; }
-        public string UserName { get; set; }
+        [CsvColumn(Optional = true)] public string SidType { get; set; }
+        [CsvColumn(Optional = true)] public string Sid { get; set; }
+        [CsvColumn(Optional = true)] public string UserName { get; set; }
 
-        public int UserId { get; set; }
-        public int AppId { get; set; }
-        public bool IsLt { get; set; }
+        [CsvColumn(Optional = true)] public int UserId { get; set; }
+        [CsvColumn(Optional = true)] public int AppId { get; set; }
+        [CsvColumn(Optional = true)] public bool IsLt { get; set; }
 
-        public long ConfigurationHash { get; set; }
-        public DateTime? EventTimestamp { get; set; }
-        public long StateTransition { get; set; }
+        [CsvColumn(Optional = true)] public long ConfigurationHash { get; set; }
+        [CsvColumn(Optional = true)] public DateTime? EventTimestamp { get; set; }
+        [CsvColumn(Optional = true)] public long StateTransition { get; set; }
 
-        public int ChargeLevel { get; set; }
-        public int CycleCount { get; set; }
-        public int DesignedCapacity { get; set; }
-        public int FullChargedCapacity { get; set; }
-        public int ActiveAcTime { get; set; }
-        public int ActiveDcTime { get; set; }
-        public int ActiveDischargeTime { get; set; }
-        public int ActiveEnergy { get; set; }
-        public int CsAcTime { get; set; }
-        public int CsDcTime { get; set; }
-        public int CsDischargeTime { get; set; }
-        public int CsEnergy { get; set; }
+        [CsvColumn(Optional = true)] public int ChargeLevel { get; set; }
+        [CsvColumn(Optional = true)] public int CycleCount { get; set; }
+        [CsvColumn(Optional = true)] public int DesignedCapacity { get; set; }
+        [CsvColumn(Optional = true)] public int FullChargedCapacity { get; set; }
+        [CsvColumn(Optional = true)] public int ActiveAcTime { get; set; }
+        [CsvColumn(Optional = true)] public int ActiveDcTime { get; set; }
+        [CsvColumn(Optional = true)] public int ActiveDischargeTime { get; set; }
+        [CsvColumn(Optional = true)] public int ActiveEnergy { get; set; }
+        [CsvColumn(Optional = true)] public int CsAcTime { get; set; }
+        [CsvColumn(Optional = true)] public int CsDcTime { get; set; }
+        [CsvColumn(Optional = true)] public int CsDischargeTime { get; set; }
+        [CsvColumn(Optional = true)] public int CsEnergy { get; set; }
 
-        public int Line { get; set; }
-        public bool Tag { get; set; }
+        [CsvIgnore] public int Line { get; set; }
+        [CsvIgnore] public bool Tag { get; set; }
 
         public override string ToString()
         {
@@ -2551,18 +2525,19 @@ namespace TLEFileEZTools
         }
     }
 
-     public class MFTFileListingData : IFileSpecData
+     [CsvRecord]
+     public partial class MFTFileListingData : IFileSpecData
     {
-        public string FullPath { get; set; }
-        public string Extension { get; set; }
+        [CsvColumn(Optional = true)] public string FullPath { get; set; }
+        [CsvColumn(Optional = true)] public string Extension { get; set; }
 
-        public bool IsDirectory { get; set; }
-        public ulong FileSize { get; set; }
-        public DateTime? Created0x10 { get; set; }
-        public DateTime? LastModified0x10 { get; set; }
+        [CsvColumn(Optional = true)] public bool IsDirectory { get; set; }
+        [CsvColumn(Optional = true)] public ulong FileSize { get; set; }
+        [CsvColumn(Optional = true)] public DateTime? Created0x10 { get; set; }
+        [CsvColumn(Optional = true)] public DateTime? LastModified0x10 { get; set; }
 
-        public int Line { get; set; }
-        public bool Tag { get; set; }
+        [CsvIgnore] public int Line { get; set; }
+        [CsvIgnore] public bool Tag { get; set; }
 
         public override string ToString()
         {
@@ -2596,25 +2571,22 @@ namespace TLEFileEZTools
 
         public void ProcessFile(string filename)
         {
-            CsvLoader.Load<MFTFileListingData>(filename, DataList, TaggedLines, map =>
-            {
-                map.Map(m => m.Created0x10).TypeConverterOption.DateTimeStyles(DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal);
-                map.Map(m => m.LastModified0x10).TypeConverterOption.DateTimeStyles(DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal);
-            });
+            CsvLoader.Load<MFTFileListingData>(filename, DataList, TaggedLines);
         }
     }
 
 
-     public class SumChainedDbData : IFileSpecData
+     [CsvRecord]
+     public partial class SumChainedDbData : IFileSpecData
     {
-        public int Year { get; set; }
+        [CsvColumn(Optional = true)] public int Year { get; set; }
 
         //added in SumECmd 2026.11 (Issues #265)
-        public string SourceDirectory { get; set; }
-        public string FileName { get; set; }
+        [CsvColumn(Optional = true)] public string SourceDirectory { get; set; }
+        [CsvColumn(Optional = true)] public string FileName { get; set; }
 
-        public int Line { get; set; }
-        public bool Tag { get; set; }
+        [CsvIgnore] public int Line { get; set; }
+        [CsvIgnore] public bool Tag { get; set; }
 
         public override string ToString()
         {
@@ -2654,42 +2626,43 @@ namespace TLEFileEZTools
     }
 
 
-     public class SumSystemIdentInfoData : IFileSpecData
+     [CsvRecord]
+     public partial class SumSystemIdentInfoData : IFileSpecData
     {
-        public DateTime? CreationTime { get; set; }
+        [CsvColumn(Optional = true)] public DateTime? CreationTime { get; set; }
 
-        public int OsMajor { get; set; }
-        public int OsMinor { get; set; }
+        [CsvColumn(Optional = true)] public int OsMajor { get; set; }
+        [CsvColumn(Optional = true)] public int OsMinor { get; set; }
 
-        public int OsBuild { get; set; }
+        [CsvColumn(Optional = true)] public int OsBuild { get; set; }
 
         //added in the 2026.10 versions of the tool
-        public string SystemDnsHostName { get; set; }
-        public string SystemDomainName { get; set; }
-        public string SystemManufacturer { get; set; }
-        public string SystemProductName { get; set; }
-        public string SystemSerialNumber { get; set; }
-        public string SystemSmbiosUuid { get; set; }
-        public string OsSerialNumber { get; set; }
-        public string OsLastBootUpTime { get; set; }
-        public string OsCountryCode { get; set; }
-        public int? OsCurrentTimeZone { get; set; }
-        public bool? OsDaylightInEffect { get; set; }
-        public int? OsProductType { get; set; }
-        public int? OsSuiteMask { get; set; }
-        public int? OsPlatformId { get; set; }
-        public int? ServicePackMajor { get; set; }
-        public int? ServicePackMinor { get; set; }
-        public int? PhysicalProcessorCount { get; set; }
-        public int? CoresPerPhysicalProcessor { get; set; }
-        public int? LogicalProcessorsPerPhysicalProcessor { get; set; }
+        [CsvColumn(Optional = true)] public string SystemDnsHostName { get; set; }
+        [CsvColumn(Optional = true)] public string SystemDomainName { get; set; }
+        [CsvColumn(Optional = true)] public string SystemManufacturer { get; set; }
+        [CsvColumn(Optional = true)] public string SystemProductName { get; set; }
+        [CsvColumn(Optional = true)] public string SystemSerialNumber { get; set; }
+        [CsvColumn(Optional = true)] public string SystemSmbiosUuid { get; set; }
+        [CsvColumn(Optional = true)] public string OsSerialNumber { get; set; }
+        [CsvColumn(Optional = true)] public string OsLastBootUpTime { get; set; }
+        [CsvColumn(Optional = true)] public string OsCountryCode { get; set; }
+        [CsvColumn(Optional = true)] public int? OsCurrentTimeZone { get; set; }
+        [CsvColumn(Optional = true)] public bool? OsDaylightInEffect { get; set; }
+        [CsvColumn(Optional = true)] public int? OsProductType { get; set; }
+        [CsvColumn(Optional = true)] public int? OsSuiteMask { get; set; }
+        [CsvColumn(Optional = true)] public int? OsPlatformId { get; set; }
+        [CsvColumn(Optional = true)] public int? ServicePackMajor { get; set; }
+        [CsvColumn(Optional = true)] public int? ServicePackMinor { get; set; }
+        [CsvColumn(Optional = true)] public int? PhysicalProcessorCount { get; set; }
+        [CsvColumn(Optional = true)] public int? CoresPerPhysicalProcessor { get; set; }
+        [CsvColumn(Optional = true)] public int? LogicalProcessorsPerPhysicalProcessor { get; set; }
 
         //added in SumECmd 2026.11 (Issues #265)
-        public string SourceDirectory { get; set; }
-        public long? MaximumMemory { get; set; }
+        [CsvColumn(Optional = true)] public string SourceDirectory { get; set; }
+        [CsvColumn(Optional = true)] public long? MaximumMemory { get; set; }
 
-        public int Line { get; set; }
-        public bool Tag { get; set; }
+        [CsvIgnore] public int Line { get; set; }
+        [CsvIgnore] public bool Tag { get; set; }
 
         public override string ToString()
         {
@@ -2725,25 +2698,26 @@ namespace TLEFileEZTools
 
         public void ProcessFile(string filename)
         {
-            CsvLoader.Load<SumSystemIdentInfoData>(filename, DataList, TaggedLines, map => map.Map(m => m.CreationTime).TypeConverterOption.DateTimeStyles(DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal));
+            CsvLoader.Load<SumSystemIdentInfoData>(filename, DataList, TaggedLines);
         }
     }
 
 
 
     
-     public class SumRoleInfoData : IFileSpecData
+     [CsvRecord]
+     public partial class SumRoleInfoData : IFileSpecData
     {
-        public string RoleGuid { get; set; }
-        public string RoleName { get; set; }
+        [CsvColumn(Optional = true)] public string RoleGuid { get; set; }
+        [CsvColumn(Optional = true)] public string RoleName { get; set; }
 
-        public string ProductName { get; set; }
+        [CsvColumn(Optional = true)] public string ProductName { get; set; }
 
         //added in SumECmd 2026.11 (Issues #265)
-        public string SourceDirectory { get; set; }
+        [CsvColumn(Optional = true)] public string SourceDirectory { get; set; }
 
-        public int Line { get; set; }
-        public bool Tag { get; set; }
+        [CsvIgnore] public int Line { get; set; }
+        [CsvIgnore] public bool Tag { get; set; }
 
         public override string ToString()
         {
@@ -2784,21 +2758,22 @@ namespace TLEFileEZTools
 
 
     
-     public class SumRoleAccessData : IFileSpecData
+     [CsvRecord]
+     public partial class SumRoleAccessData : IFileSpecData
     {
-        public string RoleGuid { get; set; }
-        public string RoleDescription { get; set; }
+        [CsvColumn(Optional = true)] public string RoleGuid { get; set; }
+        [CsvColumn(Optional = true)] public string RoleDescription { get; set; }
 
-        public DateTime FirstSeen { get;set; }
-        public DateTime LastSeen { get;set; }
+        [CsvColumn(Optional = true)] public DateTime FirstSeen { get;set; }
+        [CsvColumn(Optional = true)] public DateTime LastSeen { get;set; }
 
-        public string SourceFile { get; set; }
+        [CsvColumn(Optional = true)] public string SourceFile { get; set; }
 
         //added in SumECmd 2026.11 (Issues #265)
-        public string SourceDirectory { get; set; }
+        [CsvColumn(Optional = true)] public string SourceDirectory { get; set; }
 
-        public int Line { get; set; }
-        public bool Tag { get; set; }
+        [CsvIgnore] public int Line { get; set; }
+        [CsvIgnore] public bool Tag { get; set; }
 
         public override string ToString()
         {
@@ -2833,35 +2808,32 @@ namespace TLEFileEZTools
 
         public void ProcessFile(string filename)
         {
-            CsvLoader.Load<SumRoleAccessData>(filename, DataList, TaggedLines, map =>
-            {
-                map.Map(m => m.FirstSeen).TypeConverterOption.DateTimeStyles(DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal);
-                map.Map(m => m.LastSeen).TypeConverterOption.DateTimeStyles(DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal);
-            });
+            CsvLoader.Load<SumRoleAccessData>(filename, DataList, TaggedLines);
         }
     }
 
 
-      public class SumClientData : IFileSpecData
+      [CsvRecord]
+      public partial class SumClientData : IFileSpecData
     {
-        public string RoleGuid { get; set; }
-        public string RoleDescription { get; set; }
-        public string AuthenticatedUserName { get; set; }
-        public int TotalAccesses { get; set; }
+        [CsvColumn(Optional = true)] public string RoleGuid { get; set; }
+        [CsvColumn(Optional = true)] public string RoleDescription { get; set; }
+        [CsvColumn(Optional = true)] public string AuthenticatedUserName { get; set; }
+        [CsvColumn(Optional = true)] public int TotalAccesses { get; set; }
 
-        public DateTime InsertDate { get;set; }
-        public DateTime LastAccess { get;set; }
+        [CsvColumn(Optional = true)] public DateTime InsertDate { get;set; }
+        [CsvColumn(Optional = true)] public DateTime LastAccess { get;set; }
 
-        public string IpAddress { get; set; }
-        public string ClientName { get; set; }
-        public string TenantId { get; set; }
+        [CsvColumn(Optional = true)] public string IpAddress { get; set; }
+        [CsvColumn(Optional = true)] public string ClientName { get; set; }
+        [CsvColumn(Optional = true)] public string TenantId { get; set; }
 
         //added in SumECmd 2026.11 (Issues #265)
-        public string SourceDirectory { get; set; }
-        public string SourceFile { get; set; }
+        [CsvColumn(Optional = true)] public string SourceDirectory { get; set; }
+        [CsvColumn(Optional = true)] public string SourceFile { get; set; }
 
-        public int Line { get; set; }
-        public bool Tag { get; set; }
+        [CsvIgnore] public int Line { get; set; }
+        [CsvIgnore] public bool Tag { get; set; }
 
         public override string ToString()
         {
@@ -2896,41 +2868,38 @@ namespace TLEFileEZTools
 
         public void ProcessFile(string filename)
         {
-            CsvLoader.Load<SumClientData>(filename, DataList, TaggedLines, map =>
-            {
-                map.Map(m => m.InsertDate).TypeConverterOption.DateTimeStyles(DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal);
-                map.Map(m => m.LastAccess).TypeConverterOption.DateTimeStyles(DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal);
-            });
+            CsvLoader.Load<SumClientData>(filename, DataList, TaggedLines);
         }
     }
 
     
 
-      public class SumClientDetailedData : IFileSpecData
+      [CsvRecord]
+      public partial class SumClientDetailedData : IFileSpecData
     {
-        public DateTime Date { get;set; }
-        public int Count { get; set; }
-        public int DayNumber { get; set; }
+        [CsvColumn(Optional = true)] public DateTime Date { get;set; }
+        [CsvColumn(Optional = true)] public int Count { get; set; }
+        [CsvColumn(Optional = true)] public int DayNumber { get; set; }
 
 
-        public string RoleGuid { get; set; }
-        public string RoleDescription { get; set; }
-        public string AuthenticatedUserName { get; set; }
-        public int TotalAccesses { get; set; }
+        [CsvColumn(Optional = true)] public string RoleGuid { get; set; }
+        [CsvColumn(Optional = true)] public string RoleDescription { get; set; }
+        [CsvColumn(Optional = true)] public string AuthenticatedUserName { get; set; }
+        [CsvColumn(Optional = true)] public int TotalAccesses { get; set; }
 
-        public DateTime InsertDate { get;set; }
-        public DateTime LastAccess { get;set; }
+        [CsvColumn(Optional = true)] public DateTime InsertDate { get;set; }
+        [CsvColumn(Optional = true)] public DateTime LastAccess { get;set; }
 
-        public string IpAddress { get; set; }
-        public string ClientName { get; set; }
-        public string TenantId { get; set; }
+        [CsvColumn(Optional = true)] public string IpAddress { get; set; }
+        [CsvColumn(Optional = true)] public string ClientName { get; set; }
+        [CsvColumn(Optional = true)] public string TenantId { get; set; }
 
         //added in SumECmd 2026.11 (Issues #265)
-        public string SourceDirectory { get; set; }
-        public string SourceFile { get; set; }
+        [CsvColumn(Optional = true)] public string SourceDirectory { get; set; }
+        [CsvColumn(Optional = true)] public string SourceFile { get; set; }
 
-        public int Line { get; set; }
-        public bool Tag { get; set; }
+        [CsvIgnore] public int Line { get; set; }
+        [CsvIgnore] public bool Tag { get; set; }
 
         public override string ToString()
         {
@@ -2965,27 +2934,23 @@ namespace TLEFileEZTools
 
         public void ProcessFile(string filename)
         {
-            CsvLoader.Load<SumClientDetailedData>(filename, DataList, TaggedLines, map =>
-            {
-                map.Map(m => m.Date).TypeConverterOption.DateTimeStyles(DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal);
-                map.Map(m => m.InsertDate).TypeConverterOption.DateTimeStyles(DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal);
-                map.Map(m => m.LastAccess).TypeConverterOption.DateTimeStyles(DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal);
-            });
+            CsvLoader.Load<SumClientDetailedData>(filename, DataList, TaggedLines);
         }
     }
 
-    public class SumDnsInfoData : IFileSpecData
+    [CsvRecord]
+    public partial class SumDnsInfoData : IFileSpecData
     {
-        public string HostName { get; set; }
-        public string Address { get; set; }
-        public DateTime LastSeen { get; set; }
+        [CsvColumn(Optional = true)] public string HostName { get; set; }
+        [CsvColumn(Optional = true)] public string Address { get; set; }
+        [CsvColumn(Optional = true)] public DateTime LastSeen { get; set; }
 
         //added in SumECmd 2026.11 (Issues #265)
-        public string SourceDirectory { get; set; }
-        public string SourceFile{ get; set; }
+        [CsvColumn(Optional = true)] public string SourceDirectory { get; set; }
+        [CsvColumn(Optional = true)] public string SourceFile{ get; set; }
 
-        public int Line { get; set; }
-        public bool Tag { get; set; }
+        [CsvIgnore] public int Line { get; set; }
+        [CsvIgnore] public bool Tag { get; set; }
 
         public override string ToString()
         {
@@ -3020,54 +2985,55 @@ namespace TLEFileEZTools
 
         public void ProcessFile(string filename)
         {
-            CsvLoader.Load<SumDnsInfoData>(filename, DataList, TaggedLines, map => map.Map(m => m.LastSeen).TypeConverterOption.DateTimeStyles(DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal));
+            CsvLoader.Load<SumDnsInfoData>(filename, DataList, TaggedLines);
         }
     }
 
-    public class LogFileData : IFileSpecData
+    [CsvRecord]
+    public partial class LogFileData : IFileSpecData
     {
-        public long Lsn { get; set; }
-        public long? TransactionId { get; set; }
-        public long? TransactionFirstLsn { get; set; }
-        public string RedoOperation { get; set; }
-        public string UndoOperation { get; set; }
-        public long? TargetEntryNumber { get; set; }
-        public int? TargetSequenceNumber { get; set; }
-        public string TargetAttributeType { get; set; }
-        public string TargetAttributeName { get; set; }
-        public string TargetPath { get; set; }
-        public long? EntryNumber { get; set; }
-        public int? SequenceNumber { get; set; }
-        public string FileName { get; set; }
-        public long? ParentEntryNumber { get; set; }
-        public int? ParentSequenceNumber { get; set; }
-        public string ParentPath { get; set; }
-        public DateTime? CreatedOn { get; set; }
-        public DateTime? ContentModifiedOn { get; set; }
-        public DateTime? RecordModifiedOn { get; set; }
-        public DateTime? LastAccessedOn { get; set; }
-        public long? FileSize { get; set; }
-        public string FileAttributes { get; set; }
-        public string AttributeType { get; set; }
-        public string Details { get; set; }
-        public long? PreviousLsn { get; set; }
-        public long? UndoNextLsn { get; set; }
-        public string RecordType { get; set; }
-        public int? TargetAttribute { get; set; }
-        public bool? TargetInferred { get; set; }
-        public long? TargetVcn { get; set; }
-        public string Lcns { get; set; }
-        public int? RecordOffset { get; set; }
-        public int? AttributeOffset { get; set; }
-        public int? ClusterBlockOffset { get; set; }
-        public int? RedoLength { get; set; }
-        public int? UndoLength { get; set; }
-        public bool? Truncated { get; set; }
-        public long? FileOffset { get; set; }
-        public string SourceFile { get; set; }
+        [CsvColumn(Optional = true)] public long Lsn { get; set; }
+        [CsvColumn(Optional = true)] public long? TransactionId { get; set; }
+        [CsvColumn(Optional = true)] public long? TransactionFirstLsn { get; set; }
+        [CsvColumn(Optional = true)] public string RedoOperation { get; set; }
+        [CsvColumn(Optional = true)] public string UndoOperation { get; set; }
+        [CsvColumn(Optional = true)] public long? TargetEntryNumber { get; set; }
+        [CsvColumn(Optional = true)] public int? TargetSequenceNumber { get; set; }
+        [CsvColumn(Optional = true)] public string TargetAttributeType { get; set; }
+        [CsvColumn(Optional = true)] public string TargetAttributeName { get; set; }
+        [CsvColumn(Optional = true)] public string TargetPath { get; set; }
+        [CsvColumn(Optional = true)] public long? EntryNumber { get; set; }
+        [CsvColumn(Optional = true)] public int? SequenceNumber { get; set; }
+        [CsvColumn(Optional = true)] public string FileName { get; set; }
+        [CsvColumn(Optional = true)] public long? ParentEntryNumber { get; set; }
+        [CsvColumn(Optional = true)] public int? ParentSequenceNumber { get; set; }
+        [CsvColumn(Optional = true)] public string ParentPath { get; set; }
+        [CsvColumn(Optional = true)] public DateTime? CreatedOn { get; set; }
+        [CsvColumn(Optional = true)] public DateTime? ContentModifiedOn { get; set; }
+        [CsvColumn(Optional = true)] public DateTime? RecordModifiedOn { get; set; }
+        [CsvColumn(Optional = true)] public DateTime? LastAccessedOn { get; set; }
+        [CsvColumn(Optional = true)] public long? FileSize { get; set; }
+        [CsvColumn(Optional = true)] public string FileAttributes { get; set; }
+        [CsvColumn(Optional = true)] public string AttributeType { get; set; }
+        [CsvColumn(Optional = true)] public string Details { get; set; }
+        [CsvColumn(Optional = true)] public long? PreviousLsn { get; set; }
+        [CsvColumn(Optional = true)] public long? UndoNextLsn { get; set; }
+        [CsvColumn(Optional = true)] public string RecordType { get; set; }
+        [CsvColumn(Optional = true)] public int? TargetAttribute { get; set; }
+        [CsvColumn(Optional = true)] public bool? TargetInferred { get; set; }
+        [CsvColumn(Optional = true)] public long? TargetVcn { get; set; }
+        [CsvColumn(Optional = true)] public string Lcns { get; set; }
+        [CsvColumn(Optional = true)] public int? RecordOffset { get; set; }
+        [CsvColumn(Optional = true)] public int? AttributeOffset { get; set; }
+        [CsvColumn(Optional = true)] public int? ClusterBlockOffset { get; set; }
+        [CsvColumn(Optional = true)] public int? RedoLength { get; set; }
+        [CsvColumn(Optional = true)] public int? UndoLength { get; set; }
+        [CsvColumn(Optional = true)] public bool? Truncated { get; set; }
+        [CsvColumn(Optional = true)] public long? FileOffset { get; set; }
+        [CsvColumn(Optional = true)] public string SourceFile { get; set; }
 
-        public int Line { get; set; }
-        public bool Tag { get; set; }
+        [CsvIgnore] public int Line { get; set; }
+        [CsvIgnore] public bool Tag { get; set; }
 
         public override string ToString()
         {
@@ -3104,22 +3070,23 @@ namespace TLEFileEZTools
         }
     }
 
-    public class SrumProcessorTimeData : IFileSpecData
+    [CsvRecord]
+    public partial class SrumProcessorTimeData : IFileSpecData
     {
-        public int Id { get; set; }
-        public DateTime Timestamp { get; set; }
-        public string ExeInfo { get; set; }
-        public string ExeInfoDescription { get; set; }
-        public DateTime? ExeTimestamp { get; set; }
-        public string SidType { get; set; }
-        public string Sid { get; set; }
-        public string UserName { get; set; }
-        public int UserId { get; set; }
-        public int AppId { get; set; }
-        public long ProcessorTime { get; set; }
+        [CsvColumn(Optional = true)] public int Id { get; set; }
+        [CsvColumn(Optional = true)] public DateTime Timestamp { get; set; }
+        [CsvColumn(Optional = true)] public string ExeInfo { get; set; }
+        [CsvColumn(Optional = true)] public string ExeInfoDescription { get; set; }
+        [CsvColumn(Optional = true)] public DateTime? ExeTimestamp { get; set; }
+        [CsvColumn(Optional = true)] public string SidType { get; set; }
+        [CsvColumn(Optional = true)] public string Sid { get; set; }
+        [CsvColumn(Optional = true)] public string UserName { get; set; }
+        [CsvColumn(Optional = true)] public int UserId { get; set; }
+        [CsvColumn(Optional = true)] public int AppId { get; set; }
+        [CsvColumn(Optional = true)] public long ProcessorTime { get; set; }
 
-        public int Line { get; set; }
-        public bool Tag { get; set; }
+        [CsvIgnore] public int Line { get; set; }
+        [CsvIgnore] public bool Tag { get; set; }
 
         public override string ToString()
         {
@@ -3156,22 +3123,23 @@ namespace TLEFileEZTools
         }
     }
 
-    public class SrumSizeInBytesData : IFileSpecData
+    [CsvRecord]
+    public partial class SrumSizeInBytesData : IFileSpecData
     {
-        public int Id { get; set; }
-        public DateTime Timestamp { get; set; }
-        public string ExeInfo { get; set; }
-        public string ExeInfoDescription { get; set; }
-        public DateTime? ExeTimestamp { get; set; }
-        public string SidType { get; set; }
-        public string Sid { get; set; }
-        public string UserName { get; set; }
-        public int UserId { get; set; }
-        public int AppId { get; set; }
-        public long SizeInBytes { get; set; }
+        [CsvColumn(Optional = true)] public int Id { get; set; }
+        [CsvColumn(Optional = true)] public DateTime Timestamp { get; set; }
+        [CsvColumn(Optional = true)] public string ExeInfo { get; set; }
+        [CsvColumn(Optional = true)] public string ExeInfoDescription { get; set; }
+        [CsvColumn(Optional = true)] public DateTime? ExeTimestamp { get; set; }
+        [CsvColumn(Optional = true)] public string SidType { get; set; }
+        [CsvColumn(Optional = true)] public string Sid { get; set; }
+        [CsvColumn(Optional = true)] public string UserName { get; set; }
+        [CsvColumn(Optional = true)] public int UserId { get; set; }
+        [CsvColumn(Optional = true)] public int AppId { get; set; }
+        [CsvColumn(Optional = true)] public long SizeInBytes { get; set; }
 
-        public int Line { get; set; }
-        public bool Tag { get; set; }
+        [CsvIgnore] public int Line { get; set; }
+        [CsvIgnore] public bool Tag { get; set; }
 
         public override string ToString()
         {
@@ -3208,23 +3176,24 @@ namespace TLEFileEZTools
         }
     }
 
-    public class SrumTotalUsedData : IFileSpecData
+    [CsvRecord]
+    public partial class SrumTotalUsedData : IFileSpecData
     {
-        public int Id { get; set; }
-        public DateTime Timestamp { get; set; }
-        public string ExeInfo { get; set; }
-        public string ExeInfoDescription { get; set; }
-        public DateTime? ExeTimestamp { get; set; }
-        public string SidType { get; set; }
-        public string Sid { get; set; }
-        public string UserName { get; set; }
-        public int UserId { get; set; }
-        public int AppId { get; set; }
-        public long Total { get; set; }
-        public long Used { get; set; }
+        [CsvColumn(Optional = true)] public int Id { get; set; }
+        [CsvColumn(Optional = true)] public DateTime Timestamp { get; set; }
+        [CsvColumn(Optional = true)] public string ExeInfo { get; set; }
+        [CsvColumn(Optional = true)] public string ExeInfoDescription { get; set; }
+        [CsvColumn(Optional = true)] public DateTime? ExeTimestamp { get; set; }
+        [CsvColumn(Optional = true)] public string SidType { get; set; }
+        [CsvColumn(Optional = true)] public string Sid { get; set; }
+        [CsvColumn(Optional = true)] public string UserName { get; set; }
+        [CsvColumn(Optional = true)] public int UserId { get; set; }
+        [CsvColumn(Optional = true)] public int AppId { get; set; }
+        [CsvColumn(Optional = true)] public long Total { get; set; }
+        [CsvColumn(Optional = true)] public long Used { get; set; }
 
-        public int Line { get; set; }
-        public bool Tag { get; set; }
+        [CsvIgnore] public int Line { get; set; }
+        [CsvIgnore] public bool Tag { get; set; }
 
         public override string ToString()
         {
@@ -3261,24 +3230,25 @@ namespace TLEFileEZTools
         }
     }
 
-    public class SrumNetworkBytesData : IFileSpecData
+    [CsvRecord]
+    public partial class SrumNetworkBytesData : IFileSpecData
     {
-        public int Id { get; set; }
-        public DateTime Timestamp { get; set; }
-        public string ExeInfo { get; set; }
-        public string ExeInfoDescription { get; set; }
-        public DateTime? ExeTimestamp { get; set; }
-        public string SidType { get; set; }
-        public string Sid { get; set; }
-        public string UserName { get; set; }
-        public int UserId { get; set; }
-        public int AppId { get; set; }
-        public long BytesInBound { get; set; }
-        public long BytesOutBound { get; set; }
-        public long BytesTotal { get; set; }
+        [CsvColumn(Optional = true)] public int Id { get; set; }
+        [CsvColumn(Optional = true)] public DateTime Timestamp { get; set; }
+        [CsvColumn(Optional = true)] public string ExeInfo { get; set; }
+        [CsvColumn(Optional = true)] public string ExeInfoDescription { get; set; }
+        [CsvColumn(Optional = true)] public DateTime? ExeTimestamp { get; set; }
+        [CsvColumn(Optional = true)] public string SidType { get; set; }
+        [CsvColumn(Optional = true)] public string Sid { get; set; }
+        [CsvColumn(Optional = true)] public string UserName { get; set; }
+        [CsvColumn(Optional = true)] public int UserId { get; set; }
+        [CsvColumn(Optional = true)] public int AppId { get; set; }
+        [CsvColumn(Optional = true)] public long BytesInBound { get; set; }
+        [CsvColumn(Optional = true)] public long BytesOutBound { get; set; }
+        [CsvColumn(Optional = true)] public long BytesTotal { get; set; }
 
-        public int Line { get; set; }
-        public bool Tag { get; set; }
+        [CsvIgnore] public int Line { get; set; }
+        [CsvIgnore] public bool Tag { get; set; }
 
         public override string ToString()
         {
@@ -3315,20 +3285,21 @@ namespace TLEFileEZTools
         }
     }
 
-    public class SumVmInfoData : IFileSpecData
+    [CsvRecord]
+    public partial class SumVmInfoData : IFileSpecData
     {
-        public string VmGuid { get; set; }
-        public DateTime CreationTime { get; set; }
-        public DateTime LastSeenActive { get; set; }
-        public string BiosGuid { get; set; }
-        public string SerialNumber { get; set; }
+        [CsvColumn(Optional = true)] public string VmGuid { get; set; }
+        [CsvColumn(Optional = true)] public DateTime CreationTime { get; set; }
+        [CsvColumn(Optional = true)] public DateTime LastSeenActive { get; set; }
+        [CsvColumn(Optional = true)] public string BiosGuid { get; set; }
+        [CsvColumn(Optional = true)] public string SerialNumber { get; set; }
 
         //added in SumECmd 2026.11 (Issues #265)
-        public string SourceDirectory { get; set; }
-        public string SourceFile { get; set; }
+        [CsvColumn(Optional = true)] public string SourceDirectory { get; set; }
+        [CsvColumn(Optional = true)] public string SourceFile { get; set; }
 
-        public int Line { get; set; }
-        public bool Tag { get; set; }
+        [CsvIgnore] public int Line { get; set; }
+        [CsvIgnore] public bool Tag { get; set; }
 
         public override string ToString()
         {
@@ -3366,14 +3337,15 @@ namespace TLEFileEZTools
         }
     }
 
-    public class AmcacheParserDeviceCensusData : IFileSpecData
+    [CsvRecord]
+    public partial class AmcacheParserDeviceCensusData : IFileSpecData
     {
-        public string ItemKey { get; set; }
-        public string Data { get; set; }
-        public DateTime? LastModified { get; set; }
+        [CsvColumn(Optional = true)] public string ItemKey { get; set; }
+        [CsvColumn(Optional = true)] public string Data { get; set; }
+        [CsvColumn(Optional = true)] public DateTime? LastModified { get; set; }
 
-        public int Line { get; set; }
-        public bool Tag { get; set; }
+        [CsvIgnore] public int Line { get; set; }
+        [CsvIgnore] public bool Tag { get; set; }
 
         public override string ToString()
         {
@@ -3414,16 +3386,17 @@ namespace TLEFileEZTools
         }
     }
 
-    public class AmcacheParserInventoryAcpiPhatHealthRecordData : IFileSpecData
+    [CsvRecord]
+    public partial class AmcacheParserInventoryAcpiPhatHealthRecordData : IFileSpecData
     {
-        public string ItemKey { get; set; }
-        public string AmHealthy { get; set; }
-        public string DevicePathType { get; set; }
-        public string DevicePathSubtype { get; set; }
-        public DateTime? LastModified { get; set; }
+        [CsvColumn(Optional = true)] public string ItemKey { get; set; }
+        [CsvColumn(Optional = true)] public string AmHealthy { get; set; }
+        [CsvColumn(Optional = true)] public string DevicePathType { get; set; }
+        [CsvColumn(Optional = true)] public string DevicePathSubtype { get; set; }
+        [CsvColumn(Optional = true)] public DateTime? LastModified { get; set; }
 
-        public int Line { get; set; }
-        public bool Tag { get; set; }
+        [CsvIgnore] public int Line { get; set; }
+        [CsvIgnore] public bool Tag { get; set; }
 
         public override string ToString()
         {
@@ -3464,15 +3437,16 @@ namespace TLEFileEZTools
         }
     }
 
-    public class AmcacheParserInventoryAcpiPhatVersionElementData : IFileSpecData
+    [CsvRecord]
+    public partial class AmcacheParserInventoryAcpiPhatVersionElementData : IFileSpecData
     {
-        public string ItemKey { get; set; }
-        public string VersionValue { get; set; }
-        public string ProducerId { get; set; }
-        public DateTime? LastModified { get; set; }
+        [CsvColumn(Optional = true)] public string ItemKey { get; set; }
+        [CsvColumn(Optional = true)] public string VersionValue { get; set; }
+        [CsvColumn(Optional = true)] public string ProducerId { get; set; }
+        [CsvColumn(Optional = true)] public DateTime? LastModified { get; set; }
 
-        public int Line { get; set; }
-        public bool Tag { get; set; }
+        [CsvIgnore] public int Line { get; set; }
+        [CsvIgnore] public bool Tag { get; set; }
 
         public override string ToString()
         {
@@ -3513,14 +3487,15 @@ namespace TLEFileEZTools
         }
     }
 
-    public class AmcacheParserInventoryApplicationAppVData : IFileSpecData
+    [CsvRecord]
+    public partial class AmcacheParserInventoryApplicationAppVData : IFileSpecData
     {
-        public string ItemKey { get; set; }
-        public string ProgramIds { get; set; }
-        public DateTime? LastModified { get; set; }
+        [CsvColumn(Optional = true)] public string ItemKey { get; set; }
+        [CsvColumn(Optional = true)] public string ProgramIds { get; set; }
+        [CsvColumn(Optional = true)] public DateTime? LastModified { get; set; }
 
-        public int Line { get; set; }
-        public bool Tag { get; set; }
+        [CsvIgnore] public int Line { get; set; }
+        [CsvIgnore] public bool Tag { get; set; }
 
         public override string ToString()
         {
@@ -3561,14 +3536,15 @@ namespace TLEFileEZTools
         }
     }
 
-    public class AmcacheParserInventoryApplicationFrameworkData : IFileSpecData
+    [CsvRecord]
+    public partial class AmcacheParserInventoryApplicationFrameworkData : IFileSpecData
     {
-        public string ItemKey { get; set; }
-        public string Frameworks { get; set; }
-        public DateTime? LastModified { get; set; }
+        [CsvColumn(Optional = true)] public string ItemKey { get; set; }
+        [CsvColumn(Optional = true)] public string Frameworks { get; set; }
+        [CsvColumn(Optional = true)] public DateTime? LastModified { get; set; }
 
-        public int Line { get; set; }
-        public bool Tag { get; set; }
+        [CsvIgnore] public int Line { get; set; }
+        [CsvIgnore] public bool Tag { get; set; }
 
         public override string ToString()
         {
@@ -3609,34 +3585,35 @@ namespace TLEFileEZTools
         }
     }
 
-    public class AmcacheParserInventoryDeviceInterfaceData : IFileSpecData
+    [CsvRecord]
+    public partial class AmcacheParserInventoryDeviceInterfaceData : IFileSpecData
     {
-        public string ItemKey { get; set; }
-        public string Accelerometer3D { get; set; }
-        public string ActivityDetection { get; set; }
-        public string AmbientLight { get; set; }
-        public string Barometer { get; set; }
-        public string Custom { get; set; }
-        public string FloorElevation { get; set; }
-        public string GeomagneticOrientation { get; set; }
-        public string GravityVector { get; set; }
-        public string Gyrometer3D { get; set; }
-        public string Humidity { get; set; }
-        public string LinearAccelerometer { get; set; }
-        public string Magnetometer3D { get; set; }
-        public string Orientation { get; set; }
-        public string Pedometer { get; set; }
-        public string Proximity { get; set; }
-        public string RelativeOrientation { get; set; }
-        public string SimpleDeviceOrientation { get; set; }
-        public string Temperature { get; set; }
-        public string EnergyMeter { get; set; }
-        public string HingeAngle { get; set; }
-        public string PresenceCapabilities { get; set; }
-        public DateTime? LastModified { get; set; }
+        [CsvColumn(Optional = true)] public string ItemKey { get; set; }
+        [CsvColumn(Optional = true)] public string Accelerometer3D { get; set; }
+        [CsvColumn(Optional = true)] public string ActivityDetection { get; set; }
+        [CsvColumn(Optional = true)] public string AmbientLight { get; set; }
+        [CsvColumn(Optional = true)] public string Barometer { get; set; }
+        [CsvColumn(Optional = true)] public string Custom { get; set; }
+        [CsvColumn(Optional = true)] public string FloorElevation { get; set; }
+        [CsvColumn(Optional = true)] public string GeomagneticOrientation { get; set; }
+        [CsvColumn(Optional = true)] public string GravityVector { get; set; }
+        [CsvColumn(Optional = true)] public string Gyrometer3D { get; set; }
+        [CsvColumn(Optional = true)] public string Humidity { get; set; }
+        [CsvColumn(Optional = true)] public string LinearAccelerometer { get; set; }
+        [CsvColumn(Optional = true)] public string Magnetometer3D { get; set; }
+        [CsvColumn(Optional = true)] public string Orientation { get; set; }
+        [CsvColumn(Optional = true)] public string Pedometer { get; set; }
+        [CsvColumn(Optional = true)] public string Proximity { get; set; }
+        [CsvColumn(Optional = true)] public string RelativeOrientation { get; set; }
+        [CsvColumn(Optional = true)] public string SimpleDeviceOrientation { get; set; }
+        [CsvColumn(Optional = true)] public string Temperature { get; set; }
+        [CsvColumn(Optional = true)] public string EnergyMeter { get; set; }
+        [CsvColumn(Optional = true)] public string HingeAngle { get; set; }
+        [CsvColumn(Optional = true)] public string PresenceCapabilities { get; set; }
+        [CsvColumn(Optional = true)] public DateTime? LastModified { get; set; }
 
-        public int Line { get; set; }
-        public bool Tag { get; set; }
+        [CsvIgnore] public int Line { get; set; }
+        [CsvIgnore] public bool Tag { get; set; }
 
         public override string ToString()
         {
@@ -3677,15 +3654,16 @@ namespace TLEFileEZTools
         }
     }
 
-    public class AmcacheParserInventoryDeviceMediaClassData : IFileSpecData
+    [CsvRecord]
+    public partial class AmcacheParserInventoryDeviceMediaClassData : IFileSpecData
     {
-        public string ItemKey { get; set; }
-        public string Audio_RenderDriver { get; set; }
-        public string Audio_CaptureDriver { get; set; }
-        public DateTime? LastModified { get; set; }
+        [CsvColumn(Optional = true)] public string ItemKey { get; set; }
+        [CsvColumn(Optional = true)] public string Audio_RenderDriver { get; set; }
+        [CsvColumn(Optional = true)] public string Audio_CaptureDriver { get; set; }
+        [CsvColumn(Optional = true)] public DateTime? LastModified { get; set; }
 
-        public int Line { get; set; }
-        public bool Tag { get; set; }
+        [CsvIgnore] public int Line { get; set; }
+        [CsvIgnore] public bool Tag { get; set; }
 
         public override string ToString()
         {
@@ -3726,14 +3704,15 @@ namespace TLEFileEZTools
         }
     }
 
-    public class AmcacheParserInventoryDevicePciData : IFileSpecData
+    [CsvRecord]
+    public partial class AmcacheParserInventoryDevicePciData : IFileSpecData
     {
-        public string ItemKey { get; set; }
-        public string IsTunneledDevice { get; set; }
-        public DateTime? LastModified { get; set; }
+        [CsvColumn(Optional = true)] public string ItemKey { get; set; }
+        [CsvColumn(Optional = true)] public string IsTunneledDevice { get; set; }
+        [CsvColumn(Optional = true)] public DateTime? LastModified { get; set; }
 
-        public int Line { get; set; }
-        public bool Tag { get; set; }
+        [CsvIgnore] public int Line { get; set; }
+        [CsvIgnore] public bool Tag { get; set; }
 
         public override string ToString()
         {
@@ -3774,14 +3753,15 @@ namespace TLEFileEZTools
         }
     }
 
-    public class AmcacheParserInventoryDeviceSensorData : IFileSpecData
+    [CsvRecord]
+    public partial class AmcacheParserInventoryDeviceSensorData : IFileSpecData
     {
-        public string ItemKey { get; set; }
-        public string Manufacturer { get; set; }
-        public DateTime? LastModified { get; set; }
+        [CsvColumn(Optional = true)] public string ItemKey { get; set; }
+        [CsvColumn(Optional = true)] public string Manufacturer { get; set; }
+        [CsvColumn(Optional = true)] public DateTime? LastModified { get; set; }
 
-        public int Line { get; set; }
-        public bool Tag { get; set; }
+        [CsvIgnore] public int Line { get; set; }
+        [CsvIgnore] public bool Tag { get; set; }
 
         public override string ToString()
         {
@@ -3822,15 +3802,16 @@ namespace TLEFileEZTools
         }
     }
 
-    public class AmcacheParserInventoryDeviceUsbHubClassData : IFileSpecData
+    [CsvRecord]
+    public partial class AmcacheParserInventoryDeviceUsbHubClassData : IFileSpecData
     {
-        public string ItemKey { get; set; }
-        public string TotalUserConnectablePorts { get; set; }
-        public string TotalUserConnectableTypeCPorts { get; set; }
-        public DateTime? LastModified { get; set; }
+        [CsvColumn(Optional = true)] public string ItemKey { get; set; }
+        [CsvColumn(Optional = true)] public string TotalUserConnectablePorts { get; set; }
+        [CsvColumn(Optional = true)] public string TotalUserConnectableTypeCPorts { get; set; }
+        [CsvColumn(Optional = true)] public DateTime? LastModified { get; set; }
 
-        public int Line { get; set; }
-        public bool Tag { get; set; }
+        [CsvIgnore] public int Line { get; set; }
+        [CsvIgnore] public bool Tag { get; set; }
 
         public override string ToString()
         {
@@ -3871,17 +3852,18 @@ namespace TLEFileEZTools
         }
     }
 
-    public class AmcacheParserInventoryInstallerData : IFileSpecData
+    [CsvRecord]
+    public partial class AmcacheParserInventoryInstallerData : IFileSpecData
     {
-        public string ItemKey { get; set; }
-        public string InstallerId { get; set; }
-        public string InstallerName { get; set; }
-        public string InstallerVersion { get; set; }
-        public string InstallerPublisher { get; set; }
-        public DateTime? LastModified { get; set; }
+        [CsvColumn(Optional = true)] public string ItemKey { get; set; }
+        [CsvColumn(Optional = true)] public string InstallerId { get; set; }
+        [CsvColumn(Optional = true)] public string InstallerName { get; set; }
+        [CsvColumn(Optional = true)] public string InstallerVersion { get; set; }
+        [CsvColumn(Optional = true)] public string InstallerPublisher { get; set; }
+        [CsvColumn(Optional = true)] public DateTime? LastModified { get; set; }
 
-        public int Line { get; set; }
-        public bool Tag { get; set; }
+        [CsvIgnore] public int Line { get; set; }
+        [CsvIgnore] public bool Tag { get; set; }
 
         public override string ToString()
         {
@@ -3922,20 +3904,21 @@ namespace TLEFileEZTools
         }
     }
 
-    public class AmcacheParserInventoryInstallerApplicationData : IFileSpecData
+    [CsvRecord]
+    public partial class AmcacheParserInventoryInstallerApplicationData : IFileSpecData
     {
-        public string ItemKey { get; set; }
-        public string ProgramId { get; set; }
-        public string Name { get; set; }
-        public string Version { get; set; }
-        public string Publisher { get; set; }
-        public string Language { get; set; }
-        public string UninstallKey { get; set; }
-        public string InstallerId { get; set; }
-        public DateTime? LastModified { get; set; }
+        [CsvColumn(Optional = true)] public string ItemKey { get; set; }
+        [CsvColumn(Optional = true)] public string ProgramId { get; set; }
+        [CsvColumn(Optional = true)] public string Name { get; set; }
+        [CsvColumn(Optional = true)] public string Version { get; set; }
+        [CsvColumn(Optional = true)] public string Publisher { get; set; }
+        [CsvColumn(Optional = true)] public string Language { get; set; }
+        [CsvColumn(Optional = true)] public string UninstallKey { get; set; }
+        [CsvColumn(Optional = true)] public string InstallerId { get; set; }
+        [CsvColumn(Optional = true)] public DateTime? LastModified { get; set; }
 
-        public int Line { get; set; }
-        public bool Tag { get; set; }
+        [CsvIgnore] public int Line { get; set; }
+        [CsvIgnore] public bool Tag { get; set; }
 
         public override string ToString()
         {
@@ -3976,17 +3959,18 @@ namespace TLEFileEZTools
         }
     }
 
-    public class AmcacheParserInventoryInstallerApplicationFileData : IFileSpecData
+    [CsvRecord]
+    public partial class AmcacheParserInventoryInstallerApplicationFileData : IFileSpecData
     {
-        public string ItemKey { get; set; }
-        public string InstallerId { get; set; }
-        public string FilePath { get; set; }
-        public string FileId { get; set; }
-        public string ProgramId { get; set; }
-        public DateTime? LastModified { get; set; }
+        [CsvColumn(Optional = true)] public string ItemKey { get; set; }
+        [CsvColumn(Optional = true)] public string InstallerId { get; set; }
+        [CsvColumn(Optional = true)] public string FilePath { get; set; }
+        [CsvColumn(Optional = true)] public string FileId { get; set; }
+        [CsvColumn(Optional = true)] public string ProgramId { get; set; }
+        [CsvColumn(Optional = true)] public DateTime? LastModified { get; set; }
 
-        public int Line { get; set; }
-        public bool Tag { get; set; }
+        [CsvIgnore] public int Line { get; set; }
+        [CsvIgnore] public bool Tag { get; set; }
 
         public override string ToString()
         {
@@ -4027,15 +4011,16 @@ namespace TLEFileEZTools
         }
     }
 
-    public class AmcacheParserInventoryMiscellaneousData : IFileSpecData
+    [CsvRecord]
+    public partial class AmcacheParserInventoryMiscellaneousData : IFileSpecData
     {
-        public string ItemKey { get; set; }
-        public string Exists { get; set; }
-        public string Value { get; set; }
-        public DateTime? LastModified { get; set; }
+        [CsvColumn(Optional = true)] public string ItemKey { get; set; }
+        [CsvColumn(Optional = true)] public string Exists { get; set; }
+        [CsvColumn(Optional = true)] public string Value { get; set; }
+        [CsvColumn(Optional = true)] public DateTime? LastModified { get; set; }
 
-        public int Line { get; set; }
-        public bool Tag { get; set; }
+        [CsvIgnore] public int Line { get; set; }
+        [CsvIgnore] public bool Tag { get; set; }
 
         public override string ToString()
         {
@@ -4076,23 +4061,24 @@ namespace TLEFileEZTools
         }
     }
 
-    public class AmcacheParserInventoryMiscellaneousMemorySlotArrayInfoData : IFileSpecData
+    [CsvRecord]
+    public partial class AmcacheParserInventoryMiscellaneousMemorySlotArrayInfoData : IFileSpecData
     {
-        public string ItemKey { get; set; }
-        public string Slot { get; set; }
-        public string Type { get; set; }
-        public string TypeDetails { get; set; }
-        public string Speed { get; set; }
-        public string Capacity { get; set; }
-        public string Model { get; set; }
-        public string Manufacturer { get; set; }
-        public string TotalWidth { get; set; }
-        public string DataWidth { get; set; }
-        public string MemoryErrorCorrection { get; set; }
-        public DateTime? LastModified { get; set; }
+        [CsvColumn(Optional = true)] public string ItemKey { get; set; }
+        [CsvColumn(Optional = true)] public string Slot { get; set; }
+        [CsvColumn(Optional = true)] public string Type { get; set; }
+        [CsvColumn(Optional = true)] public string TypeDetails { get; set; }
+        [CsvColumn(Optional = true)] public string Speed { get; set; }
+        [CsvColumn(Optional = true)] public string Capacity { get; set; }
+        [CsvColumn(Optional = true)] public string Model { get; set; }
+        [CsvColumn(Optional = true)] public string Manufacturer { get; set; }
+        [CsvColumn(Optional = true)] public string TotalWidth { get; set; }
+        [CsvColumn(Optional = true)] public string DataWidth { get; set; }
+        [CsvColumn(Optional = true)] public string MemoryErrorCorrection { get; set; }
+        [CsvColumn(Optional = true)] public DateTime? LastModified { get; set; }
 
-        public int Line { get; set; }
-        public bool Tag { get; set; }
+        [CsvIgnore] public int Line { get; set; }
+        [CsvIgnore] public bool Tag { get; set; }
 
         public override string ToString()
         {
@@ -4133,18 +4119,19 @@ namespace TLEFileEZTools
         }
     }
 
-    public class AmcacheParserInventoryMiscellaneousUUPInfoData : IFileSpecData
+    [CsvRecord]
+    public partial class AmcacheParserInventoryMiscellaneousUUPInfoData : IFileSpecData
     {
-        public string ItemKey { get; set; }
-        public string Identifier { get; set; }
-        public string Version { get; set; }
-        public string Source { get; set; }
-        public string PreviousVersion { get; set; }
-        public string LastActivatedVersion { get; set; }
-        public DateTime? LastModified { get; set; }
+        [CsvColumn(Optional = true)] public string ItemKey { get; set; }
+        [CsvColumn(Optional = true)] public string Identifier { get; set; }
+        [CsvColumn(Optional = true)] public string Version { get; set; }
+        [CsvColumn(Optional = true)] public string Source { get; set; }
+        [CsvColumn(Optional = true)] public string PreviousVersion { get; set; }
+        [CsvColumn(Optional = true)] public string LastActivatedVersion { get; set; }
+        [CsvColumn(Optional = true)] public DateTime? LastModified { get; set; }
 
-        public int Line { get; set; }
-        public bool Tag { get; set; }
+        [CsvIgnore] public int Line { get; set; }
+        [CsvIgnore] public bool Tag { get; set; }
 
         public override string ToString()
         {
@@ -4185,18 +4172,19 @@ namespace TLEFileEZTools
         }
     }
 
-    public class AmcacheParserInventoryMiscellaneousUserData : IFileSpecData
+    [CsvRecord]
+    public partial class AmcacheParserInventoryMiscellaneousUserData : IFileSpecData
     {
-        public string ItemKey { get; set; }
-        public string OriginalName { get; set; }
-        public string Exists { get; set; }
-        public string Value { get; set; }
-        public string UserId { get; set; }
-        public string StandardUserHash { get; set; }
-        public DateTime? LastModified { get; set; }
+        [CsvColumn(Optional = true)] public string ItemKey { get; set; }
+        [CsvColumn(Optional = true)] public string OriginalName { get; set; }
+        [CsvColumn(Optional = true)] public string Exists { get; set; }
+        [CsvColumn(Optional = true)] public string Value { get; set; }
+        [CsvColumn(Optional = true)] public string UserId { get; set; }
+        [CsvColumn(Optional = true)] public string StandardUserHash { get; set; }
+        [CsvColumn(Optional = true)] public DateTime? LastModified { get; set; }
 
-        public int Line { get; set; }
-        public bool Tag { get; set; }
+        [CsvIgnore] public int Line { get; set; }
+        [CsvIgnore] public bool Tag { get; set; }
 
         public override string ToString()
         {
@@ -4237,19 +4225,20 @@ namespace TLEFileEZTools
         }
     }
 
-    public class AmcacheParserMareData : IFileSpecData
+    [CsvRecord]
+    public partial class AmcacheParserMareData : IFileSpecData
     {
-        public string ItemKey { get; set; }
-        public string Path { get; set; }
-        public string ProgramId { get; set; }
-        public string Flags { get; set; }
-        public string Far { get; set; }
-        public string Restore { get; set; }
-        public string Sdbentryguid { get; set; }
-        public DateTime? LastModified { get; set; }
+        [CsvColumn(Optional = true)] public string ItemKey { get; set; }
+        [CsvColumn(Optional = true)] public string Path { get; set; }
+        [CsvColumn(Optional = true)] public string ProgramId { get; set; }
+        [CsvColumn(Optional = true)] public string Flags { get; set; }
+        [CsvColumn(Optional = true)] public string Far { get; set; }
+        [CsvColumn(Optional = true)] public string Restore { get; set; }
+        [CsvColumn(Optional = true)] public string Sdbentryguid { get; set; }
+        [CsvColumn(Optional = true)] public DateTime? LastModified { get; set; }
 
-        public int Line { get; set; }
-        public bool Tag { get; set; }
+        [CsvIgnore] public int Line { get; set; }
+        [CsvIgnore] public bool Tag { get; set; }
 
         public override string ToString()
         {
@@ -4290,16 +4279,17 @@ namespace TLEFileEZTools
         }
     }
 
-    public class AmcacheParserMareBackupAppsData : IFileSpecData
+    [CsvRecord]
+    public partial class AmcacheParserMareBackupAppsData : IFileSpecData
     {
-        public string ItemKey { get; set; }
-        public string Hash { get; set; }
-        public string Aumids { get; set; }
-        public string SidState { get; set; }
-        public DateTime? LastModified { get; set; }
+        [CsvColumn(Optional = true)] public string ItemKey { get; set; }
+        [CsvColumn(Optional = true)] public string Hash { get; set; }
+        [CsvColumn(Optional = true)] public string Aumids { get; set; }
+        [CsvColumn(Optional = true)] public string SidState { get; set; }
+        [CsvColumn(Optional = true)] public DateTime? LastModified { get; set; }
 
-        public int Line { get; set; }
-        public bool Tag { get; set; }
+        [CsvIgnore] public int Line { get; set; }
+        [CsvIgnore] public bool Tag { get; set; }
 
         public override string ToString()
         {
@@ -4340,14 +4330,15 @@ namespace TLEFileEZTools
         }
     }
 
-    public class AmcacheParserMetadataData : IFileSpecData
+    [CsvRecord]
+    public partial class AmcacheParserMetadataData : IFileSpecData
     {
-        public string Database { get; set; }
-        public string Name { get; set; }
-        public string Value { get; set; }
+        [CsvColumn(Optional = true)] public string Database { get; set; }
+        [CsvColumn(Optional = true)] public string Name { get; set; }
+        [CsvColumn(Optional = true)] public string Value { get; set; }
 
-        public int Line { get; set; }
-        public bool Tag { get; set; }
+        [CsvIgnore] public int Line { get; set; }
+        [CsvIgnore] public bool Tag { get; set; }
 
         public override string ToString()
         {
@@ -4388,21 +4379,22 @@ namespace TLEFileEZTools
         }
     }
 
-    public class RecmdAdobeData : IFileSpecData
+    [CsvRecord]
+    public partial class RecmdAdobeData : IFileSpecData
     {
-        public string ProductName { get; set; }
-        public string BatchKeyPath { get; set; }
-        public string ProductVersion { get; set; }
-        public string BatchValueName { get; set; }
-        public string FullPath { get; set; }
-        public DateTime? LastOpened { get; set; }
-        public string FileName { get; set; }
-        public long? FileSize { get; set; }
-        public string FileSource { get; set; }
-        public long? PageCount { get; set; }
+        [CsvColumn(Optional = true)] public string ProductName { get; set; }
+        [CsvColumn(Optional = true)] public string BatchKeyPath { get; set; }
+        [CsvColumn(Optional = true)] public string ProductVersion { get; set; }
+        [CsvColumn(Optional = true)] public string BatchValueName { get; set; }
+        [CsvColumn(Optional = true)] public string FullPath { get; set; }
+        [CsvColumn(Optional = true), CsvConverter(typeof(LenientDateTimeConverter))] public DateTime? LastOpened { get; set; }
+        [CsvColumn(Optional = true)] public string FileName { get; set; }
+        [CsvColumn(Optional = true)] public long? FileSize { get; set; }
+        [CsvColumn(Optional = true)] public string FileSource { get; set; }
+        [CsvColumn(Optional = true)] public long? PageCount { get; set; }
 
-        public int Line { get; set; }
-        public bool Tag { get; set; }
+        [CsvIgnore] public int Line { get; set; }
+        [CsvIgnore] public bool Tag { get; set; }
 
         public override string ToString()
         {
@@ -4438,22 +4430,20 @@ namespace TLEFileEZTools
 
         public void ProcessFile(string filename)
         {
-            CsvLoader.Load<RecmdAdobeData>(filename, DataList, TaggedLines, map =>
-            {
-                map.Map(t => t.LastOpened).TypeConverter<LenientDateTimeConverter>();
-            });
+            CsvLoader.Load<RecmdAdobeData>(filename, DataList, TaggedLines);
         }
     }
 
-    public class RecmdAdobeTrustManagerData : IFileSpecData
+    [CsvRecord]
+    public partial class RecmdAdobeTrustManagerData : IFileSpecData
     {
-        public string Website { get; set; }
-        public string BatchKeyPath { get; set; }
-        public string UserChoice { get; set; }
-        public string BatchValueName { get; set; }
+        [CsvColumn(Optional = true)] public string Website { get; set; }
+        [CsvColumn(Optional = true)] public string BatchKeyPath { get; set; }
+        [CsvColumn(Optional = true)] public string UserChoice { get; set; }
+        [CsvColumn(Optional = true)] public string BatchValueName { get; set; }
 
-        public int Line { get; set; }
-        public bool Tag { get; set; }
+        [CsvIgnore] public int Line { get; set; }
+        [CsvIgnore] public bool Tag { get; set; }
 
         public override string ToString()
         {
@@ -4493,18 +4483,19 @@ namespace TLEFileEZTools
         }
     }
 
-    public class RecmdAppCompatData : IFileSpecData
+    [CsvRecord]
+    public partial class RecmdAppCompatData : IFileSpecData
     {
-        public long? CacheEntryPosition { get; set; }
-        public string BatchKeyPath { get; set; }
-        public string ProgramName { get; set; }
-        public string BatchValueName { get; set; }
-        public DateTime? ModifiedTime { get; set; }
-        public string Executed { get; set; }
-        public bool? FromSlack { get; set; }
+        [CsvColumn(Optional = true)] public long? CacheEntryPosition { get; set; }
+        [CsvColumn(Optional = true)] public string BatchKeyPath { get; set; }
+        [CsvColumn(Optional = true)] public string ProgramName { get; set; }
+        [CsvColumn(Optional = true)] public string BatchValueName { get; set; }
+        [CsvColumn(Optional = true), CsvConverter(typeof(LenientDateTimeConverter))] public DateTime? ModifiedTime { get; set; }
+        [CsvColumn(Optional = true)] public string Executed { get; set; }
+        [CsvColumn(Optional = true)] public bool? FromSlack { get; set; }
 
-        public int Line { get; set; }
-        public bool Tag { get; set; }
+        [CsvIgnore] public int Line { get; set; }
+        [CsvIgnore] public bool Tag { get; set; }
 
         public override string ToString()
         {
@@ -4540,22 +4531,20 @@ namespace TLEFileEZTools
 
         public void ProcessFile(string filename)
         {
-            CsvLoader.Load<RecmdAppCompatData>(filename, DataList, TaggedLines, map =>
-            {
-                map.Map(t => t.ModifiedTime).TypeConverter<LenientDateTimeConverter>();
-            });
+            CsvLoader.Load<RecmdAppCompatData>(filename, DataList, TaggedLines);
         }
     }
 
-    public class RecmdAppCompatFlagsData : IFileSpecData
+    [CsvRecord]
+    public partial class RecmdAppCompatFlagsData : IFileSpecData
     {
-        public string Executable { get; set; }
-        public string BatchKeyPath { get; set; }
-        public string ValueName { get; set; }
-        public string BatchValueName { get; set; }
+        [CsvColumn(Optional = true)] public string Executable { get; set; }
+        [CsvColumn(Optional = true)] public string BatchKeyPath { get; set; }
+        [CsvColumn(Optional = true)] public string ValueName { get; set; }
+        [CsvColumn(Optional = true)] public string BatchValueName { get; set; }
 
-        public int Line { get; set; }
-        public bool Tag { get; set; }
+        [CsvIgnore] public int Line { get; set; }
+        [CsvIgnore] public bool Tag { get; set; }
 
         public override string ToString()
         {
@@ -4595,14 +4584,15 @@ namespace TLEFileEZTools
         }
     }
 
-    public class RecmdAppCompatFlags2WinRARData : IFileSpecData
+    [CsvRecord]
+    public partial class RecmdAppCompatFlags2WinRARData : IFileSpecData
     {
-        public string Path { get; set; }
-        public string BatchKeyPath { get; set; }
-        public string BatchValueName { get; set; }
+        [CsvColumn(Optional = true)] public string Path { get; set; }
+        [CsvColumn(Optional = true)] public string BatchKeyPath { get; set; }
+        [CsvColumn(Optional = true)] public string BatchValueName { get; set; }
 
-        public int Line { get; set; }
-        public bool Tag { get; set; }
+        [CsvIgnore] public int Line { get; set; }
+        [CsvIgnore] public bool Tag { get; set; }
 
         public override string ToString()
         {
@@ -4642,17 +4632,18 @@ namespace TLEFileEZTools
         }
     }
 
-    public class RecmdAppPathsData : IFileSpecData
+    [CsvRecord]
+    public partial class RecmdAppPathsData : IFileSpecData
     {
-        public DateTime? Timestamp { get; set; }
-        public string BatchKeyPath { get; set; }
-        public string FileName { get; set; }
-        public string BatchValueName { get; set; }
-        public string Path1 { get; set; }
-        public string Path2 { get; set; }
+        [CsvColumn(Optional = true), CsvConverter(typeof(LenientDateTimeConverter))] public DateTime? Timestamp { get; set; }
+        [CsvColumn(Optional = true)] public string BatchKeyPath { get; set; }
+        [CsvColumn(Optional = true)] public string FileName { get; set; }
+        [CsvColumn(Optional = true)] public string BatchValueName { get; set; }
+        [CsvColumn(Optional = true)] public string Path1 { get; set; }
+        [CsvColumn(Optional = true)] public string Path2 { get; set; }
 
-        public int Line { get; set; }
-        public bool Tag { get; set; }
+        [CsvIgnore] public int Line { get; set; }
+        [CsvIgnore] public bool Tag { get; set; }
 
         public override string ToString()
         {
@@ -4688,25 +4679,23 @@ namespace TLEFileEZTools
 
         public void ProcessFile(string filename)
         {
-            CsvLoader.Load<RecmdAppPathsData>(filename, DataList, TaggedLines, map =>
-            {
-                map.Map(t => t.Timestamp).TypeConverter<LenientDateTimeConverter>();
-            });
+            CsvLoader.Load<RecmdAppPathsData>(filename, DataList, TaggedLines);
         }
     }
 
-    public class RecmdApplicationSettingsContainerData : IFileSpecData
+    [CsvRecord]
+    public partial class RecmdApplicationSettingsContainerData : IFileSpecData
     {
-        public string ValueName { get; set; }
-        public string BatchKeyPath { get; set; }
-        public string ValueType { get; set; }
-        public string BatchValueName { get; set; }
-        public string Value { get; set; }
-        public string Notes { get; set; }
-        public DateTime? UTCTimestamp { get; set; }
+        [CsvColumn(Optional = true)] public string ValueName { get; set; }
+        [CsvColumn(Optional = true)] public string BatchKeyPath { get; set; }
+        [CsvColumn(Optional = true)] public string ValueType { get; set; }
+        [CsvColumn(Optional = true)] public string BatchValueName { get; set; }
+        [CsvColumn(Optional = true)] public string Value { get; set; }
+        [CsvColumn(Optional = true)] public string Notes { get; set; }
+        [CsvColumn(Optional = true), CsvConverter(typeof(LenientDateTimeConverter))] public DateTime? UTCTimestamp { get; set; }
 
-        public int Line { get; set; }
-        public bool Tag { get; set; }
+        [CsvIgnore] public int Line { get; set; }
+        [CsvIgnore] public bool Tag { get; set; }
 
         public override string ToString()
         {
@@ -4742,22 +4731,20 @@ namespace TLEFileEZTools
 
         public void ProcessFile(string filename)
         {
-            CsvLoader.Load<RecmdApplicationSettingsContainerData>(filename, DataList, TaggedLines, map =>
-            {
-                map.Map(t => t.UTCTimestamp).TypeConverter<LenientDateTimeConverter>();
-            });
+            CsvLoader.Load<RecmdApplicationSettingsContainerData>(filename, DataList, TaggedLines);
         }
     }
 
-    public class RecmdAresData : IFileSpecData
+    [CsvRecord]
+    public partial class RecmdAresData : IFileSpecData
     {
-        public string PropertyName { get; set; }
-        public string BatchKeyPath { get; set; }
-        public string PropertyValue { get; set; }
-        public string BatchValueName { get; set; }
+        [CsvColumn(Optional = true)] public string PropertyName { get; set; }
+        [CsvColumn(Optional = true)] public string BatchKeyPath { get; set; }
+        [CsvColumn(Optional = true)] public string PropertyValue { get; set; }
+        [CsvColumn(Optional = true)] public string BatchValueName { get; set; }
 
-        public int Line { get; set; }
-        public bool Tag { get; set; }
+        [CsvIgnore] public int Line { get; set; }
+        [CsvIgnore] public bool Tag { get; set; }
 
         public override string ToString()
         {
@@ -4797,15 +4784,16 @@ namespace TLEFileEZTools
         }
     }
 
-    public class RecmdBamDamData : IFileSpecData
+    [CsvRecord]
+    public partial class RecmdBamDamData : IFileSpecData
     {
-        public string Program { get; set; }
-        public string BatchKeyPath { get; set; }
-        public DateTime? ExecutionTime { get; set; }
-        public string BatchValueName { get; set; }
+        [CsvColumn(Optional = true)] public string Program { get; set; }
+        [CsvColumn(Optional = true)] public string BatchKeyPath { get; set; }
+        [CsvColumn(Optional = true), CsvConverter(typeof(LenientDateTimeConverter))] public DateTime? ExecutionTime { get; set; }
+        [CsvColumn(Optional = true)] public string BatchValueName { get; set; }
 
-        public int Line { get; set; }
-        public bool Tag { get; set; }
+        [CsvIgnore] public int Line { get; set; }
+        [CsvIgnore] public bool Tag { get; set; }
 
         public override string ToString()
         {
@@ -4841,23 +4829,21 @@ namespace TLEFileEZTools
 
         public void ProcessFile(string filename)
         {
-            CsvLoader.Load<RecmdBamDamData>(filename, DataList, TaggedLines, map =>
-            {
-                map.Map(t => t.ExecutionTime).TypeConverter<LenientDateTimeConverter>();
-            });
+            CsvLoader.Load<RecmdBamDamData>(filename, DataList, TaggedLines);
         }
     }
 
-    public class RecmdBluetoothBthPortData : IFileSpecData
+    [CsvRecord]
+    public partial class RecmdBluetoothBthPortData : IFileSpecData
     {
-        public string Name { get; set; }
-        public string BatchKeyPath { get; set; }
-        public string Address { get; set; }
-        public string BatchValueName { get; set; }
-        public DateTime? LastSeen { get; set; }
+        [CsvColumn(Optional = true)] public string Name { get; set; }
+        [CsvColumn(Optional = true)] public string BatchKeyPath { get; set; }
+        [CsvColumn(Optional = true)] public string Address { get; set; }
+        [CsvColumn(Optional = true)] public string BatchValueName { get; set; }
+        [CsvColumn(Optional = true), CsvConverter(typeof(LenientDateTimeConverter))] public DateTime? LastSeen { get; set; }
 
-        public int Line { get; set; }
-        public bool Tag { get; set; }
+        [CsvIgnore] public int Line { get; set; }
+        [CsvIgnore] public bool Tag { get; set; }
 
         public override string ToString()
         {
@@ -4893,23 +4879,21 @@ namespace TLEFileEZTools
 
         public void ProcessFile(string filename)
         {
-            CsvLoader.Load<RecmdBluetoothBthPortData>(filename, DataList, TaggedLines, map =>
-            {
-                map.Map(t => t.LastSeen).TypeConverter<LenientDateTimeConverter>();
-            });
+            CsvLoader.Load<RecmdBluetoothBthPortData>(filename, DataList, TaggedLines);
         }
     }
 
-    public class RecmdCIDSizeMRUData : IFileSpecData
+    [CsvRecord]
+    public partial class RecmdCIDSizeMRUData : IFileSpecData
     {
-        public string Executable { get; set; }
-        public string BatchKeyPath { get; set; }
-        public long? MRUPosition { get; set; }
-        public string BatchValueName { get; set; }
-        public DateTime? OpenedOn { get; set; }
+        [CsvColumn(Optional = true)] public string Executable { get; set; }
+        [CsvColumn(Optional = true)] public string BatchKeyPath { get; set; }
+        [CsvColumn(Optional = true)] public long? MRUPosition { get; set; }
+        [CsvColumn(Optional = true)] public string BatchValueName { get; set; }
+        [CsvColumn(Optional = true), CsvConverter(typeof(LenientDateTimeConverter))] public DateTime? OpenedOn { get; set; }
 
-        public int Line { get; set; }
-        public bool Tag { get; set; }
+        [CsvIgnore] public int Line { get; set; }
+        [CsvIgnore] public bool Tag { get; set; }
 
         public override string ToString()
         {
@@ -4945,29 +4929,27 @@ namespace TLEFileEZTools
 
         public void ProcessFile(string filename)
         {
-            CsvLoader.Load<RecmdCIDSizeMRUData>(filename, DataList, TaggedLines, map =>
-            {
-                map.Map(t => t.OpenedOn).TypeConverter<LenientDateTimeConverter>();
-            });
+            CsvLoader.Load<RecmdCIDSizeMRUData>(filename, DataList, TaggedLines);
         }
     }
 
-    public class RecmdDHCPNetworkHintData : IFileSpecData
+    [CsvRecord]
+    public partial class RecmdDHCPNetworkHintData : IFileSpecData
     {
-        public string NetworkHint { get; set; }
-        public string BatchKeyPath { get; set; }
-        public string DHCPAddress { get; set; }
-        public string BatchValueName { get; set; }
-        public string DHCPServer { get; set; }
-        public string DHCPDomain { get; set; }
-        public DateTime? LeaseObtained { get; set; }
-        public DateTime? LeaseExpires { get; set; }
-        public string DefaultGateway { get; set; }
-        public string Interface { get; set; }
-        public string InterfaceSubkey { get; set; }
+        [CsvColumn(Optional = true)] public string NetworkHint { get; set; }
+        [CsvColumn(Optional = true)] public string BatchKeyPath { get; set; }
+        [CsvColumn(Optional = true)] public string DHCPAddress { get; set; }
+        [CsvColumn(Optional = true)] public string BatchValueName { get; set; }
+        [CsvColumn(Optional = true)] public string DHCPServer { get; set; }
+        [CsvColumn(Optional = true)] public string DHCPDomain { get; set; }
+        [CsvColumn(Optional = true), CsvConverter(typeof(LenientDateTimeConverter))] public DateTime? LeaseObtained { get; set; }
+        [CsvColumn(Optional = true), CsvConverter(typeof(LenientDateTimeConverter))] public DateTime? LeaseExpires { get; set; }
+        [CsvColumn(Optional = true)] public string DefaultGateway { get; set; }
+        [CsvColumn(Optional = true)] public string Interface { get; set; }
+        [CsvColumn(Optional = true)] public string InterfaceSubkey { get; set; }
 
-        public int Line { get; set; }
-        public bool Tag { get; set; }
+        [CsvIgnore] public int Line { get; set; }
+        [CsvIgnore] public bool Tag { get; set; }
 
         public override string ToString()
         {
@@ -5003,26 +4985,23 @@ namespace TLEFileEZTools
 
         public void ProcessFile(string filename)
         {
-            CsvLoader.Load<RecmdDHCPNetworkHintData>(filename, DataList, TaggedLines, map =>
-            {
-                map.Map(t => t.LeaseObtained).TypeConverter<LenientDateTimeConverter>();
-                map.Map(t => t.LeaseExpires).TypeConverter<LenientDateTimeConverter>();
-            });
+            CsvLoader.Load<RecmdDHCPNetworkHintData>(filename, DataList, TaggedLines);
         }
     }
 
-    public class RecmdDeviceClassesData : IFileSpecData
+    [CsvRecord]
+    public partial class RecmdDeviceClassesData : IFileSpecData
     {
-        public DateTime? Timestamp { get; set; }
-        public string BatchKeyPath { get; set; }
-        public string GuidFolder { get; set; }
-        public string BatchValueName { get; set; }
-        public string Type { get; set; }
-        public string Name { get; set; }
-        public string SerialNumber { get; set; }
+        [CsvColumn(Optional = true), CsvConverter(typeof(LenientDateTimeConverter))] public DateTime? Timestamp { get; set; }
+        [CsvColumn(Optional = true)] public string BatchKeyPath { get; set; }
+        [CsvColumn(Optional = true)] public string GuidFolder { get; set; }
+        [CsvColumn(Optional = true)] public string BatchValueName { get; set; }
+        [CsvColumn(Optional = true)] public string Type { get; set; }
+        [CsvColumn(Optional = true)] public string Name { get; set; }
+        [CsvColumn(Optional = true)] public string SerialNumber { get; set; }
 
-        public int Line { get; set; }
-        public bool Tag { get; set; }
+        [CsvIgnore] public int Line { get; set; }
+        [CsvIgnore] public bool Tag { get; set; }
 
         public override string ToString()
         {
@@ -5058,24 +5037,22 @@ namespace TLEFileEZTools
 
         public void ProcessFile(string filename)
         {
-            CsvLoader.Load<RecmdDeviceClassesData>(filename, DataList, TaggedLines, map =>
-            {
-                map.Map(t => t.Timestamp).TypeConverter<LenientDateTimeConverter>();
-            });
+            CsvLoader.Load<RecmdDeviceClassesData>(filename, DataList, TaggedLines);
         }
     }
 
-    public class RecmdDsrmAdminLogonBehaviourData : IFileSpecData
+    [CsvRecord]
+    public partial class RecmdDsrmAdminLogonBehaviourData : IFileSpecData
     {
-        public string ValueName { get; set; }
-        public string BatchKeyPath { get; set; }
-        public string ValueData { get; set; }
-        public string BatchValueName { get; set; }
-        public DateTime? LastWriteTime { get; set; }
-        public bool? PersistenceDetection { get; set; }
+        [CsvColumn(Optional = true)] public string ValueName { get; set; }
+        [CsvColumn(Optional = true)] public string BatchKeyPath { get; set; }
+        [CsvColumn(Optional = true)] public string ValueData { get; set; }
+        [CsvColumn(Optional = true)] public string BatchValueName { get; set; }
+        [CsvColumn(Optional = true), CsvConverter(typeof(LenientDateTimeConverter))] public DateTime? LastWriteTime { get; set; }
+        [CsvColumn(Optional = true)] public bool? PersistenceDetection { get; set; }
 
-        public int Line { get; set; }
-        public bool Tag { get; set; }
+        [CsvIgnore] public int Line { get; set; }
+        [CsvIgnore] public bool Tag { get; set; }
 
         public override string ToString()
         {
@@ -5111,25 +5088,23 @@ namespace TLEFileEZTools
 
         public void ProcessFile(string filename)
         {
-            CsvLoader.Load<RecmdDsrmAdminLogonBehaviourData>(filename, DataList, TaggedLines, map =>
-            {
-                map.Map(t => t.LastWriteTime).TypeConverter<LenientDateTimeConverter>();
-            });
+            CsvLoader.Load<RecmdDsrmAdminLogonBehaviourData>(filename, DataList, TaggedLines);
         }
     }
 
-    public class RecmdETWData : IFileSpecData
+    [CsvRecord]
+    public partial class RecmdETWData : IFileSpecData
     {
-        public string LastWriteTimestamp { get; set; }
-        public string BatchKeyPath { get; set; }
-        public string Guid { get; set; }
-        public string BatchValueName { get; set; }
-        public string Provider { get; set; }
-        public string Enabled { get; set; }
-        public string EnabledProperty { get; set; }
+        [CsvColumn(Optional = true)] public string LastWriteTimestamp { get; set; }
+        [CsvColumn(Optional = true)] public string BatchKeyPath { get; set; }
+        [CsvColumn(Optional = true)] public string Guid { get; set; }
+        [CsvColumn(Optional = true)] public string BatchValueName { get; set; }
+        [CsvColumn(Optional = true)] public string Provider { get; set; }
+        [CsvColumn(Optional = true)] public string Enabled { get; set; }
+        [CsvColumn(Optional = true)] public string EnabledProperty { get; set; }
 
-        public int Line { get; set; }
-        public bool Tag { get; set; }
+        [CsvIgnore] public int Line { get; set; }
+        [CsvIgnore] public bool Tag { get; set; }
 
         public override string ToString()
         {
@@ -5169,16 +5144,17 @@ namespace TLEFileEZTools
         }
     }
 
-    public class RecmdFeatureUsageData : IFileSpecData
+    [CsvRecord]
+    public partial class RecmdFeatureUsageData : IFileSpecData
     {
-        public string KeyPath { get; set; }
-        public string BatchKeyPath { get; set; }
-        public string ValueName { get; set; }
-        public string BatchValueName { get; set; }
-        public string Count { get; set; }
+        [CsvColumn(Optional = true)] public string KeyPath { get; set; }
+        [CsvColumn(Optional = true)] public string BatchKeyPath { get; set; }
+        [CsvColumn(Optional = true)] public string ValueName { get; set; }
+        [CsvColumn(Optional = true)] public string BatchValueName { get; set; }
+        [CsvColumn(Optional = true)] public string Count { get; set; }
 
-        public int Line { get; set; }
-        public bool Tag { get; set; }
+        [CsvIgnore] public int Line { get; set; }
+        [CsvIgnore] public bool Tag { get; set; }
 
         public override string ToString()
         {
@@ -5218,17 +5194,18 @@ namespace TLEFileEZTools
         }
     }
 
-    public class RecmdFileExtsData : IFileSpecData
+    [CsvRecord]
+    public partial class RecmdFileExtsData : IFileSpecData
     {
-        public string Extension { get; set; }
-        public string BatchKeyPath { get; set; }
-        public string OpensWithExecutables { get; set; }
-        public string BatchValueName { get; set; }
-        public string OpensWithProgramIDs { get; set; }
-        public string UserChoice { get; set; }
+        [CsvColumn(Optional = true)] public string Extension { get; set; }
+        [CsvColumn(Optional = true)] public string BatchKeyPath { get; set; }
+        [CsvColumn(Optional = true)] public string OpensWithExecutables { get; set; }
+        [CsvColumn(Optional = true)] public string BatchValueName { get; set; }
+        [CsvColumn(Optional = true)] public string OpensWithProgramIDs { get; set; }
+        [CsvColumn(Optional = true)] public string UserChoice { get; set; }
 
-        public int Line { get; set; }
-        public bool Tag { get; set; }
+        [CsvIgnore] public int Line { get; set; }
+        [CsvIgnore] public bool Tag { get; set; }
 
         public override string ToString()
         {
@@ -5268,22 +5245,23 @@ namespace TLEFileEZTools
         }
     }
 
-    public class RecmdFirewallRulesData : IFileSpecData
+    [CsvRecord]
+    public partial class RecmdFirewallRulesData : IFileSpecData
     {
-        public string Action { get; set; }
-        public string BatchKeyPath { get; set; }
-        public string Active { get; set; }
-        public string BatchValueName { get; set; }
-        public string Dir { get; set; }
-        public string Protocol { get; set; }
-        public string LPort { get; set; }
-        public string RPort { get; set; }
-        public string Name { get; set; }
-        public string Desc { get; set; }
-        public string App { get; set; }
+        [CsvColumn(Optional = true)] public string Action { get; set; }
+        [CsvColumn(Optional = true)] public string BatchKeyPath { get; set; }
+        [CsvColumn(Optional = true)] public string Active { get; set; }
+        [CsvColumn(Optional = true)] public string BatchValueName { get; set; }
+        [CsvColumn(Optional = true)] public string Dir { get; set; }
+        [CsvColumn(Optional = true)] public string Protocol { get; set; }
+        [CsvColumn(Optional = true)] public string LPort { get; set; }
+        [CsvColumn(Optional = true)] public string RPort { get; set; }
+        [CsvColumn(Optional = true)] public string Name { get; set; }
+        [CsvColumn(Optional = true)] public string Desc { get; set; }
+        [CsvColumn(Optional = true)] public string App { get; set; }
 
-        public int Line { get; set; }
-        public bool Tag { get; set; }
+        [CsvIgnore] public int Line { get; set; }
+        [CsvIgnore] public bool Tag { get; set; }
 
         public override string ToString()
         {
@@ -5323,17 +5301,18 @@ namespace TLEFileEZTools
         }
     }
 
-    public class RecmdFirstFolderData : IFileSpecData
+    [CsvRecord]
+    public partial class RecmdFirstFolderData : IFileSpecData
     {
-        public string Executable { get; set; }
-        public string BatchKeyPath { get; set; }
-        public string FolderName { get; set; }
-        public string BatchValueName { get; set; }
-        public long? MRUPosition { get; set; }
-        public DateTime? OpenedOn { get; set; }
+        [CsvColumn(Optional = true)] public string Executable { get; set; }
+        [CsvColumn(Optional = true)] public string BatchKeyPath { get; set; }
+        [CsvColumn(Optional = true)] public string FolderName { get; set; }
+        [CsvColumn(Optional = true)] public string BatchValueName { get; set; }
+        [CsvColumn(Optional = true)] public long? MRUPosition { get; set; }
+        [CsvColumn(Optional = true), CsvConverter(typeof(LenientDateTimeConverter))] public DateTime? OpenedOn { get; set; }
 
-        public int Line { get; set; }
-        public bool Tag { get; set; }
+        [CsvIgnore] public int Line { get; set; }
+        [CsvIgnore] public bool Tag { get; set; }
 
         public override string ToString()
         {
@@ -5369,21 +5348,19 @@ namespace TLEFileEZTools
 
         public void ProcessFile(string filename)
         {
-            CsvLoader.Load<RecmdFirstFolderData>(filename, DataList, TaggedLines, map =>
-            {
-                map.Map(t => t.OpenedOn).TypeConverter<LenientDateTimeConverter>();
-            });
+            CsvLoader.Load<RecmdFirstFolderData>(filename, DataList, TaggedLines);
         }
     }
 
-    public class RecmdIconLayoutsData : IFileSpecData
+    [CsvRecord]
+    public partial class RecmdIconLayoutsData : IFileSpecData
     {
-        public string Name { get; set; }
-        public string BatchKeyPath { get; set; }
-        public string BatchValueName { get; set; }
+        [CsvColumn(Optional = true)] public string Name { get; set; }
+        [CsvColumn(Optional = true)] public string BatchKeyPath { get; set; }
+        [CsvColumn(Optional = true)] public string BatchValueName { get; set; }
 
-        public int Line { get; set; }
-        public bool Tag { get; set; }
+        [CsvIgnore] public int Line { get; set; }
+        [CsvIgnore] public bool Tag { get; set; }
 
         public override string ToString()
         {
@@ -5423,20 +5400,21 @@ namespace TLEFileEZTools
         }
     }
 
-    public class RecmdInventoryApplicationData : IFileSpecData
+    [CsvRecord]
+    public partial class RecmdInventoryApplicationData : IFileSpecData
     {
-        public DateTime? Timestamp { get; set; }
-        public string BatchKeyPath { get; set; }
-        public string Name { get; set; }
-        public string BatchValueName { get; set; }
-        public string Version { get; set; }
-        public string Publisher { get; set; }
-        public string Source { get; set; }
-        public string RootDirPath { get; set; }
-        public string UninstallString { get; set; }
+        [CsvColumn(Optional = true), CsvConverter(typeof(LenientDateTimeConverter))] public DateTime? Timestamp { get; set; }
+        [CsvColumn(Optional = true)] public string BatchKeyPath { get; set; }
+        [CsvColumn(Optional = true)] public string Name { get; set; }
+        [CsvColumn(Optional = true)] public string BatchValueName { get; set; }
+        [CsvColumn(Optional = true)] public string Version { get; set; }
+        [CsvColumn(Optional = true)] public string Publisher { get; set; }
+        [CsvColumn(Optional = true)] public string Source { get; set; }
+        [CsvColumn(Optional = true)] public string RootDirPath { get; set; }
+        [CsvColumn(Optional = true)] public string UninstallString { get; set; }
 
-        public int Line { get; set; }
-        public bool Tag { get; set; }
+        [CsvIgnore] public int Line { get; set; }
+        [CsvIgnore] public bool Tag { get; set; }
 
         public override string ToString()
         {
@@ -5472,27 +5450,25 @@ namespace TLEFileEZTools
 
         public void ProcessFile(string filename)
         {
-            CsvLoader.Load<RecmdInventoryApplicationData>(filename, DataList, TaggedLines, map =>
-            {
-                map.Map(t => t.Timestamp).TypeConverter<LenientDateTimeConverter>();
-            });
+            CsvLoader.Load<RecmdInventoryApplicationData>(filename, DataList, TaggedLines);
         }
     }
 
-    public class RecmdInventoryApplicationFileData : IFileSpecData
+    [CsvRecord]
+    public partial class RecmdInventoryApplicationFileData : IFileSpecData
     {
-        public DateTime? Timestamp { get; set; }
-        public string BatchKeyPath { get; set; }
-        public string Path { get; set; }
-        public string BatchValueName { get; set; }
-        public string Name { get; set; }
-        public string ProductName { get; set; }
-        public string Publisher { get; set; }
-        public string Version { get; set; }
-        public string SHA1 { get; set; }
+        [CsvColumn(Optional = true), CsvConverter(typeof(LenientDateTimeConverter))] public DateTime? Timestamp { get; set; }
+        [CsvColumn(Optional = true)] public string BatchKeyPath { get; set; }
+        [CsvColumn(Optional = true)] public string Path { get; set; }
+        [CsvColumn(Optional = true)] public string BatchValueName { get; set; }
+        [CsvColumn(Optional = true)] public string Name { get; set; }
+        [CsvColumn(Optional = true)] public string ProductName { get; set; }
+        [CsvColumn(Optional = true)] public string Publisher { get; set; }
+        [CsvColumn(Optional = true)] public string Version { get; set; }
+        [CsvColumn(Optional = true)] public string SHA1 { get; set; }
 
-        public int Line { get; set; }
-        public bool Tag { get; set; }
+        [CsvIgnore] public int Line { get; set; }
+        [CsvIgnore] public bool Tag { get; set; }
 
         public override string ToString()
         {
@@ -5528,22 +5504,20 @@ namespace TLEFileEZTools
 
         public void ProcessFile(string filename)
         {
-            CsvLoader.Load<RecmdInventoryApplicationFileData>(filename, DataList, TaggedLines, map =>
-            {
-                map.Map(t => t.Timestamp).TypeConverter<LenientDateTimeConverter>();
-            });
+            CsvLoader.Load<RecmdInventoryApplicationFileData>(filename, DataList, TaggedLines);
         }
     }
 
-    public class RecmdInventoryApplicationShortcutData : IFileSpecData
+    [CsvRecord]
+    public partial class RecmdInventoryApplicationShortcutData : IFileSpecData
     {
-        public DateTime? Timestamp { get; set; }
-        public string BatchKeyPath { get; set; }
-        public string Path { get; set; }
-        public string BatchValueName { get; set; }
+        [CsvColumn(Optional = true), CsvConverter(typeof(LenientDateTimeConverter))] public DateTime? Timestamp { get; set; }
+        [CsvColumn(Optional = true)] public string BatchKeyPath { get; set; }
+        [CsvColumn(Optional = true)] public string Path { get; set; }
+        [CsvColumn(Optional = true)] public string BatchValueName { get; set; }
 
-        public int Line { get; set; }
-        public bool Tag { get; set; }
+        [CsvIgnore] public int Line { get; set; }
+        [CsvIgnore] public bool Tag { get; set; }
 
         public override string ToString()
         {
@@ -5579,27 +5553,25 @@ namespace TLEFileEZTools
 
         public void ProcessFile(string filename)
         {
-            CsvLoader.Load<RecmdInventoryApplicationShortcutData>(filename, DataList, TaggedLines, map =>
-            {
-                map.Map(t => t.Timestamp).TypeConverter<LenientDateTimeConverter>();
-            });
+            CsvLoader.Load<RecmdInventoryApplicationShortcutData>(filename, DataList, TaggedLines);
         }
     }
 
-    public class RecmdInventoryDeviceContainerData : IFileSpecData
+    [CsvRecord]
+    public partial class RecmdInventoryDeviceContainerData : IFileSpecData
     {
-        public DateTime? Timestamp { get; set; }
-        public string BatchKeyPath { get; set; }
-        public string ModelName { get; set; }
-        public string BatchValueName { get; set; }
-        public string FriendlyName { get; set; }
-        public string ModelNumber { get; set; }
-        public string Manufacturer { get; set; }
-        public string PrimaryCategory { get; set; }
-        public string ModelID { get; set; }
+        [CsvColumn(Optional = true), CsvConverter(typeof(LenientDateTimeConverter))] public DateTime? Timestamp { get; set; }
+        [CsvColumn(Optional = true)] public string BatchKeyPath { get; set; }
+        [CsvColumn(Optional = true)] public string ModelName { get; set; }
+        [CsvColumn(Optional = true)] public string BatchValueName { get; set; }
+        [CsvColumn(Optional = true)] public string FriendlyName { get; set; }
+        [CsvColumn(Optional = true)] public string ModelNumber { get; set; }
+        [CsvColumn(Optional = true)] public string Manufacturer { get; set; }
+        [CsvColumn(Optional = true)] public string PrimaryCategory { get; set; }
+        [CsvColumn(Optional = true)] public string ModelID { get; set; }
 
-        public int Line { get; set; }
-        public bool Tag { get; set; }
+        [CsvIgnore] public int Line { get; set; }
+        [CsvIgnore] public bool Tag { get; set; }
 
         public override string ToString()
         {
@@ -5635,27 +5607,25 @@ namespace TLEFileEZTools
 
         public void ProcessFile(string filename)
         {
-            CsvLoader.Load<RecmdInventoryDeviceContainerData>(filename, DataList, TaggedLines, map =>
-            {
-                map.Map(t => t.Timestamp).TypeConverter<LenientDateTimeConverter>();
-            });
+            CsvLoader.Load<RecmdInventoryDeviceContainerData>(filename, DataList, TaggedLines);
         }
     }
 
-    public class RecmdInventoryDevicePnpData : IFileSpecData
+    [CsvRecord]
+    public partial class RecmdInventoryDevicePnpData : IFileSpecData
     {
-        public DateTime? Timestamp { get; set; }
-        public string BatchKeyPath { get; set; }
-        public string Model { get; set; }
-        public string BatchValueName { get; set; }
-        public string Manufacturer { get; set; }
-        public string Description { get; set; }
-        public string InstallDate { get; set; }
-        public string ParentID { get; set; }
-        public string MatchingID { get; set; }
+        [CsvColumn(Optional = true), CsvConverter(typeof(LenientDateTimeConverter))] public DateTime? Timestamp { get; set; }
+        [CsvColumn(Optional = true)] public string BatchKeyPath { get; set; }
+        [CsvColumn(Optional = true)] public string Model { get; set; }
+        [CsvColumn(Optional = true)] public string BatchValueName { get; set; }
+        [CsvColumn(Optional = true)] public string Manufacturer { get; set; }
+        [CsvColumn(Optional = true)] public string Description { get; set; }
+        [CsvColumn(Optional = true)] public string InstallDate { get; set; }
+        [CsvColumn(Optional = true)] public string ParentID { get; set; }
+        [CsvColumn(Optional = true)] public string MatchingID { get; set; }
 
-        public int Line { get; set; }
-        public bool Tag { get; set; }
+        [CsvIgnore] public int Line { get; set; }
+        [CsvIgnore] public bool Tag { get; set; }
 
         public override string ToString()
         {
@@ -5691,29 +5661,27 @@ namespace TLEFileEZTools
 
         public void ProcessFile(string filename)
         {
-            CsvLoader.Load<RecmdInventoryDevicePnpData>(filename, DataList, TaggedLines, map =>
-            {
-                map.Map(t => t.Timestamp).TypeConverter<LenientDateTimeConverter>();
-            });
+            CsvLoader.Load<RecmdInventoryDevicePnpData>(filename, DataList, TaggedLines);
         }
     }
 
-    public class RecmdInventoryDriverBinaryData : IFileSpecData
+    [CsvRecord]
+    public partial class RecmdInventoryDriverBinaryData : IFileSpecData
     {
-        public DateTime? Timestamp { get; set; }
-        public string BatchKeyPath { get; set; }
-        public string DriverLastWriteTime { get; set; }
-        public string BatchValueName { get; set; }
-        public string DriverCompany { get; set; }
-        public string Product { get; set; }
-        public string ProductVersion { get; set; }
-        public string DriverName { get; set; }
-        public string DriverVersion { get; set; }
-        public string Path { get; set; }
-        public string SHA1 { get; set; }
+        [CsvColumn(Optional = true), CsvConverter(typeof(LenientDateTimeConverter))] public DateTime? Timestamp { get; set; }
+        [CsvColumn(Optional = true)] public string BatchKeyPath { get; set; }
+        [CsvColumn(Optional = true)] public string DriverLastWriteTime { get; set; }
+        [CsvColumn(Optional = true)] public string BatchValueName { get; set; }
+        [CsvColumn(Optional = true)] public string DriverCompany { get; set; }
+        [CsvColumn(Optional = true)] public string Product { get; set; }
+        [CsvColumn(Optional = true)] public string ProductVersion { get; set; }
+        [CsvColumn(Optional = true)] public string DriverName { get; set; }
+        [CsvColumn(Optional = true)] public string DriverVersion { get; set; }
+        [CsvColumn(Optional = true)] public string Path { get; set; }
+        [CsvColumn(Optional = true)] public string SHA1 { get; set; }
 
-        public int Line { get; set; }
-        public bool Tag { get; set; }
+        [CsvIgnore] public int Line { get; set; }
+        [CsvIgnore] public bool Tag { get; set; }
 
         public override string ToString()
         {
@@ -5749,22 +5717,20 @@ namespace TLEFileEZTools
 
         public void ProcessFile(string filename)
         {
-            CsvLoader.Load<RecmdInventoryDriverBinaryData>(filename, DataList, TaggedLines, map =>
-            {
-                map.Map(t => t.Timestamp).TypeConverter<LenientDateTimeConverter>();
-            });
+            CsvLoader.Load<RecmdInventoryDriverBinaryData>(filename, DataList, TaggedLines);
         }
     }
 
-    public class RecmdJumplistDataData : IFileSpecData
+    [CsvRecord]
+    public partial class RecmdJumplistDataData : IFileSpecData
     {
-        public string JumpListName { get; set; }
-        public string BatchKeyPath { get; set; }
-        public DateTime? ExecutedOn { get; set; }
-        public string BatchValueName { get; set; }
+        [CsvColumn(Optional = true)] public string JumpListName { get; set; }
+        [CsvColumn(Optional = true)] public string BatchKeyPath { get; set; }
+        [CsvColumn(Optional = true), CsvConverter(typeof(LenientDateTimeConverter))] public DateTime? ExecutedOn { get; set; }
+        [CsvColumn(Optional = true)] public string BatchValueName { get; set; }
 
-        public int Line { get; set; }
-        public bool Tag { get; set; }
+        [CsvIgnore] public int Line { get; set; }
+        [CsvIgnore] public bool Tag { get; set; }
 
         public override string ToString()
         {
@@ -5800,29 +5766,27 @@ namespace TLEFileEZTools
 
         public void ProcessFile(string filename)
         {
-            CsvLoader.Load<RecmdJumplistDataData>(filename, DataList, TaggedLines, map =>
-            {
-                map.Map(t => t.ExecutedOn).TypeConverter<LenientDateTimeConverter>();
-            });
+            CsvLoader.Load<RecmdJumplistDataData>(filename, DataList, TaggedLines);
         }
     }
 
-    public class RecmdKnownNetworksData : IFileSpecData
+    [CsvRecord]
+    public partial class RecmdKnownNetworksData : IFileSpecData
     {
-        public string FirstNetwork { get; set; }
-        public string BatchKeyPath { get; set; }
-        public string NetworkName { get; set; }
-        public string BatchValueName { get; set; }
-        public string NameType { get; set; }
-        public DateTime? FirstConnectLOCAL { get; set; }
-        public DateTime? LastConnectedLOCAL { get; set; }
-        public bool? Managed { get; set; }
-        public string DNSSuffix { get; set; }
-        public string GatewayMacAddress { get; set; }
-        public string ProfileGUID { get; set; }
+        [CsvColumn(Optional = true)] public string FirstNetwork { get; set; }
+        [CsvColumn(Optional = true)] public string BatchKeyPath { get; set; }
+        [CsvColumn(Optional = true)] public string NetworkName { get; set; }
+        [CsvColumn(Optional = true)] public string BatchValueName { get; set; }
+        [CsvColumn(Optional = true)] public string NameType { get; set; }
+        [CsvColumn(Optional = true), CsvConverter(typeof(LenientDateTimeConverter))] public DateTime? FirstConnectLOCAL { get; set; }
+        [CsvColumn(Optional = true), CsvConverter(typeof(LenientDateTimeConverter))] public DateTime? LastConnectedLOCAL { get; set; }
+        [CsvColumn(Optional = true)] public bool? Managed { get; set; }
+        [CsvColumn(Optional = true)] public string DNSSuffix { get; set; }
+        [CsvColumn(Optional = true)] public string GatewayMacAddress { get; set; }
+        [CsvColumn(Optional = true)] public string ProfileGUID { get; set; }
 
-        public int Line { get; set; }
-        public bool Tag { get; set; }
+        [CsvIgnore] public int Line { get; set; }
+        [CsvIgnore] public bool Tag { get; set; }
 
         public override string ToString()
         {
@@ -5858,26 +5822,23 @@ namespace TLEFileEZTools
 
         public void ProcessFile(string filename)
         {
-            CsvLoader.Load<RecmdKnownNetworksData>(filename, DataList, TaggedLines, map =>
-            {
-                map.Map(t => t.FirstConnectLOCAL).TypeConverter<LenientDateTimeConverter>();
-                map.Map(t => t.LastConnectedLOCAL).TypeConverter<LenientDateTimeConverter>();
-            });
+            CsvLoader.Load<RecmdKnownNetworksData>(filename, DataList, TaggedLines);
         }
     }
 
-    public class RecmdLastVisitedMRUData : IFileSpecData
+    [CsvRecord]
+    public partial class RecmdLastVisitedMRUData : IFileSpecData
     {
-        public string ValueName { get; set; }
-        public string BatchKeyPath { get; set; }
-        public long? MruPosition { get; set; }
-        public string BatchValueName { get; set; }
-        public string Executable { get; set; }
-        public string Directory { get; set; }
-        public DateTime? OpenedOn { get; set; }
+        [CsvColumn(Optional = true)] public string ValueName { get; set; }
+        [CsvColumn(Optional = true)] public string BatchKeyPath { get; set; }
+        [CsvColumn(Optional = true)] public long? MruPosition { get; set; }
+        [CsvColumn(Optional = true)] public string BatchValueName { get; set; }
+        [CsvColumn(Optional = true)] public string Executable { get; set; }
+        [CsvColumn(Optional = true)] public string Directory { get; set; }
+        [CsvColumn(Optional = true), CsvConverter(typeof(LenientDateTimeConverter))] public DateTime? OpenedOn { get; set; }
 
-        public int Line { get; set; }
-        public bool Tag { get; set; }
+        [CsvIgnore] public int Line { get; set; }
+        [CsvIgnore] public bool Tag { get; set; }
 
         public override string ToString()
         {
@@ -5913,26 +5874,24 @@ namespace TLEFileEZTools
 
         public void ProcessFile(string filename)
         {
-            CsvLoader.Load<RecmdLastVisitedMRUData>(filename, DataList, TaggedLines, map =>
-            {
-                map.Map(t => t.OpenedOn).TypeConverter<LenientDateTimeConverter>();
-            });
+            CsvLoader.Load<RecmdLastVisitedMRUData>(filename, DataList, TaggedLines);
         }
     }
 
-    public class RecmdLastVisitedPidlMRUData : IFileSpecData
+    [CsvRecord]
+    public partial class RecmdLastVisitedPidlMRUData : IFileSpecData
     {
-        public string ValueName { get; set; }
-        public string BatchKeyPath { get; set; }
-        public long? MruPosition { get; set; }
-        public string BatchValueName { get; set; }
-        public string Executable { get; set; }
-        public string AbsolutePath { get; set; }
-        public DateTime? OpenedOn { get; set; }
-        public string Details { get; set; }
+        [CsvColumn(Optional = true)] public string ValueName { get; set; }
+        [CsvColumn(Optional = true)] public string BatchKeyPath { get; set; }
+        [CsvColumn(Optional = true)] public long? MruPosition { get; set; }
+        [CsvColumn(Optional = true)] public string BatchValueName { get; set; }
+        [CsvColumn(Optional = true)] public string Executable { get; set; }
+        [CsvColumn(Optional = true)] public string AbsolutePath { get; set; }
+        [CsvColumn(Optional = true), CsvConverter(typeof(LenientDateTimeConverter))] public DateTime? OpenedOn { get; set; }
+        [CsvColumn(Optional = true)] public string Details { get; set; }
 
-        public int Line { get; set; }
-        public bool Tag { get; set; }
+        [CsvIgnore] public int Line { get; set; }
+        [CsvIgnore] public bool Tag { get; set; }
 
         public override string ToString()
         {
@@ -5968,22 +5927,20 @@ namespace TLEFileEZTools
 
         public void ProcessFile(string filename)
         {
-            CsvLoader.Load<RecmdLastVisitedPidlMRUData>(filename, DataList, TaggedLines, map =>
-            {
-                map.Map(t => t.OpenedOn).TypeConverter<LenientDateTimeConverter>();
-            });
+            CsvLoader.Load<RecmdLastVisitedPidlMRUData>(filename, DataList, TaggedLines);
         }
     }
 
-    public class RecmdMareData : IFileSpecData
+    [CsvRecord]
+    public partial class RecmdMareData : IFileSpecData
     {
-        public string Unknown { get; set; }
-        public string BatchKeyPath { get; set; }
-        public string Path { get; set; }
-        public string BatchValueName { get; set; }
+        [CsvColumn(Optional = true)] public string Unknown { get; set; }
+        [CsvColumn(Optional = true)] public string BatchKeyPath { get; set; }
+        [CsvColumn(Optional = true)] public string Path { get; set; }
+        [CsvColumn(Optional = true)] public string BatchValueName { get; set; }
 
-        public int Line { get; set; }
-        public bool Tag { get; set; }
+        [CsvIgnore] public int Line { get; set; }
+        [CsvIgnore] public bool Tag { get; set; }
 
         public override string ToString()
         {
@@ -6023,15 +5980,16 @@ namespace TLEFileEZTools
         }
     }
 
-    public class RecmdMountedDevicesData : IFileSpecData
+    [CsvRecord]
+    public partial class RecmdMountedDevicesData : IFileSpecData
     {
-        public string DeviceName { get; set; }
-        public string BatchKeyPath { get; set; }
-        public string DeviceData { get; set; }
-        public string BatchValueName { get; set; }
+        [CsvColumn(Optional = true)] public string DeviceName { get; set; }
+        [CsvColumn(Optional = true)] public string BatchKeyPath { get; set; }
+        [CsvColumn(Optional = true)] public string DeviceData { get; set; }
+        [CsvColumn(Optional = true)] public string BatchValueName { get; set; }
 
-        public int Line { get; set; }
-        public bool Tag { get; set; }
+        [CsvIgnore] public int Line { get; set; }
+        [CsvIgnore] public bool Tag { get; set; }
 
         public override string ToString()
         {
@@ -6071,19 +6029,20 @@ namespace TLEFileEZTools
         }
     }
 
-    public class RecmdNetworkAdaptersData : IFileSpecData
+    [CsvRecord]
+    public partial class RecmdNetworkAdaptersData : IFileSpecData
     {
-        public DateTime? Timestamp { get; set; }
-        public string BatchKeyPath { get; set; }
-        public string DriverDesc { get; set; }
-        public string BatchValueName { get; set; }
-        public string DriverDate { get; set; }
-        public string DriverVersion { get; set; }
-        public string ProviderName { get; set; }
-        public string DeviceInstanceid { get; set; }
+        [CsvColumn(Optional = true), CsvConverter(typeof(LenientDateTimeConverter))] public DateTime? Timestamp { get; set; }
+        [CsvColumn(Optional = true)] public string BatchKeyPath { get; set; }
+        [CsvColumn(Optional = true)] public string DriverDesc { get; set; }
+        [CsvColumn(Optional = true)] public string BatchValueName { get; set; }
+        [CsvColumn(Optional = true)] public string DriverDate { get; set; }
+        [CsvColumn(Optional = true)] public string DriverVersion { get; set; }
+        [CsvColumn(Optional = true)] public string ProviderName { get; set; }
+        [CsvColumn(Optional = true)] public string DeviceInstanceid { get; set; }
 
-        public int Line { get; set; }
-        public bool Tag { get; set; }
+        [CsvIgnore] public int Line { get; set; }
+        [CsvIgnore] public bool Tag { get; set; }
 
         public override string ToString()
         {
@@ -6119,30 +6078,28 @@ namespace TLEFileEZTools
 
         public void ProcessFile(string filename)
         {
-            CsvLoader.Load<RecmdNetworkAdaptersData>(filename, DataList, TaggedLines, map =>
-            {
-                map.Map(t => t.Timestamp).TypeConverter<LenientDateTimeConverter>();
-            });
+            CsvLoader.Load<RecmdNetworkAdaptersData>(filename, DataList, TaggedLines);
         }
     }
 
-    public class RecmdNetworkSettingsData : IFileSpecData
+    [CsvRecord]
+    public partial class RecmdNetworkSettingsData : IFileSpecData
     {
-        public string IPAddress { get; set; }
-        public string BatchKeyPath { get; set; }
-        public string SubnetMask { get; set; }
-        public string BatchValueName { get; set; }
-        public string DHCPSubnetMask { get; set; }
-        public string DHCPServer { get; set; }
-        public string DHCPNameServer { get; set; }
-        public string DHCPIPAddress { get; set; }
-        public string DHCPDefaultGateway { get; set; }
-        public DateTime? LeaseObtainedTime { get; set; }
-        public DateTime? LeaseTerminatesTime { get; set; }
-        public bool? EnabledDHCP { get; set; }
+        [CsvColumn(Optional = true)] public string IPAddress { get; set; }
+        [CsvColumn(Optional = true)] public string BatchKeyPath { get; set; }
+        [CsvColumn(Optional = true)] public string SubnetMask { get; set; }
+        [CsvColumn(Optional = true)] public string BatchValueName { get; set; }
+        [CsvColumn(Optional = true)] public string DHCPSubnetMask { get; set; }
+        [CsvColumn(Optional = true)] public string DHCPServer { get; set; }
+        [CsvColumn(Optional = true)] public string DHCPNameServer { get; set; }
+        [CsvColumn(Optional = true)] public string DHCPIPAddress { get; set; }
+        [CsvColumn(Optional = true)] public string DHCPDefaultGateway { get; set; }
+        [CsvColumn(Optional = true), CsvConverter(typeof(LenientDateTimeConverter))] public DateTime? LeaseObtainedTime { get; set; }
+        [CsvColumn(Optional = true), CsvConverter(typeof(LenientDateTimeConverter))] public DateTime? LeaseTerminatesTime { get; set; }
+        [CsvColumn(Optional = true)] public bool? EnabledDHCP { get; set; }
 
-        public int Line { get; set; }
-        public bool Tag { get; set; }
+        [CsvIgnore] public int Line { get; set; }
+        [CsvIgnore] public bool Tag { get; set; }
 
         public override string ToString()
         {
@@ -6178,27 +6135,24 @@ namespace TLEFileEZTools
 
         public void ProcessFile(string filename)
         {
-            CsvLoader.Load<RecmdNetworkSettingsData>(filename, DataList, TaggedLines, map =>
-            {
-                map.Map(t => t.LeaseObtainedTime).TypeConverter<LenientDateTimeConverter>();
-                map.Map(t => t.LeaseTerminatesTime).TypeConverter<LenientDateTimeConverter>();
-            });
+            CsvLoader.Load<RecmdNetworkSettingsData>(filename, DataList, TaggedLines);
         }
     }
 
-    public class RecmdNetworkSetup2Data : IFileSpecData
+    [CsvRecord]
+    public partial class RecmdNetworkSetup2Data : IFileSpecData
     {
-        public string ProtocolList { get; set; }
-        public string BatchKeyPath { get; set; }
-        public string Alias { get; set; }
-        public string BatchValueName { get; set; }
-        public string Description { get; set; }
-        public string Type { get; set; }
-        public string PermanentAddress { get; set; }
-        public string CurrentAddress { get; set; }
+        [CsvColumn(Optional = true)] public string ProtocolList { get; set; }
+        [CsvColumn(Optional = true)] public string BatchKeyPath { get; set; }
+        [CsvColumn(Optional = true)] public string Alias { get; set; }
+        [CsvColumn(Optional = true)] public string BatchValueName { get; set; }
+        [CsvColumn(Optional = true)] public string Description { get; set; }
+        [CsvColumn(Optional = true)] public string Type { get; set; }
+        [CsvColumn(Optional = true)] public string PermanentAddress { get; set; }
+        [CsvColumn(Optional = true)] public string CurrentAddress { get; set; }
 
-        public int Line { get; set; }
-        public bool Tag { get; set; }
+        [CsvIgnore] public int Line { get; set; }
+        [CsvIgnore] public bool Tag { get; set; }
 
         public override string ToString()
         {
@@ -6238,17 +6192,18 @@ namespace TLEFileEZTools
         }
     }
 
-    public class RecmdOfficeMRUData : IFileSpecData
+    [CsvRecord]
+    public partial class RecmdOfficeMRUData : IFileSpecData
     {
-        public string ValueName { get; set; }
-        public string BatchKeyPath { get; set; }
-        public DateTime? LastOpened { get; set; }
-        public string BatchValueName { get; set; }
-        public DateTime? LastClosed { get; set; }
-        public string FileName { get; set; }
+        [CsvColumn(Optional = true)] public string ValueName { get; set; }
+        [CsvColumn(Optional = true)] public string BatchKeyPath { get; set; }
+        [CsvColumn(Optional = true), CsvConverter(typeof(LenientDateTimeConverter))] public DateTime? LastOpened { get; set; }
+        [CsvColumn(Optional = true)] public string BatchValueName { get; set; }
+        [CsvColumn(Optional = true), CsvConverter(typeof(LenientDateTimeConverter))] public DateTime? LastClosed { get; set; }
+        [CsvColumn(Optional = true)] public string FileName { get; set; }
 
-        public int Line { get; set; }
-        public bool Tag { get; set; }
+        [CsvIgnore] public int Line { get; set; }
+        [CsvIgnore] public bool Tag { get; set; }
 
         public override string ToString()
         {
@@ -6284,26 +6239,23 @@ namespace TLEFileEZTools
 
         public void ProcessFile(string filename)
         {
-            CsvLoader.Load<RecmdOfficeMRUData>(filename, DataList, TaggedLines, map =>
-            {
-                map.Map(t => t.LastOpened).TypeConverter<LenientDateTimeConverter>();
-                map.Map(t => t.LastClosed).TypeConverter<LenientDateTimeConverter>();
-            });
+            CsvLoader.Load<RecmdOfficeMRUData>(filename, DataList, TaggedLines);
         }
     }
 
-    public class RecmdOpenSaveMRUData : IFileSpecData
+    [CsvRecord]
+    public partial class RecmdOpenSaveMRUData : IFileSpecData
     {
-        public string Extension { get; set; }
-        public string BatchKeyPath { get; set; }
-        public string ValueName { get; set; }
-        public string BatchValueName { get; set; }
-        public long? MruPosition { get; set; }
-        public string Filename { get; set; }
-        public DateTime? OpenedOn { get; set; }
+        [CsvColumn(Optional = true)] public string Extension { get; set; }
+        [CsvColumn(Optional = true)] public string BatchKeyPath { get; set; }
+        [CsvColumn(Optional = true)] public string ValueName { get; set; }
+        [CsvColumn(Optional = true)] public string BatchValueName { get; set; }
+        [CsvColumn(Optional = true)] public long? MruPosition { get; set; }
+        [CsvColumn(Optional = true)] public string Filename { get; set; }
+        [CsvColumn(Optional = true), CsvConverter(typeof(LenientDateTimeConverter))] public DateTime? OpenedOn { get; set; }
 
-        public int Line { get; set; }
-        public bool Tag { get; set; }
+        [CsvIgnore] public int Line { get; set; }
+        [CsvIgnore] public bool Tag { get; set; }
 
         public override string ToString()
         {
@@ -6339,26 +6291,24 @@ namespace TLEFileEZTools
 
         public void ProcessFile(string filename)
         {
-            CsvLoader.Load<RecmdOpenSaveMRUData>(filename, DataList, TaggedLines, map =>
-            {
-                map.Map(t => t.OpenedOn).TypeConverter<LenientDateTimeConverter>();
-            });
+            CsvLoader.Load<RecmdOpenSaveMRUData>(filename, DataList, TaggedLines);
         }
     }
 
-    public class RecmdOpenSavePidlMRUData : IFileSpecData
+    [CsvRecord]
+    public partial class RecmdOpenSavePidlMRUData : IFileSpecData
     {
-        public string Extension { get; set; }
-        public string BatchKeyPath { get; set; }
-        public string ValueName { get; set; }
-        public string BatchValueName { get; set; }
-        public long? MruPosition { get; set; }
-        public string AbsolutePath { get; set; }
-        public DateTime? OpenedOn { get; set; }
-        public string Details { get; set; }
+        [CsvColumn(Optional = true)] public string Extension { get; set; }
+        [CsvColumn(Optional = true)] public string BatchKeyPath { get; set; }
+        [CsvColumn(Optional = true)] public string ValueName { get; set; }
+        [CsvColumn(Optional = true)] public string BatchValueName { get; set; }
+        [CsvColumn(Optional = true)] public long? MruPosition { get; set; }
+        [CsvColumn(Optional = true)] public string AbsolutePath { get; set; }
+        [CsvColumn(Optional = true), CsvConverter(typeof(LenientDateTimeConverter))] public DateTime? OpenedOn { get; set; }
+        [CsvColumn(Optional = true)] public string Details { get; set; }
 
-        public int Line { get; set; }
-        public bool Tag { get; set; }
+        [CsvIgnore] public int Line { get; set; }
+        [CsvIgnore] public bool Tag { get; set; }
 
         public override string ToString()
         {
@@ -6394,29 +6344,27 @@ namespace TLEFileEZTools
 
         public void ProcessFile(string filename)
         {
-            CsvLoader.Load<RecmdOpenSavePidlMRUData>(filename, DataList, TaggedLines, map =>
-            {
-                map.Map(t => t.OpenedOn).TypeConverter<LenientDateTimeConverter>();
-            });
+            CsvLoader.Load<RecmdOpenSavePidlMRUData>(filename, DataList, TaggedLines);
         }
     }
 
-    public class RecmdProductsData : IFileSpecData
+    [CsvRecord]
+    public partial class RecmdProductsData : IFileSpecData
     {
-        public DateTime? Timestamp { get; set; }
-        public string BatchKeyPath { get; set; }
-        public string DisplayName { get; set; }
-        public string BatchValueName { get; set; }
-        public string PackageName { get; set; }
-        public string InstallDate { get; set; }
-        public string Publisher { get; set; }
-        public string Language { get; set; }
-        public string InstallLocation { get; set; }
-        public string InstallSource { get; set; }
-        public string Comments { get; set; }
+        [CsvColumn(Optional = true), CsvConverter(typeof(LenientDateTimeConverter))] public DateTime? Timestamp { get; set; }
+        [CsvColumn(Optional = true)] public string BatchKeyPath { get; set; }
+        [CsvColumn(Optional = true)] public string DisplayName { get; set; }
+        [CsvColumn(Optional = true)] public string BatchValueName { get; set; }
+        [CsvColumn(Optional = true)] public string PackageName { get; set; }
+        [CsvColumn(Optional = true)] public string InstallDate { get; set; }
+        [CsvColumn(Optional = true)] public string Publisher { get; set; }
+        [CsvColumn(Optional = true)] public string Language { get; set; }
+        [CsvColumn(Optional = true)] public string InstallLocation { get; set; }
+        [CsvColumn(Optional = true)] public string InstallSource { get; set; }
+        [CsvColumn(Optional = true)] public string Comments { get; set; }
 
-        public int Line { get; set; }
-        public bool Tag { get; set; }
+        [CsvIgnore] public int Line { get; set; }
+        [CsvIgnore] public bool Tag { get; set; }
 
         public override string ToString()
         {
@@ -6452,25 +6400,23 @@ namespace TLEFileEZTools
 
         public void ProcessFile(string filename)
         {
-            CsvLoader.Load<RecmdProductsData>(filename, DataList, TaggedLines, map =>
-            {
-                map.Map(t => t.Timestamp).TypeConverter<LenientDateTimeConverter>();
-            });
+            CsvLoader.Load<RecmdProductsData>(filename, DataList, TaggedLines);
         }
     }
 
-    public class RecmdProfileListData : IFileSpecData
+    [CsvRecord]
+    public partial class RecmdProfileListData : IFileSpecData
     {
-        public DateTime? Timestamp { get; set; }
-        public string BatchKeyPath { get; set; }
-        public string KeyName { get; set; }
-        public string BatchValueName { get; set; }
-        public string ProfileImagePath { get; set; }
-        public DateTime? LastLogonTime { get; set; }
-        public DateTime? LastLogoffTime { get; set; }
+        [CsvColumn(Optional = true), CsvConverter(typeof(LenientDateTimeConverter))] public DateTime? Timestamp { get; set; }
+        [CsvColumn(Optional = true)] public string BatchKeyPath { get; set; }
+        [CsvColumn(Optional = true)] public string KeyName { get; set; }
+        [CsvColumn(Optional = true)] public string BatchValueName { get; set; }
+        [CsvColumn(Optional = true)] public string ProfileImagePath { get; set; }
+        [CsvColumn(Optional = true), CsvConverter(typeof(LenientDateTimeConverter))] public DateTime? LastLogonTime { get; set; }
+        [CsvColumn(Optional = true), CsvConverter(typeof(LenientDateTimeConverter))] public DateTime? LastLogoffTime { get; set; }
 
-        public int Line { get; set; }
-        public bool Tag { get; set; }
+        [CsvIgnore] public int Line { get; set; }
+        [CsvIgnore] public bool Tag { get; set; }
 
         public override string ToString()
         {
@@ -6506,25 +6452,21 @@ namespace TLEFileEZTools
 
         public void ProcessFile(string filename)
         {
-            CsvLoader.Load<RecmdProfileListData>(filename, DataList, TaggedLines, map =>
-            {
-                map.Map(t => t.Timestamp).TypeConverter<LenientDateTimeConverter>();
-                map.Map(t => t.LastLogonTime).TypeConverter<LenientDateTimeConverter>();
-                map.Map(t => t.LastLogoffTime).TypeConverter<LenientDateTimeConverter>();
-            });
+            CsvLoader.Load<RecmdProfileListData>(filename, DataList, TaggedLines);
         }
     }
 
-    public class RecmdRADARData : IFileSpecData
+    [CsvRecord]
+    public partial class RecmdRADARData : IFileSpecData
     {
-        public string KeyName { get; set; }
-        public string BatchKeyPath { get; set; }
-        public string Filename { get; set; }
-        public string BatchValueName { get; set; }
-        public DateTime? LastDetectionTime { get; set; }
+        [CsvColumn(Optional = true)] public string KeyName { get; set; }
+        [CsvColumn(Optional = true)] public string BatchKeyPath { get; set; }
+        [CsvColumn(Optional = true)] public string Filename { get; set; }
+        [CsvColumn(Optional = true)] public string BatchValueName { get; set; }
+        [CsvColumn(Optional = true), CsvConverter(typeof(LenientDateTimeConverter))] public DateTime? LastDetectionTime { get; set; }
 
-        public int Line { get; set; }
-        public bool Tag { get; set; }
+        [CsvIgnore] public int Line { get; set; }
+        [CsvIgnore] public bool Tag { get; set; }
 
         public override string ToString()
         {
@@ -6560,26 +6502,24 @@ namespace TLEFileEZTools
 
         public void ProcessFile(string filename)
         {
-            CsvLoader.Load<RecmdRADARData>(filename, DataList, TaggedLines, map =>
-            {
-                map.Map(t => t.LastDetectionTime).TypeConverter<LenientDateTimeConverter>();
-            });
+            CsvLoader.Load<RecmdRADARData>(filename, DataList, TaggedLines);
         }
     }
 
-    public class RecmdRecentAppsData : IFileSpecData
+    [CsvRecord]
+    public partial class RecmdRecentAppsData : IFileSpecData
     {
-        public string KeyName { get; set; }
-        public string BatchKeyPath { get; set; }
-        public string AppId { get; set; }
-        public string BatchValueName { get; set; }
-        public string AppPath { get; set; }
-        public DateTime? LastAccessed { get; set; }
-        public long? LaunchCount { get; set; }
-        public string RecentDocs { get; set; }
+        [CsvColumn(Optional = true)] public string KeyName { get; set; }
+        [CsvColumn(Optional = true)] public string BatchKeyPath { get; set; }
+        [CsvColumn(Optional = true)] public string AppId { get; set; }
+        [CsvColumn(Optional = true)] public string BatchValueName { get; set; }
+        [CsvColumn(Optional = true)] public string AppPath { get; set; }
+        [CsvColumn(Optional = true), CsvConverter(typeof(LenientDateTimeConverter))] public DateTime? LastAccessed { get; set; }
+        [CsvColumn(Optional = true)] public long? LaunchCount { get; set; }
+        [CsvColumn(Optional = true)] public string RecentDocs { get; set; }
 
-        public int Line { get; set; }
-        public bool Tag { get; set; }
+        [CsvIgnore] public int Line { get; set; }
+        [CsvIgnore] public bool Tag { get; set; }
 
         public override string ToString()
         {
@@ -6615,27 +6555,25 @@ namespace TLEFileEZTools
 
         public void ProcessFile(string filename)
         {
-            CsvLoader.Load<RecmdRecentAppsData>(filename, DataList, TaggedLines, map =>
-            {
-                map.Map(t => t.LastAccessed).TypeConverter<LenientDateTimeConverter>();
-            });
+            CsvLoader.Load<RecmdRecentAppsData>(filename, DataList, TaggedLines);
         }
     }
 
-    public class RecmdRecentDocsData : IFileSpecData
+    [CsvRecord]
+    public partial class RecmdRecentDocsData : IFileSpecData
     {
-        public string Extension { get; set; }
-        public string BatchKeyPath { get; set; }
-        public string ValueName { get; set; }
-        public string BatchValueName { get; set; }
-        public string TargetName { get; set; }
-        public string LnkName { get; set; }
-        public long? MruPosition { get; set; }
-        public DateTime? OpenedOn { get; set; }
-        public DateTime? ExtensionLastOpened { get; set; }
+        [CsvColumn(Optional = true)] public string Extension { get; set; }
+        [CsvColumn(Optional = true)] public string BatchKeyPath { get; set; }
+        [CsvColumn(Optional = true)] public string ValueName { get; set; }
+        [CsvColumn(Optional = true)] public string BatchValueName { get; set; }
+        [CsvColumn(Optional = true)] public string TargetName { get; set; }
+        [CsvColumn(Optional = true)] public string LnkName { get; set; }
+        [CsvColumn(Optional = true)] public long? MruPosition { get; set; }
+        [CsvColumn(Optional = true), CsvConverter(typeof(LenientDateTimeConverter))] public DateTime? OpenedOn { get; set; }
+        [CsvColumn(Optional = true), CsvConverter(typeof(LenientDateTimeConverter))] public DateTime? ExtensionLastOpened { get; set; }
 
-        public int Line { get; set; }
-        public bool Tag { get; set; }
+        [CsvIgnore] public int Line { get; set; }
+        [CsvIgnore] public bool Tag { get; set; }
 
         public override string ToString()
         {
@@ -6671,25 +6609,22 @@ namespace TLEFileEZTools
 
         public void ProcessFile(string filename)
         {
-            CsvLoader.Load<RecmdRecentDocsData>(filename, DataList, TaggedLines, map =>
-            {
-                map.Map(t => t.OpenedOn).TypeConverter<LenientDateTimeConverter>();
-                map.Map(t => t.ExtensionLastOpened).TypeConverter<LenientDateTimeConverter>();
-            });
+            CsvLoader.Load<RecmdRecentDocsData>(filename, DataList, TaggedLines);
         }
     }
 
-    public class RecmdRunMRUData : IFileSpecData
+    [CsvRecord]
+    public partial class RecmdRunMRUData : IFileSpecData
     {
-        public string ValueName { get; set; }
-        public string BatchKeyPath { get; set; }
-        public long? MruPosition { get; set; }
-        public string BatchValueName { get; set; }
-        public string Executable { get; set; }
-        public DateTime? OpenedOn { get; set; }
+        [CsvColumn(Optional = true)] public string ValueName { get; set; }
+        [CsvColumn(Optional = true)] public string BatchKeyPath { get; set; }
+        [CsvColumn(Optional = true)] public long? MruPosition { get; set; }
+        [CsvColumn(Optional = true)] public string BatchValueName { get; set; }
+        [CsvColumn(Optional = true)] public string Executable { get; set; }
+        [CsvColumn(Optional = true), CsvConverter(typeof(LenientDateTimeConverter))] public DateTime? OpenedOn { get; set; }
 
-        public int Line { get; set; }
-        public bool Tag { get; set; }
+        [CsvIgnore] public int Line { get; set; }
+        [CsvIgnore] public bool Tag { get; set; }
 
         public override string ToString()
         {
@@ -6725,23 +6660,21 @@ namespace TLEFileEZTools
 
         public void ProcessFile(string filename)
         {
-            CsvLoader.Load<RecmdRunMRUData>(filename, DataList, TaggedLines, map =>
-            {
-                map.Map(t => t.OpenedOn).TypeConverter<LenientDateTimeConverter>();
-            });
+            CsvLoader.Load<RecmdRunMRUData>(filename, DataList, TaggedLines);
         }
     }
 
-    public class RecmdSAMBuiltinData : IFileSpecData
+    [CsvRecord]
+    public partial class RecmdSAMBuiltinData : IFileSpecData
     {
-        public string GroupName { get; set; }
-        public string BatchKeyPath { get; set; }
-        public string Comment { get; set; }
-        public string BatchValueName { get; set; }
-        public string Users { get; set; }
+        [CsvColumn(Optional = true)] public string GroupName { get; set; }
+        [CsvColumn(Optional = true)] public string BatchKeyPath { get; set; }
+        [CsvColumn(Optional = true)] public string Comment { get; set; }
+        [CsvColumn(Optional = true)] public string BatchValueName { get; set; }
+        [CsvColumn(Optional = true)] public string Users { get; set; }
 
-        public int Line { get; set; }
-        public bool Tag { get; set; }
+        [CsvIgnore] public int Line { get; set; }
+        [CsvIgnore] public bool Tag { get; set; }
 
         public override string ToString()
         {
@@ -6781,24 +6714,25 @@ namespace TLEFileEZTools
         }
     }
 
-    public class RecmdSCSIData : IFileSpecData
+    [CsvRecord]
+    public partial class RecmdSCSIData : IFileSpecData
     {
-        public DateTime? Timestamp { get; set; }
-        public string BatchKeyPath { get; set; }
-        public string Manufacturer { get; set; }
-        public string BatchValueName { get; set; }
-        public string Title { get; set; }
-        public string SerialNumber { get; set; }
-        public string DeviceName { get; set; }
-        public string DiskId { get; set; }
-        public DateTime? InitialTimestamp { get; set; }
-        public DateTime? Installed { get; set; }
-        public DateTime? FirstInstalled { get; set; }
-        public DateTime? LastConnected { get; set; }
-        public DateTime? LastRemoved { get; set; }
+        [CsvColumn(Optional = true), CsvConverter(typeof(LenientDateTimeConverter))] public DateTime? Timestamp { get; set; }
+        [CsvColumn(Optional = true)] public string BatchKeyPath { get; set; }
+        [CsvColumn(Optional = true)] public string Manufacturer { get; set; }
+        [CsvColumn(Optional = true)] public string BatchValueName { get; set; }
+        [CsvColumn(Optional = true)] public string Title { get; set; }
+        [CsvColumn(Optional = true)] public string SerialNumber { get; set; }
+        [CsvColumn(Optional = true)] public string DeviceName { get; set; }
+        [CsvColumn(Optional = true)] public string DiskId { get; set; }
+        [CsvColumn(Optional = true), CsvConverter(typeof(LenientDateTimeConverter))] public DateTime? InitialTimestamp { get; set; }
+        [CsvColumn(Optional = true), CsvConverter(typeof(LenientDateTimeConverter))] public DateTime? Installed { get; set; }
+        [CsvColumn(Optional = true), CsvConverter(typeof(LenientDateTimeConverter))] public DateTime? FirstInstalled { get; set; }
+        [CsvColumn(Optional = true), CsvConverter(typeof(LenientDateTimeConverter))] public DateTime? LastConnected { get; set; }
+        [CsvColumn(Optional = true), CsvConverter(typeof(LenientDateTimeConverter))] public DateTime? LastRemoved { get; set; }
 
-        public int Line { get; set; }
-        public bool Tag { get; set; }
+        [CsvIgnore] public int Line { get; set; }
+        [CsvIgnore] public bool Tag { get; set; }
 
         public override string ToString()
         {
@@ -6834,34 +6768,27 @@ namespace TLEFileEZTools
 
         public void ProcessFile(string filename)
         {
-            CsvLoader.Load<RecmdSCSIData>(filename, DataList, TaggedLines, map =>
-            {
-                map.Map(t => t.Timestamp).TypeConverter<LenientDateTimeConverter>();
-                map.Map(t => t.InitialTimestamp).TypeConverter<LenientDateTimeConverter>();
-                map.Map(t => t.Installed).TypeConverter<LenientDateTimeConverter>();
-                map.Map(t => t.FirstInstalled).TypeConverter<LenientDateTimeConverter>();
-                map.Map(t => t.LastConnected).TypeConverter<LenientDateTimeConverter>();
-                map.Map(t => t.LastRemoved).TypeConverter<LenientDateTimeConverter>();
-            });
+            CsvLoader.Load<RecmdSCSIData>(filename, DataList, TaggedLines);
         }
     }
 
-    public class RecmdSWDData : IFileSpecData
+    [CsvRecord]
+    public partial class RecmdSWDData : IFileSpecData
     {
-        public string Type { get; set; }
-        public string BatchKeyPath { get; set; }
-        public string KeyName { get; set; }
-        public string BatchValueName { get; set; }
-        public string Service { get; set; }
-        public string DeviceDesc { get; set; }
-        public string FriendlyName { get; set; }
-        public DateTime? Installed { get; set; }
-        public DateTime? FirstInstalled { get; set; }
-        public DateTime? LastConnected { get; set; }
-        public DateTime? LastRemoved { get; set; }
+        [CsvColumn(Optional = true)] public string Type { get; set; }
+        [CsvColumn(Optional = true)] public string BatchKeyPath { get; set; }
+        [CsvColumn(Optional = true)] public string KeyName { get; set; }
+        [CsvColumn(Optional = true)] public string BatchValueName { get; set; }
+        [CsvColumn(Optional = true)] public string Service { get; set; }
+        [CsvColumn(Optional = true)] public string DeviceDesc { get; set; }
+        [CsvColumn(Optional = true)] public string FriendlyName { get; set; }
+        [CsvColumn(Optional = true), CsvConverter(typeof(LenientDateTimeConverter))] public DateTime? Installed { get; set; }
+        [CsvColumn(Optional = true), CsvConverter(typeof(LenientDateTimeConverter))] public DateTime? FirstInstalled { get; set; }
+        [CsvColumn(Optional = true), CsvConverter(typeof(LenientDateTimeConverter))] public DateTime? LastConnected { get; set; }
+        [CsvColumn(Optional = true), CsvConverter(typeof(LenientDateTimeConverter))] public DateTime? LastRemoved { get; set; }
 
-        public int Line { get; set; }
-        public bool Tag { get; set; }
+        [CsvIgnore] public int Line { get; set; }
+        [CsvIgnore] public bool Tag { get; set; }
 
         public override string ToString()
         {
@@ -6897,34 +6824,29 @@ namespace TLEFileEZTools
 
         public void ProcessFile(string filename)
         {
-            CsvLoader.Load<RecmdSWDData>(filename, DataList, TaggedLines, map =>
-            {
-                map.Map(t => t.Installed).TypeConverter<LenientDateTimeConverter>();
-                map.Map(t => t.FirstInstalled).TypeConverter<LenientDateTimeConverter>();
-                map.Map(t => t.LastConnected).TypeConverter<LenientDateTimeConverter>();
-                map.Map(t => t.LastRemoved).TypeConverter<LenientDateTimeConverter>();
-            });
+            CsvLoader.Load<RecmdSWDData>(filename, DataList, TaggedLines);
         }
     }
 
-    public class RecmdServicesData : IFileSpecData
+    [CsvRecord]
+    public partial class RecmdServicesData : IFileSpecData
     {
-        public string Name { get; set; }
-        public string BatchKeyPath { get; set; }
-        public string Description { get; set; }
-        public string BatchValueName { get; set; }
-        public string DisplayName { get; set; }
-        public string StartMode { get; set; }
-        public string ServiceType { get; set; }
-        public DateTime? NameKeyLastWrite { get; set; }
-        public DateTime? ParametersKeyLastWrite { get; set; }
-        public string Group { get; set; }
-        public string ImagePath { get; set; }
-        public string ServiceDLL { get; set; }
-        public string RequiredPrivileges { get; set; }
+        [CsvColumn(Optional = true)] public string Name { get; set; }
+        [CsvColumn(Optional = true)] public string BatchKeyPath { get; set; }
+        [CsvColumn(Optional = true)] public string Description { get; set; }
+        [CsvColumn(Optional = true)] public string BatchValueName { get; set; }
+        [CsvColumn(Optional = true)] public string DisplayName { get; set; }
+        [CsvColumn(Optional = true)] public string StartMode { get; set; }
+        [CsvColumn(Optional = true)] public string ServiceType { get; set; }
+        [CsvColumn(Optional = true), CsvConverter(typeof(LenientDateTimeConverter))] public DateTime? NameKeyLastWrite { get; set; }
+        [CsvColumn(Optional = true), CsvConverter(typeof(LenientDateTimeConverter))] public DateTime? ParametersKeyLastWrite { get; set; }
+        [CsvColumn(Optional = true)] public string Group { get; set; }
+        [CsvColumn(Optional = true)] public string ImagePath { get; set; }
+        [CsvColumn(Optional = true)] public string ServiceDLL { get; set; }
+        [CsvColumn(Optional = true)] public string RequiredPrivileges { get; set; }
 
-        public int Line { get; set; }
-        public bool Tag { get; set; }
+        [CsvIgnore] public int Line { get; set; }
+        [CsvIgnore] public bool Tag { get; set; }
 
         public override string ToString()
         {
@@ -6960,22 +6882,19 @@ namespace TLEFileEZTools
 
         public void ProcessFile(string filename)
         {
-            CsvLoader.Load<RecmdServicesData>(filename, DataList, TaggedLines, map =>
-            {
-                map.Map(t => t.NameKeyLastWrite).TypeConverter<LenientDateTimeConverter>();
-                map.Map(t => t.ParametersKeyLastWrite).TypeConverter<LenientDateTimeConverter>();
-            });
+            CsvLoader.Load<RecmdServicesData>(filename, DataList, TaggedLines);
         }
     }
 
-    public class RecmdSevenZipData : IFileSpecData
+    [CsvRecord]
+    public partial class RecmdSevenZipData : IFileSpecData
     {
-        public string ArchiveName { get; set; }
-        public string BatchKeyPath { get; set; }
-        public string BatchValueName { get; set; }
+        [CsvColumn(Optional = true)] public string ArchiveName { get; set; }
+        [CsvColumn(Optional = true)] public string BatchKeyPath { get; set; }
+        [CsvColumn(Optional = true)] public string BatchValueName { get; set; }
 
-        public int Line { get; set; }
-        public bool Tag { get; set; }
+        [CsvIgnore] public int Line { get; set; }
+        [CsvIgnore] public bool Tag { get; set; }
 
         public override string ToString()
         {
@@ -7015,14 +6934,15 @@ namespace TLEFileEZTools
         }
     }
 
-    public class RecmdSevenZipCopyHistoryData : IFileSpecData
+    [CsvRecord]
+    public partial class RecmdSevenZipCopyHistoryData : IFileSpecData
     {
-        public string CopyPath { get; set; }
-        public string BatchKeyPath { get; set; }
-        public string BatchValueName { get; set; }
+        [CsvColumn(Optional = true)] public string CopyPath { get; set; }
+        [CsvColumn(Optional = true)] public string BatchKeyPath { get; set; }
+        [CsvColumn(Optional = true)] public string BatchValueName { get; set; }
 
-        public int Line { get; set; }
-        public bool Tag { get; set; }
+        [CsvIgnore] public int Line { get; set; }
+        [CsvIgnore] public bool Tag { get; set; }
 
         public override string ToString()
         {
@@ -7062,14 +6982,15 @@ namespace TLEFileEZTools
         }
     }
 
-    public class RecmdSevenZipFolderHistoryData : IFileSpecData
+    [CsvRecord]
+    public partial class RecmdSevenZipFolderHistoryData : IFileSpecData
     {
-        public string FolderPath { get; set; }
-        public string BatchKeyPath { get; set; }
-        public string BatchValueName { get; set; }
+        [CsvColumn(Optional = true)] public string FolderPath { get; set; }
+        [CsvColumn(Optional = true)] public string BatchKeyPath { get; set; }
+        [CsvColumn(Optional = true)] public string BatchValueName { get; set; }
 
-        public int Line { get; set; }
-        public bool Tag { get; set; }
+        [CsvIgnore] public int Line { get; set; }
+        [CsvIgnore] public bool Tag { get; set; }
 
         public override string ToString()
         {
@@ -7109,14 +7030,15 @@ namespace TLEFileEZTools
         }
     }
 
-    public class RecmdSevenZipPathHistoryData : IFileSpecData
+    [CsvRecord]
+    public partial class RecmdSevenZipPathHistoryData : IFileSpecData
     {
-        public string ExtractionPath { get; set; }
-        public string BatchKeyPath { get; set; }
-        public string BatchValueName { get; set; }
+        [CsvColumn(Optional = true)] public string ExtractionPath { get; set; }
+        [CsvColumn(Optional = true)] public string BatchKeyPath { get; set; }
+        [CsvColumn(Optional = true)] public string BatchValueName { get; set; }
 
-        public int Line { get; set; }
-        public bool Tag { get; set; }
+        [CsvIgnore] public int Line { get; set; }
+        [CsvIgnore] public bool Tag { get; set; }
 
         public override string ToString()
         {
@@ -7156,23 +7078,24 @@ namespace TLEFileEZTools
         }
     }
 
-    public class RecmdSyscacheObjectTableData : IFileSpecData
+    [CsvRecord]
+    public partial class RecmdSyscacheObjectTableData : IFileSpecData
     {
-        public string KeyPath { get; set; }
-        public string BatchKeyPath { get; set; }
-        public long? ObjectId { get; set; }
-        public string BatchValueName { get; set; }
-        public long? ObjectLru { get; set; }
-        public long? Usn { get; set; }
-        public long? UsnJournalId { get; set; }
-        public long? MftEntryNumber { get; set; }
-        public long? MftSequenceNumber { get; set; }
-        public string Sha1 { get; set; }
-        public string AeProgramId { get; set; }
-        public DateTime? LastWriteTime { get; set; }
+        [CsvColumn(Optional = true)] public string KeyPath { get; set; }
+        [CsvColumn(Optional = true)] public string BatchKeyPath { get; set; }
+        [CsvColumn(Optional = true)] public long? ObjectId { get; set; }
+        [CsvColumn(Optional = true)] public string BatchValueName { get; set; }
+        [CsvColumn(Optional = true)] public long? ObjectLru { get; set; }
+        [CsvColumn(Optional = true)] public long? Usn { get; set; }
+        [CsvColumn(Optional = true)] public long? UsnJournalId { get; set; }
+        [CsvColumn(Optional = true)] public long? MftEntryNumber { get; set; }
+        [CsvColumn(Optional = true)] public long? MftSequenceNumber { get; set; }
+        [CsvColumn(Optional = true)] public string Sha1 { get; set; }
+        [CsvColumn(Optional = true)] public string AeProgramId { get; set; }
+        [CsvColumn(Optional = true), CsvConverter(typeof(LenientDateTimeConverter))] public DateTime? LastWriteTime { get; set; }
 
-        public int Line { get; set; }
-        public bool Tag { get; set; }
+        [CsvIgnore] public int Line { get; set; }
+        [CsvIgnore] public bool Tag { get; set; }
 
         public override string ToString()
         {
@@ -7208,34 +7131,32 @@ namespace TLEFileEZTools
 
         public void ProcessFile(string filename)
         {
-            CsvLoader.Load<RecmdSyscacheObjectTableData>(filename, DataList, TaggedLines, map =>
-            {
-                map.Map(t => t.LastWriteTime).TypeConverter<LenientDateTimeConverter>();
-            });
+            CsvLoader.Load<RecmdSyscacheObjectTableData>(filename, DataList, TaggedLines);
         }
     }
 
-    public class RecmdTaskCacheData : IFileSpecData
+    [CsvRecord]
+    public partial class RecmdTaskCacheData : IFileSpecData
     {
-        public long? Version { get; set; }
-        public string BatchKeyPath { get; set; }
-        public string KeyName { get; set; }
-        public string BatchValueName { get; set; }
-        public string Path { get; set; }
-        public DateTime? CreatedOn { get; set; }
-        public DateTime? LastStart { get; set; }
-        public DateTime? LastStop { get; set; }
-        public long? TaskState { get; set; }
-        public long? LastActionResult { get; set; }
-        public string Source { get; set; }
-        public string Description { get; set; }
-        public string Command { get; set; }
-        public string Arguments { get; set; }
-        public string SecurityDescriptor { get; set; }
-        public string Author { get; set; }
+        [CsvColumn(Optional = true)] public long? Version { get; set; }
+        [CsvColumn(Optional = true)] public string BatchKeyPath { get; set; }
+        [CsvColumn(Optional = true)] public string KeyName { get; set; }
+        [CsvColumn(Optional = true)] public string BatchValueName { get; set; }
+        [CsvColumn(Optional = true)] public string Path { get; set; }
+        [CsvColumn(Optional = true), CsvConverter(typeof(LenientDateTimeConverter))] public DateTime? CreatedOn { get; set; }
+        [CsvColumn(Optional = true), CsvConverter(typeof(LenientDateTimeConverter))] public DateTime? LastStart { get; set; }
+        [CsvColumn(Optional = true), CsvConverter(typeof(LenientDateTimeConverter))] public DateTime? LastStop { get; set; }
+        [CsvColumn(Optional = true)] public long? TaskState { get; set; }
+        [CsvColumn(Optional = true)] public long? LastActionResult { get; set; }
+        [CsvColumn(Optional = true)] public string Source { get; set; }
+        [CsvColumn(Optional = true)] public string Description { get; set; }
+        [CsvColumn(Optional = true)] public string Command { get; set; }
+        [CsvColumn(Optional = true)] public string Arguments { get; set; }
+        [CsvColumn(Optional = true)] public string SecurityDescriptor { get; set; }
+        [CsvColumn(Optional = true)] public string Author { get; set; }
 
-        public int Line { get; set; }
-        public bool Tag { get; set; }
+        [CsvIgnore] public int Line { get; set; }
+        [CsvIgnore] public bool Tag { get; set; }
 
         public override string ToString()
         {
@@ -7271,27 +7192,23 @@ namespace TLEFileEZTools
 
         public void ProcessFile(string filename)
         {
-            CsvLoader.Load<RecmdTaskCacheData>(filename, DataList, TaggedLines, map =>
-            {
-                map.Map(t => t.CreatedOn).TypeConverter<LenientDateTimeConverter>();
-                map.Map(t => t.LastStart).TypeConverter<LenientDateTimeConverter>();
-                map.Map(t => t.LastStop).TypeConverter<LenientDateTimeConverter>();
-            });
+            CsvLoader.Load<RecmdTaskCacheData>(filename, DataList, TaggedLines);
         }
     }
 
-    public class RecmdTaskFlowShellActivitiesData : IFileSpecData
+    [CsvRecord]
+    public partial class RecmdTaskFlowShellActivitiesData : IFileSpecData
     {
-        public long? Position { get; set; }
-        public string BatchKeyPath { get; set; }
-        public string FullPath { get; set; }
-        public string BatchValueName { get; set; }
-        public string ExeName { get; set; }
-        public string WindowTitle { get; set; }
-        public string Other { get; set; }
+        [CsvColumn(Optional = true)] public long? Position { get; set; }
+        [CsvColumn(Optional = true)] public string BatchKeyPath { get; set; }
+        [CsvColumn(Optional = true)] public string FullPath { get; set; }
+        [CsvColumn(Optional = true)] public string BatchValueName { get; set; }
+        [CsvColumn(Optional = true)] public string ExeName { get; set; }
+        [CsvColumn(Optional = true)] public string WindowTitle { get; set; }
+        [CsvColumn(Optional = true)] public string Other { get; set; }
 
-        public int Line { get; set; }
-        public bool Tag { get; set; }
+        [CsvIgnore] public int Line { get; set; }
+        [CsvIgnore] public bool Tag { get; set; }
 
         public override string ToString()
         {
@@ -7331,16 +7248,17 @@ namespace TLEFileEZTools
         }
     }
 
-    public class RecmdTaskbandData : IFileSpecData
+    [CsvRecord]
+    public partial class RecmdTaskbandData : IFileSpecData
     {
-        public string LnkName { get; set; }
-        public string BatchKeyPath { get; set; }
-        public string Executable { get; set; }
-        public string BatchValueName { get; set; }
-        public string PinType { get; set; }
+        [CsvColumn(Optional = true)] public string LnkName { get; set; }
+        [CsvColumn(Optional = true)] public string BatchKeyPath { get; set; }
+        [CsvColumn(Optional = true)] public string Executable { get; set; }
+        [CsvColumn(Optional = true)] public string BatchValueName { get; set; }
+        [CsvColumn(Optional = true)] public string PinType { get; set; }
 
-        public int Line { get; set; }
-        public bool Tag { get; set; }
+        [CsvIgnore] public int Line { get; set; }
+        [CsvIgnore] public bool Tag { get; set; }
 
         public override string ToString()
         {
@@ -7380,17 +7298,18 @@ namespace TLEFileEZTools
         }
     }
 
-    public class RecmdTerminalServerClientData : IFileSpecData
+    [CsvRecord]
+    public partial class RecmdTerminalServerClientData : IFileSpecData
     {
-        public string HostName { get; set; }
-        public string BatchKeyPath { get; set; }
-        public string Username { get; set; }
-        public string BatchValueName { get; set; }
-        public long? MRUPosition { get; set; }
-        public DateTime? LastModified { get; set; }
+        [CsvColumn(Optional = true)] public string HostName { get; set; }
+        [CsvColumn(Optional = true)] public string BatchKeyPath { get; set; }
+        [CsvColumn(Optional = true)] public string Username { get; set; }
+        [CsvColumn(Optional = true)] public string BatchValueName { get; set; }
+        [CsvColumn(Optional = true)] public long? MRUPosition { get; set; }
+        [CsvColumn(Optional = true), CsvConverter(typeof(LenientDateTimeConverter))] public DateTime? LastModified { get; set; }
 
-        public int Line { get; set; }
-        public bool Tag { get; set; }
+        [CsvIgnore] public int Line { get; set; }
+        [CsvIgnore] public bool Tag { get; set; }
 
         public override string ToString()
         {
@@ -7426,23 +7345,21 @@ namespace TLEFileEZTools
 
         public void ProcessFile(string filename)
         {
-            CsvLoader.Load<RecmdTerminalServerClientData>(filename, DataList, TaggedLines, map =>
-            {
-                map.Map(t => t.LastModified).TypeConverter<LenientDateTimeConverter>();
-            });
+            CsvLoader.Load<RecmdTerminalServerClientData>(filename, DataList, TaggedLines);
         }
     }
 
-    public class RecmdTimeZoneInfoData : IFileSpecData
+    [CsvRecord]
+    public partial class RecmdTimeZoneInfoData : IFileSpecData
     {
-        public string ValueName { get; set; }
-        public string BatchKeyPath { get; set; }
-        public string ValueData { get; set; }
-        public string BatchValueName { get; set; }
-        public string ValueDataRaw { get; set; }
+        [CsvColumn(Optional = true)] public string ValueName { get; set; }
+        [CsvColumn(Optional = true)] public string BatchKeyPath { get; set; }
+        [CsvColumn(Optional = true)] public string ValueData { get; set; }
+        [CsvColumn(Optional = true)] public string BatchValueName { get; set; }
+        [CsvColumn(Optional = true)] public string ValueDataRaw { get; set; }
 
-        public int Line { get; set; }
-        public bool Tag { get; set; }
+        [CsvIgnore] public int Line { get; set; }
+        [CsvIgnore] public bool Tag { get; set; }
 
         public override string ToString()
         {
@@ -7482,17 +7399,18 @@ namespace TLEFileEZTools
         }
     }
 
-    public class RecmdTrustedDocumentsData : IFileSpecData
+    [CsvRecord]
+    public partial class RecmdTrustedDocumentsData : IFileSpecData
     {
-        public string EventType { get; set; }
-        public string BatchKeyPath { get; set; }
-        public DateTime? Timestamp { get; set; }
-        public string BatchValueName { get; set; }
-        public string FileName { get; set; }
-        public string Username { get; set; }
+        [CsvColumn(Optional = true)] public string EventType { get; set; }
+        [CsvColumn(Optional = true)] public string BatchKeyPath { get; set; }
+        [CsvColumn(Optional = true), CsvConverter(typeof(LenientDateTimeConverter))] public DateTime? Timestamp { get; set; }
+        [CsvColumn(Optional = true)] public string BatchValueName { get; set; }
+        [CsvColumn(Optional = true)] public string FileName { get; set; }
+        [CsvColumn(Optional = true)] public string Username { get; set; }
 
-        public int Line { get; set; }
-        public bool Tag { get; set; }
+        [CsvIgnore] public int Line { get; set; }
+        [CsvIgnore] public bool Tag { get; set; }
 
         public override string ToString()
         {
@@ -7528,23 +7446,21 @@ namespace TLEFileEZTools
 
         public void ProcessFile(string filename)
         {
-            CsvLoader.Load<RecmdTrustedDocumentsData>(filename, DataList, TaggedLines, map =>
-            {
-                map.Map(t => t.Timestamp).TypeConverter<LenientDateTimeConverter>();
-            });
+            CsvLoader.Load<RecmdTrustedDocumentsData>(filename, DataList, TaggedLines);
         }
     }
 
-    public class RecmdTypedURLsData : IFileSpecData
+    [CsvRecord]
+    public partial class RecmdTypedURLsData : IFileSpecData
     {
-        public DateTime? Timestamp { get; set; }
-        public string BatchKeyPath { get; set; }
-        public string Url { get; set; }
-        public string BatchValueName { get; set; }
-        public string Slack { get; set; }
+        [CsvColumn(Optional = true), CsvConverter(typeof(LenientDateTimeConverter))] public DateTime? Timestamp { get; set; }
+        [CsvColumn(Optional = true)] public string BatchKeyPath { get; set; }
+        [CsvColumn(Optional = true)] public string Url { get; set; }
+        [CsvColumn(Optional = true)] public string BatchValueName { get; set; }
+        [CsvColumn(Optional = true)] public string Slack { get; set; }
 
-        public int Line { get; set; }
-        public bool Tag { get; set; }
+        [CsvIgnore] public int Line { get; set; }
+        [CsvIgnore] public bool Tag { get; set; }
 
         public override string ToString()
         {
@@ -7580,32 +7496,30 @@ namespace TLEFileEZTools
 
         public void ProcessFile(string filename)
         {
-            CsvLoader.Load<RecmdTypedURLsData>(filename, DataList, TaggedLines, map =>
-            {
-                map.Map(t => t.Timestamp).TypeConverter<LenientDateTimeConverter>();
-            });
+            CsvLoader.Load<RecmdTypedURLsData>(filename, DataList, TaggedLines);
         }
     }
 
-    public class RecmdUSBData : IFileSpecData
+    [CsvRecord]
+    public partial class RecmdUSBData : IFileSpecData
     {
-        public string KeyName { get; set; }
-        public string BatchKeyPath { get; set; }
-        public string SerialNumber { get; set; }
-        public string BatchValueName { get; set; }
-        public string ParentidPrefix { get; set; }
-        public string Service { get; set; }
-        public string DeviceDesc { get; set; }
-        public string FriendlyName { get; set; }
-        public string DeviceName { get; set; }
-        public string LocationInformation { get; set; }
-        public DateTime? Installed { get; set; }
-        public DateTime? FirstInstalled { get; set; }
-        public DateTime? LastConnected { get; set; }
-        public DateTime? LastRemoved { get; set; }
+        [CsvColumn(Optional = true)] public string KeyName { get; set; }
+        [CsvColumn(Optional = true)] public string BatchKeyPath { get; set; }
+        [CsvColumn(Optional = true)] public string SerialNumber { get; set; }
+        [CsvColumn(Optional = true)] public string BatchValueName { get; set; }
+        [CsvColumn(Optional = true)] public string ParentidPrefix { get; set; }
+        [CsvColumn(Optional = true)] public string Service { get; set; }
+        [CsvColumn(Optional = true)] public string DeviceDesc { get; set; }
+        [CsvColumn(Optional = true)] public string FriendlyName { get; set; }
+        [CsvColumn(Optional = true)] public string DeviceName { get; set; }
+        [CsvColumn(Optional = true)] public string LocationInformation { get; set; }
+        [CsvColumn(Optional = true), CsvConverter(typeof(LenientDateTimeConverter))] public DateTime? Installed { get; set; }
+        [CsvColumn(Optional = true), CsvConverter(typeof(LenientDateTimeConverter))] public DateTime? FirstInstalled { get; set; }
+        [CsvColumn(Optional = true), CsvConverter(typeof(LenientDateTimeConverter))] public DateTime? LastConnected { get; set; }
+        [CsvColumn(Optional = true), CsvConverter(typeof(LenientDateTimeConverter))] public DateTime? LastRemoved { get; set; }
 
-        public int Line { get; set; }
-        public bool Tag { get; set; }
+        [CsvIgnore] public int Line { get; set; }
+        [CsvIgnore] public bool Tag { get; set; }
 
         public override string ToString()
         {
@@ -7641,34 +7555,29 @@ namespace TLEFileEZTools
 
         public void ProcessFile(string filename)
         {
-            CsvLoader.Load<RecmdUSBData>(filename, DataList, TaggedLines, map =>
-            {
-                map.Map(t => t.Installed).TypeConverter<LenientDateTimeConverter>();
-                map.Map(t => t.FirstInstalled).TypeConverter<LenientDateTimeConverter>();
-                map.Map(t => t.LastConnected).TypeConverter<LenientDateTimeConverter>();
-                map.Map(t => t.LastRemoved).TypeConverter<LenientDateTimeConverter>();
-            });
+            CsvLoader.Load<RecmdUSBData>(filename, DataList, TaggedLines);
         }
     }
 
-    public class RecmdUSBSTORData : IFileSpecData
+    [CsvRecord]
+    public partial class RecmdUSBSTORData : IFileSpecData
     {
-        public DateTime? Timestamp { get; set; }
-        public string BatchKeyPath { get; set; }
-        public string Manufacturer { get; set; }
-        public string BatchValueName { get; set; }
-        public string Title { get; set; }
-        public string Version { get; set; }
-        public string SerialNumber { get; set; }
-        public string DeviceName { get; set; }
-        public string DiskId { get; set; }
-        public DateTime? Installed { get; set; }
-        public DateTime? FirstInstalled { get; set; }
-        public DateTime? LastConnected { get; set; }
-        public DateTime? LastRemoved { get; set; }
+        [CsvColumn(Optional = true), CsvConverter(typeof(LenientDateTimeConverter))] public DateTime? Timestamp { get; set; }
+        [CsvColumn(Optional = true)] public string BatchKeyPath { get; set; }
+        [CsvColumn(Optional = true)] public string Manufacturer { get; set; }
+        [CsvColumn(Optional = true)] public string BatchValueName { get; set; }
+        [CsvColumn(Optional = true)] public string Title { get; set; }
+        [CsvColumn(Optional = true)] public string Version { get; set; }
+        [CsvColumn(Optional = true)] public string SerialNumber { get; set; }
+        [CsvColumn(Optional = true)] public string DeviceName { get; set; }
+        [CsvColumn(Optional = true)] public string DiskId { get; set; }
+        [CsvColumn(Optional = true), CsvConverter(typeof(LenientDateTimeConverter))] public DateTime? Installed { get; set; }
+        [CsvColumn(Optional = true), CsvConverter(typeof(LenientDateTimeConverter))] public DateTime? FirstInstalled { get; set; }
+        [CsvColumn(Optional = true), CsvConverter(typeof(LenientDateTimeConverter))] public DateTime? LastConnected { get; set; }
+        [CsvColumn(Optional = true), CsvConverter(typeof(LenientDateTimeConverter))] public DateTime? LastRemoved { get; set; }
 
-        public int Line { get; set; }
-        public bool Tag { get; set; }
+        [CsvIgnore] public int Line { get; set; }
+        [CsvIgnore] public bool Tag { get; set; }
 
         public override string ToString()
         {
@@ -7704,33 +7613,27 @@ namespace TLEFileEZTools
 
         public void ProcessFile(string filename)
         {
-            CsvLoader.Load<RecmdUSBSTORData>(filename, DataList, TaggedLines, map =>
-            {
-                map.Map(t => t.Timestamp).TypeConverter<LenientDateTimeConverter>();
-                map.Map(t => t.Installed).TypeConverter<LenientDateTimeConverter>();
-                map.Map(t => t.FirstInstalled).TypeConverter<LenientDateTimeConverter>();
-                map.Map(t => t.LastConnected).TypeConverter<LenientDateTimeConverter>();
-                map.Map(t => t.LastRemoved).TypeConverter<LenientDateTimeConverter>();
-            });
+            CsvLoader.Load<RecmdUSBSTORData>(filename, DataList, TaggedLines);
         }
     }
 
-    public class RecmdUnInstallData : IFileSpecData
+    [CsvRecord]
+    public partial class RecmdUnInstallData : IFileSpecData
     {
-        public DateTime? Timestamp { get; set; }
-        public string BatchKeyPath { get; set; }
-        public string KeyName { get; set; }
-        public string BatchValueName { get; set; }
-        public string DisplayName { get; set; }
-        public string DisplayVersion { get; set; }
-        public string Publisher { get; set; }
-        public string InstallDate { get; set; }
-        public string InstallSource { get; set; }
-        public string InstallLocation { get; set; }
-        public string UninstallString { get; set; }
+        [CsvColumn(Optional = true), CsvConverter(typeof(LenientDateTimeConverter))] public DateTime? Timestamp { get; set; }
+        [CsvColumn(Optional = true)] public string BatchKeyPath { get; set; }
+        [CsvColumn(Optional = true)] public string KeyName { get; set; }
+        [CsvColumn(Optional = true)] public string BatchValueName { get; set; }
+        [CsvColumn(Optional = true)] public string DisplayName { get; set; }
+        [CsvColumn(Optional = true)] public string DisplayVersion { get; set; }
+        [CsvColumn(Optional = true)] public string Publisher { get; set; }
+        [CsvColumn(Optional = true)] public string InstallDate { get; set; }
+        [CsvColumn(Optional = true)] public string InstallSource { get; set; }
+        [CsvColumn(Optional = true)] public string InstallLocation { get; set; }
+        [CsvColumn(Optional = true)] public string UninstallString { get; set; }
 
-        public int Line { get; set; }
-        public bool Tag { get; set; }
+        [CsvIgnore] public int Line { get; set; }
+        [CsvIgnore] public bool Tag { get; set; }
 
         public override string ToString()
         {
@@ -7766,49 +7669,47 @@ namespace TLEFileEZTools
 
         public void ProcessFile(string filename)
         {
-            CsvLoader.Load<RecmdUnInstallData>(filename, DataList, TaggedLines, map =>
-            {
-                map.Map(t => t.Timestamp).TypeConverter<LenientDateTimeConverter>();
-            });
+            CsvLoader.Load<RecmdUnInstallData>(filename, DataList, TaggedLines);
         }
     }
 
-    public class RecmdUserAccountsData : IFileSpecData
+    [CsvRecord]
+    public partial class RecmdUserAccountsData : IFileSpecData
     {
-        public bool? ValidUserId { get; set; }
-        public string BatchKeyPath { get; set; }
-        public string BatchValueName { get; set; }
-        public long? UserId { get; set; }
-        public long? InvalidLoginCount { get; set; }
-        public long? TotalLoginCount { get; set; }
-        public DateTime? CreatedOn { get; set; }
-        public DateTime? LastLoginTime { get; set; }
-        public DateTime? LastPasswordChange { get; set; }
-        public DateTime? LastIncorrectPassword { get; set; }
-        public DateTime? ExpiresOn { get; set; }
-        public string UserName { get; set; }
-        public string FullName { get; set; }
-        public string PasswordHint { get; set; }
-        public string Groups { get; set; }
-        public string Comment { get; set; }
-        public string UserComment { get; set; }
-        public string HomeDirectory { get; set; }
-        public string InternetUserName { get; set; }
-        public string ResetData { get; set; }
-        public bool? AccountDisabled { get; set; }
-        public bool? HomeDirectoryRequired { get; set; }
-        public bool? PasswordNotRequired { get; set; }
-        public bool? TempDuplicateAccount { get; set; }
-        public bool? NormalUserAccount { get; set; }
-        public bool? MnsLogonAccount { get; set; }
-        public bool? InterdomainTrustAccount { get; set; }
-        public bool? WorkstationTrustAccount { get; set; }
-        public bool? ServerTrustAccount { get; set; }
-        public bool? PasswordDoesNotExpire { get; set; }
-        public bool? AutoLocked { get; set; }
+        [CsvColumn(Optional = true)] public bool? ValidUserId { get; set; }
+        [CsvColumn(Optional = true)] public string BatchKeyPath { get; set; }
+        [CsvColumn(Optional = true)] public string BatchValueName { get; set; }
+        [CsvColumn(Optional = true)] public long? UserId { get; set; }
+        [CsvColumn(Optional = true)] public long? InvalidLoginCount { get; set; }
+        [CsvColumn(Optional = true)] public long? TotalLoginCount { get; set; }
+        [CsvColumn(Optional = true), CsvConverter(typeof(LenientDateTimeConverter))] public DateTime? CreatedOn { get; set; }
+        [CsvColumn(Optional = true), CsvConverter(typeof(LenientDateTimeConverter))] public DateTime? LastLoginTime { get; set; }
+        [CsvColumn(Optional = true), CsvConverter(typeof(LenientDateTimeConverter))] public DateTime? LastPasswordChange { get; set; }
+        [CsvColumn(Optional = true), CsvConverter(typeof(LenientDateTimeConverter))] public DateTime? LastIncorrectPassword { get; set; }
+        [CsvColumn(Optional = true), CsvConverter(typeof(LenientDateTimeConverter))] public DateTime? ExpiresOn { get; set; }
+        [CsvColumn(Optional = true)] public string UserName { get; set; }
+        [CsvColumn(Optional = true)] public string FullName { get; set; }
+        [CsvColumn(Optional = true)] public string PasswordHint { get; set; }
+        [CsvColumn(Optional = true)] public string Groups { get; set; }
+        [CsvColumn(Optional = true)] public string Comment { get; set; }
+        [CsvColumn(Optional = true)] public string UserComment { get; set; }
+        [CsvColumn(Optional = true)] public string HomeDirectory { get; set; }
+        [CsvColumn(Optional = true)] public string InternetUserName { get; set; }
+        [CsvColumn(Optional = true)] public string ResetData { get; set; }
+        [CsvColumn(Optional = true)] public bool? AccountDisabled { get; set; }
+        [CsvColumn(Optional = true)] public bool? HomeDirectoryRequired { get; set; }
+        [CsvColumn(Optional = true)] public bool? PasswordNotRequired { get; set; }
+        [CsvColumn(Optional = true)] public bool? TempDuplicateAccount { get; set; }
+        [CsvColumn(Optional = true)] public bool? NormalUserAccount { get; set; }
+        [CsvColumn(Optional = true)] public bool? MnsLogonAccount { get; set; }
+        [CsvColumn(Optional = true)] public bool? InterdomainTrustAccount { get; set; }
+        [CsvColumn(Optional = true)] public bool? WorkstationTrustAccount { get; set; }
+        [CsvColumn(Optional = true)] public bool? ServerTrustAccount { get; set; }
+        [CsvColumn(Optional = true)] public bool? PasswordDoesNotExpire { get; set; }
+        [CsvColumn(Optional = true)] public bool? AutoLocked { get; set; }
 
-        public int Line { get; set; }
-        public bool Tag { get; set; }
+        [CsvIgnore] public int Line { get; set; }
+        [CsvIgnore] public bool Tag { get; set; }
 
         public override string ToString()
         {
@@ -7844,29 +7745,23 @@ namespace TLEFileEZTools
 
         public void ProcessFile(string filename)
         {
-            CsvLoader.Load<RecmdUserAccountsData>(filename, DataList, TaggedLines, map =>
-            {
-                map.Map(t => t.CreatedOn).TypeConverter<LenientDateTimeConverter>();
-                map.Map(t => t.LastLoginTime).TypeConverter<LenientDateTimeConverter>();
-                map.Map(t => t.LastPasswordChange).TypeConverter<LenientDateTimeConverter>();
-                map.Map(t => t.LastIncorrectPassword).TypeConverter<LenientDateTimeConverter>();
-                map.Map(t => t.ExpiresOn).TypeConverter<LenientDateTimeConverter>();
-            });
+            CsvLoader.Load<RecmdUserAccountsData>(filename, DataList, TaggedLines);
         }
     }
 
-    public class RecmdUserAssistData : IFileSpecData
+    [CsvRecord]
+    public partial class RecmdUserAssistData : IFileSpecData
     {
-        public string BatchKeyPath { get; set; }
-        public string BatchValueName { get; set; }
-        public string ProgramName { get; set; }
-        public long? RunCounter { get; set; }
-        public long? FocusCount { get; set; }
-        public string FocusTime { get; set; }
-        public DateTime? LastExecuted { get; set; }
+        [CsvColumn(Optional = true)] public string BatchKeyPath { get; set; }
+        [CsvColumn(Optional = true)] public string BatchValueName { get; set; }
+        [CsvColumn(Optional = true)] public string ProgramName { get; set; }
+        [CsvColumn(Optional = true)] public long? RunCounter { get; set; }
+        [CsvColumn(Optional = true)] public long? FocusCount { get; set; }
+        [CsvColumn(Optional = true)] public string FocusTime { get; set; }
+        [CsvColumn(Optional = true), CsvConverter(typeof(LenientDateTimeConverter))] public DateTime? LastExecuted { get; set; }
 
-        public int Line { get; set; }
-        public bool Tag { get; set; }
+        [CsvIgnore] public int Line { get; set; }
+        [CsvIgnore] public bool Tag { get; set; }
 
         public override string ToString()
         {
@@ -7902,24 +7797,22 @@ namespace TLEFileEZTools
 
         public void ProcessFile(string filename)
         {
-            CsvLoader.Load<RecmdUserAssistData>(filename, DataList, TaggedLines, map =>
-            {
-                map.Map(t => t.LastExecuted).TypeConverter<LenientDateTimeConverter>();
-            });
+            CsvLoader.Load<RecmdUserAssistData>(filename, DataList, TaggedLines);
         }
     }
 
-    public class RecmdVolumeInfoCacheData : IFileSpecData
+    [CsvRecord]
+    public partial class RecmdVolumeInfoCacheData : IFileSpecData
     {
-        public DateTime? Timestamp { get; set; }
-        public string BatchKeyPath { get; set; }
-        public string DriveName { get; set; }
-        public string BatchValueName { get; set; }
-        public string VolumeLabel { get; set; }
-        public string DriveType { get; set; }
+        [CsvColumn(Optional = true), CsvConverter(typeof(LenientDateTimeConverter))] public DateTime? Timestamp { get; set; }
+        [CsvColumn(Optional = true)] public string BatchKeyPath { get; set; }
+        [CsvColumn(Optional = true)] public string DriveName { get; set; }
+        [CsvColumn(Optional = true)] public string BatchValueName { get; set; }
+        [CsvColumn(Optional = true)] public string VolumeLabel { get; set; }
+        [CsvColumn(Optional = true)] public string DriveType { get; set; }
 
-        public int Line { get; set; }
-        public bool Tag { get; set; }
+        [CsvIgnore] public int Line { get; set; }
+        [CsvIgnore] public bool Tag { get; set; }
 
         public override string ToString()
         {
@@ -7955,24 +7848,22 @@ namespace TLEFileEZTools
 
         public void ProcessFile(string filename)
         {
-            CsvLoader.Load<RecmdVolumeInfoCacheData>(filename, DataList, TaggedLines, map =>
-            {
-                map.Map(t => t.Timestamp).TypeConverter<LenientDateTimeConverter>();
-            });
+            CsvLoader.Load<RecmdVolumeInfoCacheData>(filename, DataList, TaggedLines);
         }
     }
 
-    public class RecmdWindowsAppData : IFileSpecData
+    [CsvRecord]
+    public partial class RecmdWindowsAppData : IFileSpecData
     {
-        public string KeyName { get; set; }
-        public string BatchKeyPath { get; set; }
-        public string DisplayName { get; set; }
-        public string BatchValueName { get; set; }
-        public DateTime? InstallTime { get; set; }
-        public string PackageRootFolder { get; set; }
+        [CsvColumn(Optional = true)] public string KeyName { get; set; }
+        [CsvColumn(Optional = true)] public string BatchKeyPath { get; set; }
+        [CsvColumn(Optional = true)] public string DisplayName { get; set; }
+        [CsvColumn(Optional = true)] public string BatchValueName { get; set; }
+        [CsvColumn(Optional = true), CsvConverter(typeof(LenientDateTimeConverter))] public DateTime? InstallTime { get; set; }
+        [CsvColumn(Optional = true)] public string PackageRootFolder { get; set; }
 
-        public int Line { get; set; }
-        public bool Tag { get; set; }
+        [CsvIgnore] public int Line { get; set; }
+        [CsvIgnore] public bool Tag { get; set; }
 
         public override string ToString()
         {
@@ -8008,25 +7899,23 @@ namespace TLEFileEZTools
 
         public void ProcessFile(string filename)
         {
-            CsvLoader.Load<RecmdWindowsAppData>(filename, DataList, TaggedLines, map =>
-            {
-                map.Map(t => t.InstallTime).TypeConverter<LenientDateTimeConverter>();
-            });
+            CsvLoader.Load<RecmdWindowsAppData>(filename, DataList, TaggedLines);
         }
     }
 
-    public class RecmdWindowsPortableDevicesData : IFileSpecData
+    [CsvRecord]
+    public partial class RecmdWindowsPortableDevicesData : IFileSpecData
     {
-        public DateTime? Timestamp { get; set; }
-        public string BatchKeyPath { get; set; }
-        public string Device { get; set; }
-        public string BatchValueName { get; set; }
-        public string SerialNumber { get; set; }
-        public string Guid { get; set; }
-        public string FriendlyName { get; set; }
+        [CsvColumn(Optional = true), CsvConverter(typeof(LenientDateTimeConverter))] public DateTime? Timestamp { get; set; }
+        [CsvColumn(Optional = true)] public string BatchKeyPath { get; set; }
+        [CsvColumn(Optional = true)] public string Device { get; set; }
+        [CsvColumn(Optional = true)] public string BatchValueName { get; set; }
+        [CsvColumn(Optional = true)] public string SerialNumber { get; set; }
+        [CsvColumn(Optional = true)] public string Guid { get; set; }
+        [CsvColumn(Optional = true)] public string FriendlyName { get; set; }
 
-        public int Line { get; set; }
-        public bool Tag { get; set; }
+        [CsvIgnore] public int Line { get; set; }
+        [CsvIgnore] public bool Tag { get; set; }
 
         public override string ToString()
         {
@@ -8062,24 +7951,22 @@ namespace TLEFileEZTools
 
         public void ProcessFile(string filename)
         {
-            CsvLoader.Load<RecmdWindowsPortableDevicesData>(filename, DataList, TaggedLines, map =>
-            {
-                map.Map(t => t.Timestamp).TypeConverter<LenientDateTimeConverter>();
-            });
+            CsvLoader.Load<RecmdWindowsPortableDevicesData>(filename, DataList, TaggedLines);
         }
     }
 
-    public class RecmdWordWheelQueryData : IFileSpecData
+    [CsvRecord]
+    public partial class RecmdWordWheelQueryData : IFileSpecData
     {
-        public string SearchTerm { get; set; }
-        public string BatchKeyPath { get; set; }
-        public long? MruPosition { get; set; }
-        public string BatchValueName { get; set; }
-        public string KeyName { get; set; }
-        public DateTime? LastWriteTimestamp { get; set; }
+        [CsvColumn(Optional = true)] public string SearchTerm { get; set; }
+        [CsvColumn(Optional = true)] public string BatchKeyPath { get; set; }
+        [CsvColumn(Optional = true)] public long? MruPosition { get; set; }
+        [CsvColumn(Optional = true)] public string BatchValueName { get; set; }
+        [CsvColumn(Optional = true)] public string KeyName { get; set; }
+        [CsvColumn(Optional = true), CsvConverter(typeof(LenientDateTimeConverter))] public DateTime? LastWriteTimestamp { get; set; }
 
-        public int Line { get; set; }
-        public bool Tag { get; set; }
+        [CsvIgnore] public int Line { get; set; }
+        [CsvIgnore] public bool Tag { get; set; }
 
         public override string ToString()
         {
@@ -8115,38 +8002,36 @@ namespace TLEFileEZTools
 
         public void ProcessFile(string filename)
         {
-            CsvLoader.Load<RecmdWordWheelQueryData>(filename, DataList, TaggedLines, map =>
-            {
-                map.Map(t => t.LastWriteTimestamp).TypeConverter<LenientDateTimeConverter>();
-            });
+            CsvLoader.Load<RecmdWordWheelQueryData>(filename, DataList, TaggedLines);
         }
     }
 
-    public class I30Data : IFileSpecData
+    [CsvRecord]
+    public partial class I30Data : IFileSpecData
     {
-        public long Offset { get; set; }
-        public bool FromSlack { get; set; }
+        [CsvColumn(Optional = true)] public long Offset { get; set; }
+        [CsvColumn(Optional = true)] public bool FromSlack { get; set; }
         //(48 bit entry numbers; entries recovered from slack can have any value)
-        public ulong? SelfMftEntry { get; set; }
-        public int? SelfMftSequence { get; set; }
-        public string FileName { get; set; }
-        public string Flags { get; set; }
-        public string NameType { get; set; }
-        public ulong ParentMftEntry { get; set; }
-        public int ParentMftSequence { get; set; }
-        public DateTime? CreatedOn { get; set; }
-        public DateTime? ContentModifiedOn { get; set; }
-        public DateTime? RecordModifiedOn { get; set; }
-        public DateTime? LastAccessedOn { get; set; }
-        public ulong PhysicalSize { get; set; }
-        public ulong LogicalSize { get; set; }
-        public string SourceFile { get; set; }
+        [CsvColumn(Optional = true)] public ulong? SelfMftEntry { get; set; }
+        [CsvColumn(Optional = true)] public int? SelfMftSequence { get; set; }
+        [CsvColumn(Optional = true)] public string FileName { get; set; }
+        [CsvColumn(Optional = true)] public string Flags { get; set; }
+        [CsvColumn(Optional = true)] public string NameType { get; set; }
+        [CsvColumn(Optional = true)] public ulong ParentMftEntry { get; set; }
+        [CsvColumn(Optional = true)] public int ParentMftSequence { get; set; }
+        [CsvColumn(Optional = true)] public DateTime? CreatedOn { get; set; }
+        [CsvColumn(Optional = true)] public DateTime? ContentModifiedOn { get; set; }
+        [CsvColumn(Optional = true)] public DateTime? RecordModifiedOn { get; set; }
+        [CsvColumn(Optional = true)] public DateTime? LastAccessedOn { get; set; }
+        [CsvColumn(Optional = true)] public ulong PhysicalSize { get; set; }
+        [CsvColumn(Optional = true)] public ulong LogicalSize { get; set; }
+        [CsvColumn(Optional = true)] public string SourceFile { get; set; }
 
         //added in MFTECmd 2026.11 (issue #194: -f $I30 -m $MFT)
-        public string ParentPath { get; set; }
+        [CsvColumn(Optional = true)] public string ParentPath { get; set; }
 
-        public int Line { get; set; }
-        public bool Tag { get; set; }
+        [CsvIgnore] public int Line { get; set; }
+        [CsvIgnore] public bool Tag { get; set; }
 
         public override string ToString()
         {
@@ -8188,16 +8073,17 @@ namespace TLEFileEZTools
         }
     }
 
-    public class RecentFileCacheData : IFileSpecData
+    [CsvRecord]
+    public partial class RecentFileCacheData : IFileSpecData
     {
-        public string SourceFile { get; set; }
-        public DateTime? SourceCreated { get; set; }
-        public DateTime? SourceModified { get; set; }
-        public DateTime? SourceAccessed { get; set; }
-        public string Filename { get; set; }
+        [CsvColumn(Optional = true)] public string SourceFile { get; set; }
+        [CsvColumn(Optional = true)] public DateTime? SourceCreated { get; set; }
+        [CsvColumn(Optional = true)] public DateTime? SourceModified { get; set; }
+        [CsvColumn(Optional = true)] public DateTime? SourceAccessed { get; set; }
+        [CsvColumn(Optional = true)] public string Filename { get; set; }
 
-        public int Line { get; set; }
-        public bool Tag { get; set; }
+        [CsvIgnore] public int Line { get; set; }
+        [CsvIgnore] public bool Tag { get; set; }
 
         public override string ToString()
         {
@@ -8240,22 +8126,43 @@ namespace TLEFileEZTools
     /// <summary>
     ///     A number in a W3C log field: IIS writes "-" for an empty field, which is null here (one failed the file)
     /// </summary>
-    internal class W3CNumberConverter : DefaultTypeConverter
+    internal static class W3CNumber
     {
-        public override object ConvertFromString(string text, IReaderRow row, MemberMapData memberMapData)
+        public static long? Read(CsvReader reader, int index)
         {
-            var type = Nullable.GetUnderlyingType(memberMapData.Type) ?? memberMapData.Type;
+            var text = reader.GetString(index);
             if (string.IsNullOrWhiteSpace(text) || text.Trim() == "-" ||
                 !long.TryParse(text.Trim(), NumberStyles.Integer, CultureInfo.InvariantCulture, out var value))
             {
                 return null;
             }
 
-            return Convert.ChangeType(value, type, CultureInfo.InvariantCulture);
+            return value;
         }
     }
 
-    public class IisGeolocateData : IFileSpecData
+    /// <inheritdoc cref="W3CNumber" />
+    internal sealed class W3CInt32Converter : ICsvConverter<int?>
+    {
+        public int? Read(CsvReader reader, int index)
+        {
+            var value = W3CNumber.Read(reader, index);
+            return value == null ? null : Convert.ToInt32(value.Value);
+        }
+
+        public void Write(CsvWriter writer, int? value) => writer.WriteField(value?.ToString(CultureInfo.InvariantCulture) ?? "-");
+    }
+
+    /// <inheritdoc cref="W3CNumber" />
+    internal sealed class W3CInt64Converter : ICsvConverter<long?>
+    {
+        public long? Read(CsvReader reader, int index) => W3CNumber.Read(reader, index);
+
+        public void Write(CsvWriter writer, long? value) => writer.WriteField(value?.ToString(CultureInfo.InvariantCulture) ?? "-");
+    }
+
+    [CsvRecord]
+    public partial class IisGeolocateData : IFileSpecData
     {
         /// <summary>
         ///     date and time together (IIS writes UTC); null for logs without a date field
@@ -8265,33 +8172,33 @@ namespace TLEFileEZTools
             ? t
             : (DateTime?) null;
 
-        public string Date { get; set; }
-        public string Time { get; set; }
-        public string SiteName { get; set; }
-        public string ComputerName { get; set; }
-        public string ServerIp { get; set; }
-        public string Method { get; set; }
-        public string UriStem { get; set; }
-        public string UriQuery { get; set; }
-        public int? ServerPort { get; set; }
-        public string UserName { get; set; }
-        public string ClientIp { get; set; }
-        public string ProtocolVersion { get; set; }
-        public string UserAgent { get; set; }
-        public string Cookie { get; set; }
-        public string Referer { get; set; }
-        public string Host { get; set; }
-        public int? Status { get; set; }
-        public int? SubStatus { get; set; }
-        public long? Win32Status { get; set; }
-        public long? BytesSent { get; set; }
-        public long? BytesReceived { get; set; }
-        public long? TimeTaken { get; set; }
-        public string GeoCity { get; set; }
-        public string GeoCountry { get; set; }
+        [CsvColumn("date", Optional = true)] public string Date { get; set; }
+        [CsvColumn("time", Optional = true)] public string Time { get; set; }
+        [CsvColumn("s-sitename", Optional = true)] public string SiteName { get; set; }
+        [CsvColumn("s-computername", Optional = true)] public string ComputerName { get; set; }
+        [CsvColumn("s-ip", Optional = true)] public string ServerIp { get; set; }
+        [CsvColumn("cs-method", Optional = true)] public string Method { get; set; }
+        [CsvColumn("cs-uri-stem", Optional = true)] public string UriStem { get; set; }
+        [CsvColumn("cs-uri-query", Optional = true)] public string UriQuery { get; set; }
+        [CsvColumn("s-port", Optional = true), CsvConverter(typeof(W3CInt32Converter))] public int? ServerPort { get; set; }
+        [CsvColumn("cs-username", Optional = true)] public string UserName { get; set; }
+        [CsvColumn("c-ip", Optional = true)] public string ClientIp { get; set; }
+        [CsvColumn("cs-version", Optional = true)] public string ProtocolVersion { get; set; }
+        [CsvColumn("cs(user-agent)", Optional = true)] public string UserAgent { get; set; }
+        [CsvColumn("cs(cookie)", Optional = true)] public string Cookie { get; set; }
+        [CsvColumn("cs(referer)", Optional = true)] public string Referer { get; set; }
+        [CsvColumn("cs-host", Optional = true)] public string Host { get; set; }
+        [CsvColumn("sc-status", Optional = true), CsvConverter(typeof(W3CInt32Converter))] public int? Status { get; set; }
+        [CsvColumn("sc-substatus", Optional = true), CsvConverter(typeof(W3CInt32Converter))] public int? SubStatus { get; set; }
+        [CsvColumn("sc-win32-status", Optional = true), CsvConverter(typeof(W3CInt64Converter))] public long? Win32Status { get; set; }
+        [CsvColumn("sc-bytes", Optional = true), CsvConverter(typeof(W3CInt64Converter))] public long? BytesSent { get; set; }
+        [CsvColumn("cs-bytes", Optional = true), CsvConverter(typeof(W3CInt64Converter))] public long? BytesReceived { get; set; }
+        [CsvColumn("time-taken", Optional = true), CsvConverter(typeof(W3CInt64Converter))] public long? TimeTaken { get; set; }
+        [CsvColumn(Optional = true)] public string GeoCity { get; set; }
+        [CsvColumn(Optional = true)] public string GeoCountry { get; set; }
 
-        public int Line { get; set; }
-        public bool Tag { get; set; }
+        [CsvIgnore] public int Line { get; set; }
+        [CsvIgnore] public bool Tag { get; set; }
 
         public override string ToString()
         {
@@ -8340,55 +8247,31 @@ namespace TLEFileEZTools
 
         public void ProcessFile(string filename)
         {
-            CsvLoader.Load<IisGeolocateData>(filename, DataList, TaggedLines, map =>
-            {
-                map.Map(t => t.Timestamp).Ignore();
-                map.Map(t => t.Date).Name("date");
-                map.Map(t => t.Time).Name("time");
-                map.Map(t => t.SiteName).Name("s-sitename");
-                map.Map(t => t.ComputerName).Name("s-computername");
-                map.Map(t => t.ServerIp).Name("s-ip");
-                map.Map(t => t.Method).Name("cs-method");
-                map.Map(t => t.UriStem).Name("cs-uri-stem");
-                map.Map(t => t.UriQuery).Name("cs-uri-query");
-                map.Map(t => t.ServerPort).Name("s-port").TypeConverter<W3CNumberConverter>();
-                map.Map(t => t.UserName).Name("cs-username");
-                map.Map(t => t.ClientIp).Name("c-ip");
-                map.Map(t => t.ProtocolVersion).Name("cs-version");
-                map.Map(t => t.UserAgent).Name("cs(user-agent)");
-                map.Map(t => t.Cookie).Name("cs(cookie)");
-                map.Map(t => t.Referer).Name("cs(referer)");
-                map.Map(t => t.Host).Name("cs-host");
-                map.Map(t => t.Status).Name("sc-status").TypeConverter<W3CNumberConverter>();
-                map.Map(t => t.SubStatus).Name("sc-substatus").TypeConverter<W3CNumberConverter>();
-                map.Map(t => t.Win32Status).Name("sc-win32-status").TypeConverter<W3CNumberConverter>();
-                map.Map(t => t.BytesSent).Name("sc-bytes").TypeConverter<W3CNumberConverter>();
-                map.Map(t => t.BytesReceived).Name("cs-bytes").TypeConverter<W3CNumberConverter>();
-                map.Map(t => t.TimeTaken).Name("time-taken").TypeConverter<W3CNumberConverter>();
-            });
+            CsvLoader.Load<IisGeolocateData>(filename, DataList, TaggedLines);
         }
     }
 
-    public class SqleActivitiesCacheData : IFileSpecData
+    [CsvRecord]
+    public partial class SqleActivitiesCacheData : IFileSpecData
     {
-        public string Id { get; set; }
-        public string Payload { get; set; }
-        public DateTime? LastModifiedTime { get; set; }
-        public DateTime? ExpirationTime { get; set; }
-        public DateTime? CreatedInCloud { get; set; }
-        public DateTime? StartTime { get; set; }
-        public DateTime? EndTime { get; set; }
-        public DateTime? LastModifiedOnClient { get; set; }
-        public DateTime? OriginalLastModifiedOnClient { get; set; }
-        public int? ActivityType { get; set; }
-        public int? IsLocalOnly { get; set; }
-        public long? ETag { get; set; }
-        public string PackageIdHash { get; set; }
-        public string PlatformDeviceId { get; set; }
-        public string SourceFile { get; set; }
+        [CsvColumn(Optional = true)] public string Id { get; set; }
+        [CsvColumn(Optional = true)] public string Payload { get; set; }
+        [CsvColumn(Optional = true)] public DateTime? LastModifiedTime { get; set; }
+        [CsvColumn(Optional = true)] public DateTime? ExpirationTime { get; set; }
+        [CsvColumn(Optional = true)] public DateTime? CreatedInCloud { get; set; }
+        [CsvColumn(Optional = true)] public DateTime? StartTime { get; set; }
+        [CsvColumn(Optional = true)] public DateTime? EndTime { get; set; }
+        [CsvColumn(Optional = true)] public DateTime? LastModifiedOnClient { get; set; }
+        [CsvColumn(Optional = true)] public DateTime? OriginalLastModifiedOnClient { get; set; }
+        [CsvColumn(Optional = true)] public int? ActivityType { get; set; }
+        [CsvColumn(Optional = true)] public int? IsLocalOnly { get; set; }
+        [CsvColumn(Optional = true)] public long? ETag { get; set; }
+        [CsvColumn(Optional = true)] public string PackageIdHash { get; set; }
+        [CsvColumn(Optional = true)] public string PlatformDeviceId { get; set; }
+        [CsvColumn(Optional = true)] public string SourceFile { get; set; }
 
-        public int Line { get; set; }
-        public bool Tag { get; set; }
+        [CsvIgnore] public int Line { get; set; }
+        [CsvIgnore] public bool Tag { get; set; }
 
         public override string ToString()
         {
@@ -8430,16 +8313,17 @@ namespace TLEFileEZTools
         }
     }
 
-    public class SqleActivityPackageIdData : IFileSpecData
+    [CsvRecord]
+    public partial class SqleActivityPackageIdData : IFileSpecData
     {
-        public string ActivityId { get; set; }
-        public string Platform { get; set; }
-        public string PackageName { get; set; }
-        public DateTime? ExpirationTime { get; set; }
-        public string SourceFile { get; set; }
+        [CsvColumn(Optional = true)] public string ActivityId { get; set; }
+        [CsvColumn(Optional = true)] public string Platform { get; set; }
+        [CsvColumn(Optional = true)] public string PackageName { get; set; }
+        [CsvColumn(Optional = true)] public DateTime? ExpirationTime { get; set; }
+        [CsvColumn(Optional = true)] public string SourceFile { get; set; }
 
-        public int Line { get; set; }
-        public bool Tag { get; set; }
+        [CsvIgnore] public int Line { get; set; }
+        [CsvIgnore] public bool Tag { get; set; }
 
         public override string ToString()
         {
@@ -8480,21 +8364,22 @@ namespace TLEFileEZTools
         }
     }
 
-    public class SqleActivityOperationData : IFileSpecData
+    [CsvRecord]
+    public partial class SqleActivityOperationData : IFileSpecData
     {
-        public long? OperationOrder { get; set; }
-        public string AppId { get; set; }
-        public int? ActivityType { get; set; }
-        public DateTime? LastModifiedTime { get; set; }
-        public DateTime? ExpirationTime { get; set; }
-        public DateTime? CreatedTime { get; set; }
-        public DateTime? EndTime { get; set; }
-        public DateTime? LastModifiedOnClient { get; set; }
-        public string PlatformDeviceId { get; set; }
-        public string SourceFile { get; set; }
+        [CsvColumn(Optional = true)] public long? OperationOrder { get; set; }
+        [CsvColumn(Optional = true)] public string AppId { get; set; }
+        [CsvColumn(Optional = true)] public int? ActivityType { get; set; }
+        [CsvColumn(Optional = true)] public DateTime? LastModifiedTime { get; set; }
+        [CsvColumn(Optional = true)] public DateTime? ExpirationTime { get; set; }
+        [CsvColumn(Optional = true)] public DateTime? CreatedTime { get; set; }
+        [CsvColumn(Optional = true)] public DateTime? EndTime { get; set; }
+        [CsvColumn(Optional = true)] public DateTime? LastModifiedOnClient { get; set; }
+        [CsvColumn(Optional = true)] public string PlatformDeviceId { get; set; }
+        [CsvColumn(Optional = true)] public string SourceFile { get; set; }
 
-        public int Line { get; set; }
-        public bool Tag { get; set; }
+        [CsvIgnore] public int Line { get; set; }
+        [CsvIgnore] public bool Tag { get; set; }
 
         public override string ToString()
         {

@@ -15,4 +15,12 @@
   <ItemGroup>
     <InternalsVisibleTo Include="TLEFile.Test" />
   </ItemGroup>
+  <ItemGroup>
+    <!-- CsvLoader: compiled into each plugin assembly (its reader options) -->
+    <Compile Include="..\Shared\CsvLoader.cs" Link="Shared\CsvLoader.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <!-- the source generator of the [CsvRecord] types runs in each project that has them (analyzers are not transitive) -->
+    <PackageReference Include="CsvHelper" Version="34.1.0" />
+  </ItemGroup>
 </Project>

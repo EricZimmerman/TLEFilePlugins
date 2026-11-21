@@ -4,31 +4,31 @@ using System.ComponentModel;
 using System.Globalization;
 using System.IO;
 using CsvHelper;
-using CsvHelper.TypeConversion;
 using ITLEFileSpec;
 using TLEFilePlugins.Shared;
 using Serilog;
 
 namespace TLEFileKAPE
 {
-    public class KapeCopyLogData : IFileSpecData
+    [CsvRecord]
+    public partial class KapeCopyLogData : IFileSpecData
     {
-        public DateTime CopiedTimestamp { get; set; }
-        public string SourceFile { get; set; }
-        public string DestinationFile { get; set; }
-        public long FileSize { get; set; }
-        public string SourceFileSha1 { get; set; }
-        public bool DeferredCopy { get; set; }
+        [CsvColumn(Optional = true)] public DateTime CopiedTimestamp { get; set; }
+        [CsvColumn(Optional = true)] public string SourceFile { get; set; }
+        [CsvColumn(Optional = true)] public string DestinationFile { get; set; }
+        [CsvColumn(Optional = true)] public long FileSize { get; set; }
+        [CsvColumn(Optional = true)] public string SourceFileSha1 { get; set; }
+        [CsvColumn(Optional = true)] public bool DeferredCopy { get; set; }
 
-        public DateTime CreatedOnUtc { get; set; }
-        public DateTime ModifiedOnUtc { get; set; }
-        public DateTime LastAccessedOnUtc { get; set; }
+        [CsvColumn(Optional = true)] public DateTime CreatedOnUtc { get; set; }
+        [CsvColumn(Optional = true)] public DateTime ModifiedOnUtc { get; set; }
+        [CsvColumn(Optional = true)] public DateTime LastAccessedOnUtc { get; set; }
 
-        public TimeSpan CopyDuration { get; set; }
+        [CsvColumn(Optional = true)] public TimeSpan CopyDuration { get; set; }
 
-        public int Line { get; set; }
+        [CsvIgnore] public int Line { get; set; }
 
-        public bool Tag { get; set; }
+        [CsvIgnore] public bool Tag { get; set; }
 
         public override string ToString()
         {
@@ -67,15 +67,16 @@ namespace TLEFileKAPE
         }
     }
 
-    public class KapeSkipLogData : IFileSpecData
+    [CsvRecord]
+    public partial class KapeSkipLogData : IFileSpecData
     {
-        public string SourceFile { get; set; }
-        public string SourceFileSha1 { get; set; }
-        public string Reason { get; set; }
+        [CsvColumn(Optional = true)] public string SourceFile { get; set; }
+        [CsvColumn(Optional = true)] public string SourceFileSha1 { get; set; }
+        [CsvColumn(Optional = true)] public string Reason { get; set; }
 
-        public int Line { get; set; }
+        [CsvIgnore] public int Line { get; set; }
 
-        public bool Tag { get; set; }
+        [CsvIgnore] public bool Tag { get; set; }
 
         public override string ToString()
         {
@@ -115,28 +116,29 @@ namespace TLEFileKAPE
     }
 
 
-    public class KapeTriageData : IFileSpecData
+    [CsvRecord]
+    public partial class KapeTriageData : IFileSpecData
     {
-        public DateTime DateTimeUTC { get; set; }
+        [CsvColumn(Optional = true)] public DateTime DateTimeUTC { get; set; }
 
-        public string EventTimeSource { get; set; }
-        public string Hostname { get; set; }
-        public string HostIPAddress { get; set; }
-        public string UserID { get; set; }
+        [CsvColumn(Optional = true)] public string EventTimeSource { get; set; }
+        [CsvColumn(Optional = true)] public string Hostname { get; set; }
+        [CsvColumn(Optional = true)] public string HostIPAddress { get; set; }
+        [CsvColumn(Optional = true)] public string UserID { get; set; }
 
-        public string Assessment { get; set; }
-        public string EventType { get; set; }
-        public string EventDetails { get; set; }
-        public string SDIPAddress { get; set; }
+        [CsvColumn(Optional = true)] public string Assessment { get; set; }
+        [CsvColumn(Optional = true)] public string EventType { get; set; }
+        [CsvColumn(Optional = true)] public string EventDetails { get; set; }
+        [CsvColumn(Optional = true)] public string SDIPAddress { get; set; }
 
-        public string ExaminerComments { get; set; }
-        public string MD5 { get; set; }
-        public string EventAddedBy { get; set; }
-        public DateTime DateAdded { get; set; }
-        public string RawEvent { get; set; }
+        [CsvColumn(Optional = true)] public string ExaminerComments { get; set; }
+        [CsvColumn(Optional = true)] public string MD5 { get; set; }
+        [CsvColumn(Optional = true)] public string EventAddedBy { get; set; }
+        [CsvColumn(Optional = true)] public DateTime DateAdded { get; set; }
+        [CsvColumn(Optional = true)] public string RawEvent { get; set; }
 
-        public int Line { get; set; }
-        public bool Tag { get; set; }
+        [CsvIgnore] public int Line { get; set; }
+        [CsvIgnore] public bool Tag { get; set; }
 
         public override string ToString()
         {

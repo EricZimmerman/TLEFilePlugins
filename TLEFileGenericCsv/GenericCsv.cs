@@ -2,12 +2,11 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Dynamic;
-using System.Globalization;
 using System.IO;
 using System.Linq;
 using CsvHelper;
-using CsvHelper.Configuration;
 using ITLEFileSpec;
+using TLEFilePlugins.Shared;
 using Serilog;
 using Serilog.Events;
 
@@ -16,7 +15,7 @@ namespace TLEFileGenericCsv
     public class GenericCsv : IFileSpec
     {
         //what is tried, in this order when two are as frequent (PR #18)
-        private static readonly char[] Delimiters = {',', '\t', '|', ';'};
+        private const string Separators = ",\t|;";
 
         public GenericCsv()
         {
@@ -36,25 +35,32 @@ namespace TLEFileGenericCsv
         public string InternalGuid => "40dd7405-16cf-4612-a480-9a050d0a9952";
 
         /// <summary>
-        ///     The delimiter that occurs most often in the header line (the first line that isn't a PowerShell #TYPE line)
+        ///     The reader options for <paramref name="filename" />: .tsv is always tab separated (it was always a comma: PR #18);
+        ///     anything else has its separator detected (comma, tab, vertical bar or semicolon, the one that appears the same
+        ///     number of times on the most lines). A PowerShell #TYPE line above the header is skipped
+        /// </summary>
+        private static CsvReaderOptions OptionsFor(string filename, bool tsv)
+        {
+            //(only the first line is checked: a row starting with #TYPE was skipped too)
+            var typeLine = File.ReadLines(filename).FirstOrDefault()?.StartsWith("#TYPE", StringComparison.Ordinal) == true;
+
+            return CsvLoader.Options.With(
+                (nameof(CsvReaderOptions.Separator), tsv ? '\t' : (char?) null),
+                (nameof(CsvReaderOptions.SeparatorCandidates), Separators),
+                (nameof(CsvReaderOptions.SkipLines), typeLine ? 1 : 0),
+                //bad quoting is recovered from (the record is kept), and reported for a CSV
+                (nameof(CsvReaderOptions.OnMalformedRecord), tsv
+                    ? null
+                    : (Action<CsvMalformedRecord>) (record => Log.Warning("Bad data found ({Reason}) in record {Record}! Raw data: {RawRecord}", record.Reason, record.RecordNumber, record.RawRecord))));
+        }
+
+        /// <summary>
+        ///     The separator CsvHelper detects in <paramref name="filename" /> (after a PowerShell #TYPE line)
         /// </summary>
         internal static char DetectDelimiter(string filename)
         {
-            var header = File.ReadLines(filename).FirstOrDefault(l => !l.StartsWith("#TYPE")) ?? string.Empty;
-
-            var best = Delimiters[0];
-            var bestCount = -1;
-            foreach (var d in Delimiters)
-            {
-                var count = header.Count(c => c == d);
-                if (count > bestCount)
-                {
-                    best = d;
-                    bestCount = count;
-                }
-            }
-
-            return best;
+            using var csv = CsvReader.FromFile(filename, OptionsFor(filename, false).With((nameof(CsvReaderOptions.OnMalformedRecord), null)));
+            return csv.Separator;
         }
 
         public void ProcessFile(string filename)
@@ -62,72 +68,49 @@ namespace TLEFileGenericCsv
             var tempList = new List<dynamic>();
             var tagged = new HashSet<int>(TaggedLines);
 
-            //.tsv is always tab separated; anything else uses the delimiter its header has most of (it was always a comma: PR #18)
             var tsv = filename.EndsWith(".TSV", StringComparison.OrdinalIgnoreCase);
-            var delimiter = tsv ? '\t' : DetectDelimiter(filename);
-            Log.Debug("Delimiter: {Delimiter}", delimiter == '\t' ? "tab" : delimiter.ToString());
-
-            var config = new CsvConfiguration(CultureInfo.InvariantCulture)
-            {
-                //one string for a value repeated in many rows, not one for each (CsvHelper caches values of up to 128 characters while the file loads)
-                CacheFields = true,
-                Delimiter = delimiter.ToString(),
-                BadDataFound = tsv
-                    ? null
-                    : context => { Log.Warning("Bad data found in {Field}! Skipping. Raw data: {RawRecord}", context.Field, context.RawRecord); }
-            };
 
             using var fileReader = File.Open(filename, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
-            using var ff = new StreamReader(fileReader);
-            using var csv = new CsvReader(ff, config);
+            using var csv = CsvReader.Create(fileReader, OptionsFor(filename, tsv));
+
+            Log.Debug("Delimiter: {Delimiter}", csv.Separator == '\t' ? "tab" : csv.Separator.ToString());
 
             //(RawRecord was built for every row even with debug messages off)
             var debug = Log.IsEnabled(LogEventLevel.Debug);
 
-            //the header line, after a PowerShell #TYPE line (only the first line is checked: a row starting with #TYPE was
-            //skipped too)
-            var hasHeader = csv.Read();
-            if (hasHeader && csv.Parser.RawRecord.StartsWith("#TYPE", StringComparison.Ordinal))
+            //each row goes straight into an ExpandoObject (Timeline Explorer needs one): CsvHelper's dynamic record would be
+            //made and then copied for every row. A column without a name is left out, and of two with the same name the
+            //last value is kept in the first one's place, as before (PR #18); a field a short row doesn't have is null
+            var ln = 1;
+            string[] names = null;
+            //(CsvHelper 33's CacheFields; PoolStrings alone stops pooling most columns of a large file)
+            var pool = new StringPool();
+            while (csv.Read())
             {
-                hasHeader = csv.Read();
-            }
+                names ??= csv.Headers.ToArray();
 
-            if (hasHeader)
-            {
-                csv.ReadHeader();
-
-                //each row goes straight into an ExpandoObject (Timeline Explorer needs one): CsvHelper's dynamic record
-                //was made and then copied for every row. A column without a name is left out, and of two with the same
-                //name the last value is kept in the first one's place, as before (PR #18)
-                var names = csv.HeaderRecord;
-
-                var ln = 1;
-                while (csv.Read())
+                if (debug)
                 {
-                    if (debug)
-                    {
-                        Log.Debug("Line # {Line}, Record: {RawRecord}", ln, csv.Context.Parser.RawRecord);
-                    }
-
-                    IDictionary<string, object> row = new ExpandoObject();
-                    for (var i = 0; i < names.Length; i++)
-                    {
-                        if (string.IsNullOrWhiteSpace(names[i]))
-                        {
-                            continue;
-                        }
-
-                        csv.TryGetField(i, out string field);
-                        row[names[i]] = field;
-                    }
-
-                    row["Line"] = ln;
-                    row["Tag"] = tagged.Contains(ln);
-
-                    tempList.Add(row);
-
-                    ln += 1;
+                    Log.Debug("Line # {Line}, Record: {RawRecord}", ln, csv.Current.ToString());
                 }
+
+                IDictionary<string, object> row = new ExpandoObject();
+                for (var i = 0; i < names.Length; i++)
+                {
+                    if (string.IsNullOrWhiteSpace(names[i]))
+                    {
+                        continue;
+                    }
+
+                    row[names[i]] = i < csv.FieldCount ? pool.Get(csv.GetString(i)) : null;
+                }
+
+                row["Line"] = ln;
+                row["Tag"] = tagged.Contains(ln);
+
+                tempList.Add(row);
+
+                ln += 1;
             }
 
             DataList = new BindingList<dynamic>(tempList);

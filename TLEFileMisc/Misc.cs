@@ -5,8 +5,6 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using CsvHelper;
-using CsvHelper.Configuration;
-using CsvHelper.TypeConversion;
 using ITLEFileSpec;
 using TLEFilePlugins.Shared;
 using Serilog;
@@ -18,21 +16,22 @@ namespace TLEFileMisc
     #region Hayabusa
 
     
-    public class HayabusaStandardData : IFileSpecData
+    [CsvRecord]
+    public partial class HayabusaStandardData : IFileSpecData
     {
-        public DateTime Timestamp { get; set; }
-        public string RuleTitle { get; set; }
-        public string Level { get; set; }
-        public string Computer { get; set; }
-        public string Channel { get; set; }
+        [CsvColumn(Optional = true), CsvConverter(typeof(UniversalParseTimeConverter))] public DateTime Timestamp { get; set; }
+        [CsvColumn(Optional = true)] public string RuleTitle { get; set; }
+        [CsvColumn(Optional = true)] public string Level { get; set; }
+        [CsvColumn(Optional = true)] public string Computer { get; set; }
+        [CsvColumn(Optional = true)] public string Channel { get; set; }
         
-        public int EventId { get; set; }
-        public ulong RecordId { get; set; }
-        public string Details { get; set; }
-        public string ExtraFieldInfo { get; set; }
+        [CsvColumn("EventID", Optional = true)] public int EventId { get; set; }
+        [CsvColumn("RecordID", Optional = true)] public ulong RecordId { get; set; }
+        [CsvColumn(Optional = true)] public string Details { get; set; }
+        [CsvColumn(Optional = true)] public string ExtraFieldInfo { get; set; }
         
-        public int Line { get; set; }
-        public bool Tag { get; set; }
+        [CsvIgnore] public int Line { get; set; }
+        [CsvIgnore] public bool Tag { get; set; }
 
         public override string ToString()
         {
@@ -66,40 +65,36 @@ namespace TLEFileMisc
 
         public void ProcessFile(string filename)
         {
-            CsvLoader.Load<HayabusaStandardData>(filename, DataList, TaggedLines, map =>
-            {
-                map.Map(m=>m.Timestamp).Convert(row => CsvLoader.ParseTime(row.Row.GetField<string>("Timestamp")).ToUniversalTime());
-                map.Map(t => t.EventId).Name("EventID");
-                map.Map(t => t.RecordId).Name("RecordID");
-            });
+            CsvLoader.Load<HayabusaStandardData>(filename, DataList, TaggedLines);
         }
         
     }
     
     
-    public class HayabusaVerboseData : IFileSpecData
+    [CsvRecord]
+    public partial class HayabusaVerboseData : IFileSpecData
     {
         
-        public DateTime Timestamp { get; set; }
-        public string RuleTitle { get; set; }
-        public string Level { get; set; }
-        public string Computer { get; set; }
-        public string Channel { get; set; }
+        [CsvColumn(Optional = true), CsvConverter(typeof(UniversalParseTimeConverter))] public DateTime Timestamp { get; set; }
+        [CsvColumn(Optional = true)] public string RuleTitle { get; set; }
+        [CsvColumn(Optional = true)] public string Level { get; set; }
+        [CsvColumn(Optional = true)] public string Computer { get; set; }
+        [CsvColumn(Optional = true)] public string Channel { get; set; }
         
-        public int EventId { get; set; }
+        [CsvColumn("EventID", Optional = true)] public int EventId { get; set; }
         
-        public string MitreTactics { get; set; }
-        public string MitreTags { get; set; }
-        public string OtherTags { get; set; }
+        [CsvColumn(Optional = true)] public string MitreTactics { get; set; }
+        [CsvColumn(Optional = true)] public string MitreTags { get; set; }
+        [CsvColumn(Optional = true)] public string OtherTags { get; set; }
         
-        public ulong RecordId { get; set; }
-        public string Details { get; set; }
-        public string ExtraFieldInfo { get; set; }
-        public string RuleFile { get; set; }
-        public string EvtxFile { get; set; }
+        [CsvColumn("RecordID", Optional = true)] public ulong RecordId { get; set; }
+        [CsvColumn(Optional = true)] public string Details { get; set; }
+        [CsvColumn(Optional = true)] public string ExtraFieldInfo { get; set; }
+        [CsvColumn(Optional = true)] public string RuleFile { get; set; }
+        [CsvColumn(Optional = true)] public string EvtxFile { get; set; }
         
-        public int Line { get; set; }
-        public bool Tag { get; set; }
+        [CsvIgnore] public int Line { get; set; }
+        [CsvIgnore] public bool Tag { get; set; }
 
         public override string ToString()
         {
@@ -133,49 +128,45 @@ namespace TLEFileMisc
 
         public void ProcessFile(string filename)
         {
-            CsvLoader.Load<HayabusaVerboseData>(filename, DataList, TaggedLines, map =>
-            {
-                map.Map(t => t.EventId).Name("EventID");
-                map.Map(t => t.RecordId).Name("RecordID");
-                map.Map(m=>m.Timestamp).Convert(row => CsvLoader.ParseTime(row.Row.GetField<string>("Timestamp")).ToUniversalTime());
-            });
+            CsvLoader.Load<HayabusaVerboseData>(filename, DataList, TaggedLines);
         }
         
     }
     
     
-    public class HayabusaSuperVerboseData : IFileSpecData
+    [CsvRecord]
+    public partial class HayabusaSuperVerboseData : IFileSpecData
     {
         //"EventID","RuleAuthor","RuleModifiedDate","Status",
         //"ExtraFieldInfo","MitreTactics","MitreTags","OtherTags","Provider","RuleCreationDate","RuleFile","EvtxFile"
-        public DateTime Timestamp { get; set; }
-        public string RuleTitle { get; set; }
-        public string Level { get; set; }
-        public string Computer { get; set; }
-        public string Channel { get; set; }
+        [CsvColumn(Optional = true), CsvConverter(typeof(UniversalParseTimeConverter))] public DateTime Timestamp { get; set; }
+        [CsvColumn(Optional = true)] public string RuleTitle { get; set; }
+        [CsvColumn(Optional = true)] public string Level { get; set; }
+        [CsvColumn(Optional = true)] public string Computer { get; set; }
+        [CsvColumn(Optional = true)] public string Channel { get; set; }
         
-        public int EventId { get; set; }
+        [CsvColumn("EventID", Optional = true)] public int EventId { get; set; }
         
-        public string RuleAuthor { get; set; }
-        public string RuleModifiedDate { get; set; }
-        public string Status { get; set; }
-        public ulong RecordId { get; set; }
-        public string Details { get; set; }
-        public string ExtraFieldInfo { get; set; }
-        public string MitreTactics { get; set; }
-        public string MitreTags { get; set; }
-        public string OtherTags { get; set; }
-        public string Provider { get; set; }
-        public string RuleCreationDate { get; set; }
-        public string RuleFile { get; set; }
-        public string EvtxFile { get; set; }
+        [CsvColumn(Optional = true)] public string RuleAuthor { get; set; }
+        [CsvColumn(Optional = true)] public string RuleModifiedDate { get; set; }
+        [CsvColumn(Optional = true)] public string Status { get; set; }
+        [CsvColumn("RecordID", Optional = true)] public ulong RecordId { get; set; }
+        [CsvColumn(Optional = true)] public string Details { get; set; }
+        [CsvColumn(Optional = true)] public string ExtraFieldInfo { get; set; }
+        [CsvColumn(Optional = true)] public string MitreTactics { get; set; }
+        [CsvColumn(Optional = true)] public string MitreTags { get; set; }
+        [CsvColumn(Optional = true)] public string OtherTags { get; set; }
+        [CsvColumn(Optional = true)] public string Provider { get; set; }
+        [CsvColumn(Optional = true)] public string RuleCreationDate { get; set; }
+        [CsvColumn(Optional = true)] public string RuleFile { get; set; }
+        [CsvColumn(Optional = true)] public string EvtxFile { get; set; }
         
         //"2020-07-09 21:22:31.163 +00:00","Active Directory User Backdoors","high","rootdc1.offsec.lan","Sec",5136,"@neu5ron",
         //"2024/02/26","test",15779594,"User: lambda-user ¦ SID: S-1-5-21-4230534742-2542757381-3142984815-1158 ¦ ObjDN: CN=honey-pot1,OU=Test-OU,OU=OFFSEC-COMPANY,DC=offsec,DC=lan ¦ AttrLDAPName: servicePrincipalName ¦ OpType: %%14674 ¦ LID: 0x6529663","AppCorrelationID: - ¦ AttributeSyntaxOID: 2.5.5.12 ¦ AttributeValue: HTTP/HACK-ME-PC.offsec.lan ¦ DSName: offsec.lan ¦ DSType: %%14676 ¦ ObjectClass: user ¦ ObjectGUID: 259162F1-58E4-4EE9-9B9C-2BAF2A03D376 ¦ OpCorrelationID: 52BFBF59-4CF4-4D5E-98D1-09D1EBE12FDE ¦ SubjectDomainName: OFFSEC",
         //"Persis","T1098","","Sec","2017/04/13","win_security_alert_ad_user_backdoors.yml","C:\Users\KOHDA\Downloads\tmp\ID4738,5136-SPN set on user account.evtx"
         
-        public int Line { get; set; }
-        public bool Tag { get; set; }
+        [CsvIgnore] public int Line { get; set; }
+        [CsvIgnore] public bool Tag { get; set; }
 
         public override string ToString()
         {
@@ -209,43 +200,41 @@ namespace TLEFileMisc
 
         public void ProcessFile(string filename)
         {
-            CsvLoader.Load<HayabusaSuperVerboseData>(filename, DataList, TaggedLines, map =>
-            {
-                map.Map(t => t.EventId).Name("EventID");
-                map.Map(t => t.RecordId).Name("RecordID");
-                map.Map(m=>m.Timestamp).Convert(row => CsvLoader.ParseTime(row.Row.GetField<string>("Timestamp")).ToUniversalTime());
-            });
+            CsvLoader.Load<HayabusaSuperVerboseData>(filename, DataList, TaggedLines);
         }
         
-        public class StupidDateConverter : DefaultTypeConverter
+        /// <summary>(not used) a value with a '-' is null</summary>
+        public class StupidDateConverter : ICsvConverter<string>
         {
-            public override object ConvertFromString(string text, IReaderRow row, MemberMapData memberMapData)
+            public string Read(CsvReader reader, int index)
             {
-                if (text.Contains("-"))
-                {
-                    return null;
-                }
+                var text = reader.GetString(index);
+                return text.Contains("-") ? null : text;
+            }
 
-                return text;
+            public void Write(CsvWriter writer, string value)
+            {
+                writer.WriteField(value ?? string.Empty);
             }
         }
         
     }
     
-    public class HayabusaMinimalData : IFileSpecData
+    [CsvRecord]
+    public partial class HayabusaMinimalData : IFileSpecData
     {
-        public DateTime Timestamp { get; set; }
-        public string RuleTitle { get; set; }
-        public string Level { get; set; }
-        public string Computer { get; set; }
-        public string Channel { get; set; }
+        [CsvColumn(Optional = true), CsvConverter(typeof(UniversalParseTimeConverter))] public DateTime Timestamp { get; set; }
+        [CsvColumn(Optional = true)] public string RuleTitle { get; set; }
+        [CsvColumn(Optional = true)] public string Level { get; set; }
+        [CsvColumn(Optional = true)] public string Computer { get; set; }
+        [CsvColumn(Optional = true)] public string Channel { get; set; }
         
-        public int EventId { get; set; }
-        public ulong RecordId { get; set; }
-        public string Details { get; set; }
+        [CsvColumn("EventID", Optional = true)] public int EventId { get; set; }
+        [CsvColumn("RecordID", Optional = true)] public ulong RecordId { get; set; }
+        [CsvColumn(Optional = true)] public string Details { get; set; }
         
-        public int Line { get; set; }
-        public bool Tag { get; set; }
+        [CsvIgnore] public int Line { get; set; }
+        [CsvIgnore] public bool Tag { get; set; }
 
         public override string ToString()
         {
@@ -279,12 +268,7 @@ namespace TLEFileMisc
 
         public void ProcessFile(string filename)
         {
-            CsvLoader.Load<HayabusaMinimalData>(filename, DataList, TaggedLines, map =>
-            {
-                map.Map(m=>m.Timestamp).Convert(row => CsvLoader.ParseTime(row.Row.GetField<string>("Timestamp")).ToUniversalTime());
-                map.Map(t => t.EventId).Name("EventID");
-                map.Map(t => t.RecordId).Name("RecordID");
-            });
+            CsvLoader.Load<HayabusaMinimalData>(filename, DataList, TaggedLines);
         }
         
     }
@@ -295,21 +279,22 @@ namespace TLEFileMisc
     #region Chainsaw
 
 
-    public class ChainsawSigmaData : IFileSpecData
+    [CsvRecord]
+    public partial class ChainsawSigmaData : IFileSpecData
     {
-        public DateTime Timestamp { get; set; }
-        public string Detections { get; set; }
-        public string Path { get; set; }
-        public int Count { get; set; }
-        public string EventSystemProvider { get; set; }
+        [CsvColumn(Optional = true), CsvConverter(typeof(UniversalParseTimeConverter))] public DateTime Timestamp { get; set; }
+        [CsvColumn("detections", Optional = true)] public string Detections { get; set; }
+        [CsvColumn("path", Optional = true)] public string Path { get; set; }
+        [CsvColumn("count", Optional = true)] public int Count { get; set; }
+        [CsvColumn("Event.System.Provider", Optional = true)] public string EventSystemProvider { get; set; }
 
-        public int? EventID { get; set; }
-        public ulong? RecordID { get; set; }
-        public string Computer { get; set; }
-        public string EventData { get; set; }
+        [CsvColumn("Event ID", Optional = true)] public int? EventID { get; set; }
+        [CsvColumn("Record ID", Optional = true)] public ulong? RecordID { get; set; }
+        [CsvColumn(Optional = true)] public string Computer { get; set; }
+        [CsvColumn("Event Data", Optional = true)] public string EventData { get; set; }
 
-        public int Line { get; set; }
-        public bool Tag { get; set; }
+        [CsvIgnore] public int Line { get; set; }
+        [CsvIgnore] public bool Tag { get; set; }
 
         public override string ToString()
         {
@@ -343,38 +328,29 @@ namespace TLEFileMisc
 
         public void ProcessFile(string filename)
         {
-            CsvLoader.Load<ChainsawSigmaData>(filename, DataList, TaggedLines, map =>
-            {
-                map.Map(m => m.Timestamp).Convert(row => CsvLoader.ParseTime(row.Row.GetField<string>("timestamp")).ToUniversalTime());
-                map.Map(t => t.Detections).Name("detections");
-                map.Map(t => t.Path).Name("path");
-                map.Map(t => t.Count).Name("count");
-                map.Map(t => t.EventSystemProvider).Name("Event.System.Provider");
-                map.Map(t => t.EventID).Name("Event ID");
-                map.Map(t => t.RecordID).Name("Record ID");
-                map.Map(t => t.EventData).Name("Event Data");
-            });
+            CsvLoader.Load<ChainsawSigmaData>(filename, DataList, TaggedLines);
         }
 
     }
 
-    public class ChainsawAntivirusData : IFileSpecData
+    [CsvRecord]
+    public partial class ChainsawAntivirusData : IFileSpecData
     {
-        public DateTime Timestamp { get; set; }
-        public string Detections { get; set; }
-        public string Path { get; set; }
+        [CsvColumn(Optional = true), CsvConverter(typeof(UniversalParseTimeConverter))] public DateTime Timestamp { get; set; }
+        [CsvColumn("detections", Optional = true)] public string Detections { get; set; }
+        [CsvColumn("path", Optional = true)] public string Path { get; set; }
 
-        public int EventID { get; set; }
-        public ulong? RecordID { get; set; }
-        public string Computer { get; set; }
-        public string ThreatName { get; set; }
-        public string ThreatPath { get; set; }
-        public string SHA1 { get; set; }
-        public string User { get; set; }
-        public string ThreatType { get; set; }
+        [CsvColumn("Event ID", Optional = true)] public int EventID { get; set; }
+        [CsvColumn("Record ID", Optional = true)] public ulong? RecordID { get; set; }
+        [CsvColumn("Computer", Optional = true)] public string Computer { get; set; }
+        [CsvColumn("Threat Name", Optional = true)] public string ThreatName { get; set; }
+        [CsvColumn("Threat Path", Optional = true)] public string ThreatPath { get; set; }
+        [CsvColumn("SHA1", Optional = true)] public string SHA1 { get; set; }
+        [CsvColumn("User", Optional = true)] public string User { get; set; }
+        [CsvColumn("Threat Type", Optional = true)] public string ThreatType { get; set; }
 
-        public int Line { get; set; }
-        public bool Tag { get; set; }
+        [CsvIgnore] public int Line { get; set; }
+        [CsvIgnore] public bool Tag { get; set; }
 
         public override string ToString()
         {
@@ -408,39 +384,27 @@ namespace TLEFileMisc
 
         public void ProcessFile(string filename)
         {
-            CsvLoader.Load<ChainsawAntivirusData>(filename, DataList, TaggedLines, map =>
-            {
-                map.Map(m => m.Timestamp).Convert(row => CsvLoader.ParseTime(row.Row.GetField<string>("timestamp")).ToUniversalTime());
-                map.Map(t => t.Detections).Name("detections");
-                map.Map(t => t.Path).Name("path");
-                map.Map(t => t.EventID).Name("Event ID");
-                map.Map(t => t.RecordID).Name("Record ID");
-                map.Map(t => t.Computer).Name("Computer");
-                map.Map(t => t.ThreatName).Name("Threat Name");
-                map.Map(t => t.ThreatPath).Name("Threat Path");
-                map.Map(t => t.SHA1).Name("SHA1");
-                map.Map(t => t.User).Name("User");
-                map.Map(t => t.ThreatType).Name("Threat Type");
-            });
+            CsvLoader.Load<ChainsawAntivirusData>(filename, DataList, TaggedLines);
         }
 
     }
 
-    public class ChainsawAccountTamperingData : IFileSpecData
+    [CsvRecord]
+    public partial class ChainsawAccountTamperingData : IFileSpecData
     {
-        public DateTime Timestamp { get; set; }
-        public string Detections { get; set; }
-        public string Path { get; set; }
+        [CsvColumn(Optional = true), CsvConverter(typeof(UniversalParseTimeConverter))] public DateTime Timestamp { get; set; }
+        [CsvColumn("detections", Optional = true)] public string Detections { get; set; }
+        [CsvColumn("path", Optional = true)] public string Path { get; set; }
 
-        public int EventID { get; set; }
-        public ulong? RecordID { get; set; }
-        public string Computer { get; set; }
-        public string User { get; set; }
-        public string UserSID { get; set; }
-        public string MemberSID { get; set; }
+        [CsvColumn("Event ID", Optional = true)] public int EventID { get; set; }
+        [CsvColumn("Record ID", Optional = true)] public ulong? RecordID { get; set; }
+        [CsvColumn("Computer", Optional = true)] public string Computer { get; set; }
+        [CsvColumn("User", Optional = true)] public string User { get; set; }
+        [CsvColumn("User SID", Optional = true)] public string UserSID { get; set; }
+        [CsvColumn("Member SID", Optional = true)] public string MemberSID { get; set; }
 
-        public int Line { get; set; }
-        public bool Tag { get; set; }
+        [CsvIgnore] public int Line { get; set; }
+        [CsvIgnore] public bool Tag { get; set; }
 
         public override string ToString()
         {
@@ -474,36 +438,26 @@ namespace TLEFileMisc
 
         public void ProcessFile(string filename)
         {
-            CsvLoader.Load<ChainsawAccountTamperingData>(filename, DataList, TaggedLines, map =>
-            {
-                map.Map(m => m.Timestamp).Convert(row => CsvLoader.ParseTime(row.Row.GetField<string>("timestamp")).ToUniversalTime());
-                map.Map(t => t.Detections).Name("detections");
-                map.Map(t => t.Path).Name("path");
-                map.Map(t => t.EventID).Name("Event ID");
-                map.Map(t => t.RecordID).Name("Record ID");
-                map.Map(t => t.Computer).Name("Computer");
-                map.Map(t => t.User).Name("User");
-                map.Map(t => t.UserSID).Name("User SID");
-                map.Map(t => t.MemberSID).Name("Member SID");
-            });
+            CsvLoader.Load<ChainsawAccountTamperingData>(filename, DataList, TaggedLines);
         }
 
     }
 
-    public class ChainsawCredentialAccessData : IFileSpecData
+    [CsvRecord]
+    public partial class ChainsawCredentialAccessData : IFileSpecData
     {
-        public DateTime Timestamp { get; set; }
-        public string Detections { get; set; }
-        public string Path { get; set; }
+        [CsvColumn(Optional = true), CsvConverter(typeof(UniversalParseTimeConverter))] public DateTime Timestamp { get; set; }
+        [CsvColumn("detections", Optional = true)] public string Detections { get; set; }
+        [CsvColumn("path", Optional = true)] public string Path { get; set; }
 
-        public int EventID { get; set; }
-        public string Computer { get; set; }
-        public string User { get; set; }
-        public string ServiceName { get; set; }
-        public string IPAddress { get; set; }
+        [CsvColumn("Event ID", Optional = true)] public int EventID { get; set; }
+        [CsvColumn("Computer", Optional = true)] public string Computer { get; set; }
+        [CsvColumn("User", Optional = true)] public string User { get; set; }
+        [CsvColumn("Service Name", Optional = true)] public string ServiceName { get; set; }
+        [CsvColumn("IP Address", Optional = true)] public string IPAddress { get; set; }
 
-        public int Line { get; set; }
-        public bool Tag { get; set; }
+        [CsvIgnore] public int Line { get; set; }
+        [CsvIgnore] public bool Tag { get; set; }
 
         public override string ToString()
         {
@@ -537,43 +491,34 @@ namespace TLEFileMisc
 
         public void ProcessFile(string filename)
         {
-            CsvLoader.Load<ChainsawCredentialAccessData>(filename, DataList, TaggedLines, map =>
-            {
-                map.Map(m => m.Timestamp).Convert(row => CsvLoader.ParseTime(row.Row.GetField<string>("timestamp")).ToUniversalTime());
-                map.Map(t => t.Detections).Name("detections");
-                map.Map(t => t.Path).Name("path");
-                map.Map(t => t.EventID).Name("Event ID");
-                map.Map(t => t.Computer).Name("Computer");
-                map.Map(t => t.User).Name("User");
-                map.Map(t => t.ServiceName).Name("Service Name");
-                map.Map(t => t.IPAddress).Name("IP Address");
-            });
+            CsvLoader.Load<ChainsawCredentialAccessData>(filename, DataList, TaggedLines);
         }
 
     }
 
-    public class ChainsawLateralMovementData : IFileSpecData
+    [CsvRecord]
+    public partial class ChainsawLateralMovementData : IFileSpecData
     {
-        public DateTime Timestamp { get; set; }
-        public string Detections { get; set; }
-        public string Path { get; set; }
+        [CsvColumn(Optional = true), CsvConverter(typeof(UniversalParseTimeConverter))] public DateTime Timestamp { get; set; }
+        [CsvColumn("detections", Optional = true)] public string Detections { get; set; }
+        [CsvColumn("path", Optional = true)] public string Path { get; set; }
 
-        public int EventID { get; set; }
-        public ulong? RecordID { get; set; }
-        public string Computer { get; set; }
-        public string User { get; set; }
-        public string LogonType { get; set; }
-        public string IPAddress { get; set; }
-        public string ProcessName { get; set; }
-        public string ProcessID { get; set; }
-        public string InterfaceIndex { get; set; }
-        public string SourceAddress { get; set; }
-        public string SourcePort { get; set; }
-        public string DestAddress { get; set; }
-        public string DestPort { get; set; }
+        [CsvColumn("Event ID", Optional = true)] public int EventID { get; set; }
+        [CsvColumn("Record ID", Optional = true)] public ulong? RecordID { get; set; }
+        [CsvColumn("Computer", Optional = true)] public string Computer { get; set; }
+        [CsvColumn("User", Optional = true)] public string User { get; set; }
+        [CsvColumn("Logon Type", Optional = true)] public string LogonType { get; set; }
+        [CsvColumn("IP Address", Optional = true)] public string IPAddress { get; set; }
+        [CsvColumn("Process Name", Optional = true)] public string ProcessName { get; set; }
+        [CsvColumn("Process ID", Optional = true)] public string ProcessID { get; set; }
+        [CsvColumn("Interface Index", Optional = true)] public string InterfaceIndex { get; set; }
+        [CsvColumn("Source Address", Optional = true)] public string SourceAddress { get; set; }
+        [CsvColumn("Source Port", Optional = true)] public string SourcePort { get; set; }
+        [CsvColumn("Dest Address", Optional = true)] public string DestAddress { get; set; }
+        [CsvColumn("Dest Port", Optional = true)] public string DestPort { get; set; }
 
-        public int Line { get; set; }
-        public bool Tag { get; set; }
+        [CsvIgnore] public int Line { get; set; }
+        [CsvIgnore] public bool Tag { get; set; }
 
         public override string ToString()
         {
@@ -607,44 +552,27 @@ namespace TLEFileMisc
 
         public void ProcessFile(string filename)
         {
-            CsvLoader.Load<ChainsawLateralMovementData>(filename, DataList, TaggedLines, map =>
-            {
-                map.Map(m => m.Timestamp).Convert(row => CsvLoader.ParseTime(row.Row.GetField<string>("timestamp")).ToUniversalTime());
-                map.Map(t => t.Detections).Name("detections");
-                map.Map(t => t.Path).Name("path");
-                map.Map(t => t.EventID).Name("Event ID");
-                map.Map(t => t.RecordID).Name("Record ID");
-                map.Map(t => t.Computer).Name("Computer");
-                map.Map(t => t.User).Name("User");
-                map.Map(t => t.LogonType).Name("Logon Type");
-                map.Map(t => t.IPAddress).Name("IP Address");
-                map.Map(t => t.ProcessName).Name("Process Name");
-                map.Map(t => t.ProcessID).Name("Process ID");
-                map.Map(t => t.InterfaceIndex).Name("Interface Index");
-                map.Map(t => t.SourceAddress).Name("Source Address");
-                map.Map(t => t.SourcePort).Name("Source Port");
-                map.Map(t => t.DestAddress).Name("Dest Address");
-                map.Map(t => t.DestPort).Name("Dest Port");
-            });
+            CsvLoader.Load<ChainsawLateralMovementData>(filename, DataList, TaggedLines);
         }
 
     }
 
-    public class ChainsawLateralMovementOldData : IFileSpecData
+    [CsvRecord]
+    public partial class ChainsawLateralMovementOldData : IFileSpecData
     {
-        public DateTime Timestamp { get; set; }
-        public string Detections { get; set; }
-        public string Path { get; set; }
+        [CsvColumn(Optional = true), CsvConverter(typeof(UniversalParseTimeConverter))] public DateTime Timestamp { get; set; }
+        [CsvColumn("detections", Optional = true)] public string Detections { get; set; }
+        [CsvColumn("path", Optional = true)] public string Path { get; set; }
 
-        public int EventID { get; set; }
-        public ulong? RecordID { get; set; }
-        public string Computer { get; set; }
-        public string User { get; set; }
-        public string LogonType { get; set; }
-        public string IPAddress { get; set; }
+        [CsvColumn("Event ID", Optional = true)] public int EventID { get; set; }
+        [CsvColumn("Record ID", Optional = true)] public ulong? RecordID { get; set; }
+        [CsvColumn("Computer", Optional = true)] public string Computer { get; set; }
+        [CsvColumn("User", Optional = true)] public string User { get; set; }
+        [CsvColumn("Logon Type", Optional = true)] public string LogonType { get; set; }
+        [CsvColumn("IP Address", Optional = true)] public string IPAddress { get; set; }
 
-        public int Line { get; set; }
-        public bool Tag { get; set; }
+        [CsvIgnore] public int Line { get; set; }
+        [CsvIgnore] public bool Tag { get; set; }
 
         public override string ToString()
         {
@@ -678,35 +606,25 @@ namespace TLEFileMisc
 
         public void ProcessFile(string filename)
         {
-            CsvLoader.Load<ChainsawLateralMovementOldData>(filename, DataList, TaggedLines, map =>
-            {
-                map.Map(m => m.Timestamp).Convert(row => CsvLoader.ParseTime(row.Row.GetField<string>("timestamp")).ToUniversalTime());
-                map.Map(t => t.Detections).Name("detections");
-                map.Map(t => t.Path).Name("path");
-                map.Map(t => t.EventID).Name("Event ID");
-                map.Map(t => t.RecordID).Name("Record ID");
-                map.Map(t => t.Computer).Name("Computer");
-                map.Map(t => t.User).Name("User");
-                map.Map(t => t.LogonType).Name("Logon Type");
-                map.Map(t => t.IPAddress).Name("IP Address");
-            });
+            CsvLoader.Load<ChainsawLateralMovementOldData>(filename, DataList, TaggedLines);
         }
 
     }
 
-    public class ChainsawRDSPowerShellScriptData : IFileSpecData
+    [CsvRecord]
+    public partial class ChainsawRDSPowerShellScriptData : IFileSpecData
     {
-        public DateTime Timestamp { get; set; }
-        public string Detections { get; set; }
-        public string Path { get; set; }
+        [CsvColumn(Optional = true), CsvConverter(typeof(UniversalParseTimeConverter))] public DateTime Timestamp { get; set; }
+        [CsvColumn("detections", Optional = true)] public string Detections { get; set; }
+        [CsvColumn("path", Optional = true)] public string Path { get; set; }
 
-        public int EventID { get; set; }
-        public string Channel { get; set; }
-        public string Computer { get; set; }
-        public string Information { get; set; }
+        [CsvColumn("Event ID", Optional = true)] public int EventID { get; set; }
+        [CsvColumn("Channel", Optional = true)] public string Channel { get; set; }
+        [CsvColumn("Computer", Optional = true)] public string Computer { get; set; }
+        [CsvColumn("Information", Optional = true)] public string Information { get; set; }
 
-        public int Line { get; set; }
-        public bool Tag { get; set; }
+        [CsvIgnore] public int Line { get; set; }
+        [CsvIgnore] public bool Tag { get; set; }
 
         public override string ToString()
         {
@@ -740,36 +658,28 @@ namespace TLEFileMisc
 
         public void ProcessFile(string filename)
         {
-            CsvLoader.Load<ChainsawRDSPowerShellScriptData>(filename, DataList, TaggedLines, map =>
-            {
-                map.Map(m => m.Timestamp).Convert(row => CsvLoader.ParseTime(row.Row.GetField<string>("timestamp")).ToUniversalTime());
-                map.Map(t => t.Detections).Name("detections");
-                map.Map(t => t.Path).Name("path");
-                map.Map(t => t.EventID).Name("Event ID");
-                map.Map(t => t.Channel).Name("Channel");
-                map.Map(t => t.Computer).Name("Computer");
-                map.Map(t => t.Information).Name("Information");
-            });
+            CsvLoader.Load<ChainsawRDSPowerShellScriptData>(filename, DataList, TaggedLines);
         }
 
     }
 
-    public class ChainsawRDSWebAccessData : IFileSpecData
+    [CsvRecord]
+    public partial class ChainsawRDSWebAccessData : IFileSpecData
     {
-        public DateTime Timestamp { get; set; }
-        public string Detections { get; set; }
-        public string Path { get; set; }
+        [CsvColumn(Optional = true), CsvConverter(typeof(UniversalParseTimeConverter))] public DateTime Timestamp { get; set; }
+        [CsvColumn("detections", Optional = true)] public string Detections { get; set; }
+        [CsvColumn("path", Optional = true)] public string Path { get; set; }
 
-        public int EventID { get; set; }
-        public string Channel { get; set; }
-        public string Computer { get; set; }
-        public string IPAddress { get; set; }
-        public string LogonType { get; set; }
-        public string TargetUserName { get; set; }
-        public string WorkstationName { get; set; }
+        [CsvColumn("Event ID", Optional = true)] public int EventID { get; set; }
+        [CsvColumn("Channel", Optional = true)] public string Channel { get; set; }
+        [CsvColumn("Computer", Optional = true)] public string Computer { get; set; }
+        [CsvColumn("IpAddress", Optional = true)] public string IPAddress { get; set; }
+        [CsvColumn("LogonType", Optional = true)] public string LogonType { get; set; }
+        [CsvColumn("TargetUserName", Optional = true)] public string TargetUserName { get; set; }
+        [CsvColumn("WorkstationName", Optional = true)] public string WorkstationName { get; set; }
 
-        public int Line { get; set; }
-        public bool Tag { get; set; }
+        [CsvIgnore] public int Line { get; set; }
+        [CsvIgnore] public bool Tag { get; set; }
 
         public override string ToString()
         {
@@ -803,36 +713,25 @@ namespace TLEFileMisc
 
         public void ProcessFile(string filename)
         {
-            CsvLoader.Load<ChainsawRDSWebAccessData>(filename, DataList, TaggedLines, map =>
-            {
-                map.Map(m => m.Timestamp).Convert(row => CsvLoader.ParseTime(row.Row.GetField<string>("timestamp")).ToUniversalTime());
-                map.Map(t => t.Detections).Name("detections");
-                map.Map(t => t.Path).Name("path");
-                map.Map(t => t.EventID).Name("Event ID");
-                map.Map(t => t.Channel).Name("Channel");
-                map.Map(t => t.Computer).Name("Computer");
-                map.Map(t => t.IPAddress).Name("IpAddress");
-                map.Map(t => t.LogonType).Name("LogonType");
-                map.Map(t => t.TargetUserName).Name("TargetUserName");
-                map.Map(t => t.WorkstationName).Name("WorkstationName");
-            });
+            CsvLoader.Load<ChainsawRDSWebAccessData>(filename, DataList, TaggedLines);
         }
 
     }
 
-    public class ChainsawLogTamperingData : IFileSpecData
+    [CsvRecord]
+    public partial class ChainsawLogTamperingData : IFileSpecData
     {
-        public DateTime Timestamp { get; set; }
-        public string Detections { get; set; }
-        public string Path { get; set; }
+        [CsvColumn(Optional = true), CsvConverter(typeof(UniversalParseTimeConverter))] public DateTime Timestamp { get; set; }
+        [CsvColumn("detections", Optional = true)] public string Detections { get; set; }
+        [CsvColumn("path", Optional = true)] public string Path { get; set; }
 
-        public int EventID { get; set; }
-        public ulong? RecordID { get; set; }
-        public string Computer { get; set; }
-        public string User { get; set; }
+        [CsvColumn("Event ID", Optional = true)] public int EventID { get; set; }
+        [CsvColumn("Record ID", Optional = true)] public ulong? RecordID { get; set; }
+        [CsvColumn("Computer", Optional = true)] public string Computer { get; set; }
+        [CsvColumn("User", Optional = true)] public string User { get; set; }
 
-        public int Line { get; set; }
-        public bool Tag { get; set; }
+        [CsvIgnore] public int Line { get; set; }
+        [CsvIgnore] public bool Tag { get; set; }
 
         public override string ToString()
         {
@@ -866,41 +765,33 @@ namespace TLEFileMisc
 
         public void ProcessFile(string filename)
         {
-            CsvLoader.Load<ChainsawLogTamperingData>(filename, DataList, TaggedLines, map =>
-            {
-                map.Map(m => m.Timestamp).Convert(row => CsvLoader.ParseTime(row.Row.GetField<string>("timestamp")).ToUniversalTime());
-                map.Map(t => t.Detections).Name("detections");
-                map.Map(t => t.Path).Name("path");
-                map.Map(t => t.EventID).Name("Event ID");
-                map.Map(t => t.RecordID).Name("Record ID");
-                map.Map(t => t.Computer).Name("Computer");
-                map.Map(t => t.User).Name("User");
-            });
+            CsvLoader.Load<ChainsawLogTamperingData>(filename, DataList, TaggedLines);
         }
 
     }
 
-    public class ChainsawPowerShellEngineStateData : IFileSpecData
+    [CsvRecord]
+    public partial class ChainsawPowerShellEngineStateData : IFileSpecData
     {
-        public DateTime Timestamp { get; set; }
-        public string Detections { get; set; }
-        public string Path { get; set; }
+        [CsvColumn(Optional = true), CsvConverter(typeof(UniversalParseTimeConverter))] public DateTime Timestamp { get; set; }
+        [CsvColumn("detections", Optional = true)] public string Detections { get; set; }
+        [CsvColumn("path", Optional = true)] public string Path { get; set; }
 
-        public int EventID { get; set; }
-        public string Channel { get; set; }
-        public string Computer { get; set; }
-        public string HostName { get; set; }
-        public string HostVersion { get; set; }
-        public string HostApplication { get; set; }
-        public string PipelineID { get; set; }
-        public string CommandName { get; set; }
-        public string CommandType { get; set; }
-        public string ScriptName { get; set; }
-        public string CommandPath { get; set; }
-        public string CommandLine { get; set; }
+        [CsvColumn("Event ID", Optional = true)] public int EventID { get; set; }
+        [CsvColumn("Channel", Optional = true)] public string Channel { get; set; }
+        [CsvColumn("Computer", Optional = true)] public string Computer { get; set; }
+        [CsvColumn("HostName", Optional = true)] public string HostName { get; set; }
+        [CsvColumn("HostVersion", Optional = true)] public string HostVersion { get; set; }
+        [CsvColumn("HostApplication", Optional = true)] public string HostApplication { get; set; }
+        [CsvColumn("PipelineId", Optional = true)] public string PipelineID { get; set; }
+        [CsvColumn("CommandName", Optional = true)] public string CommandName { get; set; }
+        [CsvColumn("CommandType", Optional = true)] public string CommandType { get; set; }
+        [CsvColumn("ScriptName", Optional = true)] public string ScriptName { get; set; }
+        [CsvColumn("CommandPath", Optional = true)] public string CommandPath { get; set; }
+        [CsvColumn("CommandLine", Optional = true)] public string CommandLine { get; set; }
 
-        public int Line { get; set; }
-        public bool Tag { get; set; }
+        [CsvIgnore] public int Line { get; set; }
+        [CsvIgnore] public bool Tag { get; set; }
 
         public override string ToString()
         {
@@ -934,40 +825,24 @@ namespace TLEFileMisc
 
         public void ProcessFile(string filename)
         {
-            CsvLoader.Load<ChainsawPowerShellEngineStateData>(filename, DataList, TaggedLines, map =>
-            {
-                map.Map(m => m.Timestamp).Convert(row => CsvLoader.ParseTime(row.Row.GetField<string>("timestamp")).ToUniversalTime());
-                map.Map(t => t.Detections).Name("detections");
-                map.Map(t => t.Path).Name("path");
-                map.Map(t => t.EventID).Name("Event ID");
-                map.Map(t => t.Channel).Name("Channel");
-                map.Map(t => t.Computer).Name("Computer");
-                map.Map(t => t.HostName).Name("HostName");
-                map.Map(t => t.HostVersion).Name("HostVersion");
-                map.Map(t => t.HostApplication).Name("HostApplication");
-                map.Map(t => t.PipelineID).Name("PipelineId");
-                map.Map(t => t.CommandName).Name("CommandName");
-                map.Map(t => t.CommandType).Name("CommandType");
-                map.Map(t => t.ScriptName).Name("ScriptName");
-                map.Map(t => t.CommandPath).Name("CommandPath");
-                map.Map(t => t.CommandLine).Name("CommandLine");
-            });
+            CsvLoader.Load<ChainsawPowerShellEngineStateData>(filename, DataList, TaggedLines);
         }
 
     }
 
-    public class ChainsawLoginAttacksData : IFileSpecData
+    [CsvRecord]
+    public partial class ChainsawLoginAttacksData : IFileSpecData
     {
-        public DateTime Timestamp { get; set; }
-        public string Detections { get; set; }
-        public string Path { get; set; }
+        [CsvColumn(Optional = true), CsvConverter(typeof(UniversalParseTimeConverter))] public DateTime Timestamp { get; set; }
+        [CsvColumn("detections", Optional = true)] public string Detections { get; set; }
+        [CsvColumn("path", Optional = true)] public string Path { get; set; }
 
-        public int Count { get; set; }
-        public int EventID { get; set; }
-        public string User { get; set; }
+        [CsvColumn("count", Optional = true)] public int Count { get; set; }
+        [CsvColumn("Event ID", Optional = true)] public int EventID { get; set; }
+        [CsvColumn("User", Optional = true)] public string User { get; set; }
 
-        public int Line { get; set; }
-        public bool Tag { get; set; }
+        [CsvIgnore] public int Line { get; set; }
+        [CsvIgnore] public bool Tag { get; set; }
 
         public override string ToString()
         {
@@ -1001,33 +876,26 @@ namespace TLEFileMisc
 
         public void ProcessFile(string filename)
         {
-            CsvLoader.Load<ChainsawLoginAttacksData>(filename, DataList, TaggedLines, map =>
-            {
-                map.Map(m => m.Timestamp).Convert(row => CsvLoader.ParseTime(row.Row.GetField<string>("timestamp")).ToUniversalTime());
-                map.Map(t => t.Detections).Name("detections");
-                map.Map(t => t.Path).Name("path");
-                map.Map(t => t.Count).Name("count");
-                map.Map(t => t.EventID).Name("Event ID");
-                map.Map(t => t.User).Name("User");
-            });
+            CsvLoader.Load<ChainsawLoginAttacksData>(filename, DataList, TaggedLines);
         }
 
     }
 
-    public class ChainsawIndicatorRemovalData : IFileSpecData
+    [CsvRecord]
+    public partial class ChainsawIndicatorRemovalData : IFileSpecData
     {
-        public DateTime Timestamp { get; set; }
-        public string Detections { get; set; }
-        public string Path { get; set; }
+        [CsvColumn(Optional = true), CsvConverter(typeof(UniversalParseTimeConverter))] public DateTime Timestamp { get; set; }
+        [CsvColumn("detections", Optional = true)] public string Detections { get; set; }
+        [CsvColumn("path", Optional = true)] public string Path { get; set; }
 
-        public int EventID { get; set; }
-        public ulong? RecordID { get; set; }
-        public string Computer { get; set; }
-        public string UserName { get; set; }
-        public string ScheduledTaskName { get; set; }
+        [CsvColumn("Event ID", Optional = true)] public int EventID { get; set; }
+        [CsvColumn("Record ID", Optional = true)] public ulong? RecordID { get; set; }
+        [CsvColumn("Computer", Optional = true)] public string Computer { get; set; }
+        [CsvColumn("User Name", Optional = true)] public string UserName { get; set; }
+        [CsvColumn("Scheduled Task Name", Optional = true)] public string ScheduledTaskName { get; set; }
 
-        public int Line { get; set; }
-        public bool Tag { get; set; }
+        [CsvIgnore] public int Line { get; set; }
+        [CsvIgnore] public bool Tag { get; set; }
 
         public override string ToString()
         {
@@ -1061,41 +929,32 @@ namespace TLEFileMisc
 
         public void ProcessFile(string filename)
         {
-            CsvLoader.Load<ChainsawIndicatorRemovalData>(filename, DataList, TaggedLines, map =>
-            {
-                map.Map(m => m.Timestamp).Convert(row => CsvLoader.ParseTime(row.Row.GetField<string>("timestamp")).ToUniversalTime());
-                map.Map(t => t.Detections).Name("detections");
-                map.Map(t => t.Path).Name("path");
-                map.Map(t => t.EventID).Name("Event ID");
-                map.Map(t => t.RecordID).Name("Record ID");
-                map.Map(t => t.Computer).Name("Computer");
-                map.Map(t => t.UserName).Name("User Name");
-                map.Map(t => t.ScheduledTaskName).Name("Scheduled Task Name");
-            });
+            CsvLoader.Load<ChainsawIndicatorRemovalData>(filename, DataList, TaggedLines);
         }
 
     }
 
-    public class ChainsawPersistenceData : IFileSpecData
+    [CsvRecord]
+    public partial class ChainsawPersistenceData : IFileSpecData
     {
-        public DateTime Timestamp { get; set; }
-        public string Detections { get; set; }
-        public string Path { get; set; }
+        [CsvColumn(Optional = true), CsvConverter(typeof(UniversalParseTimeConverter))] public DateTime Timestamp { get; set; }
+        [CsvColumn("detections", Optional = true)] public string Detections { get; set; }
+        [CsvColumn("path", Optional = true)] public string Path { get; set; }
 
-        public int EventID { get; set; }
-        public ulong? RecordID { get; set; }
-        public string Computer { get; set; }
-        public string UserName { get; set; }
-        public string ScheduledTaskName { get; set; }
-        public string DomainName { get; set; }
-        public string LogonID { get; set; }
-        public string ParentProcessName { get; set; }
-        public string ParentProcessCommandLine { get; set; }
-        public string NewProcessName { get; set; }
-        public string NewProcessID { get; set; }
+        [CsvColumn("Event ID", Optional = true)] public int EventID { get; set; }
+        [CsvColumn("Record ID", Optional = true)] public ulong? RecordID { get; set; }
+        [CsvColumn("Computer", Optional = true)] public string Computer { get; set; }
+        [CsvColumn("User Name", Optional = true)] public string UserName { get; set; }
+        [CsvColumn("Scheduled Task Name", Optional = true)] public string ScheduledTaskName { get; set; }
+        [CsvColumn("Domain Name", Optional = true)] public string DomainName { get; set; }
+        [CsvColumn("Logon ID", Optional = true)] public string LogonID { get; set; }
+        [CsvColumn("Parent Process Name", Optional = true)] public string ParentProcessName { get; set; }
+        [CsvColumn("Parent Process Command Line", Optional = true)] public string ParentProcessCommandLine { get; set; }
+        [CsvColumn("New Process Name", Optional = true)] public string NewProcessName { get; set; }
+        [CsvColumn("New Process ID", Optional = true)] public string NewProcessID { get; set; }
 
-        public int Line { get; set; }
-        public bool Tag { get; set; }
+        [CsvIgnore] public int Line { get; set; }
+        [CsvIgnore] public bool Tag { get; set; }
 
         public override string ToString()
         {
@@ -1129,44 +988,29 @@ namespace TLEFileMisc
 
         public void ProcessFile(string filename)
         {
-            CsvLoader.Load<ChainsawPersistenceData>(filename, DataList, TaggedLines, map =>
-            {
-                map.Map(m => m.Timestamp).Convert(row => CsvLoader.ParseTime(row.Row.GetField<string>("timestamp")).ToUniversalTime());
-                map.Map(t => t.Detections).Name("detections");
-                map.Map(t => t.Path).Name("path");
-                map.Map(t => t.EventID).Name("Event ID");
-                map.Map(t => t.RecordID).Name("Record ID");
-                map.Map(t => t.Computer).Name("Computer");
-                map.Map(t => t.UserName).Name("User Name");
-                map.Map(t => t.ScheduledTaskName).Name("Scheduled Task Name");
-                map.Map(t => t.DomainName).Name("Domain Name");
-                map.Map(t => t.LogonID).Name("Logon ID");
-                map.Map(t => t.ParentProcessName).Name("Parent Process Name");
-                map.Map(t => t.ParentProcessCommandLine).Name("Parent Process Command Line");
-                map.Map(t => t.NewProcessName).Name("New Process Name");
-                map.Map(t => t.NewProcessID).Name("New Process ID");
-            });
+            CsvLoader.Load<ChainsawPersistenceData>(filename, DataList, TaggedLines);
         }
 
     }
 
-    public class ChainsawRDPAttacksData : IFileSpecData
+    [CsvRecord]
+    public partial class ChainsawRDPAttacksData : IFileSpecData
     {
-        public DateTime Timestamp { get; set; }
-        public string Detections { get; set; }
-        public string Path { get; set; }
+        [CsvColumn(Optional = true), CsvConverter(typeof(UniversalParseTimeConverter))] public DateTime Timestamp { get; set; }
+        [CsvColumn("detections", Optional = true)] public string Detections { get; set; }
+        [CsvColumn("path", Optional = true)] public string Path { get; set; }
 
-        public int EventID { get; set; }
-        public string Computer { get; set; }
-        public string IPAddress { get; set; }
-        public string Username { get; set; }
-        public string Provider { get; set; }
-        public string LogonType { get; set; }
-        public ulong? RecordID { get; set; }
-        public string Domain { get; set; }
+        [CsvColumn("event id", Optional = true)] public int EventID { get; set; }
+        [CsvColumn("computer", Optional = true)] public string Computer { get; set; }
+        [CsvColumn("ip address", Optional = true)] public string IPAddress { get; set; }
+        [CsvColumn("username", Optional = true)] public string Username { get; set; }
+        [CsvColumn("provider", Optional = true)] public string Provider { get; set; }
+        [CsvColumn("logon type", Optional = true)] public string LogonType { get; set; }
+        [CsvColumn("record id", Optional = true)] public ulong? RecordID { get; set; }
+        [CsvColumn("domain", Optional = true)] public string Domain { get; set; }
 
-        public int Line { get; set; }
-        public bool Tag { get; set; }
+        [CsvIgnore] public int Line { get; set; }
+        [CsvIgnore] public bool Tag { get; set; }
 
         public override string ToString()
         {
@@ -1200,38 +1044,26 @@ namespace TLEFileMisc
 
         public void ProcessFile(string filename)
         {
-            CsvLoader.Load<ChainsawRDPAttacksData>(filename, DataList, TaggedLines, map =>
-            {
-                map.Map(m => m.Timestamp).Convert(row => CsvLoader.ParseTime(row.Row.GetField<string>("timestamp")).ToUniversalTime());
-                map.Map(t => t.Detections).Name("detections");
-                map.Map(t => t.Path).Name("path");
-                map.Map(t => t.EventID).Name("event id");
-                map.Map(t => t.Computer).Name("computer");
-                map.Map(t => t.IPAddress).Name("ip address");
-                map.Map(t => t.Username).Name("username");
-                map.Map(t => t.Provider).Name("provider");
-                map.Map(t => t.LogonType).Name("logon type");
-                map.Map(t => t.RecordID).Name("record id");
-                map.Map(t => t.Domain).Name("domain");
-            });
+            CsvLoader.Load<ChainsawRDPAttacksData>(filename, DataList, TaggedLines);
         }
 
     }
 
-    public class ChainsawRasVPNData : IFileSpecData
+    [CsvRecord]
+    public partial class ChainsawRasVPNData : IFileSpecData
     {
-        public DateTime Timestamp { get; set; }
-        public string Detections { get; set; }
-        public string Path { get; set; }
+        [CsvColumn(Optional = true), CsvConverter(typeof(UniversalParseTimeConverter))] public DateTime Timestamp { get; set; }
+        [CsvColumn("detections", Optional = true)] public string Detections { get; set; }
+        [CsvColumn("path", Optional = true)] public string Path { get; set; }
 
-        public int EventID { get; set; }
-        public string Channel { get; set; }
-        public string Provider { get; set; }
-        public string Computer { get; set; }
-        public string Data { get; set; }
+        [CsvColumn("Event ID", Optional = true)] public int EventID { get; set; }
+        [CsvColumn("Channel", Optional = true)] public string Channel { get; set; }
+        [CsvColumn("Provider", Optional = true)] public string Provider { get; set; }
+        [CsvColumn("Computer", Optional = true)] public string Computer { get; set; }
+        [CsvColumn("Data", Optional = true)] public string Data { get; set; }
 
-        public int Line { get; set; }
-        public bool Tag { get; set; }
+        [CsvIgnore] public int Line { get; set; }
+        [CsvIgnore] public bool Tag { get; set; }
 
         public override string ToString()
         {
@@ -1265,38 +1097,29 @@ namespace TLEFileMisc
 
         public void ProcessFile(string filename)
         {
-            CsvLoader.Load<ChainsawRasVPNData>(filename, DataList, TaggedLines, map =>
-            {
-                map.Map(m => m.Timestamp).Convert(row => CsvLoader.ParseTime(row.Row.GetField<string>("timestamp")).ToUniversalTime());
-                map.Map(t => t.Detections).Name("detections");
-                map.Map(t => t.Path).Name("path");
-                map.Map(t => t.EventID).Name("Event ID");
-                map.Map(t => t.Channel).Name("Channel");
-                map.Map(t => t.Provider).Name("Provider");
-                map.Map(t => t.Computer).Name("Computer");
-                map.Map(t => t.Data).Name("Data");
-            });
+            CsvLoader.Load<ChainsawRasVPNData>(filename, DataList, TaggedLines);
         }
 
     }
 
-    public class ChainsawServiceInstallationData : IFileSpecData
+    [CsvRecord]
+    public partial class ChainsawServiceInstallationData : IFileSpecData
     {
-        public DateTime Timestamp { get; set; }
-        public string Detections { get; set; }
-        public string Path { get; set; }
+        [CsvColumn(Optional = true), CsvConverter(typeof(UniversalParseTimeConverter))] public DateTime Timestamp { get; set; }
+        [CsvColumn("detections", Optional = true)] public string Detections { get; set; }
+        [CsvColumn("path", Optional = true)] public string Path { get; set; }
 
-        public int EventID { get; set; }
-        public ulong? RecordID { get; set; }
-        public string Computer { get; set; }
-        public string ServiceName { get; set; }
-        public string ServiceFileName { get; set; }
-        public string ServiceType { get; set; }
-        public string ServiceStartType { get; set; }
-        public string ServiceAccount { get; set; }
+        [CsvColumn("Event ID", Optional = true)] public int EventID { get; set; }
+        [CsvColumn("Record ID", Optional = true)] public ulong? RecordID { get; set; }
+        [CsvColumn("Computer", Optional = true)] public string Computer { get; set; }
+        [CsvColumn("Service Name", Optional = true)] public string ServiceName { get; set; }
+        [CsvColumn("Service File Name", Optional = true)] public string ServiceFileName { get; set; }
+        [CsvColumn("Service Type", Optional = true)] public string ServiceType { get; set; }
+        [CsvColumn("Service Start Type", Optional = true)] public string ServiceStartType { get; set; }
+        [CsvColumn("Service Account", Optional = true)] public string ServiceAccount { get; set; }
 
-        public int Line { get; set; }
-        public bool Tag { get; set; }
+        [CsvIgnore] public int Line { get; set; }
+        [CsvIgnore] public bool Tag { get; set; }
 
         public override string ToString()
         {
@@ -1330,46 +1153,34 @@ namespace TLEFileMisc
 
         public void ProcessFile(string filename)
         {
-            CsvLoader.Load<ChainsawServiceInstallationData>(filename, DataList, TaggedLines, map =>
-            {
-                map.Map(m => m.Timestamp).Convert(row => CsvLoader.ParseTime(row.Row.GetField<string>("timestamp")).ToUniversalTime());
-                map.Map(t => t.Detections).Name("detections");
-                map.Map(t => t.Path).Name("path");
-                map.Map(t => t.EventID).Name("Event ID");
-                map.Map(t => t.RecordID).Name("Record ID");
-                map.Map(t => t.Computer).Name("Computer");
-                map.Map(t => t.ServiceName).Name("Service Name");
-                map.Map(t => t.ServiceFileName).Name("Service File Name");
-                map.Map(t => t.ServiceType).Name("Service Type");
-                map.Map(t => t.ServiceStartType).Name("Service Start Type");
-                map.Map(t => t.ServiceAccount).Name("Service Account");
-            });
+            CsvLoader.Load<ChainsawServiceInstallationData>(filename, DataList, TaggedLines);
         }
 
     }
 
-    public class ChainsawServiceTamperingData : IFileSpecData
+    [CsvRecord]
+    public partial class ChainsawServiceTamperingData : IFileSpecData
     {
-        public DateTime Timestamp { get; set; }
-        public string Detections { get; set; }
-        public string Path { get; set; }
+        [CsvColumn(Optional = true), CsvConverter(typeof(UniversalParseTimeConverter))] public DateTime Timestamp { get; set; }
+        [CsvColumn("detections", Optional = true)] public string Detections { get; set; }
+        [CsvColumn("path", Optional = true)] public string Path { get; set; }
 
-        public int EventID { get; set; }
-        public string Username { get; set; }
-        public string Computer { get; set; }
-        public string Command { get; set; }
-        public string OldValue { get; set; }
-        public string NewValue { get; set; }
-        public string Service { get; set; }
-        public string OldState { get; set; }
-        public string NewState { get; set; }
-        public string SID { get; set; }
-        public ulong? RecordID { get; set; }
-        public string ServiceName { get; set; }
-        public string Action { get; set; }
+        [CsvColumn("Event ID", Optional = true)] public int EventID { get; set; }
+        [CsvColumn("Username", Optional = true)] public string Username { get; set; }
+        [CsvColumn("Computer", Optional = true)] public string Computer { get; set; }
+        [CsvColumn("Command", Optional = true)] public string Command { get; set; }
+        [CsvColumn("Old Value", Optional = true)] public string OldValue { get; set; }
+        [CsvColumn("New Value", Optional = true)] public string NewValue { get; set; }
+        [CsvColumn("Service", Optional = true)] public string Service { get; set; }
+        [CsvColumn("Old State", Optional = true)] public string OldState { get; set; }
+        [CsvColumn("New State", Optional = true)] public string NewState { get; set; }
+        [CsvColumn("SID", Optional = true)] public string SID { get; set; }
+        [CsvColumn("Record ID", Optional = true)] public ulong? RecordID { get; set; }
+        [CsvColumn("Service Name", Optional = true)] public string ServiceName { get; set; }
+        [CsvColumn("Action", Optional = true)] public string Action { get; set; }
 
-        public int Line { get; set; }
-        public bool Tag { get; set; }
+        [CsvIgnore] public int Line { get; set; }
+        [CsvIgnore] public bool Tag { get; set; }
 
         public override string ToString()
         {
@@ -1403,43 +1214,26 @@ namespace TLEFileMisc
 
         public void ProcessFile(string filename)
         {
-            CsvLoader.Load<ChainsawServiceTamperingData>(filename, DataList, TaggedLines, map =>
-            {
-                map.Map(m => m.Timestamp).Convert(row => CsvLoader.ParseTime(row.Row.GetField<string>("timestamp")).ToUniversalTime());
-                map.Map(t => t.Detections).Name("detections");
-                map.Map(t => t.Path).Name("path");
-                map.Map(t => t.EventID).Name("Event ID");
-                map.Map(t => t.Username).Name("Username");
-                map.Map(t => t.Computer).Name("Computer");
-                map.Map(t => t.Command).Name("Command");
-                map.Map(t => t.OldValue).Name("Old Value");
-                map.Map(t => t.NewValue).Name("New Value");
-                map.Map(t => t.Service).Name("Service");
-                map.Map(t => t.OldState).Name("Old State");
-                map.Map(t => t.NewState).Name("New State");
-                map.Map(t => t.SID).Name("SID");
-                map.Map(t => t.RecordID).Name("Record ID");
-                map.Map(t => t.ServiceName).Name("Service Name");
-                map.Map(t => t.Action).Name("Action");
-            });
+            CsvLoader.Load<ChainsawServiceTamperingData>(filename, DataList, TaggedLines);
         }
 
     }
 
-    public class ChainsawAppLockerData : IFileSpecData
+    [CsvRecord]
+    public partial class ChainsawAppLockerData : IFileSpecData
     {
-        public DateTime Timestamp { get; set; }
-        public string Detections { get; set; }
-        public string Path { get; set; }
+        [CsvColumn(Optional = true), CsvConverter(typeof(UniversalParseTimeConverter))] public DateTime Timestamp { get; set; }
+        [CsvColumn("detections", Optional = true)] public string Detections { get; set; }
+        [CsvColumn("path", Optional = true)] public string Path { get; set; }
 
-        public int EventID { get; set; }
-        public string Channel { get; set; }
-        public string Computer { get; set; }
-        public string TargetUser { get; set; }
-        public string FullFilePath { get; set; }
+        [CsvColumn("Event ID", Optional = true)] public int EventID { get; set; }
+        [CsvColumn("Channel", Optional = true)] public string Channel { get; set; }
+        [CsvColumn("Computer", Optional = true)] public string Computer { get; set; }
+        [CsvColumn("TargetUser", Optional = true)] public string TargetUser { get; set; }
+        [CsvColumn("FullFilePath", Optional = true)] public string FullFilePath { get; set; }
 
-        public int Line { get; set; }
-        public bool Tag { get; set; }
+        [CsvIgnore] public int Line { get; set; }
+        [CsvIgnore] public bool Tag { get; set; }
 
         public override string ToString()
         {
@@ -1473,36 +1267,27 @@ namespace TLEFileMisc
 
         public void ProcessFile(string filename)
         {
-            CsvLoader.Load<ChainsawAppLockerData>(filename, DataList, TaggedLines, map =>
-            {
-                map.Map(m => m.Timestamp).Convert(row => CsvLoader.ParseTime(row.Row.GetField<string>("timestamp")).ToUniversalTime());
-                map.Map(t => t.Detections).Name("detections");
-                map.Map(t => t.Path).Name("path");
-                map.Map(t => t.EventID).Name("Event ID");
-                map.Map(t => t.Channel).Name("Channel");
-                map.Map(t => t.Computer).Name("Computer");
-                map.Map(t => t.TargetUser).Name("TargetUser");
-                map.Map(t => t.FullFilePath).Name("FullFilePath");
-            });
+            CsvLoader.Load<ChainsawAppLockerData>(filename, DataList, TaggedLines);
         }
 
     }
 
-    public class ChainsawDefenseEvasionData : IFileSpecData
+    [CsvRecord]
+    public partial class ChainsawDefenseEvasionData : IFileSpecData
     {
-        public DateTime Timestamp { get; set; }
-        public string Detections { get; set; }
-        public string Path { get; set; }
+        [CsvColumn(Optional = true), CsvConverter(typeof(UniversalParseTimeConverter))] public DateTime Timestamp { get; set; }
+        [CsvColumn("detections", Optional = true)] public string Detections { get; set; }
+        [CsvColumn("path", Optional = true)] public string Path { get; set; }
 
-        public int EventID { get; set; }
-        public ulong? RecordID { get; set; }
-        public string Computer { get; set; }
-        public string ServiceName { get; set; }
-        public string OldStartupType { get; set; }
-        public string CurrentStartupType { get; set; }
+        [CsvColumn("Event ID", Optional = true)] public int EventID { get; set; }
+        [CsvColumn("Record ID", Optional = true)] public ulong? RecordID { get; set; }
+        [CsvColumn("Computer", Optional = true)] public string Computer { get; set; }
+        [CsvColumn("Service Name", Optional = true)] public string ServiceName { get; set; }
+        [CsvColumn("Old Startup Type", Optional = true)] public string OldStartupType { get; set; }
+        [CsvColumn("Current Startup Type", Optional = true)] public string CurrentStartupType { get; set; }
 
-        public int Line { get; set; }
-        public bool Tag { get; set; }
+        [CsvIgnore] public int Line { get; set; }
+        [CsvIgnore] public bool Tag { get; set; }
 
         public override string ToString()
         {
@@ -1536,42 +1321,32 @@ namespace TLEFileMisc
 
         public void ProcessFile(string filename)
         {
-            CsvLoader.Load<ChainsawDefenseEvasionData>(filename, DataList, TaggedLines, map =>
-            {
-                map.Map(m => m.Timestamp).Convert(row => CsvLoader.ParseTime(row.Row.GetField<string>("timestamp")).ToUniversalTime());
-                map.Map(t => t.Detections).Name("detections");
-                map.Map(t => t.Path).Name("path");
-                map.Map(t => t.EventID).Name("Event ID");
-                map.Map(t => t.RecordID).Name("Record ID");
-                map.Map(t => t.Computer).Name("Computer");
-                map.Map(t => t.ServiceName).Name("Service Name");
-                map.Map(t => t.OldStartupType).Name("Old Startup Type");
-                map.Map(t => t.CurrentStartupType).Name("Current Startup Type");
-            });
+            CsvLoader.Load<ChainsawDefenseEvasionData>(filename, DataList, TaggedLines);
         }
 
     }
 
-    public class ChainsawMFTData : IFileSpecData
+    [CsvRecord]
+    public partial class ChainsawMFTData : IFileSpecData
     {
-        public DateTime Timestamp { get; set; }
-        public string Detections { get; set; }
-        public string Path { get; set; }
-        public string FileNamePath { get; set; }
-        public DateTime? StandardInfoLastModified0x10 { get; set; }
-        public DateTime? StandardInfoLastAccess0x10 { get; set; }
-        public DateTime? FileNameCreated0x30 { get; set; }
-        public DateTime? FileNameLastModified0x30 { get; set; }
-        public DateTime? FileNameLastAccess0x30 { get; set; }
-        public ulong FileSize { get; set; }
+        [CsvColumn(Optional = true), CsvConverter(typeof(UniversalParseTimeConverter))] public DateTime Timestamp { get; set; }
+        [CsvColumn("detections", Optional = true)] public string Detections { get; set; }
+        [CsvColumn("path", Optional = true)] public string Path { get; set; }
+        [CsvColumn("FileNamePath", Optional = true)] public string FileNamePath { get; set; }
+        [CsvColumn(Optional = true)] public DateTime? StandardInfoLastModified0x10 { get; set; }
+        [CsvColumn(Optional = true)] public DateTime? StandardInfoLastAccess0x10 { get; set; }
+        [CsvColumn(Optional = true)] public DateTime? FileNameCreated0x30 { get; set; }
+        [CsvColumn(Optional = true)] public DateTime? FileNameLastModified0x30 { get; set; }
+        [CsvColumn(Optional = true)] public DateTime? FileNameLastAccess0x30 { get; set; }
+        [CsvColumn(Optional = true)] public ulong FileSize { get; set; }
 
-        public bool Directory { get; set; }
-        public bool Deleted { get; set; }
-        public bool HasAlternateDataStreams { get; set; }
+        [CsvColumn("IsADirectory", Optional = true)] public bool Directory { get; set; }
+        [CsvColumn("IsDeleted", Optional = true)] public bool Deleted { get; set; }
+        [CsvColumn(Optional = true)] public bool HasAlternateDataStreams { get; set; }
 
-        public int Line { get; set; }
+        [CsvIgnore] public int Line { get; set; }
 
-        public bool Tag { get; set; }
+        [CsvIgnore] public bool Tag { get; set; }
 
         public override string ToString()
         {
@@ -1605,44 +1380,32 @@ namespace TLEFileMisc
 
         public void ProcessFile(string filename)
         {
-            CsvLoader.Load<ChainsawMFTData>(filename, DataList, TaggedLines, map =>
-            {
-                map.Map(m => m.Timestamp).Convert(row => CsvLoader.ParseTime(row.Row.GetField<string>("timestamp")).ToUniversalTime());
-                map.Map(t => t.Detections).Name("detections");
-                map.Map(t => t.Path).Name("path");
-                map.Map(t => t.FileNamePath).Name("FileNamePath");
-                map.Map(m => m.StandardInfoLastModified0x10).TypeConverterOption.DateTimeStyles(DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal);
-                map.Map(m => m.StandardInfoLastAccess0x10).TypeConverterOption.DateTimeStyles(DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal);
-                map.Map(m => m.FileNameCreated0x30).TypeConverterOption.DateTimeStyles(DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal);
-                map.Map(m => m.FileNameLastModified0x30).TypeConverterOption.DateTimeStyles(DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal);
-                map.Map(m => m.FileNameLastAccess0x30).TypeConverterOption.DateTimeStyles(DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal);
-                map.Map(t => t.Directory).Name("IsADirectory");
-                map.Map(t => t.Deleted).Name("IsDeleted");
-            });
+            CsvLoader.Load<ChainsawMFTData>(filename, DataList, TaggedLines);
         }
     }
 
-    public class ChainsawMFTDataStreamsData : IFileSpecData
+    [CsvRecord]
+    public partial class ChainsawMFTDataStreamsData : IFileSpecData
     {
-        public DateTime Timestamp { get; set; }
-        public string Detections { get; set; }
-        public string Path { get; set; }
-        public string FileNamePath { get; set; }
-        public DateTime? StandardInfoLastModified0x10 { get; set; }
-        public DateTime? StandardInfoLastAccess0x10 { get; set; }
-        public DateTime? FileNameCreated0x30 { get; set; }
-        public DateTime? FileNameLastModified0x30 { get; set; }
-        public DateTime? FileNameLastAccess0x30 { get; set; }
-        public ulong FileSize { get; set; }
+        [CsvColumn(Optional = true), CsvConverter(typeof(UniversalParseTimeConverter))] public DateTime Timestamp { get; set; }
+        [CsvColumn("detections", Optional = true)] public string Detections { get; set; }
+        [CsvColumn("path", Optional = true)] public string Path { get; set; }
+        [CsvColumn("FileNamePath", Optional = true)] public string FileNamePath { get; set; }
+        [CsvColumn(Optional = true)] public DateTime? StandardInfoLastModified0x10 { get; set; }
+        [CsvColumn(Optional = true)] public DateTime? StandardInfoLastAccess0x10 { get; set; }
+        [CsvColumn(Optional = true)] public DateTime? FileNameCreated0x30 { get; set; }
+        [CsvColumn(Optional = true)] public DateTime? FileNameLastModified0x30 { get; set; }
+        [CsvColumn(Optional = true)] public DateTime? FileNameLastAccess0x30 { get; set; }
+        [CsvColumn(Optional = true)] public ulong FileSize { get; set; }
 
-        public bool Directory { get; set; }
-        public bool Deleted { get; set; }
-        public bool HasAlternateDataStreams { get; set; }
-        public string DataStreams { get; set; }
+        [CsvColumn("IsADirectory", Optional = true)] public bool Directory { get; set; }
+        [CsvColumn("IsDeleted", Optional = true)] public bool Deleted { get; set; }
+        [CsvColumn(Optional = true)] public bool HasAlternateDataStreams { get; set; }
+        [CsvColumn(Optional = true)] public string DataStreams { get; set; }
 
-        public int Line { get; set; }
+        [CsvIgnore] public int Line { get; set; }
 
-        public bool Tag { get; set; }
+        [CsvIgnore] public bool Tag { get; set; }
 
         public override string ToString()
         {
@@ -1676,20 +1439,7 @@ namespace TLEFileMisc
 
         public void ProcessFile(string filename)
         {
-            CsvLoader.Load<ChainsawMFTDataStreamsData>(filename, DataList, TaggedLines, map =>
-            {
-                map.Map(m => m.Timestamp).Convert(row => CsvLoader.ParseTime(row.Row.GetField<string>("timestamp")).ToUniversalTime());
-                map.Map(t => t.Detections).Name("detections");
-                map.Map(t => t.Path).Name("path");
-                map.Map(t => t.FileNamePath).Name("FileNamePath");
-                map.Map(m => m.StandardInfoLastModified0x10).TypeConverterOption.DateTimeStyles(DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal);
-                map.Map(m => m.StandardInfoLastAccess0x10).TypeConverterOption.DateTimeStyles(DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal);
-                map.Map(m => m.FileNameCreated0x30).TypeConverterOption.DateTimeStyles(DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal);
-                map.Map(m => m.FileNameLastModified0x30).TypeConverterOption.DateTimeStyles(DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal);
-                map.Map(m => m.FileNameLastAccess0x30).TypeConverterOption.DateTimeStyles(DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal);
-                map.Map(t => t.Directory).Name("IsADirectory");
-                map.Map(t => t.Deleted).Name("IsDeleted");
-            });
+            CsvLoader.Load<ChainsawMFTDataStreamsData>(filename, DataList, TaggedLines);
         }
     }
 
@@ -1804,86 +1554,8 @@ namespace TLEFileMisc
 
             DataList.Clear();
 
-            using var fileReader = File.OpenText(filename);
-            //one string for a value repeated in many rows, not one for each (CsvHelper caches values of up to 128 characters while the file loads)
-            var csv = new CsvReader(fileReader, new CsvConfiguration(CultureInfo.InvariantCulture) {CacheFields = true});
-
-            var foo = csv.Context.AutoMap<AnalyzeMftData>();
-
-            var o = new TypeConverterOptions
-            {
-                DateTimeStyle = DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal
-            };
-            csv.Context.TypeConverterOptionsCache.AddOptions<AnalyzeMftData>(o);
-
-            foo.Map(t => t.Line).Ignore();
-            foo.Map(t => t.Tag).Ignore();
-
-            foo.Map(t => t.RecordNumber).Name("Record Number");
-            foo.Map(t => t.Good).Name("Good");
-            foo.Map(t => t.Active).Name("Active");
-            foo.Map(t => t.RecordType).Name("Record type");
-            foo.Map(t => t.SequenceNumber).Name("Sequence Number");
-            foo.Map(t => t.ParentFileRecordNumber).Name("Parent File Rec. #");
-            foo.Map(t => t.ParentFileRecordSequence).Name("Parent File Rec. Seq. #");
-            foo.Map(t => t.FileName1).Name("Filename #1");
-            foo.Map(t => t.StdInfoCreated).Name("Std Info Creation date");
-            foo.Map(t => t.StdInfoModified).Name("Std Info Modification date");
-            foo.Map(t => t.StdInfoAccessed).Name("Std Info Access date");
-            foo.Map(t => t.StdInfoEntryDate).Name("Std Info Entry date");
-            foo.Map(t => t.FileNameCreated).Name("FN Info Creation date");
-            foo.Map(t => t.FileNameModified).Name("FN Info Modification date");
-            foo.Map(t => t.FileNameAccessed).Name("FN Info Access date");
-            foo.Map(t => t.FileNameEntryDate).Name("FN Info Entry date");
-            foo.Map(t => t.ObjectId).Name("Object ID");
-            foo.Map(t => t.BirthVolumeId).Name("Birth Volume ID");
-            foo.Map(t => t.BirthObjectId).Name("Birth Object ID");
-            foo.Map(t => t.BirthVolumeId).Name("Birth Domain ID");
-
-            foo.Map(t => t.FileName2).Name("Filename #2");
-            foo.Map(t => t.FileNameCreated2).Name("FN Info Creation date");
-            foo.Map(t => t.FileNameModified2).Name("FN Info Modification date");
-            foo.Map(t => t.FileNameAccessed2).Name("FN Info Access date");
-            foo.Map(t => t.FileNameEntryDate2).Name("FN Info Entry date");
-
-            foo.Map(t => t.FileName3).Name("Filename #3");
-            foo.Map(t => t.FileNameCreated3).Name("FN Info Creation date");
-            foo.Map(t => t.FileNameModified3).Name("FN Info Modification date");
-            foo.Map(t => t.FileNameAccessed3).Name("FN Info Access date");
-            foo.Map(t => t.FileNameEntryDate3).Name("FN Info Entry date");
-
-            foo.Map(t => t.FileName4).Name("Filename #4");
-            foo.Map(t => t.FileNameCreated4).Name("FN Info Creation date");
-            foo.Map(t => t.FileNameModified4).Name("FN Info Modification date");
-            foo.Map(t => t.FileNameAccessed4).Name("FN Info Access date");
-            foo.Map(t => t.FileNameEntryDate4).Name("FN Info Entry date");
-
-            foo.Map(t => t.StandardInformation).Name("Standard Information");
-            foo.Map(t => t.AttributeList).Name("Attribute List");
-            foo.Map(t => t.Filename).Name("Filename");
-            foo.Map(t => t.ObjectId2).Name("Object ID");
-            foo.Map(t => t.VolumeName).Name("Volume Name");
-            foo.Map(t => t.VolumeInfo).Name("Volume Info");
-            foo.Map(t => t.Data).Name("Data");
-            foo.Map(t => t.IndexRoot).Name("Index Root");
-            foo.Map(t => t.IndexAllocation).Name("Index Allocation");
-            foo.Map(t => t.Bitmap).Name("Bitmap");
-            foo.Map(t => t.ReparsePoint).Name("Reparse Point");
-            foo.Map(t => t.EaInformation).Name("EA Information");
-            foo.Map(t => t.Ea).Name("EA");
-            foo.Map(t => t.PropertySet).Name("Property Set");
-            foo.Map(t => t.LoggedUtilityStream).Name("Logged Utility Stream");
-            foo.Map(t => t.LogNotes).Name("Log/Notes");
-            foo.Map(t => t.StfFnShift).Name("STF FN Shift");
-            foo.Map(t => t.uSecZero).Name("uSec Zero");
-            foo.Map(t => t.Ads).Name("ADS");
-
-
-            csv.Context.RegisterClassMap(foo);
-
-
-            csv.Read();
-            csv.ReadHeader();
+            //read by index after the header (comma separated; bad quoting is recovered from)
+            using var csv = CsvReader.FromFile(filename, CsvLoader.Options);
 
             var ln = 1;
             //(RawRecord was built for every row even with debug messages off)
@@ -1896,22 +1568,22 @@ namespace TLEFileMisc
             {
                 if (debug)
                 {
-                    Log.Debug("Line # {Line}, Record: {RawRecord}", ln, csv.Context.Parser.RawRecord);
+                    Log.Debug("Line # {Line}, Record: {RawRecord}", ln, csv.Current.ToString());
                 }
 
-                if (csv.Context.Parser.RawRecord.Contains("BAAD MFT Record"))
+                if (csv.Current.ToString().Contains("BAAD MFT Record"))
                 {
                     continue;
                 }
 
-                var recNum = int.Parse(csv.GetField(0));
-                var isGood = csv.GetField(1).Equals("Good");
-                var isActive = csv.GetField(2).Equals("Active");
-                var recType = csv.GetField(3);
-                var seqNumber = csv.GetField(4);
+                var recNum = int.Parse(csv.GetString(0));
+                var isGood = csv.GetString(1).Equals("Good");
+                var isActive = csv.GetString(2).Equals("Active");
+                var recType = csv.GetString(3);
+                var seqNumber = csv.GetString(4);
 
-                var parentEntryNum = csv.GetField(5);
-                var parentSeqNum = csv.GetField(6);
+                var parentEntryNum = csv.GetString(5);
+                var parentSeqNum = csv.GetString(6);
 
                 if (parentSeqNum == "NoParent")
                 {
@@ -1923,9 +1595,9 @@ namespace TLEFileMisc
                     parentEntryNum = "-1";
                 }
 
-                var fileName1 = csv.GetField(7);
+                var fileName1 = csv.GetString(7);
 
-                var siCreate1 = csv.GetField(8).Trim('=').Trim('"');
+                var siCreate1 = csv.GetString(8).Trim('=').Trim('"');
 
                 DateTime? siCreate1D = null;
                 DateTime? siModify1d = null;
@@ -1936,18 +1608,18 @@ namespace TLEFileMisc
                 {
                     siCreate1D = DateTime.Parse(siCreate1,
                         CultureInfo.InvariantCulture, DateTimeStyles.AssumeUniversal).ToUniversalTime();
-                    siModify1d = DateTime.Parse(csv.GetField(9).Trim('=').Trim('"'),
+                    siModify1d = DateTime.Parse(csv.GetString(9).Trim('=').Trim('"'),
                         CultureInfo.InvariantCulture, DateTimeStyles.AssumeUniversal).ToUniversalTime();
-                    siAccess1d = DateTime.Parse(csv.GetField(10).Trim('=').Trim('"'),
+                    siAccess1d = DateTime.Parse(csv.GetString(10).Trim('=').Trim('"'),
                         CultureInfo.InvariantCulture, DateTimeStyles.AssumeUniversal).ToUniversalTime();
-                    siEntry1d = DateTime.Parse(csv.GetField(11).Trim('=').Trim('"'),
+                    siEntry1d = DateTime.Parse(csv.GetString(11).Trim('=').Trim('"'),
                         CultureInfo.InvariantCulture, DateTimeStyles.AssumeUniversal).ToUniversalTime();
                 }
 
-                var fnCreate1 = csv.GetField(12).Trim('=').Trim('"');
-                var fnModify1 = csv.GetField(13).Trim('=').Trim('"');
-                var fnAccess1 = csv.GetField(14).Trim('=').Trim('"');
-                var fnEntry1 = csv.GetField(15).Trim('=').Trim('"');
+                var fnCreate1 = csv.GetString(12).Trim('=').Trim('"');
+                var fnModify1 = csv.GetString(13).Trim('=').Trim('"');
+                var fnAccess1 = csv.GetString(14).Trim('=').Trim('"');
+                var fnEntry1 = csv.GetString(15).Trim('=').Trim('"');
 
                 DateTime? fnCreate1d = null;
                 DateTime? fnModify1d = null;
@@ -1967,14 +1639,14 @@ namespace TLEFileMisc
                         CultureInfo.InvariantCulture, DateTimeStyles.AssumeUniversal).ToUniversalTime();
                 }
 
-                var objectId = csv.GetField(16);
-                var birthVolId = csv.GetField(17);
-                var birthObjectId = csv.GetField(18);
-                var birthDomainId = csv.GetField(19);
+                var objectId = csv.GetString(16);
+                var birthVolId = csv.GetString(17);
+                var birthObjectId = csv.GetString(18);
+                var birthDomainId = csv.GetString(19);
 
-                var fileName2 = csv.GetField(20);
+                var fileName2 = csv.GetString(20);
 
-                var fnCreate2 = csv.GetField(21).Trim('=').Trim('"');
+                var fnCreate2 = csv.GetString(21).Trim('=').Trim('"');
                 DateTime? fnCreate2d = null;
                 DateTime? fnModify2d = null;
                 DateTime? fnAccess2d = null;
@@ -1984,18 +1656,18 @@ namespace TLEFileMisc
                 {
                     fnCreate2d = DateTime.Parse(fnCreate2,
                         CultureInfo.InvariantCulture, DateTimeStyles.AssumeUniversal).ToUniversalTime();
-                    fnModify2d = DateTime.Parse(csv.GetField(22).Trim('=').Trim('"'),
+                    fnModify2d = DateTime.Parse(csv.GetString(22).Trim('=').Trim('"'),
                         CultureInfo.InvariantCulture, DateTimeStyles.AssumeUniversal).ToUniversalTime();
-                    fnAccess2d = DateTime.Parse(csv.GetField(23).Trim('=').Trim('"'),
+                    fnAccess2d = DateTime.Parse(csv.GetString(23).Trim('=').Trim('"'),
                         CultureInfo.InvariantCulture, DateTimeStyles.AssumeUniversal).ToUniversalTime();
-                    fnEntry2d = DateTime.Parse(csv.GetField(24).Trim('=').Trim('"'),
+                    fnEntry2d = DateTime.Parse(csv.GetString(24).Trim('=').Trim('"'),
                         CultureInfo.InvariantCulture, DateTimeStyles.AssumeUniversal).ToUniversalTime();
                 }
 
 
-                var fileName3 = csv.GetField(25);
+                var fileName3 = csv.GetString(25);
 
-                var fnCreate3 = csv.GetField(26).Trim('=').Trim('"');
+                var fnCreate3 = csv.GetString(26).Trim('=').Trim('"');
                 DateTime? fnCreate3d = null;
                 DateTime? fnModify3d = null;
                 DateTime? fnAccess3d = null;
@@ -2005,17 +1677,17 @@ namespace TLEFileMisc
                 {
                     fnCreate3d = DateTime.Parse(fnCreate3,
                         CultureInfo.InvariantCulture, DateTimeStyles.AssumeUniversal).ToUniversalTime();
-                    fnModify3d = DateTime.Parse(csv.GetField(27).Trim('=').Trim('"'),
+                    fnModify3d = DateTime.Parse(csv.GetString(27).Trim('=').Trim('"'),
                         CultureInfo.InvariantCulture, DateTimeStyles.AssumeUniversal).ToUniversalTime();
-                    fnAccess3d = DateTime.Parse(csv.GetField(29).Trim('=').Trim('"'),
+                    fnAccess3d = DateTime.Parse(csv.GetString(29).Trim('=').Trim('"'),
                         CultureInfo.InvariantCulture, DateTimeStyles.AssumeUniversal).ToUniversalTime();
-                    fnEntry3d = DateTime.Parse(csv.GetField(29).Trim('=').Trim('"'),
+                    fnEntry3d = DateTime.Parse(csv.GetString(29).Trim('=').Trim('"'),
                         CultureInfo.InvariantCulture, DateTimeStyles.AssumeUniversal).ToUniversalTime();
                 }
 
-                var fileName4 = csv.GetField(30);
+                var fileName4 = csv.GetString(30);
 
-                var fnCreate4 = csv.GetField(31).Trim('=').Trim('"');
+                var fnCreate4 = csv.GetString(31).Trim('=').Trim('"');
                 DateTime? fnCreate4d = null;
                 DateTime? fnModify4d = null;
                 DateTime? fnAccess4d = null;
@@ -2025,34 +1697,34 @@ namespace TLEFileMisc
                 {
                     fnCreate4d = DateTime.Parse(fnCreate4,
                         CultureInfo.InvariantCulture, DateTimeStyles.AssumeUniversal).ToUniversalTime();
-                    fnModify4d = DateTime.Parse(csv.GetField(32).Trim('=').Trim('"'),
+                    fnModify4d = DateTime.Parse(csv.GetString(32).Trim('=').Trim('"'),
                         CultureInfo.InvariantCulture, DateTimeStyles.AssumeUniversal).ToUniversalTime();
-                    fnAccess4d = DateTime.Parse(csv.GetField(33).Trim('=').Trim('"'),
+                    fnAccess4d = DateTime.Parse(csv.GetString(33).Trim('=').Trim('"'),
                         CultureInfo.InvariantCulture, DateTimeStyles.AssumeUniversal).ToUniversalTime();
-                    fnEntry4d = DateTime.Parse(csv.GetField(34).Trim('=').Trim('"'),
+                    fnEntry4d = DateTime.Parse(csv.GetString(34).Trim('=').Trim('"'),
                         CultureInfo.InvariantCulture, DateTimeStyles.AssumeUniversal).ToUniversalTime();
                 }
 
-                var stdInfo = csv.GetField(35).Equals("True");
-                var attrList = csv.GetField(36).Equals("True");
-                var fn = csv.GetField(37).Equals("True");
-                var objectId2 = csv.GetField(38).Equals("True");
-                var volName = csv.GetField(39).Equals("True");
-                var volInfo = csv.GetField(40).Equals("True");
-                var data = csv.GetField(41).Equals("True");
-                var indexRoot = csv.GetField(42).Equals("True");
+                var stdInfo = csv.GetString(35).Equals("True");
+                var attrList = csv.GetString(36).Equals("True");
+                var fn = csv.GetString(37).Equals("True");
+                var objectId2 = csv.GetString(38).Equals("True");
+                var volName = csv.GetString(39).Equals("True");
+                var volInfo = csv.GetString(40).Equals("True");
+                var data = csv.GetString(41).Equals("True");
+                var indexRoot = csv.GetString(42).Equals("True");
 
-                var indexAlloc = csv.GetField(43).Equals("True");
-                var bitmap = csv.GetField(44).Equals("True");
-                var reparsePoint = csv.GetField(45).Equals("True");
-                var eaInfo = csv.GetField(46).Equals("True");
-                var ea = csv.GetField(47).Equals("True");
-                var propSet = csv.GetField(48).Equals("True");
-                var loggedUtil = csv.GetField(49).Equals("True");
-                var logNotes = csv.GetField(50);
-                var fnShift = csv.GetField(51).Equals("Y");
-                var uSecZero = csv.GetField(52).Equals("Y");
-                var hasAds = csv.GetField(53).Equals("Y");
+                var indexAlloc = csv.GetString(43).Equals("True");
+                var bitmap = csv.GetString(44).Equals("True");
+                var reparsePoint = csv.GetString(45).Equals("True");
+                var eaInfo = csv.GetString(46).Equals("True");
+                var ea = csv.GetString(47).Equals("True");
+                var propSet = csv.GetString(48).Equals("True");
+                var loggedUtil = csv.GetString(49).Equals("True");
+                var logNotes = csv.GetString(50);
+                var fnShift = csv.GetString(51).Equals("Y");
+                var uSecZero = csv.GetString(52).Equals("Y");
+                var hasAds = csv.GetString(53).Equals("Y");
 
                 var e = new AnalyzeMftData
                 {
@@ -2124,26 +1796,27 @@ namespace TLEFileMisc
 
 
 
-    public class BrowsingHistoryViewEventData251AndNewer : IFileSpecData
+    [CsvRecord]
+    public partial class BrowsingHistoryViewEventData251AndNewer : IFileSpecData
     {
-        public string Url { get; set; }
-        public string Title { get; set; }
-        public DateTime VisitTime { get; set; }
-        public int VisitCount { get; set; }
-        public string VisitedFrom { get; set; }
-        public string VisitType { get; set; }
-        public string VisitDuration { get; set; }
-        public string WebBrowser { get; set; }
-        public string UserProfile { get; set; }
-        public string BrowserProfile { get; set; }
-        public int UrlLength { get; set; }
-        public int? TypedCount { get; set; }
-        public string HistoryFile { get; set; }
-        public int RecordId { get; set; }
+        [CsvColumn("URL", Optional = true)] public string Url { get; set; }
+        [CsvColumn(Optional = true)] public string Title { get; set; }
+        [CsvColumn("Visit Time", Optional = true), CsvConverter(typeof(ParseTimeConverter))] public DateTime VisitTime { get; set; }
+        [CsvColumn("Visit Count", Optional = true)] public int VisitCount { get; set; }
+        [CsvColumn("Visited From", Optional = true)] public string VisitedFrom { get; set; }
+        [CsvColumn("Visit Type", Optional = true)] public string VisitType { get; set; }
+        [CsvColumn("Visit Duration", Optional = true)] public string VisitDuration { get; set; }
+        [CsvColumn("Web Browser", Optional = true)] public string WebBrowser { get; set; }
+        [CsvColumn("User Profile", Optional = true)] public string UserProfile { get; set; }
+        [CsvColumn("Browser Profile", Optional = true)] public string BrowserProfile { get; set; }
+        [CsvColumn("URL Length", Optional = true)] public int UrlLength { get; set; }
+        [CsvColumn("Typed Count", Optional = true)] public int? TypedCount { get; set; }
+        [CsvColumn("History File", Optional = true)] public string HistoryFile { get; set; }
+        [CsvColumn("Record ID", Optional = true)] public int RecordId { get; set; }
 
 
-        public int Line { get; set; }
-        public bool Tag { get; set; }
+        [CsvIgnore] public int Line { get; set; }
+        [CsvIgnore] public bool Tag { get; set; }
 
         public override string ToString()
         {
@@ -2183,44 +1856,30 @@ namespace TLEFileMisc
 
         public void ProcessFile(string filename)
         {
-            CsvLoader.Load<BrowsingHistoryViewEventData251AndNewer>(filename, DataList, TaggedLines, map =>
-            {
-                map.Map(t => t.Url).Name("URL");
-                map.Map(m => m.VisitTime).Convert(row => CsvLoader.ParseTime(row.Row.GetField<string>("Visit Time")));
-                map.Map(t => t.VisitCount).Name("Visit Count");
-                map.Map(t => t.VisitedFrom).Name("Visited From");
-                map.Map(t => t.VisitType).Name("Visit Type");
-                map.Map(t => t.VisitDuration).Name("Visit Duration");
-                map.Map(t => t.WebBrowser).Name("Web Browser");
-                map.Map(t => t.UserProfile).Name("User Profile");
-                map.Map(t => t.BrowserProfile).Name("Browser Profile");
-                map.Map(t => t.UrlLength).Name("URL Length");
-                map.Map(t => t.TypedCount).Name("Typed Count");
-                map.Map(t => t.HistoryFile).Name("History File");
-                map.Map(t => t.RecordId).Name("Record ID");
-            });
+            CsvLoader.Load<BrowsingHistoryViewEventData251AndNewer>(filename, DataList, TaggedLines);
         }
     }
 
-    public class BrowsingHistoryViewEventData250AndOlder : IFileSpecData
+    [CsvRecord]
+    public partial class BrowsingHistoryViewEventData250AndOlder : IFileSpecData
     {
-        public string Url { get; set; }
-        public string Title { get; set; }
-        public DateTime VisitTime { get; set; }
-        public int VisitCount { get; set; }
-        public string VisitedFrom { get; set; }
-        public string VisitType { get; set; }
-        public string WebBrowser { get; set; }
-        public string UserProfile { get; set; }
-        public string BrowserProfile { get; set; }
-        public int UrlLength { get; set; }
-        public int? TypedCount { get; set; }
-        public string HistoryFile { get; set; }
-        public int RecordId { get; set; }
+        [CsvColumn("URL", Optional = true)] public string Url { get; set; }
+        [CsvColumn(Optional = true)] public string Title { get; set; }
+        [CsvColumn("Visit Time", Optional = true), CsvConverter(typeof(ParseTimeConverter))] public DateTime VisitTime { get; set; }
+        [CsvColumn("Visit Count", Optional = true)] public int VisitCount { get; set; }
+        [CsvColumn("Visited From", Optional = true)] public string VisitedFrom { get; set; }
+        [CsvColumn("Visit Type", Optional = true)] public string VisitType { get; set; }
+        [CsvColumn("Web Browser", Optional = true)] public string WebBrowser { get; set; }
+        [CsvColumn("User Profile", Optional = true)] public string UserProfile { get; set; }
+        [CsvColumn("Browser Profile", Optional = true)] public string BrowserProfile { get; set; }
+        [CsvColumn("URL Length", Optional = true)] public int UrlLength { get; set; }
+        [CsvColumn("Typed Count", Optional = true)] public int? TypedCount { get; set; }
+        [CsvColumn("History File", Optional = true)] public string HistoryFile { get; set; }
+        [CsvColumn("Record ID", Optional = true)] public int RecordId { get; set; }
 
 
-        public int Line { get; set; }
-        public bool Tag { get; set; }
+        [CsvIgnore] public int Line { get; set; }
+        [CsvIgnore] public bool Tag { get; set; }
 
         public override string ToString()
         {
@@ -2256,44 +1915,31 @@ namespace TLEFileMisc
 
         public void ProcessFile(string filename)
         {
-            CsvLoader.Load<BrowsingHistoryViewEventData250AndOlder>(filename, DataList, TaggedLines, map =>
-            {
-                map.Map(t => t.Url).Name("URL");
-                map.Map(m => m.VisitTime).Convert(row => CsvLoader.ParseTime(row.Row.GetField<string>("Visit Time")));
-                map.Map(t => t.VisitCount).Name("Visit Count");
-                map.Map(t => t.VisitedFrom).Name("Visited From");
-                map.Map(t => t.VisitType).Name("Visit Type");
-                map.Map(t => t.WebBrowser).Name("Web Browser");
-                map.Map(t => t.UserProfile).Name("User Profile");
-                map.Map(t => t.BrowserProfile).Name("Browser Profile");
-                map.Map(t => t.UrlLength).Name("URL Length");
-                map.Map(t => t.TypedCount).Name("Typed Count");
-                map.Map(t => t.HistoryFile).Name("History File");
-                map.Map(t => t.RecordId).Name("Record ID");
-            });
+            CsvLoader.Load<BrowsingHistoryViewEventData250AndOlder>(filename, DataList, TaggedLines);
         }
     }
 
 
-    public class CrowdStrikeEventData : IFileSpecData
+    [CsvRecord]
+    public partial class CrowdStrikeEventData : IFileSpecData
     {
-        public DateTime Timestamp { get; set; }
-        public string TreeId { get; set; }
-        public string PatternId { get; set; }
-        public string ParentProcessId { get; set; }
-        public string ProcessId { get; set; }
-        public string Event { get; set; }
-        public string FileLoadedExecuted { get; set; }
-        public string Domain { get; set; }
-        public string DestIP { get; set; }
-        public string FileAccessedWritten { get; set; }
-        public string UserSid { get; set; }
-        public string UserName { get; set; }
-        public string Attributes { get; set; }
-        public string Aid { get; set; }
+        [CsvColumn(Optional = true), CsvConverter(typeof(NoZParseTimeConverter))] public DateTime Timestamp { get; set; }
+        [CsvColumn("TreeID", Optional = true)] public string TreeId { get; set; }
+        [CsvColumn("PatternID", Optional = true)] public string PatternId { get; set; }
+        [CsvColumn("Parent Process ID", Optional = true)] public string ParentProcessId { get; set; }
+        [CsvColumn("Process ID", Optional = true)] public string ProcessId { get; set; }
+        [CsvColumn(Optional = true)] public string Event { get; set; }
+        [CsvColumn("File Loaded/Executed", Optional = true)] public string FileLoadedExecuted { get; set; }
+        [CsvColumn(Optional = true)] public string Domain { get; set; }
+        [CsvColumn("DestIP", Optional = true)] public string DestIP { get; set; }
+        [CsvColumn("File Accessed/Written", Optional = true)] public string FileAccessedWritten { get; set; }
+        [CsvColumn("UserSid_readable", Optional = true)] public string UserSid { get; set; }
+        [CsvColumn(Optional = true)] public string UserName { get; set; }
+        [CsvColumn(Optional = true)] public string Attributes { get; set; }
+        [CsvColumn("aid", Optional = true)] public string Aid { get; set; }
 
-        public int Line { get; set; }
-        public bool Tag { get; set; }
+        [CsvIgnore] public int Line { get; set; }
+        [CsvIgnore] public bool Tag { get; set; }
 
         public override string ToString()
         {
@@ -2329,19 +1975,7 @@ namespace TLEFileMisc
 
         public void ProcessFile(string filename)
         {
-            CsvLoader.Load<CrowdStrikeEventData>(filename, DataList, TaggedLines, map =>
-            {
-                map.Map(m => m.Timestamp).Convert(row => CsvLoader.ParseTime(row.Row.GetField<string>("Timestamp").Replace("Z", "")));
-                map.Map(t => t.ProcessId).Name("Process ID");
-                map.Map(t => t.ParentProcessId).Name("Parent Process ID");
-                map.Map(t => t.TreeId).Name("TreeID");
-                map.Map(t => t.PatternId).Name("PatternID");
-                map.Map(t => t.FileLoadedExecuted).Name("File Loaded/Executed");
-                map.Map(t => t.DestIP).Name("DestIP");
-                map.Map(t => t.FileAccessedWritten).Name("File Accessed/Written");
-                map.Map(t => t.UserSid).Name("UserSid_readable");
-                map.Map(t => t.Aid).Name("aid");
-            });
+            CsvLoader.Load<CrowdStrikeEventData>(filename, DataList, TaggedLines);
         }
     }
 
@@ -2410,33 +2044,8 @@ namespace TLEFileMisc
 
             DataList.Clear();
 
-            using var fileReader = File.OpenText(filename);
-            //one string for a value repeated in many rows, not one for each (CsvHelper caches values of up to 128 characters while the file loads)
-            //TLE matches header lines ignoring case: the columns are matched the same way (a lower-case header failed)
-            var csv = new CsvReader(fileReader, new CsvConfiguration(CultureInfo.InvariantCulture) {CacheFields = true, PrepareHeaderForMatch = args => args.Header.ToLowerInvariant()});
-
-            var foo = csv.Context.AutoMap<ShimcacheParserData>();
-
-            var o = new TypeConverterOptions
-            {
-                DateTimeStyle = DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal
-            };
-            csv.Context.TypeConverterOptionsCache.AddOptions<ShimcacheParserData>(o);
-
-            foo.Map(t => t.Line).Ignore();
-            foo.Map(t => t.Tag).Ignore();
-
-            foo.Map(t => t.LastModified).Name("Last Modified");
-            foo.Map(t => t.LastUpdate).Name("Last Update");
-            foo.Map(t => t.Executed).Name("Exec Flag");
-            foo.Map(t => t.FileSize).Name("File Size");
-            foo.Map(t => t.FilePath).Name("Path");
-
-            csv.Context.RegisterClassMap(foo);
-
-
-            csv.Read();
-            csv.ReadHeader();
+            //columns by name, matched ignoring case as TLE matches header lines (a lower-case header failed)
+            using var csv = CsvReader.FromFile(filename, CsvLoader.Options);
 
             var ln = 1;
             //(RawRecord was built for every row even with debug messages off)
@@ -2449,13 +2058,13 @@ namespace TLEFileMisc
             {
                 if (debug)
                 {
-                    Log.Debug("Line # {Line}, Record: {RawRecord}", ln, csv.Context.Parser.RawRecord);
+                    Log.Debug("Line # {Line}, Record: {RawRecord}", ln, csv.Current.ToString());
                 }
 
-                var modified = DateTime.Parse(csv.GetField("Last Modified"),
+                var modified = DateTime.Parse(csv.GetString("Last Modified"),
                     CultureInfo.InvariantCulture, DateTimeStyles.AssumeUniversal).ToUniversalTime();
 
-                var upraw = csv.GetField("Last Update");
+                var upraw = csv.GetString("Last Update");
                 DateTime? update = null;
                 if (upraw.Length > 0 && upraw != "N/A")
                 {
@@ -2463,11 +2072,11 @@ namespace TLEFileMisc
                         CultureInfo.InvariantCulture, DateTimeStyles.AssumeUniversal).ToUniversalTime();
                 }
 
-                var executed = csv.GetField("Exec Flag") == "True";
-                var fileSize = csv.GetField("File Size").Length > 0 && csv.GetField("File Size") != "N/A"
-                    ? long.Parse(csv.GetField("File Size"))
+                var executed = csv.GetString("Exec Flag") == "True";
+                var fileSize = csv.GetString("File Size").Length > 0 && csv.GetString("File Size") != "N/A"
+                    ? long.Parse(csv.GetString("File Size"))
                     : 0;
-                var filePath = csv.GetField("Path");
+                var filePath = csv.GetString("Path");
 
                 var e = new ShimcacheParserData(ln, modified, update, executed, fileSize, filePath);
                 e.Tag = tagged.Contains(ln);
@@ -2544,34 +2153,8 @@ namespace TLEFileMisc
 
             DataList.Clear();
 
-            using var fileReader = File.OpenText(filename);
-            //one string for a value repeated in many rows, not one for each (CsvHelper caches values of up to 128 characters while the file loads)
-            //TLE matches header lines ignoring case: the columns are matched the same way (a lower-case header failed)
-            var csv = new CsvReader(fileReader, new CsvConfiguration(CultureInfo.InvariantCulture) {CacheFields = true, PrepareHeaderForMatch = args => args.Header.ToLowerInvariant()});
-
-            var foo = csv.Context.AutoMap<ShimcacheVolatilityData>();
-
-            var o = new TypeConverterOptions
-            {
-                DateTimeStyle = DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal
-            };
-            csv.Context.TypeConverterOptionsCache.AddOptions<ShimcacheVolatilityData>(o);
-
-            foo.Map(t => t.Line).Ignore();
-            foo.Map(t => t.Tag).Ignore();
-
-            foo.Map(t => t.Order).Name("Order");
-            foo.Map(t => t.LastModified).Name("Last Modified");
-            foo.Map(t => t.LastUpdate).Name("Last Update");
-            foo.Map(t => t.Executed).Name("Exec Flag");
-            foo.Map(t => t.FileSize).Name("File Size");
-            foo.Map(t => t.FilePath).Name("File Path");
-
-            csv.Context.RegisterClassMap(foo);
-
-
-            csv.Read();
-            csv.ReadHeader();
+            //columns by name, matched ignoring case as TLE matches header lines (a lower-case header failed)
+            using var csv = CsvReader.FromFile(filename, CsvLoader.Options);
 
             var ln = 1;
             //(RawRecord was built for every row even with debug messages off)
@@ -2584,12 +2167,12 @@ namespace TLEFileMisc
             {
                 if (debug)
                 {
-                    Log.Debug("Line # {Line}, Record: {RawRecord}", ln, csv.Context.Parser.RawRecord);
+                    Log.Debug("Line # {Line}, Record: {RawRecord}", ln, csv.Current.ToString());
                 }
 
-                var order = int.Parse(csv.GetField("Order"));
+                var order = int.Parse(csv.GetString("Order"));
 
-                var lastMod = csv.GetField("Last Modified");
+                var lastMod = csv.GetString("Last Modified");
                 DateTime? lastModTs = null;
                 if (lastMod.Length > 0)
                 {
@@ -2597,7 +2180,7 @@ namespace TLEFileMisc
                         CultureInfo.InvariantCulture, DateTimeStyles.AssumeUniversal).ToUniversalTime();
                 }
 
-                var upraw = csv.GetField("Last Update");
+                var upraw = csv.GetString("Last Update");
                 DateTime? update = null;
                 if (upraw.Length > 0)
                 {
@@ -2605,11 +2188,11 @@ namespace TLEFileMisc
                         CultureInfo.InvariantCulture, DateTimeStyles.AssumeUniversal).ToUniversalTime();
                 }
 
-                var executed = csv.GetField("Exec Flag") == "True";
-                var fileSize = csv.GetField("File Size").Length > 0
-                    ? long.Parse(csv.GetField("File Size"))
+                var executed = csv.GetString("Exec Flag") == "True";
+                var fileSize = csv.GetString("File Size").Length > 0
+                    ? long.Parse(csv.GetString("File Size"))
                     : 0;
-                var filePath = csv.GetField("File Path");
+                var filePath = csv.GetString("File Path");
 
                 var e = new ShimcacheVolatilityData(ln, order, lastModTs, update, executed, fileSize, filePath);
                 e.Tag = tagged.Contains(ln);
@@ -2697,22 +2280,23 @@ namespace TLEFileMisc
         }
     }
 
-    public class VanillaWindowsReferenceData : IFileSpecData
+    [CsvRecord]
+    public partial class VanillaWindowsReferenceData : IFileSpecData
     {
-        public string DirectoryName { get; set; }
-        public string Name { get; set; }
-        public string FullName { get; set; }
-        public int Length { get; set; }
-        public DateTime CreationTimeUtc { get; set; }
-        public DateTime LastAccessTimeUtc { get; set; }
-        public DateTime LastWriteTimeUtc { get; set; }
-        public string Attributes { get; set; }
-        public string Md5 { get; set; }
-        public string Sha256 { get; set; }
-        public string Sddl { get; set; }
+        [CsvColumn(Optional = true)] public string DirectoryName { get; set; }
+        [CsvColumn(Optional = true)] public string Name { get; set; }
+        [CsvColumn(Optional = true)] public string FullName { get; set; }
+        [CsvColumn(Optional = true)] public int Length { get; set; }
+        [CsvColumn(Optional = true)] public DateTime CreationTimeUtc { get; set; }
+        [CsvColumn(Optional = true)] public DateTime LastAccessTimeUtc { get; set; }
+        [CsvColumn(Optional = true)] public DateTime LastWriteTimeUtc { get; set; }
+        [CsvColumn(Optional = true)] public string Attributes { get; set; }
+        [CsvColumn("MD5", Optional = true)] public string Md5 { get; set; }
+        [CsvColumn("SHA256", Optional = true)] public string Sha256 { get; set; }
+        [CsvColumn(Optional = true)] public string Sddl { get; set; }
 
-        public int Line { get; set; }
-        public bool Tag { get; set; }
+        [CsvIgnore] public int Line { get; set; }
+        [CsvIgnore] public bool Tag { get; set; }
 
         public override string ToString()
         {
@@ -2750,34 +2334,31 @@ namespace TLEFileMisc
 
         public void ProcessFile(string filename)
         {
-            CsvLoader.Load<VanillaWindowsReferenceData>(filename, DataList, TaggedLines, map =>
-            {
-                map.Map(t => t.Md5).Name("MD5");
-                map.Map(t => t.Sha256).Name("SHA256");
-            });
+            CsvLoader.Load<VanillaWindowsReferenceData>(filename, DataList, TaggedLines);
         }
     }
 
-    public class EVTXETWResourcesData : IFileSpecData
+    [CsvRecord]
+    public partial class EVTXETWResourcesData : IFileSpecData
     {
-        public int EventID { get; set; }
-        public int EventVersion { get; set; }
-        public string Level { get; set; }
-        public string Channel { get; set; }
-        public string Task { get; set; }
-        public string Opcode { get; set; }
-        public string Keyword { get; set; }
-        public string Windows { get; set; }
-        public string Version { get; set; }
-        public string Edition { get; set; }
-        public DateTime Date { get; set; }
-        public float Build { get; set; }
-        public string EventMessage { get; set; }
-        public string EventFields { get; set; }
+        [CsvColumn("Event ID", Optional = true)] public int EventID { get; set; }
+        [CsvColumn("Event Version", Optional = true)] public int EventVersion { get; set; }
+        [CsvColumn("Level", Optional = true)] public string Level { get; set; }
+        [CsvColumn("Channel", Optional = true)] public string Channel { get; set; }
+        [CsvColumn("Task", Optional = true)] public string Task { get; set; }
+        [CsvColumn("Opcode", Optional = true)] public string Opcode { get; set; }
+        [CsvColumn("Keyword", Optional = true)] public string Keyword { get; set; }
+        [CsvColumn("Windows", Optional = true)] public string Windows { get; set; }
+        [CsvColumn("Version", Optional = true)] public string Version { get; set; }
+        [CsvColumn("Edition", Optional = true)] public string Edition { get; set; }
+        [CsvColumn(Optional = true), CsvConverter(typeof(UniversalParseTimeConverter))] public DateTime Date { get; set; }
+        [CsvColumn("Build", Optional = true)] public float Build { get; set; }
+        [CsvColumn("Event Message", Optional = true)] public string EventMessage { get; set; }
+        [CsvColumn("Event Fields", Optional = true)] public string EventFields { get; set; }
 
 
-        public int Line { get; set; }
-        public bool Tag { get; set; }
+        [CsvIgnore] public int Line { get; set; }
+        [CsvIgnore] public bool Tag { get; set; }
 
         public override string ToString()
         {
@@ -2815,43 +2396,50 @@ namespace TLEFileMisc
 
         public void ProcessFile(string filename)
         {
-            CsvLoader.Load<EVTXETWResourcesData>(filename, DataList, TaggedLines, map =>
-            {
-                map.Map(m => m.Date).Convert(row => CsvLoader.ParseTime(row.Row.GetField<string>("Date")).ToUniversalTime());
-                map.Map(t => t.EventID).Name("Event ID");
-                map.Map(t => t.EventVersion).Name("Event Version");
-                map.Map(t => t.Level).Name("Level");
-                map.Map(t => t.Channel).Name("Channel");
-                map.Map(t => t.Task).Name("Task");
-                map.Map(t => t.Opcode).Name("Opcode");
-                map.Map(t => t.Keyword).Name("Keyword");
-                map.Map(t => t.Windows).Name("Windows");
-                map.Map(t => t.Version).Name("Version");
-                map.Map(t => t.Edition).Name("Edition");
-                map.Map(t => t.Build).Name("Build");
-                map.Map(t => t.Version).Name("Version");
-                map.Map(t => t.EventMessage).Name("Event Message");
-                map.Map(t => t.EventFields).Name("Event Fields");
-            });
+            CsvLoader.Load<EVTXETWResourcesData>(filename, DataList, TaggedLines);
         }
     }
     
-        public class ConvertPSHistoryToCSVData : IFileSpecData
+        [CsvRecord]
+        public partial class ConvertPSHistoryToCSVData : IFileSpecData
     {
         // https://gist.github.com/Qazeer/a0c1c14bb1eae233c1147d1d9dfb3e93
         public string User { get; set; }
         public int CommandIndex { get; set; }
         public string Command { get; set; }
-        public DateTime ExecutionTimestamp { get; set; }
+        [CsvConverter(typeof(PsHistoryTimestampConverter))] public DateTime ExecutionTimestamp { get; set; }
         public string File { get; set; }
 
-        public int Line { get; set; }
-        public bool Tag { get; set; }
+        [CsvIgnore] public int Line { get; set; }
+        [CsvIgnore] public bool Tag { get; set; }
 
         public override string ToString()
         {
             return
                 $"{User} {CommandIndex} {Command} {ExecutionTimestamp} {File}";
+        }
+    }
+
+    /// <summary>ConvertPSHistoryToCSV's ExecutionTimestamp (yyyy-MM-ddTHH:mm:ssZ, UTC); empty or another format is MinValue</summary>
+    internal sealed class PsHistoryTimestampConverter : ICsvConverter<DateTime>
+    {
+        public DateTime Read(CsvReader reader, int index)
+        {
+            var executionTimestamp = reader.GetString(index);
+
+            if (string.IsNullOrEmpty(executionTimestamp))
+            {
+                return default;
+            }
+
+            return DateTime.TryParseExact(executionTimestamp, "yyyy-MM-dd'T'HH:mm:ss'Z'", CultureInfo.InvariantCulture, DateTimeStyles.AssumeUniversal | DateTimeStyles.AdjustToUniversal, out var result)
+                ? result
+                : default;
+        }
+
+        public void Write(CsvWriter writer, DateTime value)
+        {
+            writer.WriteField(value.ToString("yyyy-MM-dd'T'HH:mm:ss'Z'", CultureInfo.InvariantCulture));
         }
     }
 
@@ -2890,49 +2478,8 @@ namespace TLEFileMisc
 
             DataList.Clear();
 
-            using var fileReader = File.OpenText(filename);
-            //one string for a value repeated in many rows, not one for each (CsvHelper caches values of up to 128 characters while the file loads)
-            //TLE matches header lines ignoring case: the columns are matched the same way (a lower-case header failed)
-            var csv = new CsvReader(fileReader, new CsvConfiguration(CultureInfo.InvariantCulture) {CacheFields = true, PrepareHeaderForMatch = args => args.Header.ToLowerInvariant()});
-
-            var o = new TypeConverterOptions
-            {
-                DateTimeStyle = DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal
-            };
-            csv.Context.TypeConverterOptionsCache.AddOptions<ConvertPSHistoryToCSVData>(o);
-
-            var foo = csv.Context.AutoMap<ConvertPSHistoryToCSVData>();
-
-            //foo.Map(t => t.Url).Name("URL");
-
-            //"User","CommandIndex","Command","ExecutionTimestamp","File"
-
-            foo.Map(t => t.User).Name("User");
-            foo.Map(t => t.CommandIndex).Name("CommandIndex");
-            foo.Map(t => t.Command).Name("Command");
-            foo.Map(m => m.ExecutionTimestamp).Convert(args =>
-            {
-                var executionTimestamp = args.Row.GetField<string>("ExecutionTimestamp");
-
-                if (string.IsNullOrEmpty(executionTimestamp))
-                {
-                    return default(DateTime);
-                }
-
-                DateTime result;
-                return DateTime.TryParseExact(executionTimestamp, "yyyy-MM-dd'T'HH:mm:ss'Z'", CultureInfo.InvariantCulture, DateTimeStyles.AssumeUniversal | DateTimeStyles.AdjustToUniversal, out result)
-                    ? result
-                    : default(DateTime);
-            });
-
-            foo.Map(t => t.File).Name("File");
-
-            foo.Map(t => t.Line).Ignore();
-            foo.Map(t => t.Tag).Ignore();
-
-            csv.Context.RegisterClassMap(foo);
-
-            var records = csv.GetRecords<ConvertPSHistoryToCSVData>();
+            //the columns are matched ignoring case, as TLE matches header lines (a lower-case header failed)
+            using var csv = CsvReader.FromFile(filename, CsvLoader.Options);
 
             var ln = 1;
             try
@@ -2943,11 +2490,11 @@ namespace TLEFileMisc
                 //one reset at the end instead of a ListChanged event for every row
                 using var quiet = CsvLoader.QuietList<ConvertPSHistoryToCSVData>(DataList);
 
-                foreach (var record in records)
+                foreach (var record in csv.GetRecords<ConvertPSHistoryToCSVData>())
                 {
                     if (debug)
                     {
-                        Log.Debug("Line # {Line}, Record: {RawRecord}", ln, csv.Context.Parser.RawRecord);
+                        Log.Debug("Line # {Line}, Record: {RawRecord}", ln, csv.Current.ToString());
                     }
 
                     record.Line = ln;

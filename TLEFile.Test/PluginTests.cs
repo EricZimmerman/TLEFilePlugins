@@ -225,10 +225,7 @@ public class PluginTests
 
     private static int CountRows(string file)
     {
-        using var reader = new StreamReader(file);
-        using var csv = new CsvReader(reader, CultureInfo.InvariantCulture);
-        csv.Read();
-        csv.ReadHeader();
+        using var csv = CsvReader.FromFile(file, new CsvReaderOptions {Separator = ','});
         var n = 0;
         while (csv.Read())
         {
@@ -242,11 +239,10 @@ public class PluginTests
     {
         var delimiter = header.Contains('\t') ? "\t" : ",";
         string[] cols;
-        using (var r = new StringReader(header))
-        using (var parser = new CsvParser(r, new CsvHelper.Configuration.CsvConfiguration(CultureInfo.InvariantCulture) {Delimiter = delimiter}))
+        using (var csv = CsvReader.FromText(header, new CsvReaderOptions {Separator = delimiter[0], HasHeader = false}))
         {
-            parser.Read();
-            cols = parser.Record;
+            csv.Read();
+            cols = Enumerable.Range(0, csv.FieldCount).Select(i => csv.GetString(i)).ToArray();
         }
 
         var sb = new StringBuilder(header).Append("\r\n");

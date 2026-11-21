@@ -5,8 +5,6 @@ using System.Globalization;
 using System.IO;
 using System.Text;
 using CsvHelper;
-using CsvHelper.Configuration;
-using CsvHelper.TypeConversion;
 using ITLEFileSpec;
 using TLEFilePlugins.Shared;
 using Serilog;
@@ -14,31 +12,48 @@ using Serilog.Events;
 
 namespace TLEFileMicrosoft
 {
-    public class SigcheckData : IFileSpecData
+    /// <summary>Sigcheck's Verified column: true for "Signed"</summary>
+    internal sealed class SignedConverter : ICsvConverter<bool>
+    {
+        public bool Read(CsvReader reader, int index) => reader.GetString(index) == "Signed";
+
+        public void Write(CsvWriter writer, bool value) => writer.WriteField(value ? "Signed" : "Unsigned");
+    }
+
+    /// <summary>Autoruns' Enabled column: true for "enabled"</summary>
+    internal sealed class EnabledConverter : ICsvConverter<bool>
+    {
+        public bool Read(CsvReader reader, int index) => reader.GetString(index) == "enabled";
+
+        public void Write(CsvWriter writer, bool value) => writer.WriteField(value ? "enabled" : "disabled");
+    }
+
+    [CsvRecord]
+    public partial class SigcheckData : IFileSpecData
     {
         public string Path { get; set; }
-        public bool Verified { get; set; }
-        public DateTime Timestamp { get; set; }
+        [CsvConverter(typeof(SignedConverter))] public bool Verified { get; set; }
+        [CsvColumn("Date")] public DateTime Timestamp { get; set; }
 
         public string Publisher { get; set; }
         public string Company { get; set; }
         public string Description { get; set; }
         public string Product { get; set; }
-        public string ProductVersion { get; set; }
-        public string FileVersion { get; set; }
-        public string MachineType { get; set; }
+        [CsvColumn("Product Version")] public string ProductVersion { get; set; }
+        [CsvColumn("File Version")] public string FileVersion { get; set; }
+        [CsvColumn("Machine Type")] public string MachineType { get; set; }
         public string MD5 { get; set; }
         public string SHA1 { get; set; }
         public string PESHA1 { get; set; }
         public string PESHA256 { get; set; }
         public string SHA256 { get; set; }
         public string IMP { get; set; }
-        public string VTDetection { get; set; }
-        public string VTLink { get; set; }
+        [CsvColumn("VT detection")] public string VTDetection { get; set; }
+        [CsvColumn("VT link")] public string VTLink { get; set; }
 
-        public int Line { get; set; }
+        [CsvIgnore] public int Line { get; set; }
 
-        public bool Tag { get; set; }
+        [CsvIgnore] public bool Tag { get; set; }
 
         public override string ToString()
         {
@@ -79,41 +94,10 @@ namespace TLEFileMicrosoft
 
             DataList.Clear();
 
+            //Windows-1252 (a byte order mark still wins)
             using var fileReader = new StreamReader(filename, CodePagesEncodingProvider.Instance.GetEncoding(1252));
-            var config = new CsvConfiguration(CultureInfo.InvariantCulture)
-            {
-                //one string for a value repeated in many rows, not one for each (CsvHelper caches values of up to 128 characters while the file loads)
-                CacheFields = true,
-                //TLE matches header lines ignoring case: the columns are matched the same way (a lower-case header failed)
-                PrepareHeaderForMatch = args => args.Header.ToLowerInvariant(),
-                BadDataFound = null,
-            };
-
-            var csv = new CsvReader(fileReader, config);
-                
-            var o = new TypeConverterOptions
-            {
-                DateTimeStyle = DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal
-            };
-            csv.Context.TypeConverterOptionsCache.AddOptions<SigcheckData>(o);
-
-            var foo = csv.Context.AutoMap<SigcheckData>();
-
-            foo.Map(t => t.Line).Ignore();
-            foo.Map(t => t.Tag).Ignore();
-
-            foo.Map(t => t.Verified).Convert(t => t.Row.GetField("Verified") == "Signed");
-
-            foo.Map(t => t.Timestamp).Name("Date");
-            foo.Map(t => t.ProductVersion).Name("Product Version");
-            foo.Map(t => t.FileVersion).Name("File Version");
-            foo.Map(t => t.MachineType).Name("Machine Type");
-            foo.Map(t => t.VTDetection).Name("VT detection");
-            foo.Map(t => t.VTLink).Name("VT link");
-
-            csv.Context.RegisterClassMap(foo);
-
-                
+            //the columns are matched ignoring case, as TLE matches header lines (a lower-case header failed); bad quoting is recovered from
+            using var csv = CsvReader.Create(fileReader, CsvLoader.Options);
 
             var records = csv.GetRecords<SigcheckData>();
 
@@ -128,7 +112,7 @@ namespace TLEFileMicrosoft
             {
                 if (debug)
                 {
-                    Log.Debug("Line # {Line}, Record: {RawRecord}", ln, csv.Context.Parser.RawRecord);
+                    Log.Debug("Line # {Line}, Record: {RawRecord}", ln, csv.Current.ToString());
                 }
 
                 sc.Line = ln;
@@ -139,22 +123,23 @@ namespace TLEFileMicrosoft
         }
     }
 
-    public class SigcheckTroyData : IFileSpecData
+    [CsvRecord]
+    public partial class SigcheckTroyData : IFileSpecData
     {
         public string Path { get; set; }
-        public bool Verified { get; set; }
-        public DateTime Timestamp { get; set; }
+        [CsvConverter(typeof(SignedConverter))] public bool Verified { get; set; }
+        [CsvColumn("Date")] public DateTime Timestamp { get; set; }
 
         public string Publisher { get; set; }
         public string Company { get; set; }
         public string Description { get; set; }
         public string Product { get; set; }
-        public string ProductVersion { get; set; }
-        public string FileVersion { get; set; }
-        public string MachineType { get; set; }
-        public string BinaryVersion { get; set; }
-        public string OriginalName { get; set; }
-        public string InternalName { get; set; }
+        [CsvColumn("Product Version")] public string ProductVersion { get; set; }
+        [CsvColumn("File Version")] public string FileVersion { get; set; }
+        [CsvColumn("Machine Type")] public string MachineType { get; set; }
+        [CsvColumn("Binary Version")] public string BinaryVersion { get; set; }
+        [CsvColumn("Original Name")] public string OriginalName { get; set; }
+        [CsvColumn("Internal Name")] public string InternalName { get; set; }
         public string Copyright { get; set; }
         public string Comments { get; set; }
         public string Entropy { get; set; }
@@ -166,9 +151,9 @@ namespace TLEFileMicrosoft
         public string IMP { get; set; }
 
 
-        public int Line { get; set; }
+        [CsvIgnore] public int Line { get; set; }
 
-        public bool Tag { get; set; }
+        [CsvIgnore] public bool Tag { get; set; }
 
         public override string ToString()
         {
@@ -209,47 +194,10 @@ namespace TLEFileMicrosoft
 
             DataList.Clear();
 
+            //Windows-1252 (a byte order mark still wins)
             using var fileReader = new StreamReader(filename, CodePagesEncodingProvider.Instance.GetEncoding(1252));
-            var config = new CsvConfiguration(CultureInfo.InvariantCulture)
-            {
-                //one string for a value repeated in many rows, not one for each (CsvHelper caches values of up to 128 characters while the file loads)
-                CacheFields = true,
-                //TLE matches header lines ignoring case: the columns are matched the same way (a lower-case header failed)
-                PrepareHeaderForMatch = args => args.Header.ToLowerInvariant(),
-                BadDataFound = null,
-            };
-
-            var csv = new CsvReader(fileReader, config);
-                
-            
-
-            var o = new TypeConverterOptions
-            {
-                DateTimeStyle = DateTimeStyles.AssumeUniversal & DateTimeStyles.AdjustToUniversal
-            };
-            csv.Context.TypeConverterOptionsCache.AddOptions<SigcheckTroyData>(o);
-
-            var foo = csv.Context.AutoMap<SigcheckTroyData>();
-
-            //path,verified,date,publisher,company,description,product,product version,file version,machine type,binary version,original name,internal name,copyright,comments,entropy,md5,sha1,pesha1,pesha256,sha256,imp
-
-            foo.Map(t => t.Line).Ignore();
-            foo.Map(t => t.Tag).Ignore();
-
-            foo.Map(t => t.Verified).Convert(t => t.Row.GetField("Verified") == "Signed");
-
-            foo.Map(t => t.Timestamp).Name("Date");
-            foo.Map(t => t.ProductVersion).Name("Product Version");
-            foo.Map(t => t.FileVersion).Name("File Version");
-            foo.Map(t => t.MachineType).Name("Machine Type");
-            foo.Map(t => t.BinaryVersion).Name("Binary Version");
-            foo.Map(t => t.OriginalName).Name("Original Name");
-            foo.Map(t => t.InternalName).Name("Internal Name");
-
-
-            csv.Context.RegisterClassMap(foo);
-
-                
+            //the columns are matched ignoring case, as TLE matches header lines (a lower-case header failed); bad quoting is recovered from
+            using var csv = CsvReader.Create(fileReader, CsvLoader.Options);
 
             var records = csv.GetRecords<SigcheckTroyData>();
 
@@ -264,7 +212,7 @@ namespace TLEFileMicrosoft
             {
                 if (debug)
                 {
-                    Log.Debug("Line # {Line}, Record: {RawRecord}", ln, csv.Context.Parser.RawRecord);
+                    Log.Debug("Line # {Line}, Record: {RawRecord}", ln, csv.Current.ToString());
                 }
 
                 sc.Line = ln;
@@ -275,31 +223,32 @@ namespace TLEFileMicrosoft
         }
     }
 
-    public class AutorunsData : IFileSpecData
+    [CsvRecord]
+    public partial class AutorunsData : IFileSpecData
     {
         public DateTime? Time { get; set; }
-        public string EntryLocation { get; set; }
+        [CsvColumn("Entry Location")] public string EntryLocation { get; set; }
         public string Entry { get; set; }
-        public bool Enabled { get; set; }
+        [CsvColumn(Index = 3), CsvConverter(typeof(EnabledConverter))] public bool Enabled { get; set; }
         public string Category { get; set; }
         public string Description { get; set; }
         public string Signer { get; set; }
         public string Company { get; set; }
         public string Version { get; set; }
-        public string ImagePath { get; set; }
-        public string LaunchString { get; set; }
+        [CsvColumn("Image Path")] public string ImagePath { get; set; }
+        [CsvColumn("Launch String")] public string LaunchString { get; set; }
         public string MD5 { get; set; }
-        public string SHA1 { get; set; }
-        public string PESHA1 { get; set; }
-        public string SHA256 { get; set; }
-        public string PESHA256 { get; set; }
-        public string Imp { get; set; }
+        [CsvColumn("SHA-1")] public string SHA1 { get; set; }
+        [CsvColumn("PESHA-1")] public string PESHA1 { get; set; }
+        [CsvColumn("SHA-256")] public string SHA256 { get; set; }
+        [CsvColumn("PESHA-256")] public string PESHA256 { get; set; }
+        [CsvColumn("IMP")] public string Imp { get; set; }
         public string PSComputerName { get; set; }
         public string RunspaceId { get; set; }
         public string PSShowComputerName { get; set; }
 
-        public int Line { get; set; }
-        public bool Tag { get; set; }
+        [CsvIgnore] public int Line { get; set; }
+        [CsvIgnore] public bool Tag { get; set; }
 
         public override string ToString()
         {
@@ -340,33 +289,8 @@ namespace TLEFileMicrosoft
 
             DataList.Clear();
 
-            using var fileReader = File.OpenText(filename);
-            //one string for a value repeated in many rows, not one for each (CsvHelper caches values of up to 128 characters while the file loads)
-            //TLE matches header lines ignoring case: the columns are matched the same way (a lower-case header failed)
-            var csv = new CsvReader(fileReader, new CsvConfiguration(CultureInfo.InvariantCulture) {CacheFields = true, PrepareHeaderForMatch = args => args.Header.ToLowerInvariant()});
-                
-            var foo = csv.Context.AutoMap<AutorunsData>();
-
-            //"Time","Entry Location","Entry","Enabled","Category","Profile","Description","Signer","Company",
-            //"Image Path","Version","Launch String","MD5","SHA-1","PESHA-1","PESHA-256","SHA-256","IMP",
-            //"PSComputerName","RunspaceId","PSShowComputerName"
-
-            foo.Map(t => t.Line).Ignore();
-            foo.Map(t => t.Tag).Ignore();
-
-            foo.Map(t => t.EntryLocation).Name("Entry Location");
-            foo.Map(t => t.Enabled).Convert(t => t.Row[3] == "enabled");
-            foo.Map(t => t.ImagePath).Name("Image Path");
-            foo.Map(t => t.LaunchString).Name("Launch String");
-            foo.Map(t => t.SHA1).Name("SHA-1");
-            foo.Map(t => t.PESHA1).Name("PESHA-1");
-            foo.Map(t => t.SHA256).Name("SHA-256");
-            foo.Map(t => t.PESHA256).Name("PESHA-256");
-            foo.Map(t => t.Imp).Name("IMP");
-
-            csv.Context.RegisterClassMap(foo);
-
-                
+            //the columns are matched ignoring case, as TLE matches header lines (a lower-case header failed)
+            using var csv = CsvReader.FromFile(filename, CsvLoader.Options);
 
             var records = csv.GetRecords<AutorunsData>();
 
@@ -381,7 +305,7 @@ namespace TLEFileMicrosoft
             {
                 if (debug)
                 {
-                    Log.Debug("Line # {Line}, Record: {RawRecord}", ln, csv.Context.Parser.RawRecord);
+                    Log.Debug("Line # {Line}, Record: {RawRecord}", ln, csv.Current.ToString());
                 }
 
                 autorunsEntry.Line = ln;
@@ -392,52 +316,53 @@ namespace TLEFileMicrosoft
         }
     }
 
-    public class MsftMftData : IFileSpecData
+    [CsvRecord]
+    public partial class MsftMftData : IFileSpecData
     {
-        public long SegmentNumber { get; set; }
-        public bool InUse { get; set; }
-        public int ReferenceCount { get; set; }
-        public bool IsDirectory { get; set; }
-        public bool IsStream { get; set; }
-        public string FileName { get; set; }
-        public long? FileSize { get; set; }
-        public string Extension { get; set; }
-        public DateTime? CreationTime0x10 { get; set; }
-        public DateTime? LastModificationTime0x10 { get; set; }
-        public DateTime? LastChangeTime0x10 { get; set; }
-        public DateTime? LastAccessTime0x10 { get; set; }
-        public DateTime? LastModificationTime0x30 { get; set; }
-        public DateTime? CreationTime0x30 { get; set; }
-        public DateTime? LastChangeTime0x30 { get; set; }
-        public DateTime? LastAccessTime0x30 { get; set; }
-        public string Path { get; set; }
-        public int ParentFRS { get; set; }
-        public int? OwnerID { get; set; }
-        public int? SecurityID { get; set; }
-        public bool HasEA { get; set; }
-        public bool IsReadOnly { get; set; }
-        public bool IsHidden { get; set; }
-        public bool IsSystem { get; set; }
-        public bool IsArchive { get; set; }
-        public bool IsNormal { get; set; }
-        public bool IsTemporary { get; set; }
-        public bool IsSparse { get; set; }
-        public bool IsReparsePoint { get; set; }
-        public bool IsCompressed { get; set; }
-        public bool IsOffline { get; set; }
-        public bool IsNotContentIndexed { get; set; }
-        public bool IsEncrypted { get; set; }
-        public bool IsIntegrityStream { get; set; }
-        public bool IsVirtual { get; set; }
-        public bool IsNoScrubData { get; set; }
-        public bool IsEA { get; set; }
-        public string LoggedUtilityStream { get; set; }
-        public int SequenceNumber { get; set; }
-        public string ParseErrorMsg { get; set; }
+        [CsvColumn(Optional = true)] public long SegmentNumber { get; set; }
+        [CsvColumn(Optional = true)] public bool InUse { get; set; }
+        [CsvColumn(Optional = true)] public int ReferenceCount { get; set; }
+        [CsvColumn(Optional = true)] public bool IsDirectory { get; set; }
+        [CsvColumn(Optional = true)] public bool IsStream { get; set; }
+        [CsvColumn(Optional = true)] public string FileName { get; set; }
+        [CsvColumn(Optional = true)] public long? FileSize { get; set; }
+        [CsvColumn(Optional = true)] public string Extension { get; set; }
+        [CsvColumn(Optional = true), CsvConverter(typeof(NullableNoZParseTimeConverter))] public DateTime? CreationTime0x10 { get; set; }
+        [CsvColumn(Optional = true), CsvConverter(typeof(NullableNoZParseTimeConverter))] public DateTime? LastModificationTime0x10 { get; set; }
+        [CsvColumn(Optional = true), CsvConverter(typeof(NullableNoZParseTimeConverter))] public DateTime? LastChangeTime0x10 { get; set; }
+        [CsvColumn(Optional = true), CsvConverter(typeof(NullableNoZParseTimeConverter))] public DateTime? LastAccessTime0x10 { get; set; }
+        [CsvColumn(Optional = true), CsvConverter(typeof(NullableNoZParseTimeConverter))] public DateTime? LastModificationTime0x30 { get; set; }
+        [CsvColumn(Optional = true), CsvConverter(typeof(NullableNoZParseTimeConverter))] public DateTime? CreationTime0x30 { get; set; }
+        [CsvColumn(Optional = true), CsvConverter(typeof(NullableNoZParseTimeConverter))] public DateTime? LastChangeTime0x30 { get; set; }
+        [CsvColumn(Optional = true), CsvConverter(typeof(NullableNoZParseTimeConverter))] public DateTime? LastAccessTime0x30 { get; set; }
+        [CsvColumn(Optional = true)] public string Path { get; set; }
+        [CsvColumn(Optional = true)] public int ParentFRS { get; set; }
+        [CsvColumn(Optional = true)] public int? OwnerID { get; set; }
+        [CsvColumn(Optional = true)] public int? SecurityID { get; set; }
+        [CsvColumn(Optional = true)] public bool HasEA { get; set; }
+        [CsvColumn(Optional = true)] public bool IsReadOnly { get; set; }
+        [CsvColumn(Optional = true)] public bool IsHidden { get; set; }
+        [CsvColumn(Optional = true)] public bool IsSystem { get; set; }
+        [CsvColumn(Optional = true)] public bool IsArchive { get; set; }
+        [CsvColumn(Optional = true)] public bool IsNormal { get; set; }
+        [CsvColumn(Optional = true)] public bool IsTemporary { get; set; }
+        [CsvColumn(Optional = true)] public bool IsSparse { get; set; }
+        [CsvColumn(Optional = true)] public bool IsReparsePoint { get; set; }
+        [CsvColumn(Optional = true)] public bool IsCompressed { get; set; }
+        [CsvColumn(Optional = true)] public bool IsOffline { get; set; }
+        [CsvColumn(Optional = true)] public bool IsNotContentIndexed { get; set; }
+        [CsvColumn(Optional = true)] public bool IsEncrypted { get; set; }
+        [CsvColumn(Optional = true)] public bool IsIntegrityStream { get; set; }
+        [CsvColumn(Optional = true)] public bool IsVirtual { get; set; }
+        [CsvColumn(Optional = true)] public bool IsNoScrubData { get; set; }
+        [CsvColumn(Optional = true)] public bool IsEA { get; set; }
+        [CsvColumn(Optional = true)] public string LoggedUtilityStream { get; set; }
+        [CsvColumn(Optional = true)] public int SequenceNumber { get; set; }
+        [CsvColumn(Optional = true)] public string ParseErrorMsg { get; set; }
 
-        public int Line { get; set; }
+        [CsvIgnore] public int Line { get; set; }
 
-        public bool Tag { get; set; }
+        [CsvIgnore] public bool Tag { get; set; }
 
 
         public override string ToString()
@@ -476,17 +401,7 @@ namespace TLEFileMicrosoft
         public void ProcessFile(string filename)
         {
             //tab separated (with the default comma, no file ever loaded)
-            CsvLoader.Load<MsftMftData>(filename, DataList, TaggedLines, map =>
-            {
-                map.Map(m => m.CreationTime0x10).Convert(row => CsvLoader.ParseTime(row.Row.GetField<string>("CreationTime0x10")?.Replace("Z", "")));
-                map.Map(m => m.CreationTime0x30).Convert(row => CsvLoader.ParseTime(row.Row.GetField<string>("CreationTime0x30")?.Replace("Z", "")));
-                map.Map(m => m.LastModificationTime0x10).Convert(row => CsvLoader.ParseTime(row.Row.GetField<string>("LastModificationTime0x10")?.Replace("Z", "")));
-                map.Map(m => m.LastModificationTime0x30).Convert(row => CsvLoader.ParseTime(row.Row.GetField<string>("LastModificationTime0x30")?.Replace("Z", "")));
-                map.Map(m => m.LastChangeTime0x10).Convert(row => CsvLoader.ParseTime(row.Row.GetField<string>("LastChangeTime0x10")?.Replace("Z", "")));
-                map.Map(m => m.LastChangeTime0x30).Convert(row => CsvLoader.ParseTime(row.Row.GetField<string>("LastChangeTime0x30")?.Replace("Z", "")));
-                map.Map(m => m.LastAccessTime0x10).Convert(row => CsvLoader.ParseTime(row.Row.GetField<string>("LastAccessTime0x10")?.Replace("Z", "")));
-                map.Map(m => m.LastAccessTime0x30).Convert(row => CsvLoader.ParseTime(row.Row.GetField<string>("LastAccessTime0x30")?.Replace("Z", "")));
-            }, configure: config => { config.Delimiter = "\t"; });
+            CsvLoader.Load<MsftMftData>(filename, DataList, TaggedLines, CsvLoader.Options.With((nameof(CsvReaderOptions.Separator), '\t')));
         }
     }
 }
