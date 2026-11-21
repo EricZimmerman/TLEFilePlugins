@@ -64,7 +64,7 @@
   </property>
   <property name="ActiveFilterEnabled">true</property>
   <property name="ViewCaptionHeight">-1</property>
-  <property name="Columns" iskey="true" value="28">
+  <property name="Columns" iskey="true" value="29">
     <property name="Item1" isnull="true" iskey="true">
       <property name="Name">colRecordNumber</property>
       <property name="VisibleIndex">2</property>
@@ -285,6 +285,14 @@
       <property name="Visible">true</property>
       <property name="Width">171</property>
       <property name="MinWidth">23</property>
+      <property name="MaxWidth">0</property>
+    </property>
+    <property name="Item29" isnull="true" iskey="true">
+      <property name="Name">colRecovered</property>
+      <property name="VisibleIndex">27</property>
+      <property name="Visible">true</property>
+      <property name="Width">150</property>
+      <property name="MinWidth">20</property>
       <property name="MaxWidth">0</property>
     </property>
   </property>
