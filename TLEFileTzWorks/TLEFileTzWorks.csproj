@@ -11,7 +11,7 @@
   </ItemGroup>
   <ItemGroup>
 
-    <PackageReference Include="ServiceStack.Text" Version="10.4.2" />
+    <PackageReference Include="ServiceStack.Text" Version="10.5.0" />
   </ItemGroup>
   <ItemGroup>
     <!-- CsvLoader: compiled into each plugin assembly -->
